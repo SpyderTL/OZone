@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Boolean"
+	type="http://metalx.org/Boolean"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/i286/Structures/Class"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:obj="http://metalx.org/i286/Functions/Object"
+	xmlns:lst="http://metalx.org/i286/Functions/List"
+	xmlns:str="http://metalx.org/i286/Functions/String"
+	xmlns:mm="http://metalx.org/i286/Functions/MemoryManager"
+	xmlns:sys="http://metalx.org/i286/Functions/System"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:ari="http://metalx.org/Intel/80286/Arithmetic"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands">
+
+	<cls:field name="Value" type="http://metalx.org/Boolean" offset="0"/>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<scope>
+			<obj:GetData/>
+
+			<cpu:MathImmediateToOperandFunction8/>
+			<math:CompareWithSIAddress/>
+			<byte>0</byte>
+
+			<cpu:BranchToRelativeIfNotEqual8/>
+			<addressOf ref="true" type="Relative8"/>
+
+			<cpu:JumpToRelative16/>
+			<addressOf ref="false" type="Relative16"/>
+
+			<label id="true"/>
+			
+			<sys:GetMemoryManager/>
+
+			<cpu:PushImmediateToStack16/>
+			<addressOf ref="trueString" type="Segment16"/>
+
+			<cpu:PullESFromStack/>
+			
+			<cpu:CopyImmediateToDI/>
+			<addressOf ref="trueString" type="Absolute16"/>
+
+			<str:CreateObject/>
+
+			<cpu:PushESToStack/>
+			<cpu:PullDSFromStack/>
+			
+			<cpu:CopyRegisterToOperand16/>
+			<op:DI-SIRegister/>
+
+			<cpu:ReturnToNearCaller/>
+
+			<label id="false"/>
+
+			<sys:GetMemoryManager/>
+
+			<cpu:PushImmediateToStack16/>
+			<addressOf ref="falseString" type="Segment16"/>
+
+			<cpu:PullESFromStack/>
+
+			<cpu:CopyImmediateToDI/>
+			<addressOf ref="falseString" type="Absolute16"/>
+
+			<str:CreateObject/>
+
+			<cpu:PushESToStack/>
+			<cpu:PullDSFromStack/>
+
+			<cpu:CopyRegisterToOperand16/>
+			<op:DI-SIRegister/>
+
+			<cpu:ReturnToNearCaller/>
+
+			<label id="falseString"/>
+			<short>5</short>
+			<string>False</string>
+
+			<label id="trueString"/>
+			<short>4</short>
+			<string>True</string>
+		</scope>
+	</cls:method>
+</cls:class>

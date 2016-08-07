@@ -1,0 +1,621 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="System"
+	type="http://metalx.org/System"
+	static="true"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/i286/Structures/Class"
+	xmlns:clsf="http://metalx.org/i286/Functions/Class"
+	xmlns:dbg="http://metalx.org/i286/Functions/Debug"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:cat="http://metalx.org/i286/Functions/Catalog"
+	xmlns:mm="http://metalx.org/i286/Functions/MemoryManager"
+	xmlns:date="http://metalx.org/i286/Functions/Date"
+	xmlns:time="http://metalx.org/i286/Functions/Time"
+	xmlns:ver="http://metalx.org/i286/Functions/Version"
+	xmlns:obj="http://metalx.org/i286/Functions/Object"
+	xmlns:lst="http://metalx.org/i286/Functions/List"
+	xmlns:str="http://metalx.org/i286/Functions/String"
+	xmlns:sys="http://metalx.org/i286/Functions/System"
+	xmlns:int="http://metalx.org/i286/Functions/Short"
+	xmlns:bool="http://metalx.org/i286/Functions/Boolean"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:pci="http://metalx.org/Pc/Pci/Functions"
+	xmlns:pcic="http://metalx.org/Pc/Pci/Command"
+	xmlns:pcir="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:pnp="http://metalx.org/Pc/System/Pnp"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:shift="http://metalx.org/Intel/80286/Shift"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:clk="http://metalx.org/Pc/Bios/Clock"
+	xmlns:pwr="http://metalx.org/Pc/Vesa/Power"
+	xmlns:ps="http://metalx.org/Pc/Vesa/Power/State"
+	xmlns:pd="http://metalx.org/Pc/Vesa/Power/Devices"
+	xmlns:kbd="http://metalx.org/Pc/Keyboard">
+
+	<cls:method name="Reset" static="true">
+		<cpu:CopyImmediateToAL/>
+		<kbd:ResetCpu/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<kbd:ControlPort/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="StandBy" static="true">
+		<cpu:CopyImmediateToAX/>
+		<pwr:SetState/>
+
+		<cpu:CopyImmediateToBX/>
+		<pd:AllBiosDevices/>
+
+		<cpu:CopyImmediateToCX/>
+		<ps:Standby/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:SystemFunctions/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Suspend" static="true">
+		<cpu:CopyImmediateToAX/>
+		<pwr:SetState/>
+
+		<cpu:CopyImmediateToBX/>
+		<pd:AllBiosDevices/>
+
+		<cpu:CopyImmediateToCX/>
+		<ps:Suspend/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:SystemFunctions/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Shutdown" static="true">
+		<cpu:CopyImmediateToAX/>
+		<pwr:SetState/>
+
+		<cpu:CopyImmediateToBX/>
+		<pd:AllBiosDevices/>
+
+		<cpu:CopyImmediateToCX/>
+		<ps:Off/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:SystemFunctions/>
+	</cls:method>
+
+	<cls:method name="IsPciInstalled" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<pci:InstallationCheck/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:PciFunctions/>
+
+		<cpu:MathImmediateToOperandFunction8/>
+		<math:CompareWithAHRegister/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelativeIfEqual8/>
+		<addressOf ref="checkSignature" type="Relative8"/>
+
+		<cpu:JumpToRelative16/>
+		<addressOf ref="pciIsNotInstalled" type="Relative16"/>
+
+		<label id="checkSignature"/>
+
+		<cpu:Operand32/>
+		<cpu:MathImmediateToOperandFunction16/>
+		<math:CompareWithDXRegister/>
+		<string>PCI </string>
+
+		<cpu:BranchToRelativeIfNotEqual8/>
+		<addressOf ref="pciIsInstalled" type="Relative8"/>
+
+		<cpu:JumpToRelative16/>
+		<addressOf ref="pciIsNotInstalled" type="Relative16"/>
+
+		<label id="pciIsInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="pciIsNotInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<sys:GetMemoryManager/>
+
+		<bool:CreateObject/>
+
+		<cpu:PushESToStack/>
+		<cpu:PullDSFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetPciVersion" type="http://metalx.org/Version" static="true">
+		<cpu:CopyImmediateToAX/>
+		<pci:InstallationCheck/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:PciFunctions/>
+
+		<sys:GetMemoryManager/>
+
+		<ver:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetPciDevices" type="http://metalx.org/List" static="true">
+		<!--Find PciDevice class-->
+		<sys:GetCatalog/>
+
+		<cpu:PushESToStack/>
+
+		<cpu:PushImmediateToStack16/>
+		<addressOf ref="pciDeviceType" type="Segment16"/>
+
+		<cpu:PullESFromStack/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="pciDeviceType" type="Absolute16"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="pciDeviceClass" type="Absolute16"/>
+
+		<cpu:PullESFromStack/>
+
+		<!--Get last bus number-->
+		<cpu:CopyImmediateToAX/>
+		<pci:InstallationCheck/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:PciFunctions/>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:CL-CHRegister/>
+
+		<cpu:CopyImmediateToCL/>
+		<hex>ff</hex>
+
+		<cpu:CopyImmediateToBX/>
+		<short>0</short>
+
+		<cpu:CopyImmediateToDX/>
+		<short>0</short>
+
+		<!--Scan Pci bus and store slot information-->
+		<label id="scanPciBus"/>
+
+		<cpu:PushCXToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<pci:ReadConfigurationShort/>
+
+		<cpu:CopyImmediateToDI/>
+		<pcir:VendorID/>
+		<hex>00</hex>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:PciFunctions/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:CX-AXRegister/>
+
+		<cpu:PullCXFromStack/>
+
+		<cpu:CompareAXToImmediate/>
+		<short>-1</short>
+
+		<cpu:BranchToRelativeIfEqual8/>
+		<addressOf ref="nextSlot" type="Relative8"/>
+
+		<!--Store slot number-->
+		<cpu:PushBXToStack/>
+
+		<!--Store vendor id-->
+		<cpu:PushAXToStack/>
+
+		<!--Store device id-->
+		<cpu:PushCXToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<pci:ReadConfigurationShort/>
+
+		<cpu:CopyImmediateToDI/>
+		<pcir:DeviceID/>
+		<hex>00</hex>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:PciFunctions/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:CX-AXRegister/>
+
+		<cpu:PullCXFromStack/>
+
+		<cpu:PushAXToStack/>
+
+		<!--Store class code-->
+		<cpu:PushCXToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<pci:ReadConfigurationInteger/>
+
+		<cpu:CopyImmediateToDI/>
+		<pcir:RevisionID/>
+		<hex>00</hex>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:PciFunctions/>
+
+		<cpu:Operand32/>
+		<cpu:CopyRegisterToOperand16/>
+		<op:CX-AXRegister/>
+
+		<cpu:PullCXFromStack/>
+
+		<cpu:Operand32/>
+		<cpu:PushAXToStack/>
+
+		<cpu:IncrementDX/>
+
+		<label id="nextSlot"/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="scanPciBus" type="Relative8"/>
+
+		<!--Create List structure-->
+		<label id="createListStructure"/>
+
+		<sys:GetMemoryManager/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DX-AXRegister/>
+
+		<lst:Create/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-BXRegister/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DX-CXRegister/>
+
+		<!--Create PciDevice structure-->
+		<label id="createPciDeviceStructure"/>
+
+		<sys:GetMemoryManager/>
+
+		<mm:CheckOut length="10"/>
+
+		<!--Set class code-->
+		<cpu:Operand32/>
+		<cpu:PullAXFromStack/>
+
+		<cpu:Operand32/>
+		<cpu:CopyRegisterToOperand16/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>2</byte>
+
+		<!--Set device id-->
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<!--Set vendor id-->
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>6</byte>
+
+		<!--Set slot number-->
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:AX-DIAddress/>
+
+		<!--Create PciDevice object-->
+		<cpu:PushBXToStack/>
+
+		<cpu:SegmentCS/>
+		<cpu:CopyOperandToRegister16/>
+		<op:BX-ImmediateAddress/>
+		<addressOf ref="pciDeviceClass" type="Absolute16"/>
+
+		<sys:GetMemoryManager/>
+
+		<cpu:CopyImmediateToAX/>
+		<short>10</short>
+
+		<obj:Create/>
+
+		<cpu:PullBXFromStack/>
+
+		<!--Add PciDevice object to List structure-->
+		<cpu:CopyRegisterToOperand16/>
+		<op:CX-AXRegister/>
+
+		<cpu:DecrementAX/>
+
+		<!--<cpu:PushImmediateToStack16/>
+		<hex>2000</hex>
+		<cpu:PullDSFromStack/>-->
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:BX-SIRegister/>
+
+		<!--<cpu:PushAllRegistersToStack/>
+		<cpu:CopyOperandToRegister16/>
+		<op:AX-SIRegister/>
+		<con:WriteShortHex digits="4" endLine="true"/>
+		<cpu:PullAllRegistersFromStack/>-->
+
+		<lst:SetItem/>
+
+		<!--<cpu:PushAllRegistersToStack/>
+		<cpu:CopyRegisterToOperand16/>
+		<op:BX-SIRegister/>
+		<cpu:PushImmediateToStack16/>
+		<hex>2000</hex>
+		<cpu:PullDSFromStack/>
+		<cpu:CopyImmediateToAX/>
+		<short>0</short>
+		<lst:GetItem/>
+		<obj:GetData/>-->
+		<!--<cpu:CopyRegisterToOperand16/>
+		<op:SI-AXRegister/>-->
+		<!--<cpu:CopyOperandToRegister16/>
+		<op:AX-SIAddress/>-->
+		<!--<con:WriteShortHex digits="4" endLine="true"/>
+		<cpu:ClearInterruptFlag/>
+		<cpu:HaltProcessing/>
+		<cpu:PullAllRegistersFromStack/>-->
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="createPciDeviceStructure" type="Relative8"/>
+
+		<!--Create List object-->
+		<sys:GetMemoryManager/>
+
+		<cpu:PushImmediateToStack16/>
+		<hex>2000</hex>
+		<cpu:PullESFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:BX-DIRegister/>
+
+		<lst:CreateObject/>
+
+		<cpu:PushESToStack/>
+		<cpu:PullDSFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<!--Debug-->
+		<!--<cpu:PushAllRegistersToStack/>
+		<obj:GetData/>-->
+		<!--<cpu:CopyRegisterToOperand16/>
+		<op:SI-AXRegister/>-->
+		<!--<cpu:CopyImmediateToAX/>
+		<short>0</short>
+		<lst:GetItem/>-->
+		<!--<cpu:PushImmediateToStack16/>
+		<hex>2000</hex>
+		<cpu:PullDSFromStack/>-->
+		<!--<lst:GetLength/>-->
+		<!--<obj:GetData/>
+		<cpu:CopyOperandToRegister16/>
+		<op:AX-SIAddress/>-->
+		<!--<obj:GetType/>-->
+		<!--<cpu:PushImmediateToStack16/>
+		<hex>1000</hex>
+		<cpu:PullDSFromStack/>
+		<clsf:GetName/>
+		<con:WriteString endLine="true"/>-->
+		<!--<con:WriteShortHex digits="4" endLine="true"/>-->
+		<!--<cpu:CopyImmediateToAX/>
+		<short>0</short>
+		<lst:GetItem/>-->
+		<!--<obj:GetType/>
+		<cpu:PushImmediateToStack16/>
+		<hex>1000</hex>
+		<cpu:PullDSFromStack/>
+		<clsf:GetName/>
+		<con:WriteString endLine="true"/>-->
+		<!--<cpu:PullAllRegistersFromStack/>-->
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="pciDeviceType"/>
+		<short>26</short>
+		<string>http://metalx.org/Pci/PciDevice</string>
+
+		<label id="pciDeviceClass"/>
+		<hex>0000</hex>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsPnpInstalled" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<pnp:InstallationCheck/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:PnpFunctions/>
+
+		<cpu:MathImmediateToOperandFunction16/>
+		<math:CompareWithAXRegister/>
+		<short>0</short>
+
+		<cpu:BranchToRelativeIfEqual8/>
+		<addressOf ref="checkSignature" type="Relative8"/>
+
+		<cpu:JumpToRelative16/>
+		<addressOf ref="pnpIsNotInstalled" type="Relative16"/>
+
+		<label id="checkSignature"/>
+
+		<cpu:Operand32/>
+		<cpu:MathImmediateToOperandFunction16/>
+		<math:CompareWithDXRegister/>
+		<string>ACFG</string>
+
+		<cpu:BranchToRelativeIfEqual8/>
+		<addressOf ref="pnpIsInstalled" type="Relative8"/>
+
+		<cpu:JumpToRelative16/>
+		<addressOf ref="pnpIsNotInstalled" type="Relative16"/>
+
+		<label id="pnpIsInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<sys:GetMemoryManager/>
+
+		<bool:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="pnpIsNotInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<sys:GetMemoryManager/>
+
+		<bool:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetLastPciBusNumber" type="http://metalx.org/Short" static="true">
+		<cpu:CopyImmediateToAX/>
+		<pci:InstallationCheck/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:PciFunctions/>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:CL-ALRegister/>
+
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<sys:GetMemoryManager/>
+
+		<int:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetPnpVersion" type="http://metalx.org/Version" static="true">
+		<cpu:CopyImmediateToAX/>
+		<pnp:InstallationCheck/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:PnpFunctions/>
+
+		<sys:GetMemoryManager/>
+
+		<ver:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetDate" type="http://metalx.org/Date" static="true">
+		<cpu:SetCarryFlag/>
+
+		<cpu:CopyImmediateToAH/>
+		<clk:ReadRealTimeClockDate/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:ClockFunctions/>
+
+		<cpu:BranchToRelativeIfNotCarry8/>
+		<addressOf ref="printDate" type="Relative8"/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="printDate"/>
+
+		<sys:GetMemoryManager/>
+
+		<date:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:PushESToStack/>
+		<cpu:PullDSFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetTime" type="http://metalx.org/Time" static="true">
+		<cpu:SetCarryFlag/>
+
+		<cpu:CopyImmediateToAH/>
+		<clk:ReadRealTimeClockTime/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:ClockFunctions/>
+
+		<cpu:BranchToRelativeIfNotCarry8/>
+		<addressOf ref="printTime" type="Relative8"/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="printTime"/>
+
+		<sys:GetMemoryManager/>
+
+		<time:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

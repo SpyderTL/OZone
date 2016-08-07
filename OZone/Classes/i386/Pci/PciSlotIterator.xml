@@ -1,0 +1,260 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="PciSlotIterator"
+	type="http://metalx.org/Pci/PciSlotIterator"
+	xmlns="http://metalx.org/Program"
+	xmlns:dbg="http://metalx.org/i386/Functions/Debug"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:con="http://metalx.org/i386/Functions/Console"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:flp="http://metalx.org/i386/Functions/Floppy"
+	xmlns:pci="http://metalx.org/i386/Functions/Pci"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:inc="http://metalx.org/Intel/80386/Increment"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:cls="http://metalx.org/Class">
+
+	<cls:field name="Slot" offset="0" type="http://metalx.org/Pci/PciSlot"/>
+
+	<cls:method name="NextFunction" type="http://metalx.org/Pci/PciSlotIterator">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:IncrementFunction/>
+		<inc:IncrementSIAddress/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="PreviousFunction" type="http://metalx.org/Pci/PciSlotIterator">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:IncrementFunction/>
+		<inc:DecrementSIAddress/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Next" type="http://metalx.org/Pci/PciSlotIterator">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIAddress/>
+		<byte>8</byte>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Previous" type="http://metalx.org/Pci/PciSlotIterator">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromSIAddress/>
+		<byte>8</byte>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="NextBus" type="http://metalx.org/Pci/PciSlotIterator">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToSIAddress/>
+		<int>256</int>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="PreviousBus" type="http://metalx.org/Pci/PciSlotIterator">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromSIAddress/>
+		<int>256</int>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Skip" type="http://metalx.org/Pci/PciSlotIterator">
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetDevice" type="http://metalx.org/Pci/PciDevice">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pci:CreateDeviceObject/>
+		
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<mm:CheckOut length="12"/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>8</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<cpu:PushDIToStack/>
+
+		<int:ToString/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PushDIToStack/>
+
+		<str:AppendString/>
+
+		<cpu:PullSIFromStack/>
+		<cpu:PushSIToStack/>
+
+		<str:AppendCharacter value='.'/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:PullAXFromStack/>
+		<cpu:PushAXToStack/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>3</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000001f</hex>
+
+		<cpu:PushDIToStack/>
+
+		<int:ToString/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PushDIToStack/>
+
+		<str:AppendString/>
+
+		<cpu:PullSIFromStack/>
+		<cpu:PushSIToStack/>
+
+		<str:AppendCharacter value='.'/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>00000007</hex>
+
+		<cpu:PushDIToStack/>
+
+		<int:ToString/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PushDIToStack/>
+
+		<str:AppendString/>
+
+		<cpu:PullSIFromStack/>
+		<cpu:PushSIToStack/>
+
+		<str:AppendCharacter value=' '/>
+
+		<cpu:PullDIFromStack/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+</cls:class>

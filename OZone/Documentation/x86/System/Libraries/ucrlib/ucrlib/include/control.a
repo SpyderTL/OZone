@@ -1,0 +1,131 @@
+		ifndef	$Control_a
+$Control_a	=	0
+		echo	control.a
+		include	macros.a
+
+
+
+$ForStk		textequ	<>			;Stack variable for FOR loops.
+
+ForLp		macro	LCV, start, stop	;LCV="Loop Ctrl Var"
+		local	ForLoop
+
+		ifndef	$ForCnt
+$ForCnt		=	0
+		else
+$ForCnt		=	$ForCnt + 1
+		endif
+
+		$push	$ForStk, <%$ForCnt>
+
+;; Emit the instructions to initialize the loop control variable.
+
+		if	IsConst(Start)		  ;If immediate constant
+		mov	LCV, Start-1
+		else
+		if	IsReg(LCV)		  ;If register and variable
+		mov	LCV, Start
+		dec	LCV
+		else				  ;If two memory locations
+		mov	ax, Start
+		dec	ax
+		mov	LCV, ax
+		echo	Warning! FORLP macro modifies AX
+		endif
+		endif
+
+;; Output Loop Label:
+
+ForLoop		catstr	<$ForLoop>, %$ForCnt
+&ForLoop&:
+
+		inc	LCV			;Bump up for next value.
+
+;; Output test to see if the loop is done:
+
+		if	IsConst(Stop) or IsReg(LCV)
+		cmp	LCV, Stop
+		else
+		mov	ax, LCV
+		cmp	ax, Stop
+		endif
+		jg	@catstr(<$Next>, %$ForCnt)
+
+		endm
+
+
+
+
+; Here is the NEXT macro:
+
+
+Next		macro
+		local	ForDone
+
+		$pop	$ForStk, ForDone
+
+		jmp	@catstr(<$ForLoop>, %&ForDone&)
+ForDone		catstr	<$Next>, %ForDone
+&ForDone&:
+		endm
+
+
+
+
+
+
+
+; Okay, handle a FOREACH loop down here.
+
+$ForEachStk	textequ	<>
+
+ForEach		macro	Iterator
+		local	Failure
+
+		ifndef	$ForCnt
+$ForCnt		=	0
+		else
+$ForCnt		=	$ForCnt + 1
+		endif
+
+		$push	$ForEachStk, %$ForCnt
+Failure		catstr	<$Failure>, %$ForCnt
+
+		push	offset &Failure&
+		call	Iterator
+		endm
+
+
+
+
+
+EndFor		macro
+		local	Failure
+
+		retn
+		$pop	$ForEachStk, Failure
+@catstr(<$Failure>,<%Failure>):
+		endm
+
+
+
+Yield		macro
+
+		ifndef	$YieldedOnce
+		echo	Warning: Yield modifies DX!
+$YieldedOnce	=	0
+		endif
+
+		push	bp
+		mov	dx, [bp+2]
+		mov	bp, [bp]
+		call	dx
+		pop	bp
+		endm
+
+
+
+iter		textequ	<proc near>
+endi		textequ	<endp>
+
+		endif	;ifndef $control_a

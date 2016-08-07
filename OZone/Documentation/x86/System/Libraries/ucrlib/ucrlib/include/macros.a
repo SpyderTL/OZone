@@ -1,0 +1,1206 @@
+		ifndef	macros_a
+macros_a	=	0
+		echo	macros.a
+
+
+; Some very useful textequs
+
+byp		textequ	<byte ptr>
+wp		textequ	<word ptr>
+dp		textequ	<dword ptr>
+
+
+
+; Macros that check the validity of different operand types.
+
+
+;IsConst-	Checks an operand to see if it is a constant (numeric or string).
+;		This function returns true (0FFh) if the operand is a constant,
+;		it returns false (0) otherwise.  You would normally use it with
+;		the "if" directive.
+
+IsConst		macro	Operand
+
+;; Assume if we see a quote or an apostrophe that this is a string constant
+;; operand.  The funny syntax below is necessary because MASM doesn't handle
+;; stuff like <'> or <"> too well.
+
+%		ifidn	<@catstr(@substr(<Operand>,1,1),< >,@substr(<Operand>,1,1))>, <' '>
+		exitm	<-1>
+		endif
+
+%		ifidn	<@catstr(@substr(<Operand>,1,1),< >,@substr(<Operand>,1,1))>, <" ">
+		exitm	<-1>
+		endif
+
+;; If not quote or apostrophe, check it out with OPATTR.
+
+		exitm	<(((OPATTR Operand) and 1100b) eq 0100b)>
+		endm
+
+
+
+
+
+
+
+
+;IsNumConst-	Checks an operand to see if it is a numeric constant.
+;		This function returns true (0FFh) if the operand is a constant,
+;		it returns false (0) otherwise.  You would normally use it with
+;		the "if" directive.
+
+IsNumConst	macro	Operand
+
+;; Check it out with OPATTR.
+
+		exitm	<(((OPATTR Operand) and 1100b) eq 0100b)>
+		endm
+
+
+
+
+
+
+;IsStrConst-	Checks an operand to see if it is a string constant.
+;		This function returns true (0FFh) if the operand is a constant,
+;		it returns false (0) otherwise.  You would normally use it with
+;		the "if" directive.
+
+IsStrConst	macro	Operand
+
+;; Assume if we see a quote or an apostrophe that this is a string constant
+;; operand.  The funny syntax below is necessary because MASM doesn't handle
+;; stuff like <'> or <"> too well.
+
+%		ifidn	<@catstr(@substr(<Operand>,1,1),< >,@substr(<Operand>,1,1))>, <' '>
+		exitm	<-1>
+		endif
+
+%		ifidn	<@catstr(@substr(<Operand>,1,1),< >,@substr(<Operand>,1,1))>, <" ">
+		exitm	<-1>
+		endif
+
+;; If not quote or apostrophe, it's not a string constant.
+
+		exitm	<0>
+		endm
+
+
+
+
+
+
+
+
+
+;IsReg-		Checks to see if an operand is a register.
+;		This function returns the operand as a textual value if
+;		it is a register.  It returns the empty string (blank)
+;		if the operand is not a register.  You would normally
+;		use this function in an "ifb" directive.
+
+IsReg		macro	Operand
+		if	(((OPATTR Operand) and 10000b) eq 10000b)
+		exitm	<Operand>
+		else
+		exitm	<>
+		endif
+		endm
+
+
+
+
+
+
+;IsVar-		Checks an operand to see if it is a variable.
+;		This function returns the operand as a textual value if
+;		it is a variable.  It returns the empty string (blank)
+;		if the operand is not a variable.  You would normally
+;		use this function in an "ifb" directive.
+
+IsVar		macro	Operand
+		if	(((OPATTR Operand) and 1010b) eq 1010b)
+		exitm	<Operand>
+		else
+		exitm	<>
+		endif
+		endm
+
+
+
+
+
+; IsByte,
+; IsWord,
+; IsDword-	Tests its operand to see if it is a variable of the specific 
+;		object size.
+
+IsByte		macro	Operand
+		exitm	<((type Operand) eq 1) and (((OPATTR Operand) and 1010b) eq 1010b)>
+		endm
+
+IsWord		macro	Operand
+		exitm	<((type Operand) eq 2) and (((OPATTR Operand) and 1010b) eq 1010b)>
+		endm
+
+IsDword		macro	Operand
+		exitm	<((type Operand) eq 4) and (((OPATTR Operand) and 1010b) eq 1010b)>
+		endm
+
+
+
+
+
+; IsWordPtr-	Checks the operand to see if it is a word variable
+;		surrounded by square brackets.
+;
+;		This function returns the operand minus the square brackets
+;		if it is indeed a word ptr operand.  It returns blank
+;		otherwise.  You would normally use this function in an
+;		"ifb" directive or in the operand field of an instruction.
+
+IsWordPtr	macro	Operand
+%		ifidn	<@substr(<Operand>,1,1)>, <[>
+%		ifidn	<@substr(<Operand>,@SizeStr(<Operand>),1)>, <]>
+%		if	IsWord(<@substr(<Operand>,2,@SizeStr(<Operand>)-2)>)
+%		exitm	<@substr(<Operand>,2,@SizeStr(<Operand>)-2)>
+		endif
+		endif
+		endif
+		exitm	<>
+		endm
+
+; IsDwordPtr-	Checks the operand to see if it is a dword variable
+;		surrounded by square brackets.
+;
+;		This function returns the operand minus the square brackets
+;		if it is indeed a dword ptr operand.  It returns blank
+;		otherwise.  You would normally use this function in an
+;		"ifb" directive or in the operand field of an instruction.
+
+IsDwordPtr	macro	Operand
+%		ifidn	<@substr(<Operand>,1,1)>, <[>
+%		ifidn	<@substr(<Operand>,@SizeStr(Operand),1)>, <]>
+%		if	IsDword(@substr(<Operand>,2,@SizeStr(<Operand>)-2))
+%		exitm	<@substr(<Operand>,2,@SizeStr(<Operand>)-2)>
+		endif
+		endif
+		endif
+		exitm	<>
+		endm
+
+
+; IsReg8-	Checks the parameter to see if it corresponds to a
+;		valid eight-bit 80x86 register.  It returns that
+;		register as an operand if it is a valid 8-bit reg.
+;		It returns blank otherwise.
+
+IsReg8		macro	reg8
+		ifidni	<reg8>, <al>
+		exitm	<al>
+		endif
+
+		ifidni	<reg8>, <bl>
+		exitm	<bl>
+		endif
+
+		ifidni	<reg8>, <cl>
+		exitm	<cl>
+		endif
+
+		ifidni	<reg8>, <dl>
+		exitm	<dl>
+		endif
+
+		ifidni	<reg8>, <ah>
+		exitm	<ah>
+		endif
+
+		ifidni	<reg8>, <bh>
+		exitm	<bh>
+		endif
+
+		ifidni	<reg8>, <ch>
+		exitm	<ch>
+		endif
+
+		ifidni	<reg8>, <dh>
+		exitm	<dh>
+		endif
+
+		exitm	<>	;; Not a valid eight-bit register.
+		endm
+
+
+; pReg8-	If the specified operand is an eight-bit register,
+;		this macro will push it onto the stack (it actually
+;		pushes 16 bits, the specified value occupies the
+;		L.O. byte of the value pushed).
+
+pReg8		macro	Operand1
+
+		ifidni	<Operand1>, <al>
+		push	ax
+		endif
+
+		ifidni	<Operand1>, <bl>
+		push	bx
+		endif
+
+		ifidni	<Operand1>, <cl>
+		push	cx
+		endif
+
+		ifidni	<Operand1>, <dl>
+		push	dx
+		endif
+
+		ifidni	<Operand1>, <ah>
+		xchg	al, ah
+		push	ax
+		xchg	al, ah
+		endif
+
+		ifidni	<Operand1>, <bh>
+		xchg	bl, bh
+		push	bx
+		xchg	bl, bh
+		endif
+
+		ifidni	<Operand1>, <ch>
+		xchg	cl, ch
+		push	cx
+		xchg	cl, ch
+		endif
+
+		ifidni	<Operand1>, <dh>
+		xchg	dl, dh
+		push	dx
+		xchg	dl, dh
+		endif
+
+		endm
+
+
+;IsReg16-	Checks the parameter to see if it corresponds to a
+;		valid 16-bit register.
+
+IsReg16		macro	reg16
+		ifidni	<reg16>, <ax>
+		exitm	<ax>
+		endif
+
+		ifidni	<reg16>, <bx>
+		exitm	<bx>
+		endif
+
+		ifidni	<reg16>, <cx>
+		exitm	<cx>
+		endif
+
+		ifidni	<reg16>, <dx>
+		exitm	<dx>
+		endif
+
+		ifidni	<reg16>, <si>
+		exitm	<si>
+		endif
+
+		ifidni	<reg16>, <di>
+		exitm	<di>
+		endif
+
+		ifidni	<reg16>, <bp>
+		exitm	<bp>
+		endif
+
+		ifidni	<reg16>, <sp>
+		exitm	<sp>
+		endif
+
+		exitm	<>	;; Not a valid 16-bit register.
+		endm
+
+
+
+
+
+
+;IsReg32-	Checks the parameter to see if it corresponds to a
+;		valid 32-bit register.
+
+IsReg32		macro	reg32
+		ifidni	<reg32>, <eax>
+		exitm	<eax>
+		endif
+
+		ifidni	<reg32>, <ebx>
+		exitm	<ebx>
+		endif
+
+		ifidni	<reg32>, <ecx>
+		exitm	<ecx>
+		endif
+
+		ifidni	<reg32>, <edx>
+		exitm	<edx>
+		endif
+
+		ifidni	<reg32>, <esi>
+		exitm	<esi>
+		endif
+
+		ifidni	<reg32>, <edi>
+		exitm	<edi>
+		endif
+
+		ifidni	<reg32>, <ebp>
+		exitm	<ebp>
+		endif
+
+		ifidni	<reg32>, <esp>
+		exitm	<esp>
+		endif
+
+		exitm	<>	;; Not a valid 32-bit register.
+		endm
+
+
+
+
+; $Push Symstk, Value
+;
+; Symstk is a symbol name (it need not already exist).
+; Value is a numeric value.
+; $Push "pushes" this value onto the stack named Symstk by
+; concatenating the string equivalent of the value to the
+; begining of the Symstk symbol as a text value.  Note that
+; $push separates stack entries (which must be numbers) using
+; the ":" symbol.
+
+$push		macro	SymStk, value
+		ifnb	<value>
+SymStk		catstr	<value>, <:>, SymStk
+		endif
+		endm
+
+
+
+; $Pop- extracts the top of stack value (a numeric value) and equates
+; the dest symbol to this value.  $Pop removes the item on the top
+; of the stack from the Symstk text value (everything up to and including
+; the ":" stack separator).
+
+$pop		macro	SymStk, dest
+		local	posn
+
+posn		instr	1,SymStk,<:>
+
+		ifb	SymStk
+		echo	Error- Empty stack (POP)
+		err
+		exitm
+		endif
+
+		if	posn ne 0
+dest		substr	SymStk, 1, posn-1
+		else
+dest		textequ	<>
+		endif
+		if	posn ne @sizestr(%&SymStk&)
+SymStk		substr	SymStk, posn+1
+		else
+SymStk		textequ	<>
+		endif
+		endm
+
+
+
+
+; $Peek is like $Pop except it does not remove the item from
+; the top of the stack.
+
+$peek		macro	SymStk, dest
+		local	posn
+
+posn		instr	1,SymStk,<:>
+
+		ifb	SymStk
+		echo	Error- Empty stack (PEEK)
+		err
+		exitm
+		endif
+
+		if	posn ne 0
+dest		substr	SymStk, 1, posn-1
+		else
+dest		textequ	<>
+		endif
+		endm
+
+
+
+
+
+; Macros to generate STDLIB equates
+;
+; xtrn-	Generates a set of externdef statements for a given
+;	label.  The first parameter specifies the name of the
+;	symbol, the remaining parameters provide the suffixes.
+
+xtrn		macro	  name, suffixes:vararg
+		externdef $&name&:far
+
+		ifnb	  <suffixes>
+		for	  suffix,<suffixes>
+		externdef $&name&&suffix&:far
+&name&&suffix&	textequ	  <call $&name&&suffix&>
+		endm
+		else
+&name&		textequ	  <call $&name&>
+		endif
+		endm
+
+
+
+
+
+
+
+; The following macros generate calls and equates for many of the
+; standard library routines.
+;
+; bCSStkTOS:
+;
+;	Routines that have a byte operand and support the plain, CS,
+;	Stk, and TOS addressing modes.
+
+
+bCSStkTOS	macro	funcName, Operand
+
+		ifb	<Operand>
+		call	$&funcName&
+		exitm
+		endif
+
+;; See if it's an eight-bit register
+
+		ifnb	IsReg8( <Operand> )
+
+		pReg8	<Operand>
+		call	$&funcName&TOS
+		exitm
+
+		endif
+
+;; See if it's a numeric constant
+
+		if	IsNumConst( <Operand> )
+
+		push	Operand
+		call	$&funcName&TOS
+		exitm
+
+		endif
+
+;; See if it's a byte variable:
+
+		if	IsByte( <Operand> )
+
+		call	$&funcName&CS
+		dword	Operand
+		exitm
+
+		endif
+
+;; See if it's a near or far pointer variable.
+
+		ifnb	IsWordPtr(<Operand>)
+		push	ds
+		push	IsWordPtr(<Operand>)
+		call	$&funcName&Stk
+		exitm
+		endif
+
+		ifnb	IsDwordPtr(<Operand>)
+		pushd	IsDwordPtr(<Operand>)
+		call	$&funcName&Stk
+		exitm
+		endif
+
+;; If it's not any of the above, we have an error.
+
+%		echo	Illegal &funcName& operand.
+		err
+		endm
+
+
+
+; bCSStk:
+;
+;	Input routines that have a byte operand and support the plain, CS,
+;	and Stk addressing modes.
+
+
+bCSStk		macro	funcName, Operand
+
+		ifb	<Operand>
+		call	$&funcName&
+		exitm
+		endif
+
+
+;; See if it's a byte variable:
+
+		if	IsByte( <Operand> )
+
+		call	$&funcName&CS
+		dword	Operand
+		exitm
+
+		endif
+
+;; See if it's a near or far pointer variable.
+
+		ifnb	IsWordPtr(<Operand>)
+		push	ds
+		push	IsWordPtr(<Operand>)
+		call	$&funcName&Stk
+		exitm
+		endif
+
+		ifnb	IsDwordPtr(<Operand>)
+		pushd	IsDwordPtr(<Operand>)
+		call	$&funcName&Stk
+		exitm
+		endif
+
+;; If it's not any of the above, we have an error.
+
+%		echo	Illegal &funcName& operand.
+		err
+		endm
+
+
+
+; wCSStkTOS:
+;
+;	Routines that have a word operand and support the plain, CS,
+;	Stk, and TOS addressing modes.
+
+
+wCSStkTOS	macro	funcName, Operand
+
+		ifb	<Operand>
+		call	$&funcName&
+		exitm
+		endif
+
+;; See if it's a 16-bit register
+
+		ifnb	IsReg16( <Operand> )
+
+		push	IsReg16( <Operand> )
+		call	$&funcName&TOS
+		exitm
+
+		endif
+
+;; See if it's a numeric constant
+
+		if	IsNumConst( <Operand> )
+
+		push	Operand
+		call	$&funcName&TOS
+		exitm
+
+		endif
+
+;; See if it's a near or far pointer variable.
+
+		ifnb	IsWordPtr(<Operand>)
+		push	ds
+		push	IsWordPtr(<Operand>)
+		call	$&funcName&Stk
+		exitm
+		endif
+
+		ifnb	IsDwordPtr(<Operand>)
+		pushd	IsDwordPtr(<Operand>)
+		call	$&funcName&Stk
+		exitm
+		endif
+
+;; See if it's a word variable:
+
+		if	IsWord( <Operand> )
+
+		call	$&funcName&CS
+		dword	Operand
+		exitm
+
+		endif
+
+;; If it's not any of the above, we have an error.
+
+%		echo	Illegal &funcName& operand.
+		err
+		endm
+
+
+
+
+
+
+
+
+; wCSStk:
+;
+;	Input routines that have a word operand and support the plain, CS,
+;	and Stk addressing modes, returning a 16-bit value.
+
+
+wCSStk		macro	funcName, Operand
+
+		ifb	<Operand>
+		call	$&funcName&
+		exitm
+		endif
+
+;; See if it's a 16-bit register (need to implement TOS mode
+;; for getc, etc.)
+;;
+;;		ifnb	IsReg16( <Operand> )
+;;
+;;		call	$&funcName&TOS
+;;		pop	IsReg16( <Operand> )
+;;		exitm
+;;
+;;		endif
+
+
+;; See if it's a near or far pointer variable.
+
+		ifnb	IsWordPtr(<Operand>)
+		push	ds
+		push	IsWordPtr(<Operand>)
+		call	$&funcName&Stk
+		exitm
+		endif
+
+		ifnb	IsDwordPtr(<Operand>)
+		pushd	IsDwordPtr(<Operand>)
+		call	$&funcName&Stk
+		exitm
+		endif
+
+;; See if it's a word variable:
+
+		if	IsWord( <Operand> )
+
+		call	$&funcName&CS
+		dword	Operand
+		exitm
+
+		endif
+
+;; If it's not any of the above, we have an error.
+
+%		echo	Illegal &funcName& operand.
+		err
+		endm
+
+
+
+
+
+
+; LCSStkTOS:
+;
+;	Routines that have a dword operand and support the plain, CS,
+;	Stk, and TOS addressing modes.
+
+
+LCSStkTOS	macro	funcName, Operand
+
+		ifb	<Operand>
+		call	$&funcName&
+		exitm
+		endif
+
+;; See if it's a 16-bit register
+
+		ifnb	IsReg32( <Operand> )
+
+		push	IsReg32( <Operand> )
+		call	$&funcName&TOS
+		exitm
+
+		endif
+
+;; See if it's a numeric constant
+
+		if	IsNumConst( <Operand> )
+
+		pushd	Operand
+		call	$&funcName&TOS
+		exitm
+
+		endif
+
+;; See if it's a near or far pointer variable.
+
+		ifnb	IsWordPtr(<Operand>)
+		push	ds
+		push	IsWordPtr(<Operand>)
+		call	$&funcName&Stk
+		exitm
+		endif
+
+		ifnb	IsDwordPtr(<Operand>)
+		pushd	IsDwordPtr(<Operand>)
+		call	$&funcName&Stk
+		exitm
+		endif
+
+;; See if it's a dword variable:
+
+		if	IsDWord( <Operand> )
+
+		call	$&funcName&CS
+		dword	Operand
+		exitm
+
+		endif
+
+;; If it's not any of the above, we have an error.
+
+%		echo	Illegal &funcName& operand.
+		err
+		endm
+
+
+
+
+
+
+
+
+; lCSStk:
+;
+;	Input routines that have a word operand and support the plain, CS,
+;	and Stk addressing modes, returning a 32-bit value.
+
+
+lCSStk		macro	funcName, Operand
+
+		ifb	<Operand>
+		call	$&funcName&
+		exitm
+		endif
+
+;; See if it's a 32-bit register (need to implement TOS mode
+;; for getul, etc.)
+;;
+;;		ifnb	IsReg32( <Operand> )
+;;
+;;		call	$&funcName&TOS
+;;		pop	IsReg32( <Operand> )
+;;		exitm
+;;
+;;		endif
+
+
+;; See if it's a near or far pointer variable.
+
+		ifnb	IsWordPtr(<Operand>)
+		push	ds
+		push	IsWordPtr(<Operand>)
+		call	$&funcName&Stk
+		exitm
+		endif
+
+		ifnb	IsDwordPtr(<Operand>)
+		pushd	IsDwordPtr(<Operand>)
+		call	$&funcName&Stk
+		exitm
+		endif
+
+;; See if it's a dword variable:
+
+		if	IsDWord( <Operand> )
+
+		call	$&funcName&CS
+		dword	Operand
+		exitm
+
+		endif
+
+;; If it's not any of the above, we have an error.
+
+%		echo	Illegal &funcName& operand.
+		err
+		endm
+
+
+
+
+; sbCSStkTOS:
+;
+;	Routines that have a string operand and support the plain, CS,
+;	Stk, and TOS addressing modes.
+;
+;	They must produce a 8-bit result and leave the result in
+;	AL, TOS, or a destination byte.
+;
+;	Note: 	The "ScndOpb" macro handles the second operand if it
+;		is present.
+
+ScndOpb		macro	Operand2, funcName
+		if	IsByte( <Operand2> )
+		push	seg &Operand2&
+		push	offset &Operand2&
+		call	$&funcName&Stk
+		exitm
+		endif
+
+		ifnb	IsWordPtr( <Operand2> )
+		push	ds
+		push	IsWordPtr( <Operand2> )
+		call	$&funcName&Stk
+		exitm
+		endif
+
+		ifnb	IsDWordPtr( <Operand2> )
+		push	IsDWordPtr( <Operand2> )
+		call	$&funcName&Stk
+		exitm
+		endif
+
+%		echo	If &funcName has two operands,  then second
+		echo	operand must be a byte, [word], or [dword] parameter.
+		err
+
+		endm
+
+
+
+sbCSStkTOS	macro	funcName, Operand1, Operand2
+
+		ifb	<Operand2>
+
+		ifb	<Operand1>
+		call	$&funcName&
+		exitm
+		endif
+
+
+;; See if it's a byte variable:
+
+		if	IsByte( <Operand1> )
+
+		call	$&funcName&CS
+		dword	Operand1
+		exitm
+
+		endif
+
+
+
+
+		else	;Operand2 is not blank
+
+
+
+
+		if	IsByte( <Operand1> )
+
+		push	seg &Operand1&
+		push	offset &Operand1&
+
+		ScndOpb	Operand2, funcName
+		exitm
+
+		endif	;IsByte
+
+
+
+
+;; See if it's a near or far pointer variable.
+
+		ifnb	IsWordPtr( <Operand1> )
+		push	ds
+		push	IsWordPtr( <Operand1> )
+
+		ScndOpb	Operand2, funcName
+		exitm
+
+		endif
+
+
+; Check far ptr here.
+
+		ifnb	IsDwordPtr(<Operand1>)
+		pushd	IsDwordPtr(<Operand1>)
+		
+		ScndOpb	Operand2, funcName
+		exitm
+		endif
+
+
+		endif	;Check of operand2.
+
+;; If it's not any of the above, we have an error.
+
+%		echo	Illegal &funcName& operand.
+		err
+		endm
+
+
+
+
+
+
+
+
+; swCSStkTOS:
+;
+;	Routines that have a string operand and support the plain, CS,
+;	Stk, and TOS addressing modes.
+;
+;	They must produce a 16-bit result and leave the result in
+;	AX, TOS, or a destination word.
+;
+;	Note: 	The "ScndOp" macro handles the second operand if it
+;		is present.
+
+ScndOpw		macro	Operand2, funcName
+		if	IsWord( <Operand2> )
+		push	seg &Operand2&
+		push	offset &Operand2&
+		call	$&funcName&Stk
+		exitm
+		endif
+
+		ifnb	IsWordPtr( <Operand2> )
+		push	ds
+		push	IsWordPtr( <Operand2> )
+		call	$&funcName&Stk
+		exitm
+		endif
+
+		ifnb	IsDWordPtr( <Operand2> )
+		push	IsDWordPtr( <Operand2> )
+		call	$&funcName&Stk
+		exitm
+		endif
+
+%		echo	If &funcName has two operands,  then second
+		echo	operand must be a word, [word], or [dword] parameter.
+		err
+
+		endm
+
+
+
+swCSStkTOS	macro	funcName, Operand1, Operand2
+
+		ifb	<Operand2>
+
+		ifb	<Operand1>
+		call	$&funcName&
+		exitm
+		endif
+
+
+;; See if it's a byte variable:
+
+		if	IsByte( <Operand1> )
+
+		call	$&funcName&CS
+		dword	Operand1
+		exitm
+
+		endif
+
+
+
+
+		else	;Operand2 is not blank
+
+
+
+
+		if	IsByte( <Operand1> )
+
+		push	seg &Operand1&
+		push	offset &Operand1&
+
+		ScndOpw	Operand2, funcName
+		exitm
+
+		endif	;IsByte
+
+
+
+
+;; See if it's a near or far pointer variable.
+
+		ifnb	IsWordPtr( <Operand1> )
+		push	ds
+		push	IsWordPtr( <Operand1> )
+
+		ScndOpw	Operand2, funcName
+		exitm
+
+		endif
+
+
+; Check far ptr here.
+
+		ifnb	IsDwordPtr(<Operand1>)
+		pushd	IsDwordPtr(<Operand1>)
+		
+		ScndOpw	Operand2, funcName
+		exitm
+		endif
+
+
+		endif	;Check of operand2.
+
+;; If it's not any of the above, we have an error.
+
+%		echo	Illegal &funcName& operand.
+		err
+		endm
+
+
+
+
+
+
+
+
+
+
+; sdCSStkTOS:
+;
+;	Routines that have a string operand and support the plain, CS,
+;	Stk, and TOS addressing modes.
+;
+;	They must produce a 32-bit result and leave the result in
+;	EAX, TOS, or a destination word.
+;
+;	Note: 	The "ScndOpd" macro handles the second operand if it
+;		is present.
+
+ScndOpd		macro	Operand2, funcName
+		if	IsDWord( <Operand2> )
+		push	seg &Operand2&
+		push	offset &Operand2&
+		call	$&funcName&Stk
+		exitm
+		endif
+
+		ifnb	IsWordPtr( <Operand2> )
+		push	ds
+		push	IsWordPtr( <Operand2> )
+		call	$&funcName&Stk
+		exitm
+		endif
+
+		ifnb	IsDWordPtr( <Operand2> )
+		push	IsDWordPtr( <Operand2> )
+		call	$&funcName&Stk
+		exitm
+		endif
+
+%		echo	If &funcName has two operands,  then second
+		echo	operand must be a dword, [word], or [dword] parameter.
+		err
+
+		endm
+
+
+
+sdCSStkTOS	macro	funcName, Operand1, Operand2
+
+		ifb	<Operand2>
+
+		ifb	<Operand1>
+		call	$&funcName&
+		exitm
+		endif
+
+
+;; See if it's a byte variable:
+
+		if	IsByte( <Operand1> )
+
+		call	$&funcName&CS
+		dword	Operand1
+		exitm
+
+		endif
+
+
+
+
+		else	;Operand2 is not blank
+
+
+
+
+		if	IsByte( <Operand1> )
+
+		push	seg &Operand1&
+		push	offset &Operand1&
+
+		ScndOpd	Operand2, funcName
+		exitm
+
+		endif	;IsByte
+
+
+
+
+;; See if it's a near or far pointer variable.
+
+		ifnb	IsWordPtr( <Operand1> )
+		push	ds
+		push	IsWordPtr( <Operand1> )
+
+		ScndOpd	Operand2, funcName
+		exitm
+
+		endif
+
+
+; Check far ptr here.
+
+		ifnb	IsDwordPtr(<Operand1>)
+		pushd	IsDwordPtr(<Operand1>)
+		
+		ScndOpd	Operand2, funcName
+		exitm
+		endif
+
+
+		endif	;Check of operand2.
+
+;; If it's not any of the above, we have an error.
+
+%		echo	Illegal &funcName& operand.
+		err
+		endm
+
+
+
+
+
+
+
+
+		endif	;ifndef macros_a
+

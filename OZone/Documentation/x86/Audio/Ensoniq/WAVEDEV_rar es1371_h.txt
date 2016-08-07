@@ -1,0 +1,418 @@
+WAVEDEV.rar es1371.h  
+www.pudn.com > WAVEDEV.rar > es1371.h, change:2004-07-01,size:15192b
+ 
+   
+
+
+ 
+// 
+// Copyright (c) Microsoft Corporation.  All rights reserved. 
+// 
+// 
+// Use of this source code is subject to the terms of the Microsoft end-user 
+// license agreement (EULA) under which you licensed this SOFTWARE PRODUCT. 
+// If you did not accept the terms of the EULA, you are not authorized to use 
+// this source code. For a copy of the EULA, please see the LICENSE.RTF on your 
+// install media. 
+// 
+// 
+// Copyright 1998-2000 (c) Creative Labs, Malvern.  All rights reserved. 
+// 
+// es1371.h 
+// 
+// defines for the registers in the ENSONIQ ES1371 chip 
+// 
+// 
+// $Workfile: es1371.h $    
+// 
+#ifndef ES1371_H 
+#define ES1371_H 
+ 
+#define MAXLEN_DMA_BUFFER       0x1000	// 4k single page size  
+ 
+#define ES1371_IO_SPACE_SIZE	0xFF	// how large an IO space to map 
+ 
+#include <wtypes.h> 
+#include <ceddk.h> 
+ 
+// 
+// Do nothing emulation of WDM InteruptSync interface 
+//  
+typedef LONG NTSTATUS; 
+ 
+typedef NTSTATUS 
+(*PINTERRUPTSYNCROUTINE) 
+( 
+    IN struct IInterruptSync_WinCeStub* InterruptSync, 
+    IN PVOID  DynamicContext 
+); 
+ 
+struct IInterruptSync_WinCeStub 
+{ 
+    STDMETHOD(CallSynchronizedRoutine)(PINTERRUPTSYNCROUTINE Routine, PVOID DynamicContext) 
+	{ 
+		return Routine(NULL,DynamicContext); 
+	} 
+}; 
+ 
+typedef IInterruptSync_WinCeStub *PINTERRUPTSYNC; 
+ 
+ 
+#include "ac97.h" 
+ 
+#define MAX(a,b) (((a) > (b)) ? (a) : (b)) 
+#define MIN(a,b) (((a) < (b)) ? (a) : (b)) 
+ 
+// Initial volome value 
+#define ES1371_INITIALVOLUME	0x0a0a 
+ 
+//chip defines 
+/* ES1371 PCI-SIG defines */ 
+#define ES1371_PCI_VENDID     0x1274U 
+#define ES1371_PCI_DEVID      0x1371U 
+#define ES5880_PCI_DEVID      0x5880U 
+ 
+/* Concert97 direct register offset defines */ 
+#define ES1371_bDEVCTL_OFF    0x00    /* Device control/enable */ 
+#define ES1371_bMISCCTL_OFF   0x01    /* Miscellaneous control */ 
+#define ES1371_bGPIO_OFF      0x02    /* General purpose I/O control */ 
+#define ES1371_bJOYCTL_OFF    0x03    /* Joystick control (decode) */ 
+#define ES1371_dSTATUS_OFF    0x04    /* long status register */ 
+#define ES1371_bINTSTAT_OFF   0x04    /* Device interrupt status */ 
+#define ES1371_bCODECSTAT_OFF 0x05    /* CODEC interface status */ 
+#define ES1371_bINTSUMM_OFF   0x07    /* Interrupt summary status */ 
+#define ES1371_bUARTDATA_OFF  0x08    /* UART data R/W - read clears RX int */ 
+#define ES1371_bUARTCSTAT_OFF 0x09    /* UART control and status */ 
+#define ES1371_bUARTTEST_OFF  0x0a    /* UART test control reg */ 
+#define ES1371_bMEMPAGE_OFF   0x0c    /* Memory page select */ 
+#define ES1371_dSRCIO_OFF     0x10    /* I/O ctl/stat/data for SRC RAM */ 
+#define ES1371_dCODECCTL_OFF  0x14    /* CODEC control - dword read/write */ 
+#define ES1371_wNMISTAT_OFF   0x18    /* Legacy NMI status */ 
+#define ES1371_bNMIENA_OFF    0x1a    /* Legacy NMI enable */ 
+#define ES1371_bNMICTL_OFF    0x1b    /* Legacy control */ 
+#define ES1371_bSERFMT_OFF    0x20    /* Serial device format */ 
+#define ES1371_bSERCTL_OFF    0x21    /* Serial device control */ 
+#define ES1371_bSKIPC_OFF     0x22    /* DAC skip count reg */ 
+#define ES1371_wDAC0IC_OFF    0x24    /* DAC0 int count in sample frames */ 
+#define ES1371_wDAC0CIC_OFF   0x26    /* DAC0 current int count */ 
+#define ES1371_wDAC1IC_OFF    0x28    /* DAC1 int count in sample frames */ 
+#define ES1371_wDAC1CIC_OFF   0x2a    /* DAC1 current int count */ 
+#define ES1371_wADCIC_OFF     0x2c    /* ADC int count in sample frames */ 
+#define ES1371_wADCCIC_OFF    0x2e    /* ADC current int count */ 
+#define ES1371_MEMBASE_OFF    0x30    /* Memory window base - 16 byte window */ 
+ 
+/* Concert memory page-banked register offset defines */ 
+#define ES1371_dDAC0PADDR_OFF 0x30    /* DAC0 host frame PCI phys addr */ 
+#define ES1371_wDAC0FC_OFF    0x34    /* DAC0 host frame count in DWORDS */ 
+#define ES1371_wDAC0CFC_OFF   0x36    /* DAC0 host current frame count */ 
+#define ES1371_dDAC1PADDR_OFF 0x38    /* DAC1 host frame PCI phys addr */ 
+#define ES1371_wDAC1FC_OFF    0x3c    /* DAC1 host frame count in DWORDS */ 
+#define ES1371_wDAC1CFC_OFF   0x3e    /* DAC1 host current frame count */ 
+#define ES1371_dADCPADDR_OFF  0x30    /* ADC host frame PCI phys addr */ 
+#define ES1371_wADCFC_OFF     0x34    /* ADC host frame count in DWORDS */ 
+#define ES1371_wADCCFC_OFF    0x36    /* ADC host current frame count */ 
+ 
+/* Concert memory page number defines */ 
+#define ES1371_DAC0RAM_PAGE   0x00    /* DAC0 host/serial I/F RAM */ 
+#define ES1371_DAC1RAM_PAGE   0x04    /* DAC1 host/serial I/F RAM */ 
+#define ES1371_ADCRAM_PAGE    0x08    /* ADC host/serial I/F RAM */ 
+#define ES1371_DAC0CTL_PAGE   0x0c    /* Page bank for DAC0 host control */ 
+#define ES1371_DAC1CTL_PAGE   0x0c    /* Page bank for DAC1 host control */ 
+#define ES1371_ADCCTL_PAGE    0x0d    /* Page bank for ADC host control */ 
+#define ES1371_FIFO0_PAGE     0x0e    /* page 0 of UART "FIFO" (rx stash) */ 
+#define ES1371_FIFO1_PAGE     0x0f    /* page 1 of UART "FIFO" (rx stash) */ 
+ 
+/* PCM format defines */ 
+#define ES1371_PCM_DAC0_STEREO 0x01 
+#define ES1371_PCM_DAC0_16BIT  0x02 
+#define ES1371_PCM_DAC0_MASK   0xfc 
+#define ES1371_PCM_DAC1_STEREO 0x04 
+#define ES1371_PCM_DAC1_16BIT  0x08 
+#define ES1371_PCM_DAC1_MASK   0xf3 
+#define ES1371_PCM_ADC_STEREO  0x10 
+#define ES1371_PCM_ADC_16BIT   0x20 
+#define ES1371_PCM_ADC_MASK    0xcf 
+ 
+/* Device Control defines */ 
+#define ES1371_DEVCTL_PCICLK_DS    0x01  // PCI Clock Disable 
+#define ES1371_DEVCTL_XTALCLK_DS   0x02  // Crystal Clock Disable 
+#define ES1371_DEVCTL_JSTICK_EN    0x04  // Joystick Enable 
+#define ES1371_DEVCTL_UART_EN      0x08  // UART Enable  
+#define ES1371_DEVCTL_ADC_EN       0x10  // ADC Enable (record) 
+#define ES1371_DEVCTL_DAC1_EN      0x20  // DAC1 Enable (playback) 
+#define ES1371_DEVCTL_DAC0_EN      0x40  // DAC0 Enabale (synth) 
+ 
+/* Misc Control defines */ 
+#define ES1371_MISCCTL_PDLEV_D0      0x00  // These bits reflect the 
+#define ES1371_MISCCTL_PDLEV_D1      0x01  // power down state of  
+#define ES1371_MISCCTL_PDLEV_D2      0x02  // the part 
+#define ES1371_MISCCTL_PDLEV_D3      0x03  // 
+#define ES1371_MISCCTL_CCBINTRM_EN   0x04  // CCB module interrupt mask 
+ 
+#define ES1371_MISCCTL_SYNC_RES      0x40  // for AC97 warm reset 
+ 
+/* Serial Control defines */ 
+#define ES1371_SERCTL_DAC0IE    0x01  // DAC0 interrupt enable P1_INT_EN 
+#define ES1371_SERCTL_DAC1IE    0x02  // DAC1 interrupt enable P2_INT_EN 
+#define ES1371_SERCTL_ADCIE     0x04  // ADC interrupt enable   R1_INT_EN    
+#define ES1371_SERCTL_DAC0PAUSE 0x08  // DAC0 pause 
+#define ES1371_SERCTL_DAC1PAUSE 0x10  // DAC1 pause 
+#define ES1371_SERCTL_R1LOOP    0x80 
+#define ES1371_SERCTL_P1LOOP    0x40 
+#define ES1371_SERCTL_P0LOOP    0x20 
+ 
+/* Interrupt Status defines */ 
+#define ES1371_INTSTAT_ADCINT  0x01       /* A/D interrupt pending bit */ 
+#define ES1371_INTSTAT_DAC1INT 0x02       /* DAC1 interrupt pending bit */ 
+#define ES1371_INTSTAT_DAC0INT 0x04       /* DAC0 interrupt pending bit */ 
+#define ES1371_INTSTAT_UARTINT 0x08       /* UART interrupt pending bit */ 
+#define ES1371_INTSTAT_PENDING 0x80000000 /* this bit set high while'st we have an interrupt */ 
+ 
+/* JOYCTL register defines */ 
+#define ES1371_JOYCTL_$200    0x00 
+#define ES1371_JOYCTL_$208    0x01 
+#define ES1371_JOYCTL_$210    0x02 
+#define ES1371_JOYCTL_$218    0x03 
+ 
+/* UARTCSTAT register masks  */ 
+#define ES1371_UART_RXRDY      0x01 
+#define ES1371_UART_TXRDY      0x02 
+#define ES1371_UART_TXINT      0x04 
+#define ES1371_UART_RXINT      0x80 
+ 
+#define ES1371_UART_CTL        0x03 
+#define ES1371_UART_TXINTEN    0x20 
+#define ES1371_UART_RXINTEN    0x80 
+ 
+/* These are used as index for each DMA controller */ 
+/* on chip - used for generic routines that access all */ 
+/* DMA controllers */ 
+#define ES1371_DAC0           0 
+#define ES1371_DAC1           1 
+#define ES1371_ADC            2 
+ 
+/* Interrupt source defines */ 
+#define ES1371_INT_ADC        0x01 
+#define ES1371_INT_DAC1       0x02 
+#define ES1371_INT_DAC0       0x04 
+#define ES1371_INT_UART       0x08 
+#define ES1371_INT_PM         0x20 
+#define ES1371_INT_NONE       0x00 
+#define ES1371_INT_MASK       0x2f 
+ 
+/* register/base equates for the SRC RAM */ 
+#define SRC_DAC0_FIFO       0x00 
+#define SRC_DAC1_FIFO       0x20 
+#define SRC_ADC_FIFO        0x40 
+#define SRC_ADC_VOL_L       0x6c 
+#define SRC_ADC_VOL_R       0x6d 
+#define SRC_DAC0_BASE       0x70 
+#define SRC_DAC1_BASE       0x74 
+#define SRC_ADC_BASE        0x78 
+#define SRC_DAC0_VOL_L      0x7c 
+#define SRC_DAC0_VOL_R      0x7d 
+#define SRC_DAC1_VOL_L      0x7e 
+#define SRC_DAC1_VOL_R      0x7f 
+ 
+#define SRC_TRUNC_N_OFF     0x00 
+#define SRC_INT_REGS_OFF    0x01 
+#define SRC_ACCUM_FRAC_OFF  0x02 
+#define SRC_VFREQ_FRAC_OFF  0x03 
+ 
+/* Sample rate converter bit defines */ 
+#define SRC_IOPOLL_COUNT    0x20000UL 
+#define SRC_WENABLE         (1UL << 24) 
+#define SRC_BUSY            (1UL << 23) 
+#define SRC_DISABLE         (1UL << 22) 
+#define SRC_DAC0FREEZE      (1UL << 21) 
+#define SRC_DAC1FREEZE      (1UL << 20) 
+#define SRC_ADCFREEZE       (1UL << 19) 
+#define SRC_CTLMASK         0x00780000UL 
+ 
+/* DMA Channel State defines */ 
+#define DMA_STOPPED         0 
+#define DMA_RUNNING         1 
+#define DMA_PAUSED          2 
+ 
+/* UART State defines */ 
+#define UART_ENABLE         0x00000001  // is the chip's UART section turned on 
+#define UART_RX_ENABLE      0x00000002  // does the higher level have MIDI input on 
+#define UART_TX_ENABLE      0x00000004  // does the higher level have MIDI output on 
+#define UART_TX_ACTIVE      0x00000008  // is the Tx interrupt on (data in the queue) 
+ 
+/* UART Queue defines */ 
+#define UART_RX_QUEUE_SIZE  0x1000 
+#define UART_RX_QSIZE_MASK  0x0fff 
+#define UART_TX_QUEUE_SIZE  0x1000 
+#define UART_TX_QSIZE_MASK  0x0fff 
+ 
+typedef struct DMAChannelTag 
+{ 
+    ULONG ulDMAChannelState; 
+ 
+    // system things 
+    ULONG ulPhysDMAAddr;         // physical RAM address of the buffer 
+    ULONG ulDMABufSize;          // lenght of contiguous physical RAM 
+ 
+    // internal things 
+    ULONG ulChannels;            // number of channels (1 or 2) 
+    ULONG ul16Bit;               // sample word size (0=8bit 1=16bit) 
+    ULONG ulSampleRate;          // sample rate in samples/second 
+    ULONG ulBufferLength;        // size of buffer currently in use 
+    ULONG ulSamplesPerInt;       // number of samples to play before interrupting 
+     
+} DMACHANNEL; 
+ 
+ 
+ 
+class CES1371 
+{ 
+public: 
+	CES1371 (); 
+    CES1371 ( PUCHAR PciAddr, PINTERRUPTSYNC pInterruptSync ); 
+    ~CES1371 (); 
+	// need reference counting to support separate WAV/MIX/etc? interfaces 
+	LONG AddRef(void); 
+	LONG Release(void); 
+	// public initialization stuff 
+	BOOL MapHardware (ULONG ulSysIntr, ULONG ulPciAddr, ULONG ulPciLength, ULONG ulDeviceID, ULONG ulRevisionID); 
+ 
+    // Power Management 
+    ULONG SetPowerState( ULONG ulState ); 
+ 
+    // DMA control 
+    void InitDMAChannel( UCHAR ucDMAChannel,  
+                         ULONG ulPhysDMAAddr,  
+                         ULONG ulBufferSize ); 
+    void SetDMAChannelFormat( UCHAR ucDMAChannel, 
+                              ULONG ulChannels, 
+                              ULONG ul16Bit, 
+                              ULONG ulSampleRate ); 
+    void SetDMAChannelBuffer( UCHAR ucDMAChannel, 
+                              ULONG ulBufferLength, 
+                              ULONG ulSamplesPerInt ); 
+    void StartDMAChannel( UCHAR ucDMAChannel ); 
+    void StopDMAChannel( UCHAR ucDMAChannel ); 
+    void PauseDMAChannel( UCHAR ucDMAChannel ); 
+    ULONG GetDMAPosition( UCHAR ucDMAChannel ); 
+ 
+    // Interrupts 
+    UCHAR GetInterruptSource( void ); 
+    void AckDMAInterrupt( UCHAR ucIntSrc ); 
+ 
+    // Codec control 
+    void WriteCodecRegister( UCHAR Reg, USHORT Val); 
+    USHORT ReadCodecRegister( UCHAR Reg ); 
+    USHORT GetCodecRegisterValue( UCHAR Reg ); 
+    ULONG Codec_SetPowerState( ULONG ulNewState ); 
+ 
+    // UART 
+    ULONG UARTEnable( BOOLEAN fRx ); 
+    ULONG UARTDisable( BOOLEAN fRx ); 
+    UCHAR UARTGetStatus( void ); 
+    ULONG UARTReadRxBytes( void ); 
+    ULONG UARTDeQRxByte( PUCHAR pMidiByte ); 
+    void UARTTxQueuedByte( void ); 
+    ULONG UARTQueueTxByte( UCHAR ucMidiByte ); 
+ 
+    // Joystick 
+    void JoystickEnable( ULONG ulIOPort ); 
+    //void SetJoystick ( BOOL fState ); 
+ 
+private: 
+    // Member Variable 
+    PUCHAR m_pPciAddr; 
+    USHORT m_usDid;                // the PCI Device ID 
+    UCHAR m_ucRevision;            // the PCI chip revision 
+ 
+	LONG m_refcount; 
+	BOOL m_fIsMapped; // must call MmUnmapIoSpace when destroyed 
+ 
+    ULONG m_ulDRegs[12];  // ES1371 direct registers 
+    ULONG m_ulIRegs[16];  // ES1371 indirect registers 
+ 
+    // power management 
+    ULONG m_ulPowerState; // ES1371 power state 
+    UCHAR m_ucSerialControl; 
+    UCHAR m_ucDeviceControl; 
+    ULONG m_ulDRegsPMContext[12];   
+    ULONG m_ulIRegsPMContext[64]; 
+    USHORT m_usCRegsPMContext[40]; 
+    USHORT m_usSRCRegsPMContext[20]; 
+ 
+    // codec 
+    USHORT m_usCRegs[40]; // AC97 CoDec registers 
+    ULONG m_ulCodecVendorID; 
+    ULONG m_ulCodecRevision; 
+    ULONG m_ulCodecPowerState; // current power state of the AC97 Codec 
+ 
+    // DMA 
+    DMACHANNEL m_dmachannel[3]; // info about dma channel states 
+ 
+    // UART 
+    ULONG m_ulUARTState;       // flags that indicate the state of UART activity 
+    ULONG m_ulUARTRxPointer;   // pointer to the current RxPostion 
+ 
+    UCHAR m_ulUARTRxQ[UART_RX_QUEUE_SIZE]; 
+    ULONG m_ulUARTRxQHead; 
+    ULONG m_ulUARTRxQTail; 
+ 
+    UCHAR m_ulUARTTxQ[UART_TX_QUEUE_SIZE]; 
+    ULONG m_ulUARTTxQHead; 
+    ULONG m_ulUARTTxQTail; 
+ 
+    // ISR 
+    PINTERRUPTSYNC m_pInterruptSync; 
+ 
+    // Initialization 
+    void InitHardware(); 
+ 
+    // Power Management 
+    void SaveES1371Context( void ); 
+    void RetoreES1371Context( void ); 
+ 
+    // AC97 Codec 
+    void InitCodec(); 
+    void Codec_WaitForPowerState( USHORT usState ); 
+    void Codec_SaveRegisterState( USHORT *pusRegisters ); 
+    void Codec_RestoreRegisterState( USHORT *pusRegisters ); 
+ 
+    // Sample Rate Converter 
+    void InitSRC( BOOLEAN fEnable ); 
+    USHORT SRCRegRead( USHORT reg ); 
+    void SRCRegWrite( USHORT reg, USHORT val ); 
+    void SRCSetRate ( UCHAR ucDMAChannel, USHORT wSampleRate ); 
+    ULONG SRCPollIOReg (); 
+    void SRCWaitForFrame1 (); 
+    void SRCSaveRegisterState( void ); 
+    void SRCRestoreRegisterState( void ); 
+ 
+    // UART 
+    void InitUART(); 
+    UCHAR UARTWaitForTxRdy(); 
+    NTSTATUS HwPagedIOWrite( UCHAR Page, ULONG pAddr, ULONG ulData ); 
+    ULONG HwPagedIORead( UCHAR Page, ULONG pAddr ); 
+    ULONG HwRegRMW ( UCHAR Reg, ULONG dwBitMask, ULONG dwSetBits ); 
+    USHORT HwRegRMW ( UCHAR Reg, USHORT wBitMask, USHORT wSetBits ); 
+    UCHAR HwRegRMW ( UCHAR Reg, UCHAR bBitMask, UCHAR bSetBits ); 
+    /************************************************************************* 
+     * Friends  
+     */ 
+    friend NTSTATUS 
+    SynchronizedPagedIO 
+    ( 
+        IN      PINTERRUPTSYNC  InterruptSync, 
+        IN      PVOID           syncWriteContext 
+    ); 
+}; 
+ 
+// the single global device pointer 
+// If we ever want to support multiple devices, just make this an array! 
+extern CES1371 * pCES1371; 
+ 
+#endif  // ES1371_H 
+ 
+
+
+ 
+ 

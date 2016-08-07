@@ -1,0 +1,5743 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="VMWare"
+	type="http://metalx.org/Video/VMWare/VMWare"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:matrix="http://metalx.org/i386/Functions/Matrix"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
+	xmlns:pcic="http://metalx.org/Pc/Pci/Command"
+	xmlns:pcir="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:pcis="http://metalx.org/Pc/Pci/Status"
+	xmlns:pcn="http://metalx.org/Amd/PcNet/Ports"
+	xmlns:pcs="http://metalx.org/Amd/PcNet/ControlStatus"
+	xmlns:pcb="http://metalx.org/Amd/PcNet/BusConfiguration"
+	xmlns:mix="http://metalx.org/Intel/Ac97/Mixer"
+	xmlns:bus="http://metalx.org/Intel/Ac97/BusMaster"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:short="http://metalx.org/i386/Functions/Short"
+	xmlns:con="http://metalx.org/i386/Functions/Console"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:index="http://metalx.org/Intel/80386/Index"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands">
+
+	<cls:field name="Device" type="http://metalx.org/Pci/PciDevice" offset="0"/>
+
+	<cls:method name="SetPixel" type="http://metalx.org/Video/VideoDevice">
+		<cls:parameter name="Pixel" type="http://metalx.org/Video/Graphics/Pixel"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<byte>4</byte>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Test" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>90000002</hex>
+
+		<label id="nextVersion"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:LoopToRelative8WhileNotEqual/>
+		<addressOf ref="nextVersion" type="Relative8"/>
+
+		<!--Disable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Color Depth-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>7</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>32</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Height-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>3</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>768</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Width-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>2</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1024</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Enable Video (Linear Buffer)-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Draw Test-->
+		<cpu:CopyImmediateToAX/>
+		<hex>ffffffff</hex>
+
+		<label id="nextFrame"/>
+
+		<cpu:CopyImmediateToDI/>
+		<hex>e8000000</hex>
+
+		<cpu:CopyImmediateToCX/>
+		<int>786432</int>
+
+		<cpu:Repeat/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<!--<cpu:ExclusiveOrAXWithImmediate/>
+		<hex>ffffffff</hex>-->
+
+		<cpu:IncrementAX/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="nextFrame" type="Relative8"/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Test2" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>90000002</hex>
+
+		<label id="nextVersion"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:LoopToRelative8WhileNotEqual/>
+		<addressOf ref="nextVersion" type="Relative8"/>
+
+		<!--Disable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Color Depth-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>7</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>32</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Height-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>3</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>768</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Width-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>2</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1024</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Enable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Setup FIFO-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>18</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddress/>
+		<int>2048</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>12288</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>2048</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>2048</int>
+
+		<!--Set 3D Version-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate/>
+		<int>1152</int>
+		<hex>00020001</hex>
+
+		<!--Enable FIFO-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>20</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Draw Test-->
+		<cpu:CopyImmediateToAX/>
+		<hex>ffffffff</hex>
+
+		<cpu:PullDXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-DXAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<byte>8</byte>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToSIRegister/>
+		<int>2048</int>
+
+		<label id="nextFrame"/>
+
+		<cpu:CopyImmediateToDI/>
+		<hex>e8000000</hex>
+
+		<cpu:CopyImmediateToCX/>
+		<int>786432</int>
+
+		<cpu:Repeat/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<!--Update Display-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>768</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXAddress/>
+		<byte>20</byte>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:BX-DXAddress/>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="skipReset" type="Relative8"/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDXAddress/>
+		<int>2048</int>
+
+		<label id="skipReset"/>
+
+		<cpu:IncrementAX/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="nextFrame" type="Relative8"/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Test3" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>90000002</hex>
+
+		<label id="nextVersion"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:LoopToRelative8WhileNotEqual/>
+		<addressOf ref="nextVersion" type="Relative8"/>
+
+		<!--Disable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Setup FIFO-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>18</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddress/>
+		<int>2048</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>12288</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>2048</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>2048</int>
+
+		<!--Set 3D Version-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate/>
+		<int>1152</int>
+		<hex>00020001</hex>
+
+		<!--Enable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Enable FIFO-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>20</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Color Depth-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>7</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>32</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Height-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>3</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>768</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Width-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>2</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1024</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Enable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Draw Test-->
+		<cpu:CopyImmediateToAX/>
+		<hex>ff0000ff</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToSIRegister/>
+		<int>2048</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIRegister/>
+		<byte>8</byte>
+
+		<!--Create SVGA Context-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1045</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>4</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>12</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>12</byte>
+
+		<!--Set Viewport-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1055</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>20</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>768</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>28</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>28</byte>
+
+		<!--Create Color Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1040</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>48</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>44</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<int>768</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<int>1</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>56</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>56</byte>
+
+		<!--Create Depth Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1040</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>48</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>8</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>44</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<int>768</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<int>1</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>56</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>56</byte>
+
+		<!--Set Color Render Target To Color Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1050</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>20</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>2</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>28</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>28</byte>
+
+		<!--Set Depth Render Target To Depth Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1050</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>20</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>28</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>28</byte>
+
+		<cpu:CopyImmediateToCX/>
+		<int>1000</int>
+
+		<label id="nextFrame"/>
+
+		<!--Wait For FIFO Empty-->
+		<cpu:PushAXToStack/>
+
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>21</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<label id="waitForFifo"/>
+
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>22</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:CompareAXToImmediate/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="waitForFifo" type="Relative8"/>
+
+		<cpu:PullAXFromStack/>
+
+		<!--Clear Screen-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1057</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>36</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>3</int>
+
+		<!--<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<hex>ffffffff</hex>-->
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<float>1.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>768</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>44</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>44</byte>
+
+		<!--Present Screen-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1058</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>28</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>768</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>36</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>36</byte>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:BX-DIAddress/>
+
+		<cpu:BranchToRelative8IfNotLessOrEqual/>
+		<addressOf ref="skipReset" type="Relative8"/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddress/>
+		<int>2048</int>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToSIRegister/>
+		<int>2048</int>
+
+		<label id="skipReset"/>
+
+		<cpu:IncrementAX/>
+
+		<cpu:DecrementCX/>
+
+		<cpu:BranchToRelative8IfCXIsZero/>
+		<addressOf ref="done" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="nextFrame" type="Relative32"/>
+
+		<label id="done"/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Test4" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>90000002</hex>
+
+		<label id="nextVersion"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:LoopToRelative8WhileNotEqual/>
+		<addressOf ref="nextVersion" type="Relative8"/>
+
+		<!--Disable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Setup FIFO-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>18</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddress/>
+		<int>2048</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>12288</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>2048</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>2048</int>
+
+		<!--Set 3D Version-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate/>
+		<int>1152</int>
+		<hex>00020001</hex>
+
+		<!--Enable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Enable FIFO-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>20</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Color Depth-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>7</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>32</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Height-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>3</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>768</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Width-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>2</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1024</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Enable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Copy Vertex Data To Frame Buffer-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>13</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<cpu:CopyImmediateToSI/>
+		<addressOf ref="vertexData" type="Absolute32"/>
+
+		<cpu:CopyImmediateToCX/>
+		<int>24</int>
+
+		<cpu:Repeat/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+		<!--Draw Test-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromBXRegister/>
+		<int>1024</int>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToSIRegister/>
+		<int>2048</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIRegister/>
+		<byte>8</byte>
+
+		<!--Create SVGA Context-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1045</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>4</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>12</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>12</byte>
+
+		<!--Set Viewport-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1055</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>20</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>768</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>28</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>28</byte>
+
+		<!--Create Color Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1040</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>48</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>44</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<int>768</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<int>1</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>56</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>56</byte>
+
+		<!--Create Depth Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1040</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>48</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>8</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>44</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<int>768</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<int>1</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>56</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>56</byte>
+
+		<!--Set Color Render Target To Color Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1050</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>20</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>2</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>28</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>28</byte>
+
+		<!--Set Depth Render Target To Depth Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1050</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>20</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>28</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>28</byte>
+
+		<cpu:CopyImmediateToCX/>
+		<int>1000</int>
+
+		<!--Create Vertex Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1040</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>48</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>2</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>37</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>44</byte>
+		<int>24</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<int>1</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>56</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>56</byte>
+
+		<!--Transfer Vertex Data To Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1044</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>64</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>-2</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>2</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>44</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<int>24</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>56</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>60</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>64</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>68</byte>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>72</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>72</byte>
+
+		<label id="nextFrame"/>
+
+		<!--Wait For FIFO Empty-->
+		<cpu:PushAXToStack/>
+
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>21</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<label id="waitForFifo"/>
+
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>22</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:CompareAXToImmediate/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="waitForFifo" type="Relative8"/>
+
+		<cpu:PullAXFromStack/>
+
+		<!--Clear Screen-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1057</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>36</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>3</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<hex>00113366</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<float>1.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>768</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>44</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>44</byte>
+
+		<!--Set World Matrix-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1047</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>72</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<float>1.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<float>1.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>44</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>56</byte>
+		<float>1.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>60</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>64</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>68</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>72</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>76</byte>
+		<float>1.0</float>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>80</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>80</byte>
+
+		<!--Draw Triangle-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1063</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>76</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>2</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>44</byte>
+		<int>8</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>56</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>60</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>64</byte>
+		<int>-1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>68</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>72</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>76</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>80</byte>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>84</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>84</byte>
+
+		<!--Present Screen-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1058</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>28</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>768</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>36</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>36</byte>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:BX-DIAddress/>
+
+		<cpu:BranchToRelative8IfNotLessOrEqual/>
+		<addressOf ref="skipReset" type="Relative8"/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddress/>
+		<int>2048</int>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToSIRegister/>
+		<int>2048</int>
+
+		<label id="skipReset"/>
+
+		<cpu:IncrementAX/>
+
+		<cpu:DecrementCX/>
+
+		<cpu:BranchToRelative8IfCXIsZero/>
+		<addressOf ref="done" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="nextFrame" type="Relative32"/>
+
+		<label id="done"/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="vertexData"/>
+		<float>0.0</float>
+		<float>1.0</float>
+
+		<float>1.0</float>
+		<float>0.0</float>
+
+		<float>-1.0</float>
+		<float>0.0</float>
+	</cls:method>
+
+	<cls:method name="Test5" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>90000002</hex>
+
+		<label id="nextVersion"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:LoopToRelative8WhileNotEqual/>
+		<addressOf ref="nextVersion" type="Relative8"/>
+
+		<!--Disable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Setup FIFO-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>18</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddress/>
+		<int>2048</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>12288</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>2048</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>2048</int>
+
+		<!--Set 3D Version-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate/>
+		<int>1152</int>
+		<hex>00020001</hex>
+
+		<!--Enable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Enable FIFO-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>20</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Color Depth-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>7</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>32</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Height-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>3</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>768</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Width-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>2</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1024</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Enable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Copy Vertex Data To Frame Buffer-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>13</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<cpu:CopyImmediateToSI/>
+		<addressOf ref="vertexData" type="Absolute32"/>
+
+		<cpu:CopyImmediateToCX/>
+		<int>36</int>
+
+		<cpu:Repeat/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+		<!--Draw Test-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromBXRegister/>
+		<int>1024</int>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToSIRegister/>
+		<int>2048</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIRegister/>
+		<byte>8</byte>
+
+		<!--Create SVGA Context-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1045</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>4</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>12</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>12</byte>
+
+		<!--Set Viewport-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1055</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>20</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>768</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>28</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>28</byte>
+
+		<!--Create Color Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1040</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>48</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>44</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<int>768</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<int>1</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>56</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>56</byte>
+
+		<!--Create Depth Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1040</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>48</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>8</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>44</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<int>768</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<int>1</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>56</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>56</byte>
+
+		<!--Set Color Render Target To Color Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1050</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>20</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>2</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>28</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>28</byte>
+
+		<!--Set Depth Render Target To Depth Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1050</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>20</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>28</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>28</byte>
+
+		<cpu:CopyImmediateToCX/>
+		<int>1000</int>
+
+		<!--Create Vertex Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1040</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>48</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>2</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>37</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>44</byte>
+		<int>36</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<int>1</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>56</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>56</byte>
+
+		<!--Transfer Vertex Data To Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1044</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>64</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>-2</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>2</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>44</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<int>36</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>56</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>60</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>64</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>68</byte>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>72</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>72</byte>
+		
+		<!--Disable Lighting-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1049</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>12</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>9</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>20</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>20</byte>
+
+		<label id="nextFrame"/>
+
+		<!--Wait For FIFO Empty-->
+		<cpu:PushAXToStack/>
+
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>21</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<label id="waitForFifo"/>
+
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>22</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:CompareAXToImmediate/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="waitForFifo" type="Relative8"/>
+
+		<cpu:PullAXFromStack/>
+
+		<!--Clear Screen-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1057</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>36</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>3</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<hex>00113366</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<float>1.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>768</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>44</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>44</byte>
+
+		<!--Set World Matrix-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1047</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>72</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<float>1.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<float>1.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>44</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>56</byte>
+		<float>1.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>60</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>64</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>68</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>72</byte>
+		<float>0.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>76</byte>
+		<float>1.0</float>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>80</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>80</byte>
+
+		<!--Draw Triangle-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1063</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>112</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>2</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>2</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>44</byte>
+		<int>12</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>56</byte>
+		<int>4</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>60</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>64</byte>
+		<int>10</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>68</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>72</byte>
+		<int>2</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>76</byte>
+		<int>8</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>80</byte>
+		<int>12</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>84</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>88</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>92</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>96</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>100</byte>
+		<int>-1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>104</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>108</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>112</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>116</byte>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>120</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>120</byte>
+
+		<!--Present Screen-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1058</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>28</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>768</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>36</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>36</byte>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:BX-DIAddress/>
+
+		<cpu:BranchToRelative8IfNotLessOrEqual/>
+		<addressOf ref="skipReset" type="Relative8"/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddress/>
+		<int>2048</int>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToSIRegister/>
+		<int>2048</int>
+
+		<label id="skipReset"/>
+
+		<cpu:IncrementAX/>
+
+		<cpu:DecrementCX/>
+
+		<cpu:BranchToRelative8IfCXIsZero/>
+		<addressOf ref="done" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="nextFrame" type="Relative32"/>
+
+		<label id="done"/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="vertexData"/>
+		<float>0.0</float>
+		<float>1.0</float>
+		<hex>ffff0000</hex>
+
+		<float>1.0</float>
+		<float>0.0</float>
+		<hex>ff00ff00</hex>
+
+		<float>-1.0</float>
+		<float>0.0</float>
+		<hex>ff0000ff</hex>
+
+	</cls:method>
+
+	<cls:method name="Test6" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>90000002</hex>
+
+		<label id="nextVersion"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:LoopToRelative8WhileNotEqual/>
+		<addressOf ref="nextVersion" type="Relative8"/>
+
+		<!--Disable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Setup FIFO-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>18</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddress/>
+		<int>2048</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>12288</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>2048</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>2048</int>
+
+		<!--Set 3D Version-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate/>
+		<int>1152</int>
+		<hex>00020001</hex>
+
+		<!--Enable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Enable FIFO-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>20</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Color Depth-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>7</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>32</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Height-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>3</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>768</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Width-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>2</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1024</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Enable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Copy Vertex Data To Frame Buffer-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>13</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<cpu:CopyImmediateToSI/>
+		<addressOf ref="vertexData" type="Absolute32"/>
+
+		<cpu:CopyImmediateToCX/>
+		<int>36</int>
+
+		<cpu:Repeat/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+		<!--Draw Test-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromBXRegister/>
+		<int>1024</int>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToSIRegister/>
+		<int>2048</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIRegister/>
+		<byte>8</byte>
+
+		<!--Create SVGA Context-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1045</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>4</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>12</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>12</byte>
+
+		<!--Set Viewport-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1055</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>20</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>768</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>28</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>28</byte>
+
+		<!--Create Color Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1040</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>48</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>44</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<int>768</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<int>1</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>56</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>56</byte>
+
+		<!--Create Depth Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1040</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>48</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>8</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>44</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<int>768</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<int>1</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>56</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>56</byte>
+
+		<!--Set Color Render Target To Color Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1050</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>20</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>2</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>28</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>28</byte>
+
+		<!--Set Depth Render Target To Depth Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1050</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>20</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>28</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>28</byte>
+
+		<cpu:CopyImmediateToCX/>
+		<int>1000</int>
+
+		<!--Create Vertex Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1040</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>48</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>2</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>37</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>44</byte>
+		<int>36</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<int>1</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>56</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>56</byte>
+
+		<!--Transfer Vertex Data To Surface-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1044</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>64</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>-2</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>2</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>44</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<int>36</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>56</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>60</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>64</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>68</byte>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>72</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>72</byte>
+
+		<!--Disable Lighting-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1049</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>12</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>9</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>20</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>20</byte>
+
+		<label id="nextFrame"/>
+
+		<!--Update World Matrix-->
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cpu:CopyImmediateToSI/>
+		<addressOf ref="world" type="Absolute32"/>
+
+		<cpu:CopyImmediateToAX/>
+		<addressOf ref="rotation" type="Absolute32"/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="result" type="Absolute32"/>
+
+		<matrix:Multiply/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SI-DIRegister/>
+
+		<cpu:CopyImmediateToCX/>
+		<int>16</int>
+
+		<cpu:Repeat/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<!--Wait For FIFO Empty-->
+		<cpu:PushAXToStack/>
+
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>21</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<label id="waitForFifo"/>
+
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>22</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:CompareAXToImmediate/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="waitForFifo" type="Relative8"/>
+
+		<cpu:PullAXFromStack/>
+
+		<!--Clear Screen-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1057</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>36</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>3</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<hex>00113366</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<float>1.0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>768</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>44</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>44</byte>
+
+		<!--Set World Matrix-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1047</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>72</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>1</int>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="world" type="Absolute32" offset="0"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="world" type="Absolute32" offset="4"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>20</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="world" type="Absolute32" offset="8"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>24</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="world" type="Absolute32" offset="12"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>28</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="world" type="Absolute32" offset="16"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>32</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="world" type="Absolute32" offset="20"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>36</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="world" type="Absolute32" offset="24"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>40</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="world" type="Absolute32" offset="28"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>44</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="world" type="Absolute32" offset="32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>48</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="world" type="Absolute32" offset="36"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>52</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="world" type="Absolute32" offset="40"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>56</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="world" type="Absolute32" offset="44"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>60</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="world" type="Absolute32" offset="48"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>64</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="world" type="Absolute32" offset="52"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>68</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="world" type="Absolute32" offset="56"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>72</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="world" type="Absolute32" offset="60"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>76</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>80</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>80</byte>
+
+		<!--Draw Triangle-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1063</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>112</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>2</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<int>2</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>40</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>44</byte>
+		<int>12</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>56</byte>
+		<int>4</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>60</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>64</byte>
+		<int>10</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>68</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>72</byte>
+		<int>2</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>76</byte>
+		<int>8</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>80</byte>
+		<int>12</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>84</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>88</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>92</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>96</byte>
+		<int>1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>100</byte>
+		<int>-1</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>104</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>108</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>112</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>116</byte>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>120</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>120</byte>
+
+		<!--Present Screen-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>1058</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>28</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<int>768</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>36</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddress/>
+		<byte>36</byte>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:BX-DIAddress/>
+
+		<cpu:BranchToRelative8IfNotLessOrEqual/>
+		<addressOf ref="skipReset" type="Relative8"/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddress/>
+		<int>2048</int>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToSIRegister/>
+		<int>2048</int>
+
+		<label id="skipReset"/>
+
+		<cpu:IncrementAX/>
+
+		<cpu:DecrementCX/>
+
+		<cpu:BranchToRelative8IfCXIsZero/>
+		<addressOf ref="done" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="nextFrame" type="Relative32"/>
+
+		<label id="done"/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="vertexData"/>
+		<float>0.0</float>
+		<float>1.0</float>
+		<hex>ffff0000</hex>
+
+		<float>1.0</float>
+		<float>0.0</float>
+		<hex>ff00ff00</hex>
+
+		<float>-1.0</float>
+		<float>0.0</float>
+		<hex>ff0000ff</hex>
+
+		<label id="world"/>
+		<float>1.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>1.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>1.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>1.0</float>
+
+		<label id="rotation"/>
+		<float>0.999941</float>
+		<float>0.009991</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>-0.009991</float>
+		<float>0.999941</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>1.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>1.0</float>
+
+		<label id="result"/>
+		<float>1.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>1.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>1.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>1.0</float>
+	</cls:method>
+
+	<cls:method name="Get3dHardwareVersion" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>90000002</hex>
+
+		<label id="nextVersion"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:LoopToRelative8WhileNotEqual/>
+		<addressOf ref="nextVersion" type="Relative8"/>
+
+		<!--Disable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Color Depth-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>7</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>32</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Height-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>3</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>768</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Width-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>2</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1024</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Enable Video (Linear Buffer)-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Setup FIFO-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>18</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddress/>
+		<int>2048</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>12288</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>2048</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>2048</int>
+
+		<!--Set 3D Version-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate/>
+		<int>1152</int>
+		<hex>00020001</hex>
+
+		<cpu:PushAXToStack/>
+
+		<!--Enable FIFO-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>20</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--DEBUG-->
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<byte>28</byte>
+
+		<cpu:PushAXToStack/>
+
+		<!--Disable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:PullAXFromStack/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Get3dHardwareVersion2" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>90000002</hex>
+
+		<label id="nextVersion"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:LoopToRelative8WhileNotEqual/>
+		<addressOf ref="nextVersion" type="Relative8"/>
+
+		<!--Disable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Color Depth-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>7</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>32</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Height-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>3</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>768</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Width-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>2</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1024</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Enable Video (Linear Buffer)-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Setup FIFO-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>18</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddress/>
+		<int>2048</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>12288</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>2048</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>2048</int>
+
+		<!--Set 3D Version-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate/>
+		<int>1152</int>
+		<hex>00020001</hex>
+
+		<cpu:PushAXToStack/>
+
+		<!--Enable FIFO-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>20</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--DEBUG-->
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<byte>68</byte>
+
+		<cpu:PushAXToStack/>
+
+		<!--Disable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:PullAXFromStack/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetCapabilities" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>90000002</hex>
+
+		<label id="nextVersion"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:LoopToRelative8WhileNotEqual/>
+		<addressOf ref="nextVersion" type="Relative8"/>
+
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>17</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetVersion" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>90000002</hex>
+
+		<label id="nextVersion"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:LoopToRelative8WhileNotEqual/>
+		<addressOf ref="nextVersion" type="Relative8"/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetScreenWidth" type="http://metalx.org/Short">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>2</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<short:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetScreenHeight" type="http://metalx.org/Short">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>3</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<short:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetBitsPerPixel" type="http://metalx.org/Short">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>7</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<short:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsEnabled" type="http://metalx.org/Boolean">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Enable" type="http://metalx.org/Video/VMWare/VMWare">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Disable" type="http://metalx.org/Video/VMWare/VMWare">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="SetVideoMode" type="http://metalx.org/Video/VMWare/VMWare">
+		<cls:parameter name="Width" type="http://metalx.org/Short"/>
+		<cls:parameter name="Height" type="http://metalx.org/Short"/>
+		<cls:parameter name="ColorBitsPerPixel" type="http://metalx.org/Short"/>
+
+		<!--Disable Video-->
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Color Depth-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>7</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Height-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>3</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Width-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>2</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Enable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>12</byte>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="deviceName" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="deviceName">VMWare Graphics Adapter</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

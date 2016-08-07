@@ -1,0 +1,128 @@
+Mp3Packet (Stereo, v1)		((144 * Header.BitRate) / Header.SampleRate) + Header.Padding
+	Header								4
+		Sync									11 bits
+		Version								2 bits		// 3 = v1
+		Layer									2 bits		// 1 = Layer 3
+		NoCrc								1 bit
+		BitRate								4 bits		// 7 = 96kbps, 8 = 112kbps, 9 = 128kbps, 11 = 192kbps, 13 = 256kbps, 14 = 320kbps
+		SampleRate						2 bits		// 0 = 44100Hz, 1 = 48000Hz, 2 = 32000Hz
+		Padding							1 bit
+		Undefined							1 bit
+		ChannelMode					2 bits		// 0 = Stereo, 1 = Joint Stereo, 2 = Dual Mono, 1 = Mono
+		JointMs								1 bit
+		JointIntensity						1 bit
+		Copyright							1 bit
+		Original								1 bit
+		Emphasis							2 bits		// 0 = None, 1 = 50/15 ms, 3 = CCIT J.17
+	Checksum							2					// Optional
+	SideInfo	 							32
+		MainDataBegin					9 bits
+		PrivateBits							3 bits
+		ChannelScaleFactors[2]		
+			ChannelScaleFactor			4 bits
+		Granules[2]
+			Channels[2]
+				Part23Length						12 bits
+				BigValues							9 bits
+				GlobalGain						8 bits
+				CompressedScaleFactors	4 bits
+				WindowSwitching				1 bit
+				WindowSwitchingTables		22 bits
+					WindowSwitching = 0
+						TableSelect1					5 bits
+						TableSelect2					5 bits
+						TableSelect3					5 bits
+						Region0Count				4 bits
+						Region1Count				3 bits
+					WindowSwitching = 1
+						BlockType						2 bits
+						MixedBlock					1 bit
+						TableSelect1					5 bits
+						TableSelect2					5 bits
+						SubBlockGain1				3 bits
+						SubBlockGain2				3 bits
+						SubBlockGain3				3 bits
+				Preflag							1 bit
+				ScaleFactorScale			1 bit
+				Count1TableSelect			1 bit
+	Padding							1
+	MainData
+		Granules[2]
+			Channels[2]
+				ScaleFactors[Bands]
+		
+
+Mp3Packet (Stereo, v2)		((144 * Header.BitRate) / Header.SampleRate) + Header.Padding
+	Header								4
+		Sync									11 bits
+		Version								2 bits		// 2 = v2
+		Layer									2 bits		// 1 = Layer 3
+		NoCrc								1 bit
+		BitRate								4 bits		// 12 = 128kbps
+		SampleRate						2 bits		// 0 = 22050Hz, 1 = 24000Hz, 2 = 16000Hz
+		Padding							1 bit
+		Undefined							1 bit
+		ChannelMode					2 bits		// 0 = Stereo, 1 = Joint Stereo, 2 = Dual Mono, 1 = Mono
+		JointMs								1 bit
+		JointIntensity						1 bit
+		Copyright							1 bit
+		Original								1 bit
+		Emphasis							2 bits		// 0 = None, 1 = 50/15 ms, 3 = CCIT J.17
+	Checksum							2					// Optional
+	SideInfo	 							32
+		MainDataBegin					8 bits
+		PrivateBits							2 bits
+		Channels[2]
+			Part23Length						12 bits
+			BigValues							9 bits
+			GlobalGain						8 bits
+			CompressedScaleFactors	9 bits
+			WindowSwitching				1 bit
+			WindowSwitchingTables		22 bits
+				WindowSwitching = 0
+					TableSelect1					5 bits
+					TableSelect2					5 bits
+					TableSelect3					5 bits
+					Region0Count				4 bits
+					Region1Count				3 bits
+				WindowSwitching = 1
+					BlockType						2 bits
+					MixedBlock					1 bit
+					TableSelect1					5 bits
+					TableSelect2					5 bits
+					SubBlockGain1				3 bits
+					SubBlockGain2				3 bits
+					SubBlockGain3			3 bits
+			Preflag							1 bit
+			ScaleFactorScale			1 bit
+			Count1TableSelect			1 bit
+	Padding							1
+	MainData
+		Granules[2]
+			Channels[2]
+				ScaleFactors[Bands]
+
+MpegAudioTagId3v1		128
+	Identifier						3					// "TAG"
+	Title								30
+	Artist								30
+	Album							30
+	Year								4
+	Comment						30					// Last byte may contain track number
+	Genre							1
+
+MpegAudioTagId3v2
+	Header							10
+		Identifier					3					// "ID3"
+		Version						2
+		Flags							1
+		Size							4					// Size * 4
+	ExtendedHeader
+		Size							4					// Size * 4
+		FlagsLength				1					// 1
+		Flags							1
+	Frames
+		FrameHeader				10
+			FrameID				4
+			Size						4					// Size * 4
+			Flags						2

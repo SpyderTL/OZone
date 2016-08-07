@@ -1,0 +1,688 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="ParallelPort"
+	type="http://metalx.org/Ports/Parallel/ParallelPort"
+	static="true"
+	xmlns="http://metalx.org/Program"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:dbg="http://metalx.org/i386/Functions/Debug"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:byte="http://metalx.org/i386/Functions/Byte"
+	xmlns:short="http://metalx.org/i386/Functions/Short"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:float="http://metalx.org/i386/Functions/Float"
+	xmlns:dbl="http://metalx.org/i386/Functions/Double"
+	xmlns:real="http://metalx.org/i386/Functions/Real"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:loop="http://metalx.org/i386/Functions/Loop"
+	xmlns:con="http://metalx.org/i386/Functions/Console"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:fpu="http://metalx.org/Intel/80386/FpuOperators"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:inc="http://metalx.org/Intel/80386/Increment"
+	xmlns:index="http://metalx.org/Intel/80386/Index"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:cls="http://metalx.org/Class">
+
+	<cls:field name="Port" type="http://metalx.org/Hexadecimal" offset="0"/>
+
+	<cls:method name="Create" type="http://metalx.org/Ports/Parallel/ParallelPort" static="true">
+		<cls:parameter name="Port" type="http://metalx.org/Hexadecimal"/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<mm:CheckOut length="4"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddress/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>4</int>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+	
+	<cls:method name="GetPorts" type="http://metalx.org/Ports/Parallel/ParallelPortList" static="true">
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:CX-CXRegister/>
+		
+		<!--Port 1-->
+		<cpu:CopyImmediateToDX/>
+		<hex>00000378</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:CompareALToImmediate/>
+		<hex>ff</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="noPort1" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<hex>00000378</hex>
+		
+		<cpu:IncrementCX/>
+		
+		<label id="noPort1"/>
+
+		<!--Port 2-->
+		<cpu:CopyImmediateToDX/>
+		<hex>00000278</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:CompareALToImmediate/>
+		<hex>ff</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="noPort2" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<hex>00000278</hex>
+		
+		<cpu:IncrementCX/>
+		
+		<label id="noPort2"/>
+
+		<!--Port 3-->
+		<cpu:CopyImmediateToDX/>
+		<hex>000003bc</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:CompareALToImmediate/>
+		<hex>ff</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="noPort3" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<hex>000003bc</hex>
+		
+		<cpu:IncrementCX/>
+		
+		<label id="noPort3"/>
+
+		<!--Port 4--><!--
+		<cpu:CopyImmediateToDX/>
+		<hex>000002e9</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:CompareALToImmediate/>
+		<hex>ff</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="noPort4" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<hex>000002e8</hex>
+		
+		<cpu:IncrementCX/>
+		
+		<label id="noPort4"/>-->
+		
+		<!--Find Item Type-->
+		<cpu:PushCXToStack/>
+				
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="itemType" type="Absolute32"/>
+
+		<cat:FindType/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+		
+		<!--Create List-->
+		<label id="createList"/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddress/>
+		<index:SP/>
+		
+		<lst:Create/>
+		
+		<!--Add Items-->
+		<cpu:PullCXFromStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:CompareWithCXRegister/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notEmpty" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="createObject" type="Relative32"/>
+
+		<label id="notEmpty"/>
+		
+		<loop:For>
+			<cpu:PullAXFromStack/>
+
+			<cpu:PushDIToStack/>
+			
+			<mm:CheckOut length="4"/>
+
+			<cpu:CopyRegisterToOperand/>
+			<op:AX-DIAddress/>
+
+			<obj:Create length="4"/>
+
+			<cpu:CopyRegisterToOperand/>
+			<op:CX-AXRegister/>
+
+			<cpu:DecrementAX/>
+
+			<cpu:CopyOperandToRegister/>
+			<op:SI-IndexAddress/>
+			<index:SP/>
+
+			<lst:SetItem/>
+
+			<cpu:PullDIFromStack/>
+		</loop:For>
+		
+		<!--Create List Object-->
+		<label id="createObject"/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:AX-DIAddress/>
+		
+		<cpu:IncrementAX/>
+		
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+		
+		<obj:Create type="http://metalx.org/Ports/Parallel/ParallelPortList"/>
+
+		<cpu:ReturnToNearCaller/>
+		
+		<var:string id="itemType">http://metalx.org/Ports/Parallel/ParallelPort</var:string>
+	</cls:method>
+
+	<cls:method name="GetReader" type="http://metalx.org/Ports/Parallel/ParallelPortReader">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<mm:CheckOut length="4"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddress/>
+
+		<obj:Create length="4" type="http://metalx.org/Ports/Parallel/ParallelPortReader"/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetWriter" type="http://metalx.org/Ports/Parallel/ParallelPortWriter">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<mm:CheckOut length="4"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddress/>
+
+		<obj:Create length="4" type="http://metalx.org/Ports/Parallel/ParallelPortWriter"/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetData" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:ExclusiveOrOperandWithRegister/>
+		<op:AX-AXRegister/>
+		
+		<cpu:ReadFromDXPortToAL/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+	
+	<cls:method name="GetLineStatus" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<byte>5</byte>
+		
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:ReadFromDXPortToAL/>
+		
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetFifoControl" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<byte>2</byte>
+		
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:ReadFromDXPortToAL/>
+		
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetLineControl" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<byte>3</byte>
+		
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:ReadFromDXPortToAL/>
+		
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetModemControl" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<byte>4</byte>
+		
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:ReadFromDXPortToAL/>
+		
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetModemStatus" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<byte>6</byte>
+		
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:ReadFromDXPortToAL/>
+		
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetBaudRate" type="http://metalx.org/Integer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Enable Baud Rate Registers-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<byte>3</byte>
+
+		<cpu:PushDXToStack/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:OrALWithImmediate/>
+		<binary>10000000</binary>
+
+		<cpu:WriteALToDXPort/>
+		
+		<!--Get Baud Rate-->
+		<cpu:ExclusiveOrOperandWithRegister/>
+		<op:AX-AXRegister/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<byte>2</byte>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:DecrementDX/>
+
+		<cpu:ReadFromDXPortToAL/>
+		
+		<!--Calculate Baud Rate-->
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>115200</int>
+
+		<cpu:ExclusiveOrOperandWithRegister/>
+		<op:DX-DXRegister/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:DivideByBXRegister/>
+		
+		<int:CreateObject/>
+
+		<cpu:PullDXFromStack/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>01111111</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+	
+	<cls:method name="SetBaudRate" type="http://metalx.org/Ports/Parallel/ParallelPort">
+		<cls:parameter name="Value" type="http://metalx.org/Integer"/>
+		
+		<cpu:PushDIToStack/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Enable Baud Rate Registers-->
+		<cpu:PushDXToStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<byte>3</byte>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:OrALWithImmediate/>
+		<binary>10000000</binary>
+
+		<cpu:WriteALToDXPort/>
+		
+		<!--Calculate Baud Rate-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>115200</int>
+
+		<cpu:ExclusiveOrOperandWithRegister/>
+		<op:DX-DXRegister/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:DivideByBXRegister/>
+		
+		<!--Set Baud Rate-->
+		<cpu:PullDXFromStack/>
+		
+		<cpu:WriteALToDXPort/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>8</byte>
+
+		<cpu:IncrementDX/>
+		
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<byte>2</byte>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>01111111</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+	
+	<cls:method name="WriteString" type="http://metalx.org/Ports/Parallel/ParallelPort">
+		<cls:parameter name="Value" type="http://metalx.org/String"/>
+		
+		<cpu:PushDIToStack/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+		
+		<!--Disable Interrupts-->
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:WriteALToDXPort/>
+		
+		<!--Set Line Control-->
+		<cpu:MathImmediate8ToOperandFunction />
+		<math:AddToDXRegister />
+		<byte>2</byte>
+		
+		<cpu:CopyImmediateToAL/>
+		<binary>00000011</binary>
+		
+		<cpu:WriteALToDXPort/>
+		
+		<!--Set FIFO Control-->
+		<cpu:DecrementDX/>
+		
+		<cpu:CopyImmediateToAL/>
+		<binary>11000111</binary>
+		
+		<cpu:WriteALToDXPort/>
+		
+		<!--Set Modem Control-->
+		<cpu:MathImmediate8ToOperandFunction />
+		<math:AddToDXRegister />
+		<byte>2</byte>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+		
+		<cpu:WriteALToDXPort/>
+		
+		<!--Write Bytes-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+		
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+		
+		<obj:GetData/>
+		
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+		
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<byte>4</byte>
+		
+		<!--Write Byte-->
+		<label id="forEachCharacter"/>
+		
+		<!--Wait For Ready-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<byte>5</byte>
+		
+		<label id="waitForReady"/>
+		
+		<cpu:ReadFromDXPortToAL/>
+		
+		<cpu:TestALWithImmediate/>
+		<binary>00100000</binary>
+		
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="waitForReady" type="Relative8"/>
+		
+		<!--Send Byte-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<byte>5</byte>
+		
+		<cpu:WriteSIAddressToDXPortAndIncrementSI8/>
+				
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachCharacter" type="Relative8"/>
+		
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+	
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="className" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="className">Parallel Port</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

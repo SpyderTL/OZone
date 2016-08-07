@@ -1,0 +1,257 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:mem="http://metalx.org/Commodore64/Memory"
+	xmlns:key="http://metalx.org/Commodore64/Keyboard"
+	xmlns:mm="http://metalx.org/C64/Functions/MemoryManager"
+	xmlns:str="http://metalx.org/C64/Functions/String"
+	xmlns:cls="http://metalx.org/C64/Functions/Class">
+
+	<!--Initialize System-->
+	<mem:KernelInitializeIODevices id="initializeIoDevices"/>
+	<mem:KernelInitializeMemoryPointers id="initializeMemoryPointers"/>
+	<mem:KernelRestoreIOVectors id="restoreIoVectors"/>
+	<mem:KernelInitializeScreenAndKeyboard id="initializeScreenAndKeyboard"/>
+	<mem:VideoBorderColor id="borderColor"/>
+	<mem:VideoBackgroundColor0 id="backgroundColor"/>
+	<mem:SystemCharacterColor id="characterColor"/>
+	<mem:VideoCharacterSettings id="characterSettings"/>
+	
+	<cpu:CallProcedureAtAbsoluteMemory/>
+	<addressOf ref="initializeIoDevices" type="Absolute16"/>
+
+	<cpu:CallProcedureAtAbsoluteMemory/>
+	<addressOf ref="initializeMemoryPointers" type="Absolute16"/>
+
+	<cpu:CallProcedureAtAbsoluteMemory/>
+	<addressOf ref="restoreIoVectors" type="Absolute16"/>
+
+	<cpu:CallProcedureAtAbsoluteMemory/>
+	<addressOf ref="initializeScreenAndKeyboard" type="Absolute16"/>
+	
+	<!--Enable Interrupts-->
+	<cpu:ClearInterruptDisableFlag/>
+
+	<!--Set Screen Color-->
+	<cpu:CopyImmediateToAccumulator/>
+	<byte>0</byte>
+
+	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<addressOf ref="borderColor" type="Absolute16"/>
+
+	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<addressOf ref="backgroundColor" type="Absolute16"/>
+
+	<!--Set Text Color-->
+	<cpu:CopyImmediateToAccumulator/>
+	<hex>ff</hex>
+
+	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<addressOf ref="characterColor" type="Absolute16"/>
+
+	<!--Set Lower Case Mode-->
+	<cpu:CopyAbsoluteMemoryToAccumulator/>
+	<addressOf ref="characterSettings" type="Absolute16"/>
+
+	<cpu:OrImmediateWithAccumulator/>
+	<byte>2</byte>
+
+	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<addressOf ref="characterSettings" type="Absolute16"/>
+
+	<!--Turn On Cursor Blink Mode-->
+	<!--<cpu:CopyImmediateToAccumulator/>
+	<byte>0</byte>
+
+	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<hex>00cc</hex>-->
+
+	<!--Setup Memory Manager-->
+	<label id="memory" segment="0000" offset="c100"/>
+	<label id="memoryManager" segment="0000" offset="00FB"/>
+	<label id="selectedPointer" segment="0000" offset="00FD"/>
+	<label id="inputBuffer" segment="0000" offset="C000"/>
+
+	<mm:Reset memory="memory" memoryManager="memoryManager"/>
+	
+	<str:Create memoryManager="memoryManager" pointer="inputBuffer"/>
+
+	<!--Show Prompt-->
+	<mem:KernelWriteCharacterToScreen id="writeCharacter"/>
+	<mem:KernelGetCharacterFromKeyboard id="readCharacter"/>
+	
+	<label id="showPrompt"/>
+	<cpu:CopyImmediateToAccumulator/>
+	<string>&gt;</string>
+
+	<cpu:CallProcedureAtAbsoluteMemory/>
+	<addressOf ref="writeCharacter" type="Absolute16"/>
+
+	<!--Wait For Keypress-->
+	<label id="waitForKeypress" />
+
+	<cpu:CallProcedureAtAbsoluteMemory/>
+	<addressOf ref="readCharacter" type="Absolute16"/>
+
+	<cpu:BranchToRelativeMemoryIfZero/>
+	<addressOf ref="waitForKeypress" type="Relative8"/>
+
+	<!--Check For Enter Key-->
+	<cpu:CompareAccumulatorToImmediate/>
+	<key:Enter/>
+
+	<cpu:BranchToRelativeMemoryIfEqual/>
+	<addressOf ref="enterKeyPressed" type="Relative8"/>
+
+	<!--Check For Escape Key-->
+	<cpu:CompareAccumulatorToImmediate/>
+	<key:Escape/>
+
+	<cpu:BranchToRelativeMemoryIfNotEqual/>
+	<addressOf ref="escapeKeyNotPressed" type="Relative8"/>
+
+	<cpu:JumpToAbsoluteMemory/>
+	<addressOf ref="escapeKeyPressed" type="Absolute16"/>
+
+	<label id="escapeKeyNotPressed"/>
+
+	<!--Check For Backspace Key-->
+	<cpu:CompareAccumulatorToImmediate/>
+	<key:Backspace/>
+
+	<cpu:BranchToRelativeMemoryIfNotEqual/>
+	<addressOf ref="backspaceKeyNotPressed" type="Relative8"/>
+
+	<cpu:JumpToAbsoluteMemory/>
+	<addressOf ref="backspaceKeyPressed" type="Absolute16"/>
+
+	<label id="backspaceKeyNotPressed"/>
+
+	<!--Check Buffer Length-->
+	<cpu:PushAccumulatorToStack />
+	<str:GetLength pointer="inputBuffer"/>
+	<cpu:CompareAccumulatorToImmediate/>
+	<byte>78</byte>
+	<cpu:BranchToRelativeMemoryIfEqual />
+	<addressOf ref="waitForKeypress" type="Relative8"/>
+	<cpu:PullAccumulatorFromStack />
+
+	<!--Write Character To Screen-->
+	<cpu:CallProcedureAtAbsoluteMemory />
+	<addressOf ref="writeCharacter" type="Absolute16"/>
+
+	<!--Add Character To Buffer-->
+	<str:AppendCharacter pointer="inputBuffer"/>
+
+	<cpu:JumpToAbsoluteMemory/>
+	<addressOf ref="waitForKeypress" type="Absolute16"/>
+
+	<!--Handle Enter Key-->
+	<label id="enterKeyPressed"/>
+
+	<cls:FindMethod class="systemClassPointer" methodName="inputBuffer"/>
+	
+	<cpu:CopyZeroPageMemoryToAccumulator/>
+	<mm:SelectedPointer/>
+
+	<cpu:BranchToRelativeMemoryIfNotZero/>
+	<addressOf ref="executeMethod" type="Relative8"/>
+
+	<cpu:CopyZeroPageMemoryToAccumulator/>
+	<hex>FE</hex>
+	
+	<cpu:BranchToRelativeMemoryIfNotZero/>
+	<addressOf ref="executeMethod" type="Relative8"/>
+	
+	<cpu:CopyImmediateToAccumulator />
+	<key:Enter />
+	
+	<cpu:CallProcedureAtAbsoluteMemory />
+	<addressOf ref="writeCharacter" type="Absolute16"/>
+
+	<cpu:JumpToAbsoluteMemory/>
+	<addressOf ref="clearInputBuffer" type="Absolute16"/>
+	
+	<!--Execute Method-->
+	<label id="executeMethod"/>
+		
+	<mm:SelectReference/>
+	<cpu:JumpToIndirectMemory/>
+	<hex>00FD</hex>
+
+	<cpu:JumpToAbsoluteMemory/>
+	<addressOf ref="clearInputBuffer" type="Absolute16"/>
+	
+	<!--Handle Escape Key-->
+	<label id="escapeKeyPressed"/>
+
+	<cpu:CopyImmediateToAccumulator />
+	<key:Enter />
+
+	<cpu:CallProcedureAtAbsoluteMemory />
+	<addressOf ref="writeCharacter" type="Absolute16"/>
+
+	<!--Clear Input Buffer-->
+	<label id="clearInputBuffer"/>
+	<str:Clear pointer="inputBuffer"/>
+
+	<cpu:JumpToAbsoluteMemory />
+	<addressOf ref="showPrompt" type="Absolute16"/>
+	
+	<!--Handle Backspace Key-->
+	<label id="backspaceKeyPressed"/>
+	<str:GetLength pointer="inputBuffer"/>
+
+	<cpu:BranchToRelativeMemoryIfZero />
+	<addressOf ref="bufferEmpty" type="Relative8"/>
+
+	<str:TrimLastCharacter pointer="inputBuffer"/>
+	
+	<cpu:CopyImmediateToAccumulator />
+	<key:Backspace/>
+	
+	<cpu:CallProcedureAtAbsoluteMemory />
+	<addressOf ref="writeCharacter" type="Absolute16"/>
+
+	<label id="bufferEmpty"/>
+	<cpu:JumpToAbsoluteMemory/>
+	<addressOf ref="waitForKeypress" type="Absolute16"/>
+
+	<label id="systemClassPointer"/>
+	<addressOf ref="systemClass" type="Absolute16"/>
+	
+	<!--Add System Class-->
+	<label id="systemClass"/>
+	<addressOf ref="nameField" type="Absolute16"/>
+	<addressOf ref="namespaceField" type="Absolute16"/>
+	
+	<!--Method Count-->
+	<byte>1</byte>
+
+	<addressOf ref="resetMethod" type="Absolute16"/>
+
+	<label id="nameField"/>
+	<byte>6</byte>
+	<string>System</string>
+
+	<label id="namespaceField"/>
+	<byte>5</byte>
+	<string>OZone</string>
+
+	<!--Methods-->
+	<mem:KernelReset id="reset"/>
+	
+	<label id="resetMethod"/>
+	<addressOf ref="methodName" type="Absolute16"/>
+	<addressOf ref="method" type="Absolute16"/>
+	
+	<label id="method"/>
+	<cpu:JumpToIndirectMemory/>
+	<addressOf ref="reset" type="Absolute16"/>
+
+	<label id="methodName" />
+	<byte>5</byte>
+	<string>reset</string>
+</scope>

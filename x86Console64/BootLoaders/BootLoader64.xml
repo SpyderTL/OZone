@@ -1,0 +1,177 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Amd/Amd64/Operators"
+	xmlns:op="http://metalx.org/Amd/Amd64/Operands"
+	xmlns:ex="http://metalx.org/Amd/Amd64/ExtendedOperators"
+	xmlns:gdt="http://metalx.org/Amd/Amd64/DescriptorTable"
+	xmlns:seg="http://metalx.org/Amd/Amd64/Segments"
+	xmlns:ctrl="http://metalx.org/Amd/Amd64/Control"
+	xmlns:imm="http://metalx.org/Amd/Amd64/Immediate"
+	xmlns:math="http://metalx.org/Amd/Amd64/Math"
+	xmlns:inc="http://metalx.org/Amd/Amd64/Increment"
+	xmlns:sys="http://metalx.org/Pc/Bios/System"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:pic="http://metalx.org/Pc/Pic/Ports"
+	xmlns:cmd="http://metalx.org/Pc/Pic/Commands">
+
+	<!--Enable NMI-->
+	<cpu:ReadFromImmediate8PortToAL/>
+	<hex>70</hex>
+
+	<cpu:AndALWithImmediate/>
+	<binary>01111111</binary>
+
+	<cpu:WriteALToImmediate8Port/>
+	<hex>70</hex>
+
+	<!--Setup Segment Registers-->
+	<cpu:CopyImmediateToAX/>
+	<hex>00000010</hex>
+
+	<!--<cpu:CopyOperandToSegmentRegister/>
+	<seg:SS-AXRegister/>-->
+
+	<cpu:CopyOperandToSegmentRegister/>
+	<seg:DS-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister/>
+	<seg:ES-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister/>
+	<seg:FS-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister/>
+	<seg:GS-AXRegister/>
+
+	<cpu:CopyImmediateToSP/>
+	<hex>00010000</hex>
+
+	<!--Reprogram Master Interrupt Controller-->
+	<cpu:CopyImmediateToAL/>
+	<cmd:InitializeForEnvironment/>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:MasterCommand/>
+
+	<cpu:CopyImmediateToAL/>
+	<byte>32</byte>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:MasterData/>
+
+	<cpu:CopyImmediateToAL/>
+	<binary>00000100</binary>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:MasterData/>
+
+	<cpu:CopyImmediateToAL/>
+	<cmd:Environment8086Mode/>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:MasterData/>
+
+	<cpu:CopyImmediateToAL/>
+	<hex>00</hex>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:MasterData/>
+
+	<!--Reprogram Slave Interrupt Controller-->
+	<cpu:CopyImmediateToAL/>
+	<cmd:InitializeForEnvironment/>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:SlaveCommand/>
+
+	<cpu:CopyImmediateToAL/>
+	<byte>40</byte>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:SlaveData/>
+
+	<cpu:CopyImmediateToAL/>
+	<binary>00000010</binary>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:SlaveData/>
+
+	<cpu:CopyImmediateToAL/>
+	<cmd:Environment8086Mode/>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:SlaveData/>
+
+	<cpu:CopyImmediateToAL/>
+	<hex>00</hex>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:SlaveData/>
+
+	<!--Welcome-->
+	<cpu:CallRelative/>
+	<addressOf ref="clearScreen" type="Relative32"/>
+	
+	<cpu:Operand64/>
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="message" type="Absolute64"/>
+
+	<cpu:Operand64/>
+	<cpu:CopyImmediateToDI/>
+	<hex>00000000000b8000</hex>
+
+	<cpu:Operand64/>
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu:Operand64/>
+	<cpu:CopyRegisterToOperand/>
+	<op:AX-CXRegister/>
+
+	<cpu:CopyImmediateToAH/>
+	<hex>08</hex>
+
+	<label id="forEachCharacter"/>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+
+	<cpu:Operand16/>
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="forEachCharacter" type="Relative8"/>
+
+	<cpu:Operand64/>
+	<cpu:CopyAbsoluteMemoryToAX/>
+	<addressOf ref="message" type="Absolute64"/>
+
+	<vid:SetCursorPosition xmlns:vid="http://metalx.org/x64/Functions/Video"/>
+
+	<cpu:ClearInterruptFlag/>
+	<cpu:WaitForInterrupt/>
+
+	<label id="message"/>
+	<long>18</long>
+	<string>Welcome to 64-Bit!</string>
+
+	<!--Functions-->
+	<label id="clearScreen"/>
+
+	<cpu:CopyImmediateToCX/>
+	<int>500</int>
+
+	<cpu:Operand64/>
+	<cpu:CopyImmediateToAX/>
+	<hex>0820082008200820</hex>
+	
+	<cpu:CopyImmediateToDI/>
+	<hex>000b8000</hex>
+
+	<cpu:Repeat/>
+	<cpu:Operand64/>
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:ReturnToNearCaller/>
+
+</scope>

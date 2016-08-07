@@ -1,0 +1,138 @@
+﻿Ethernet Packet					14
+	Destination MAC Address	6
+	Source MAC Address			6
+	Type									2					(0x08 0x00=IPv4, 0x08 0x06=ARP)
+
+ARP Packet						28
+	HardwareType					2					(1=Ethernet)
+	ProtocolType						2					(0x80 0x00=IPv4)
+	HardwareLength				1
+	ProtocolLength					1
+	Operation							2					(1=Request, 2=Reply)
+	SenderHardwareAddress	6
+	SenderProtocolAddress		4
+	TargetHardwareAddress		6
+	TargetProtocolAddress		4
+
+IPv4 Packet : Ethernet Packet	20					(Plus options)
+	VersionHeaderLength			1
+		Version								4 bits
+		HeaderLength					4 bits		(Divided by 4)
+	CodePointCongestion			1
+		CodePoint							4 bits
+		Congestion						4 bits
+	TotalLength						2
+	Identification						2
+	FlagsFragmentOffset			2
+		Flags									3 bits		(2 = Don't Fragment, 4 = More Fragments)
+		FragmentOffset					13 bits
+	TimeToLive						1
+	Protocol							1					(6 = TCP, 17 = UDP)
+	HeaderChecksum				2
+	SourceIPAddress				4
+	DestinationIPAddress			4
+	Options								*					((HeaderLength - 5) * 4)
+
+TCP Packet : IPv4 Packet		20						(Plus options)
+	SourcePort						2
+	DestinationPort					2					(80 = HTTP)
+	SequenceNumber				4
+	AcknowledgeNumber			4
+	HeaderLength					1
+		Length								4 bits
+		Reserved							3 bits
+		NonceConcealment			1 bit
+	Flags									1
+		CongestionReduced			1 bit
+		CongestionEcho					1 bit
+		Urgent								1 bit
+		Acknowledge						1 bit
+		Push									1 bit
+		Reset								1 bit
+		SynchronizeSequence			1 bit
+		Finish								1 bit
+	WindowSize						2
+	Checksum							2
+	UrgentPointer					2
+	Options								*
+
+UDP Packet : IPv4 Packet		8
+	SourcePort						2
+	DestinationPort					2					(53 = DNS)
+	Length								2
+	Checksum							2
+
+DHCP Packet : UDP Packet
+	OperationCode					1
+	HardwareType					1
+	HardwareAddressLength	1
+	Hops									1
+	TransactionID						4
+	WaitTime							2
+	Flags									2					(1 = Broadcast reply)
+	ClientIPAddress					4					(0 = Unknown)
+	YourIPAddress					4					(0 = Unknown)
+	ServerIPAddress					4					(0 = Unknown)
+	GatewayIPAddress				4					(Used if redirect is necessary)
+	ClientMACAddress				16
+	ServerName						64
+	BootFileName					128
+	MagicNumber					4					(99, 130, 83, 99)
+	Options								*
+
+NTP Packet : UDP Packet		48						(Plus Optional Fields)
+	Flags									1
+		LeapSecond						2 bits
+		VersionNumber					3 bits		(4 = NTPv4)
+		Mode								3 bits		(3 = Client, 4 = Server, 5 = Broadcast)
+	Stratum								1
+	Poll									1
+	Precision							1
+	RootDelay							4
+	RootDispersion					4
+	ReferenceIdentifier				4
+	ReferenceTimestamp			8
+	OriginateTimestamp			8
+	ReceiveTimestamp				8
+	TransmitTimestamp			8
+	KeyIdentifier						4					(Optional)
+	MessageDigest					128				(Optional)
+
+
+DNS Header : UDP Packet	12						(TCP may also be used for large transfers)
+	Identity								2
+	Flags									2
+		Response							1 bit
+		OpCode							4 bits		(0 = Query, 1 = Obsolete, 2 = Status, 4 = Notify, 5 = Update)
+		AuthoritativeAnswer			1 bit
+		Truncated							1 bit
+		RecursiveRequest				1 bit
+		RecursiveResponse			1 bit
+		Reserved							3 bits
+		ResponseCode					4 bits		(0 = Success, 1 = Format Error, 2 = Server Failure, 3 = Name Error, 4 = Not Implemented, 5 = Refused)
+	QuestionCount					2
+	AnswerCount						2
+	AuthorityCount					2
+	AdditionalRecordCount		2
+
+DNS Question
+	Name								*					(DNS Name, or Pointer To DNS Name)
+	Type									2					(1 = Address, 2 = Name Server, 5 = Canonical Name, 6 = Start of Authority, 12 = Pointer, 15 = Mail, 16 = Text)
+	Class									2					(1 = Internet, 255 = Any)
+
+DNS Answer
+	Name								*					(DNS Name, or Pointer To DNS Name)
+	Type									2					(1 = Address, 2 = Name Server, 5 = Canonical Name, 6 = Start of Authority, 12 = Pointer, 15 = Mail, 16 = Text)
+	Class									2					(1 = Internet, 255 = Any)
+	TimeToLive						4					(Seconds)
+	DataLength						2
+	Data									*
+
+Address Data	
+	Address							4
+
+Name Server Data
+	Name Server						*
+
+Canonical Name Data
+	Canonical Name					*

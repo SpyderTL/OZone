@@ -1,0 +1,339 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="KeyboardReader"
+	type="http://metalx.org/Input/Keyboard/KeyboardReader"
+	xmlns="http://metalx.org/Program"
+	xmlns:kbc="http://metalx.org/Pc/Keyboard"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:dbg="http://metalx.org/i386/Functions/Debug"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:byte="http://metalx.org/i386/Functions/Byte"
+	xmlns:short="http://metalx.org/i386/Functions/Short"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:float="http://metalx.org/i386/Functions/Float"
+	xmlns:dbl="http://metalx.org/i386/Functions/Double"
+	xmlns:real="http://metalx.org/i386/Functions/Real"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:loop="http://metalx.org/i386/Functions/Loop"
+	xmlns:con="http://metalx.org/i386/Functions/Console"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:kb="http://metalx.org/i386/Functions/Keyboard"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:fpu="http://metalx.org/Intel/80386/FpuOperators"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:inc="http://metalx.org/Intel/80386/Increment"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:cls="http://metalx.org/Class">
+
+	<cls:method name="Create" type="http://metalx.org/Input/Keyboard/KeyboardReader" static="true">
+		<mm:CheckOut length="4"/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddress/>
+		<int>0</int>
+
+		<obj:Create length="4"/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+	
+	<cls:method name="Skip" type="http://metalx.org/Input/Keyboard/KeyboardReader">
+		<cls:parameter name="Count" type="http://metalx.org/Integer"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<cpu:PullSIFromStack/>
+		
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-SIAddress/>
+
+		<cpu:Repeat/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="SetPosition" type="http://metalx.org/Input/Keyboard/KeyboardReader">
+		<cls:parameter name="Position" type="http://metalx.org/Hexadecimal"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ReadBytes" type="http://metalx.org/List">
+		<cls:parameter name="Count" type="http://metalx.org/Integer"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ReadBoolean" type="http://metalx.org/Boolean">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ReadByte" type="http://metalx.org/Byte">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:ReadFromDXPortToAL/>
+		<byte:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ReadShort" type="http://metalx.org/Short">
+		<cpu:CallRelative/>
+		<addressOf ref="readByte" type="Relative32"/>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-BLRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftBXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="readByte" type="Relative32"/>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-BLRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<short:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ReadInteger" type="http://metalx.org/Integer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ReadHexadecimal" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ReadFloat" type="http://metalx.org/Float">
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ReadDouble" type="http://metalx.org/Double">
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ReadReal" type="http://metalx.org/Real">
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ReadString" type="http://metalx.org/String">
+		<cls:parameter name="Count" type="http://metalx.org/Integer"/>
+
+		<!--Get Count-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-SIAddress/>
+
+		<!--Create String-->
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<str:Create/>
+
+		<loop:For>
+			<cpu:CallRelative/>
+			<addressOf ref="readByte" type="Relative32"/>
+
+			<cpu:CopyRegisterToOperand/>
+			<op:DI-SIRegister/>
+
+			<str:AppendCharacter/>
+		</loop:For>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ReadObject" type="http://metalx.org/Input/Keyboard/KeyboardReader">
+		<cls:parameter name="Object" type="http://metalx.org/Object"/>
+
+		<cpu:PushDIToStack/>
+		
+		<!--Get Count-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<obj:GetDataLength/>
+
+		<obj:GetData/>
+
+		<!--Read Bytes-->
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<loop:For>
+			<cpu:CallRelative/>
+			<addressOf ref="readByte" type="Relative32"/>
+
+			<cpu:CopyALToDIAddressAndIncrementDI/>
+		</loop:For>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="className" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="className">PS/2 Keyboard Reader</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<label id="readByte">
+		<!--Wait For Keystroke-->
+		<label id="waitForKeystroke"/>
+
+		<cpu:ReadFromImmediate8PortToAL/>
+		<kbc:StatusPort/>
+
+		<cpu:TestALWithImmediate/>
+		<binary>00000001</binary>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="handleKeystroke" type="Relative8"/>
+
+		<cpu:WaitForInterrupt/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="waitForKeystroke" type="Relative8"/>
+
+		<label id="handleKeystroke"/>
+
+		<cpu:ReadFromImmediate8PortToAL/>
+		<kbc:DataPort/>
+		
+		<cpu:ReturnToNearCaller/>
+	</label>
+</cls:class>

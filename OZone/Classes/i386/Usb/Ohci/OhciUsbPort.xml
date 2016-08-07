@@ -1,0 +1,926 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="OhciUsbPort"
+	type="http://metalx.org/Usb/Ohci/OhciUsbPort"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:date="http://metalx.org/i386/Functions/Date"
+	xmlns:time="http://metalx.org/i386/Functions/Time"
+	xmlns:clk="http://metalx.org/i386/Functions/Clock"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:usb="http://metalx.org/Usb/Ohci/Registers"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
+	xmlns:cfg="http://metalx.org/Pc/Pci/Configuration">
+
+	<cls:field name="Device" type="http://metalx.org/Pci/PciDevice" offset="0"/>
+	<cls:field name="Index" type="http://metalx.org/Integer" offset="4"/>
+
+	<cls:method name="GetDevice" type="http://metalx.org/Usb/Ohci/OhciUsbDevice">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:PushAXToStack/>
+
+		<!--Reset Port-->
+		<cpu:AddImmediateToAX/>
+		<hex>00000054</hex>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftBXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddress/>
+		<hex>001f0012</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIRegister/>
+		
+		<!--Wait For Port Reset-->
+		<label id="wait"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:TestAXWithImmediate/>
+		<hex>00000010</hex>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="wait" type="Relative8"/>
+		
+		<!--Set Device Address (1)-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200000</hex>
+		<hex>00</hex>
+		<hex>05</hex>
+		<hex>0001</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200004</hex>
+		<hex>00000000</hex>
+
+		<!--Create Setup Transfer Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210000</hex>
+		<hex>e0e00000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210004</hex>
+		<hex>00200000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210008</hex>
+		<hex>00210010</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021000c</hex>
+		<hex>00200007</hex>
+
+		<!--Create Result Transfer Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210010</hex>
+		<hex>e0f00000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210014</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210018</hex>
+		<hex>00210020</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021001c</hex>
+		<hex>00000000</hex>
+
+		<!--Create Terminator Transfer Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210020</hex>
+		<hex>e0000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210024</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210028</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021002c</hex>
+		<hex>00000000</hex>
+
+		<!--Queue Transfer Descriptors-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220004</hex>
+		<hex>00210020</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220008</hex>
+		<hex>00210000</hex>
+
+		<!--Create Control Endpoint Descriptor (64 byte, general, disabled, low-speed, auto direction, address 1, index 0)-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>00407801</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220014</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0022001c</hex>
+		<hex>00000000</hex>
+		
+		<!--Queue Endpoint Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0022000c</hex>
+		<hex>00220010</hex>
+
+		<!--Enable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AndWithImmediateAddress/>
+		<hex>00220000</hex>
+		<hex>ffffbfff</hex>
+
+		<!--Notify Controller-->
+		<cpu:PullDIFromStack/>
+		
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<usb:CommandStatus/>
+		<hex>00000002</hex>
+
+		<!--Wait For Data-->
+		<label id="wait2"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithImmediateAddress/>
+		<hex>00220008</hex>
+		<hex>00210020</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wait2" type="Relative8"/>
+
+		<!--Save Address-->
+		<cpu:PushImmediateToStack/>
+		<int>1</int>
+
+		<!--Disable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:OrWithImmediateAddress/>
+		<hex>00220000</hex>
+		<hex>00004000</hex>
+
+		<!--Create Device-->
+		<mm:CheckOut length="8"/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddress/>
+		
+		<cpu:PushDIToStack/>
+
+		<!--Find Class-->
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="ohciUsbDevice" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<!--Create Object-->
+		<cpu:PullDIFromStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>8</int>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="ohciUsbDevice">http://metalx.org/Usb/Ohci/OhciUsbDevice</var:string>
+	</cls:method>
+
+	<cls:method name="GetStatus" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:AddImmediateToAX/>
+		<hex>00000054</hex>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftBXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsConnected" type="http://metalx.org/Boolean">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:AddImmediateToAX/>
+		<hex>00000054</hex>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftBXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>00000001</binary>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsEnabled" type="http://metalx.org/Boolean">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:AddImmediateToAX/>
+		<hex>00000054</hex>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftBXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterRight/>
+		<byte>1</byte>
+
+		<cpu:AndALWithImmediate/>
+		<binary>00000001</binary>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsSuspended" type="http://metalx.org/Boolean">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:AddImmediateToAX/>
+		<hex>00000054</hex>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftBXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>2</byte>
+
+		<cpu:AndALWithImmediate/>
+		<binary>00000001</binary>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsOvercurrent" type="http://metalx.org/Boolean">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:AddImmediateToAX/>
+		<hex>00000054</hex>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftBXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>3</byte>
+
+		<cpu:AndALWithImmediate/>
+		<binary>00000001</binary>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Reset" type="http://metalx.org/Usb/Ohci/OhciUsbPort">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:AddImmediateToAX/>
+		<hex>00000054</hex>
+
+		<!--<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>-->
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftBXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddress/>
+		<hex>001f0012</hex>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsReset" type="http://metalx.org/Boolean">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:AddImmediateToAX/>
+		<hex>00000054</hex>
+
+		<!--<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>-->
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftBXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>4</byte>
+
+		<cpu:AndALWithImmediate/>
+		<binary>00000001</binary>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsPowered" type="http://metalx.org/Boolean">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:AddImmediateToAX/>
+		<hex>00000054</hex>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftBXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>8</byte>
+
+		<cpu:AndALWithImmediate/>
+		<binary>00000001</binary>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsLowSpeed" type="http://metalx.org/Boolean">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:AddImmediateToAX/>
+		<hex>00000054</hex>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftBXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>9</byte>
+
+		<cpu:AndALWithImmediate/>
+		<binary>00000001</binary>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsConnectedChanged" type="http://metalx.org/Boolean">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:AddImmediateToAX/>
+		<hex>00000054</hex>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftBXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>16</byte>
+
+		<cpu:AndALWithImmediate/>
+		<binary>00000001</binary>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsEnabledChanged" type="http://metalx.org/Boolean">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:AddImmediateToAX/>
+		<hex>00000054</hex>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftBXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>17</byte>
+
+		<cpu:AndALWithImmediate/>
+		<binary>00000001</binary>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsSuspendedChanged" type="http://metalx.org/Boolean">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:AddImmediateToAX/>
+		<hex>00000054</hex>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftBXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>18</byte>
+
+		<cpu:AndALWithImmediate/>
+		<binary>00000001</binary>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsOvercurrentChanged" type="http://metalx.org/Boolean">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:AddImmediateToAX/>
+		<hex>00000054</hex>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftBXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>19</byte>
+
+		<cpu:AndALWithImmediate/>
+		<binary>00000001</binary>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsResetChanged" type="http://metalx.org/Boolean">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:AddImmediateToAX/>
+		<hex>00000054</hex>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftBXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>20</byte>
+
+		<cpu:AndALWithImmediate/>
+		<binary>00000001</binary>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="deviceName" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="deviceName">Universal Serial Bus 1.0 Controller Port (OHCI)</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

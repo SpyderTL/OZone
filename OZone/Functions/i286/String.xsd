@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema
+    targetNamespace="http://metalx.org/i286/Functions/String"
+    elementFormDefault="qualified"
+    xmlns="http://metalx.org/i286/Functions/String"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:element name="Create">
+		<xsd:annotation>
+			<xsd:documentation>
+				Creates a new string.
+
+				Input:
+				SI=MemoryManager
+				AX=Length
+
+				Output:
+				DI=String
+				
+				Modifies: AX
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="length" type="xsd:unsignedShort"/>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="CreateObject">
+		<xsd:annotation>
+			<xsd:documentation>
+				Creates a new string object from a string structure.
+
+				Input:
+				SI=MemoryManager
+				DI=String
+
+				Output:
+				DI=Object
+				
+				Modifies: AX BX DX
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="Clear">
+		<xsd:annotation>
+			<xsd:documentation>
+				Removes all bytes from a string.
+				
+				Input:
+				SI=String
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="AppendByte">
+		<xsd:annotation>
+			<xsd:documentation>
+				Appends a byte to the end of a string.
+
+				Input:
+				AL=Value
+				SI=String
+
+				Modifies: BX SI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="value">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:length value="1" fixed="true"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="AppendString">
+		<xsd:annotation>
+			<xsd:documentation>
+				Appends the source string to the end of the destination string.
+
+				Input:
+				SI=Source
+				DI=Destination
+				
+				Modifies: CX SI DI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="GetLength">
+		<xsd:annotation>
+			<xsd:documentation>
+				Gets the length of the string.
+				
+				Input:
+				SI=String
+				
+				Output:
+				AX=Length
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="TrimLastCharacter">
+		<xsd:annotation>
+			<xsd:documentation>
+				Removes the last byte from a string.
+				
+				Input:
+				SI=String
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="Compare">
+		<xsd:annotation>
+			<xsd:documentation>
+				Compares two strings.
+				
+				Input:
+				SI=String1
+				DI=String2
+				
+				Output:
+				ZF=Equal
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="BeginsWith">
+		<xsd:annotation>
+			<xsd:documentation>
+				Compares the initial characters of a string.
+
+				Input:
+				SI=String
+				DI=BeginsWith
+
+				Output:
+				ZF=BeginsWith
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="GetSegment">
+		<xsd:annotation>
+			<xsd:documentation>
+				Copies a segment of a string to another string.
+
+				Input:
+				SI=Source
+				DI=Destination
+				AX=Start
+				CX=Count
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="ForEach">
+		<xsd:annotation>
+			<xsd:documentation>
+				Executes code for each value in the string.
+
+				Input:
+				SI=String
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:any/>
+			</xsd:choice>
+		</xsd:complexType>
+	</xsd:element>
+
+</xsd:schema>

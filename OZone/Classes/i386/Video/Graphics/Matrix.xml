@@ -1,0 +1,1959 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Matrix"
+	static="true"
+	type="http://metalx.org/Video/Graphics/Matrix"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:vector="http://metalx.org/i386/Functions/Vector3"
+	xmlns:matrix="http://metalx.org/i386/Functions/Matrix"
+	xmlns:float="http://metalx.org/i386/Functions/Float"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:index="http://metalx.org/Intel/80386/Index"
+	xmlns:fpu="http://metalx.org/Intel/80386/FpuOperators">
+
+	<cls:field name="M11" type="http://metalx.org/Float" offset="0"/>
+	<cls:field name="M12" type="http://metalx.org/Float" offset="4"/>
+	<cls:field name="M13" type="http://metalx.org/Float" offset="8"/>
+	<cls:field name="M14" type="http://metalx.org/Float" offset="12"/>
+	<cls:field name="M21" type="http://metalx.org/Float" offset="16"/>
+	<cls:field name="M22" type="http://metalx.org/Float" offset="20"/>
+	<cls:field name="M23" type="http://metalx.org/Float" offset="24"/>
+	<cls:field name="M24" type="http://metalx.org/Float" offset="28"/>
+	<cls:field name="M31" type="http://metalx.org/Float" offset="32"/>
+	<cls:field name="M32" type="http://metalx.org/Float" offset="36"/>
+	<cls:field name="M33" type="http://metalx.org/Float" offset="40"/>
+	<cls:field name="M34" type="http://metalx.org/Float" offset="44"/>
+	<cls:field name="M41" type="http://metalx.org/Float" offset="48"/>
+	<cls:field name="M42" type="http://metalx.org/Float" offset="52"/>
+	<cls:field name="M43" type="http://metalx.org/Float" offset="56"/>
+	<cls:field name="M44" type="http://metalx.org/Float" offset="60"/>
+
+	<cls:method name="Zero" type="http://metalx.org/Video/Graphics/Matrix" static="true">
+		<mm:CheckOut length="64"/>
+
+		<fpu:ResetFpu/>
+
+		<fpu:Zero/>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>20</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>24</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>28</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>32</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>36</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>40</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>44</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>48</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>52</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>56</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>60</byte>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<matrix:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Identity" type="http://metalx.org/Video/Graphics/Matrix" static="true">
+		<mm:CheckOut length="64"/>
+
+		<fpu:ResetFpu/>
+
+		<fpu:Zero/>
+		
+		<fpu:One/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>0</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<fpu:One/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>20</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>24</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>28</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>32</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>36</byte>
+
+		<fpu:One/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>40</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>44</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>48</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>52</byte>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>56</byte>
+
+		<fpu:One/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>60</byte>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<matrix:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="RotateX" type="http://metalx.org/Video/Graphics/Matrix" static="true">
+		<cls:parameter name="Value" type="http://metalx.org/Float"/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<obj:GetData/>
+
+		<mm:CheckOut length="64"/>
+
+		<fpu:ResetFpu/>
+
+		<fpu:Zero/>
+
+		<fpu:One/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>0</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:Cosine/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>20</byte>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:Sine/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>24</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>28</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>32</byte>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:Sine/>
+
+		<fpu:ChangeSign/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>36</byte>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:Cosine/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>40</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>44</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>48</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>52</byte>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>56</byte>
+
+		<fpu:One/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>60</byte>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<matrix:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+	
+	<cls:method name="RotateY" type="http://metalx.org/Video/Graphics/Matrix" static="true">
+		<cls:parameter name="Value" type="http://metalx.org/Float"/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<obj:GetData/>
+
+		<mm:CheckOut length="64"/>
+
+		<fpu:ResetFpu/>
+
+		<fpu:Zero/>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:Cosine/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>0</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:Sine/>
+
+		<fpu:ChangeSign/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>8</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<fpu:One/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>20</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>24</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>28</byte>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:Sine/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>32</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>36</byte>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:Cosine/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>40</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>44</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>48</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>52</byte>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>56</byte>
+
+		<fpu:One/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>60</byte>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<matrix:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="RotateZ" type="http://metalx.org/Video/Graphics/Matrix" static="true">
+		<cls:parameter name="Value" type="http://metalx.org/Float"/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PullSIFromStack/>
+		
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<obj:GetData/>
+
+		<mm:CheckOut length="64"/>
+
+		<fpu:ResetFpu/>
+
+		<fpu:Zero/>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:Cosine/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>0</byte>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:Sine/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>4</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:Sine/>
+
+		<fpu:ChangeSign/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>16</byte>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:Cosine/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>20</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>24</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>28</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>32</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>36</byte>
+
+		<fpu:One/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>40</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>44</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>48</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>52</byte>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>56</byte>
+
+		<fpu:One/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>60</byte>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<matrix:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Scale" type="http://metalx.org/Video/Graphics/Matrix" static="true">
+		<cls:parameter name="X" type="http://metalx.org/Float"/>
+		<cls:parameter name="Y" type="http://metalx.org/Float"/>
+		<cls:parameter name="Z" type="http://metalx.org/Float"/>
+
+		<fpu:ResetFpu/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:GetData/>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:GetData/>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:GetData/>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<mm:CheckOut length="64"/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>0</byte>
+
+		<fpu:Zero/>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>16</byte>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>20</byte>
+
+		<fpu:Zero/>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>24</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>28</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>32</byte>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>36</byte>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>40</byte>
+
+		<fpu:Zero/>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>44</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>48</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>52</byte>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>56</byte>
+
+		<fpu:One/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>60</byte>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<matrix:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Forward" type="http://metalx.org/Video/Graphics/Matrix">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<fpu:ResetFpu/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>28</hex>
+
+		<fpu:ChangeSign/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>24</hex>
+
+		<fpu:ChangeSign/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>20</hex>
+
+		<fpu:ChangeSign/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<vector:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Backward" type="http://metalx.org/Video/Graphics/Matrix">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<fpu:ResetFpu/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>28</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>24</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>20</hex>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<vector:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Left" type="http://metalx.org/Video/Graphics/Matrix">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<fpu:ResetFpu/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>08</hex>
+
+		<fpu:ChangeSign/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>04</hex>
+
+		<fpu:ChangeSign/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>00</hex>
+
+		<fpu:ChangeSign/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<vector:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Right" type="http://metalx.org/Video/Graphics/Matrix">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<fpu:ResetFpu/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>08</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>04</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>00</hex>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<vector:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Up" type="http://metalx.org/Video/Graphics/Matrix">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<fpu:ResetFpu/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>18</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>14</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>10</hex>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<vector:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Down" type="http://metalx.org/Video/Graphics/Matrix">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<fpu:ResetFpu/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>18</hex>
+
+		<fpu:ChangeSign/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>14</hex>
+
+		<fpu:ChangeSign/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>10</hex>
+
+		<fpu:ChangeSign/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<vector:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Multiply" type="http://metalx.org/Video/Graphics/Matrix">
+		<cls:parameter name="Value" type="http://metalx.org/Video/Graphics/Matrix"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-AXRegister/>
+
+		<mm:CheckOut length="64"/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<obj:GetData/>
+
+		<fpu:ResetFpu/>
+
+		<!--M11-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>00</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>00</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>04</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>10</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>08</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>20</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>0c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>30</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>00</hex>
+
+
+		<!--M12-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>00</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>04</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>04</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>14</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>08</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>24</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>0c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>34</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>04</hex>
+
+
+		<!--M13-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>00</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>08</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>04</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>18</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>08</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>28</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>0c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>38</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>08</hex>
+
+
+		<!--M14-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>00</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>0c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>04</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>1c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>08</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>2c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>0c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>3c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>0c</hex>
+
+
+		<!--M21-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>10</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>00</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>14</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>10</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>18</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>20</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>1c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>30</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>10</hex>
+
+
+		<!--M22-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>10</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>04</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>14</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>14</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>18</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>24</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>1c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>34</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>14</hex>
+
+
+		<!--M23-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>10</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>08</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>14</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>18</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>18</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>28</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>1c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>38</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>18</hex>
+
+
+		<!--M24-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>10</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>0c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>14</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>1c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>18</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>2c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>1c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>3c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>1c</hex>
+
+
+		<!--M31-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>20</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>00</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>24</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>10</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>28</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>20</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>2c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>30</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>20</hex>
+
+
+		<!--M32-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>20</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>04</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>24</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>14</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>28</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>24</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>2c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>34</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>24</hex>
+
+
+		<!--M33-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>20</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>08</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>24</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>18</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>28</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>28</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>2c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>38</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>28</hex>
+
+
+		<!--M34-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>20</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>0c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>24</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>1c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>28</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>2c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>2c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>3c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>2c</hex>
+
+
+		<!--M41-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>30</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>00</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>34</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>10</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>38</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>20</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>3c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>30</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>30</hex>
+
+
+		<!--M42-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>30</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>04</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>34</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>14</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>38</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>24</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>3c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>34</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>34</hex>
+
+
+		<!--M43-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>30</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>08</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>34</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>18</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>38</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>28</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>3c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>38</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>38</hex>
+
+
+		<!--M44-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>30</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>0c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>34</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>1c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>38</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>2c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>3c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>3c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>3c</hex>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<matrix:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:PushSIToStack/>
+
+		<str:Create length="160"/>
+
+		<cpu:PushDIToStack/>
+
+		<fpu:ResetFpu/>
+
+		<!--M11-->
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="floatToString" type="Relative32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendString/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendCharacter value=","/>
+
+		<!--M12-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>4</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="floatToString" type="Relative32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendString/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendCharacter value=","/>
+
+		<!--M13-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>8</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="floatToString" type="Relative32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendString/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendCharacter value=","/>
+
+		<!--M14-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>12</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="floatToString" type="Relative32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendString/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="newLine" type="Relative32"/>
+
+		<!--M21-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>16</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="floatToString" type="Relative32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendString/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendCharacter value=","/>
+
+		<!--M22-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>20</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="floatToString" type="Relative32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendString/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendCharacter value=","/>
+
+		<!--M23-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>24</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="floatToString" type="Relative32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendString/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendCharacter value=","/>
+
+		<!--M24-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>28</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="floatToString" type="Relative32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendString/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="newLine" type="Relative32"/>
+
+		<!--M31-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>32</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="floatToString" type="Relative32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendString/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendCharacter value=","/>
+
+		<!--M32-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>36</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="floatToString" type="Relative32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendString/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendCharacter value=","/>
+
+		<!--M33-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>40</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="floatToString" type="Relative32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendString/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendCharacter value=","/>
+
+		<!--M34-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>44</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="floatToString" type="Relative32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendString/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="newLine" type="Relative32"/>
+
+		<!--M41-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>48</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="floatToString" type="Relative32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendString/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendCharacter value=","/>
+
+		<!--M42-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>52</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="floatToString" type="Relative32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendString/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendCharacter value=","/>
+
+		<!--M43-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>56</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="floatToString" type="Relative32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendString/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendCharacter value=","/>
+
+		<!--M44-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>60</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="floatToString" type="Relative32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendString/>
+
+		<cpu:PullDIFromStack/>
+
+		<str:CreateObject/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="floatToString"/>
+		
+		<float:ToString/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="newLine"/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0d</hex>
+
+		<str:AppendCharacter/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0a</hex>
+
+		<str:AppendCharacter/>
+
+		<cpu:ReturnToNearCaller/>
+		
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

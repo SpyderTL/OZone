@@ -1,0 +1,326 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:pic="http://metalx.org/Pc/Pic/Ports"
+	xmlns:cmd="http://metalx.org/Pc/Pic/Commands"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:inc="http://metalx.org/Intel/80386/Increment"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:math="http://metalx.org/Intel/80386/Math">
+
+	<!--<cpu:PushAXToStack/>-->
+
+	<!--<cpu:IncrementFunction8/>
+		<inc:IncrementImmediateAddress/>
+		<hex>000b8f98</hex>-->
+
+	<!--<cpu:LogicFunction/>
+		<logic:CallImmediateAddress/>
+		<addressOf ref="switch" type="Absolute32"/>-->
+
+	<!--<cpu:JumpToRelative8/>
+		<addressOf ref="switch" type="Relative8"/>-->
+
+	<!--Check for Ctrl-Alt-Del-->
+	<!--<cpu:MathImmediateToOperandFunction8/>
+	<math:CompareWithImmediateAddress/>
+	<hex>00007053</hex>
+	<byte>0</byte>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="returnFromSwitch" type="Relative8"/>
+
+	<cpu:CopyImmediateToOperandFunction/>
+	<imm:CopyImmediateToIndexAddress/>
+	<index:SP xmlns:index="http://metalx.org/Intel/80386/Index"/>
+	<hex>00100000</hex>
+
+	<cpu:CopyImmediateToOperandFunction/>
+	<imm:CopyImmediateToIndexAddressPlusImmediate8/>
+	<index:SP xmlns:index="http://metalx.org/Intel/80386/Index"/>
+	<byte>4</byte>
+	<hex>00000008</hex>-->
+	
+	<!--Update Interrupt Counts On Screen-->
+	<!--<cpu:PushAllRegistersToStack/>
+
+	<cpu:CopyImmediateToSI/>
+	<hex>00001000</hex>
+
+	<cpu:CopyImmediateToDI/>
+	<hex>000b8000</hex>
+
+	<cpu:CopyImmediateToCX/>
+	<int>80</int>
+
+	<label id="nextInterrupt"/>
+
+	<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+	<cpu:IncrementDI/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="nextInterrupt" type="Relative8"/>
+
+	<cpu:PullAllRegistersFromStack/>-->
+
+	<label id="returnFromSwitch"/>
+
+	<cpu:PushAXToStack/>
+
+	<cpu:CopyImmediateToAL/>
+	<cmd:EndOfInterrupt/>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:MasterCommand/>
+
+	<cpu:PullAXFromStack/>
+
+	<cpu:ReturnFromInterrupt/>
+
+	<label id="switch"/>
+
+	<!--Store CPU State To Stack-->
+	<cpu:PushAllRegistersToStack/>
+	<cpu:PushDSToStack/>
+	<cpu:PushESToStack/>
+	<cpu:PushFlagsToStack/>
+
+	<!--DEBUG-->
+	<cpu:CopyOperandToRegister/>
+	<op:AX-ImmediateAddress/>
+	<addressOf ref="nextSP" type="Absolute32"/>
+
+	<cpu:CompareAXToImmediate/>
+	<int>0</int>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="InstallThreads" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="skip" type="Relative32"/>
+
+	<label id="InstallThreads"/>
+
+	<!--Thread 1-->
+	<mm:CheckOut length="4096" xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"/>
+
+	<cpu:MathImmediateToOperandFunction/>
+	<math:AddToDIRegister/>
+	<int>4096</int>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:DI-SPRegister/>
+
+	<!--<cpu:SetInterruptFlag/>-->
+
+	<!--<cpu:PushFlagsToStack/>-->
+	<cpu:PushImmediateToStack/>
+	<hex>00000202</hex>
+
+	<cpu:PushCSToStack/>
+
+	<cpu:PushImmediateToStack/>
+	<addressOf ref="thread1" type="Absolute32"/>
+
+	<cpu:PushAllRegistersToStack/>
+	<cpu:PushDSToStack/>
+	<cpu:PushESToStack/>
+
+	<!--<cpu:PushFlagsToStack/>-->
+	<cpu:PushImmediateToStack/>
+	<hex>00000002</hex>
+
+	<cpu:PushDIToStack/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="lastSP" type="Absolute32"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SP-AXRegister/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-SPRegister/>
+
+	<cpu:CopyAXToAbsoluteMemory/>
+	<addressOf ref="nextSP" type="Absolute32"/>
+
+	<!--Thread 2-->
+	<mm:CheckOut length="4096" xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"/>
+
+	<cpu:MathImmediateToOperandFunction/>
+	<math:AddToDIRegister/>
+	<int>4096</int>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:DI-SPRegister/>
+
+	<!--<cpu:SetInterruptFlag/>-->
+
+	<!--<cpu:PushFlagsToStack/>-->
+	<cpu:PushImmediateToStack/>
+	<hex>00000202</hex>
+
+	<cpu:PushCSToStack/>
+
+	<cpu:PushImmediateToStack/>
+	<addressOf ref="thread2" type="Absolute32"/>
+
+	<cpu:PushAllRegistersToStack/>
+	<cpu:PushDSToStack/>
+	<cpu:PushESToStack/>
+
+	<!--<cpu:PushFlagsToStack/>-->
+	<cpu:PushImmediateToStack/>
+	<hex>00000002</hex>
+
+	<cpu:CopyOperandToRegister/>
+	<op:AX-ImmediateAddress/>
+	<addressOf ref="nextSP" type="Absolute32"/>
+
+	<cpu:PushAXToStack/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="nextSP" type="Absolute32"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-SPRegister/>
+
+	<!--Thread 3-->
+	<mm:CheckOut length="4096" xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"/>
+
+	<cpu:MathImmediateToOperandFunction/>
+	<math:AddToDIRegister/>
+	<int>4096</int>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:DI-SPRegister/>
+
+	<!--<cpu:SetInterruptFlag/>-->
+
+	<!--<cpu:PushFlagsToStack/>-->
+	<cpu:PushImmediateToStack/>
+	<hex>00000202</hex>
+
+	<cpu:PushCSToStack/>
+
+	<cpu:PushImmediateToStack/>
+	<addressOf ref="thread3" type="Absolute32"/>
+
+	<cpu:PushAllRegistersToStack/>
+	<cpu:PushDSToStack/>
+	<cpu:PushESToStack/>
+
+	<!--<cpu:PushFlagsToStack/>-->
+	<cpu:PushImmediateToStack/>
+	<hex>00000002</hex>
+
+	<cpu:CopyOperandToRegister/>
+	<op:AX-ImmediateAddress/>
+	<addressOf ref="nextSP" type="Absolute32"/>
+
+	<cpu:PushAXToStack/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="nextSP" type="Absolute32"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-SPRegister/>
+
+	<label id="skip"/>
+
+	<!--Store Next Stack Pointer-->
+	<cpu:CopyAbsoluteMemoryToAX/>
+	<addressOf ref="nextSP" type="Absolute32"/>
+
+	<cpu:PushAXToStack/>
+
+	<!--Update Last Stack's Next Stack Pointer-->
+	<cpu:CopyOperandToRegister/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="lastSP" type="Absolute32"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SP-DIAddress/>
+
+	<!--Update Last Stack Pointer-->
+	<cpu:CopyRegisterToOperand/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="lastSP" type="Absolute32"/>
+
+	<!--Switch To New Stack-->
+	<cpu:ExchangeSPWithAX/>
+
+	<!--<cpu:CopyRegisterToOperand/>
+  <op:AX-ImmediateAddress/>
+  <addressOf ref="nextSP" type="Absolute32"/>-->
+
+	<!--Reload CPU State From Stack-->
+	<cpu:PullAXFromStack/>
+
+	<cpu:CopyAXToAbsoluteMemory/>
+	<addressOf ref="nextSP" type="Absolute32"/>
+
+	<cpu:PullFlagsFromStack/>
+	<cpu:PullESFromStack/>
+	<cpu:PullDSFromStack/>
+	<cpu:PullAllRegistersFromStack/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="returnFromSwitch" type="Relative32"/>
+
+	<label id="nextSP"/>
+	<int>0</int>
+
+	<label id="lastSP"/>
+	<int>0</int>
+
+	<label id="thread1"/>
+
+	<cpu:IncrementFunction8/>
+	<inc:IncrementImmediateAddress/>
+	<hex>000b8f9a</hex>
+
+	<cpu:CallImmediate8Interrupt/>
+	<byte>32</byte>
+
+	<!--<cpu:WaitForInterrupt/>-->
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="thread1" type="Relative8"/>
+
+	<label id="thread2"/>
+
+	<cpu:IncrementFunction8/>
+	<inc:IncrementImmediateAddress/>
+	<hex>000b8f9c</hex>
+
+	<cpu:CallImmediate8Interrupt/>
+	<byte>32</byte>
+
+	<!--<cpu:WaitForInterrupt/>-->
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="thread2" type="Relative8"/>
+
+	<label id="thread3"/>
+
+	<cpu:IncrementFunction8/>
+	<inc:IncrementImmediateAddress/>
+	<hex>000b8f9e</hex>
+
+	<cpu:CallImmediate8Interrupt/>
+	<byte>32</byte>
+
+	<!--<cpu:WaitForInterrupt/>-->
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="thread3" type="Relative8"/>
+
+</scope>

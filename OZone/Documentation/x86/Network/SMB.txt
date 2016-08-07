@@ -1,0 +1,465 @@
+﻿Server Message Block (SMB)
+	Transport Protocols
+		TCP Port 445
+		NetBIOS
+			UDP Port 137, 138
+			TCP Ports 137, 139
+		NBF
+	Workflow
+		Connect
+		Negotiate
+			NEGOTIATE
+		Setup
+			SESSION_SETUP
+		Execute
+			TREE_CONNECT
+			TREE_DISCONNECT
+			CANCEL
+			CHANGE_NOTIFY
+			CLOSE
+			CREATE
+			FLUSH
+			IOCTL
+			LOCK
+			QUERY_DIRECTORY
+			QUERY_INFO
+			READ
+			SET_INFO
+			WRITE
+			ECHO
+			OPLOCK_BREAK				(Server Only)
+		Disconnect	
+			LOGOFF
+
+SMB Packet
+	Identifier						4			(0xFF, 'S', 'M', 'B')
+	Command						1			
+	ErrorClass						1			(1=DOS, 2=FileManager, 3=Hardware, 0xFF=Command)
+	Reserved(0)					1
+	ErrorCode						2
+	Flags								1
+		Unknown						4
+		CaseInsensitive				1
+		Unknown						3
+	Flags2							2
+		Unicode							1 bit
+		Unknown							8 bits
+		LongFilenamesReturned		1 bit
+		Unknown							5 bits
+		LongFilenamesRequested	1 bit
+	SecuritySignature			4
+	TreeID							2
+	ClientProcessID				2
+	UserID							2
+	MultiplexID					2			(Unique for each request)
+	WordCount					1
+	ParameterWords			WordCount * 2
+	ByteCount						2
+	Data								ByteCount
+
+TCP SMB Packet
+	Reserved(0)					1
+	SMBPacketLength			3
+
+
+SMB Commands
+
+	Create Directory				0x00			(Deprecated)
+		Request
+			Data
+				BufferFormat			1			(0x04)
+				DirectoryName		*			(Null terminated)
+
+	Delete Directory				0x01
+		Request
+			Data
+				BufferFormat			1			(0x04)
+				DirectoryName		*			(Null terminated)
+	
+	Open File						0x02			(Deprecated)
+		Request
+			Parameters
+				AccessMode			2
+					Reserved					1 bit
+					WriteThroughMode	1 bit
+					Reserved					1 bit
+					DoNotCache				1 bit
+					Reserved					1 bit
+					Locality						3 bits				(0 = Unknown, 1 = Sequential, 2 = Random, 3 = RandomLocal)
+					Reserved					1 bit
+					SharingMode				3 bits				(0 = Compatibility, 1 = Exclusive, 2 = DenyWrite, 3 = DenyReadExecute, 4 = DenyNone)
+					Reserved					1 bit
+					AccessMode				3 bits				(0 = Read, 1 = Write, 2 = ReadWrite, 3 = Execute)
+				SearchAttributes		2
+			Data
+				BufferFormat			1			(0x04)
+				DirectoryName		*			(Null terminated)
+		Response
+			Parameters
+				FID						2
+				FileAttributes			2
+				LastModified			4
+				FileSize					4
+				AccessMode			2
+
+	Create File						0x03			(Deprecated)
+		Request
+			Parameters
+				FileAttributes			2
+				CreationTime			4
+			Data
+				BufferFormat			1			(0x04)
+				DirectoryName		*			(Null terminated)
+		Response
+			Parameters
+				FID						2
+
+	Close							0x04
+		Request
+			Parameters
+				FID						2
+				LastTimeModified	4
+
+	Flush								0x05
+		Request
+			Parameters
+				FID						2
+	
+	Delete File						0x06
+		Request
+			Parameters
+				SearchAttributes		2
+			Data
+				BufferFormat			1			(0x04)
+				DirectoryName		*			(Null terminated)
+	
+	Rename							0x07
+		Request
+			Parameters
+				SearchAttributes		2
+			Data
+				BufferFormat			1			(0x04)
+				OldName				*			(Null terminated)
+				BufferFormat			1			(0x04)
+				NewName				*			(Null terminated)
+
+	Query Information			0x08			(Deprecated)
+
+	Set Information				0x09			(Deprecated)
+
+	Read File						0x0a			(Deprecated)
+
+	Write File						0x0b			(Deprecated)
+
+	Lock Byte Range				0x0c			(Deprecated)
+
+	Unlock Byte Range			0x0d			(Deprecated)
+
+	Create Temporary File	0x0e			(Obsolete)
+
+	Create New					0x0f			(Deprecated)
+
+	Check Directory				0x10
+		Request
+			Data
+				BufferFormat			1			(0x04)
+				Name				*			(Null terminated)
+
+	Process Exit					0x11			(Obsolete)
+
+	Seek								0x12			(Obsolete)
+
+	Lock And Read				0x13			(Deprecated)
+
+	Write And Unlock			0x14			(Deprecated)
+
+	Read Raw						0x1a			(Deprecated)
+
+	Read Mpx						0x1b			(Obsolete)
+
+	Read Mpx Secondary		0x1c			(Obsolete)
+
+	Write Raw						0x1d			(Deprecated)
+
+	Write Mpx						0x1e			(Obsolete)
+
+	Write Mpx Secondary		0x1f			(Obsolete)
+
+	Write Complete				0x20			(Obsolete)
+
+	Query Server					0x21			(Not Implemented)
+
+	Set Information 2			0x22			(Deprecated)
+
+	Query Information 2		0x23			(Deprecated)
+
+	Locking							0x24
+		Request
+		Response
+	
+	Transaction					0x25
+		Request
+		Response
+
+	Transaction Secondary	0x26
+		Request
+		Response
+
+	IOCTL							0x27
+		Request
+		Response
+
+	IOCTL Secondary			0x28
+
+	Copy								0x29
+
+	Move							0x2a
+
+	Echo								0x2b
+		Request
+		Response
+	
+	Write And Close				0x2c
+		Request
+		Response
+
+	Open							0x2d
+		Request
+		Response
+
+	Read								0x2e
+		Request
+		Response
+
+	Write								0x2f
+		Request
+		Response
+
+	New File Size					0x30
+		Request
+		Response
+
+	Close And Tree Desc		0x31
+
+	Transaction 2					0x32
+		Request
+		Response
+
+	Transaction 2	 Secondary	0x32
+		Request
+		Response
+
+	Find Close 2					0x
+		Request
+		Response
+
+	Find Notify Close			0x
+		Request
+		Response
+
+	Tree Connect					0x70
+		Request
+		Response
+
+	Tree Diconnect				0x71
+		Request
+		Response
+
+	Negotiate						0x72
+		Request
+			Data
+				Dialect[]
+					Buffer Format			1				(0x02 = Null Terminated Char Array)
+					Dialect					*				(PCLAN1.0, PC NETWORK PROGRAM 1.0, xenix1.1, XENIX CORE, MICROSOFT NETWORKS 1.03, LANMAN1.0, MICROSOFT NETWORKS 3.0, LANMAN1.2, LM1.2X002, DOS LM1.2X002, LANMAN2.1, DOS LANMAN2.1, NT LM 0.12)
+				
+		Response
+
+	Session Setup				0x73
+		Request
+		Response
+
+	Logoff							0x74
+		Request
+		Response
+
+	Tree Connect					0x75
+		Request
+		Response
+
+	Security Package			0x7e
+
+	Query Information Disk	0x80
+		Request
+		Response
+
+	Search							0x81
+		Request
+		Response
+
+	Find								0x82
+		Request
+		Response
+
+	Find Unique					0x83
+		Request
+		Response
+
+	Find Close						0x84
+		Request
+		Response
+
+	NT Transaction				0xa0
+		Request
+		Response
+
+	NT Transaction Secondary	0xa1
+		Request
+		Response
+
+	NT Create							0xa2
+		Request
+		Response
+
+	NT Cancel							0xa4
+		Request
+		Response
+
+	NT Rename						0xa5
+		Request
+		Response
+
+	Open Print File					0xc0
+		Request
+		Response
+
+	Write Print File					0xc1
+		Request
+		Response
+
+	Close Print File					0xc2
+		Request
+		Response
+
+	Get Print Queue					0xc3
+		Request
+		Response
+
+	Read Bulk							0xd8
+
+	Write Bulk							0xd8
+
+	Write Bulk Data					0xd8
+
+	Invalid								0xd8
+
+	No Command					0xff
+
+Transaction Commands
+	
+	Set Pipe State				0x0001
+
+	Raw Read Pipe				0x0011
+
+	Query Pipe State			0x0021
+
+	Query Pipe Info				0x0022
+
+	Peek Pipe						0x0023
+
+	Transaction Pipe			0x0026
+
+	Raw Write Pipe				0x0031
+
+	Read Pipe						0x0036
+
+	Write Pipe						0x0037
+
+	Wait Pipe						0x0053
+
+	Call Pipe						0x0054
+
+	Mail Slot Write				0x0001
+
+Transaction 2 Commands
+
+	Open										0x0000
+
+	Find First									0x0001
+
+	Find Next									0x0002
+
+	Query File System Information		0x0003
+
+	Set File System Information			0x0004
+
+	Query Path Information				0x0005
+
+	Set Path Information					0x0006
+
+	Query File Information				0x0007
+
+	Set File Information					0x0008
+
+	File System Control						0x0009
+
+	I/O Control								0x000a
+
+	Find Notify First							0x000b
+
+	Find Notify Next							0x000c
+
+	Create Directory							0x000d
+
+	Session Setup							0x000e
+
+	Get DFS Referral						0x0010
+
+	Report DFS Inconsistancy			0x0011
+
+
+NT Transaction Commands
+
+	Create								0x0001
+	
+	I/O Control						0x0002
+
+	Set Security Description		0x0003
+
+	Notify Change					0x0004
+
+	Rename								0x0005
+
+	Query Security Description	0x0006
+
+
+
+Negotiate and Tree Connect
+	Negotiate
+	Session Setup
+	Tree Connect
+
+Disconnect
+	Tree Disconnect
+
+Download File
+	Open
+	Query Information
+	Close
+	Query Information
+	Find First
+	Open
+	Read Raw
+	Find Next
+	Find Close
+
+Upload File
+	Open
+	Query Information
+	Find First
+	Query Information
+	Find First
+	Open
+	Find Next
+	Write
+	Close
+

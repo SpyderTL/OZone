@@ -1,0 +1,688 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Internet"
+	static="true"
+	type="http://metalx.org/Network/Internet"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:class="http://metalx.org/i386/Functions/Class"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:pci="http://metalx.org/Pc/Pci"
+	xmlns:pcic="http://metalx.org/Pc/Pci/Command"
+	xmlns:pcir="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:pcis="http://metalx.org/Pc/Pci/Status"
+	xmlns:pcn="http://metalx.org/Amd/PcNet/Ports"
+	xmlns:pcs="http://metalx.org/Amd/PcNet/ControlStatus"
+	xmlns:pcb="http://metalx.org/Amd/PcNet/BusConfiguration"
+	xmlns:pcnet="http://metalx.org/i386/Functions/PcNet"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:con="http://metalx.org/i386/Functions/Console"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:inc="http://metalx.org/Intel/80386/Increment"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:index="http://metalx.org/Intel/80386/Index"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands">
+
+	<cls:method name="GetTime" type="http://metalx.org/Time" static="true">
+		<cls:parameter name="Connection" type="http://metalx.org/Network/NetworkConnection"/>
+		<cls:parameter name="Server" type="http://metalx.org/String"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<obj:ExecuteMethod name="GetInternetAddress"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:ExecuteMethod name="GetNetworkDevice"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:ExecuteMethod name="GetNetworkAddress"/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<obj:GetFieldValue name="GatewayNetworkAddress"/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<obj:GetFieldValue name="InternetAddress"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<class:ExecuteMethod class="TimePacket" method="Create"/>		
+		
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<obj:ExecuteMethod name="SendPacket"/>
+
+		<label id="waitForResponse"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<obj:ExecuteMethod name="IsPacketAvailable"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToALAndIncrementSI/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="getResponse" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="waitForResponse" type="Relative32"/>
+		
+		<label id="getResponse"/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:ExecuteMethod name="GetPacket"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetFieldValue name="InternetPacket"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetFieldValue name="DataPacket"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetFieldValue name="TimePacket"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:ExecuteMethod name="GetTransmitTimestamp"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSPRegister/>
+		<byte>4</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+	
+	<cls:method name="GetWebPage" type="http://metalx.org/String" static="true">
+		<cls:parameter name="Connection" type="http://metalx.org/Network/NetworkConnection"/>
+		<cls:parameter name="Server" type="http://metalx.org/String"/>
+		<cls:parameter name="Path" type="http://metalx.org/String"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<obj:ExecuteMethod name="GetInternetAddress"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>80</int>
+
+		<int:CreateObject/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<addressOf ref="nextPortNumber" type="Absolute32"/>
+		
+		<cpu:IncrementFunction/>
+		<inc:IncrementImmediateAddress/>
+		<addressOf ref="nextPortNumber" type="Absolute32"/>
+
+		<int:CreateObject/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<class:ExecuteMethod class="InternetConnection" method="Create"/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:ExecuteMethod name="Enable"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="request" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:ExecuteMethod name="WriteString"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:ExecuteMethod name="WriteString"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="request2" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:ExecuteMethod name="WriteString"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:ExecuteMethod name="WriteString"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="request3" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:ExecuteMethod name="WriteString"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:ExecuteMethod name="Flush"/>
+
+		<cpu:PushDIToStack/>
+
+		<label id="waitForData"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<obj:ExecuteMethod name="GetAvailableByteCount"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:CompareAXToImmediate/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="dataAvailable" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="waitForData" type="Relative32"/>
+
+		<label id="dataAvailable"/>
+
+		<!--<int:CreateObject/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>-->
+
+		<label id="nextLine"/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<!--<obj:ExecuteMethod name="ReadString"/>-->
+		
+		<obj:ExecuteMethod name="ReadLine"/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+		
+		<obj:GetData/>
+		
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:CompareWithSIAddress/>
+		<byte>0</byte>
+		
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="checkContentLength" type="Relative8"/>
+		
+		<cpu:JumpToRelative/>
+		<addressOf ref="endOfHeader" type="Relative32"/>
+		
+		<!--Check For Content Length-->
+		<label id="checkContentLength"/>
+		
+		<cpu:PushSIToStack/>
+		
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="contentLength" type="Absolute32"/>
+		
+		<str:BeginsWith/>
+		
+		<cpu:PullSIFromStack/>
+		
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="readContentLength" type="Relative8"/>
+		
+		<cpu:JumpToRelative/>
+		<addressOf ref="checkTransferEncoding" type="Relative32"/>
+		
+		<label id="readContentLength"/>
+		
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+		
+		<cpu:PushAXToStack/>
+		
+		<cpu:SubtractImmediateFromAX/>
+		<int>12</int>
+		
+		<mm:CheckOut/>
+		
+		<cpu:PullAXFromStack/>
+		<cpu:PushDIToStack/>
+		
+		<cpu:SubtractImmediateFromAX/>
+		<int>16</int>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+		
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+		
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>16</byte>
+		
+		<cpu:Repeat/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+		
+		<cpu:PullSIFromStack/>
+		
+		<int:Parse/>
+		
+		<int:CreateObject/>
+		
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+		
+		<cpu:PushDIToStack/>
+		
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+		
+		<cpu:JumpToRelative/>
+		<addressOf ref="nextLine" type="Relative32"/>
+
+		<!--Check For Transfer Encoding-->
+		<label id="checkTransferEncoding"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="transferEncoding" type="Absolute32"/>
+
+		<str:BeginsWith/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="readTransferEncoding" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="nextLine" type="Relative32"/>
+
+		<label id="readTransferEncoding"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<cpu:CopyImmediateToSI/>
+		<addressOf ref="chunked" type="Absolute32"/>
+
+		<str:ContainsString/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="chunkedMode" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="nextLine" type="Relative32"/>
+
+		<label id="chunkedMode"/>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<int:CreateObject/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="nextLine" type="Relative32"/>
+
+		<label id="endOfHeader"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetData/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:CompareWithSIAddress/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="readContent" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="readChunked" type="Relative32"/>
+
+		<label id="readContent"/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<obj:ExecuteMethod name="ReadString"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>12</byte>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="end" type="Relative32"/>
+
+		<label id="readChunked"/>
+
+		<str:Create length="0"/>
+
+		<str:CreateObject/>
+
+		<cpu:PushDIToStack/>
+
+		<label id="nextChunk"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<obj:ExecuteMethod name="ReadLine"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+		
+		<hex:Parse/>
+
+		<cpu:CompareAXToImmediate/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="readNextChunk" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="lastChunk" type="Relative32"/>
+
+		<label id="readNextChunk"/>
+
+		<int:CreateObject/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<obj:ExecuteMethod name="ReadString"/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:ExecuteMethod name="Append"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<obj:ExecuteMethod name="ReadLine"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="nextChunk" type="Relative32"/>
+
+		<label id="lastChunk"/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>16</byte>
+
+		<label id="end"/>
+		
+		<cpu:PullSIFromStack/>
+		
+		<cpu:PushDIToStack/>
+
+		<obj:ExecuteMethod name="Disable"/>
+		
+		<cpu:PullDIFromStack/>
+		
+		<cpu:ReturnToNearCaller/>
+
+		<label id="request"/>
+		<int>4</int>
+		<string xml:space="preserve">GET </string>
+
+		<label id="request2"/>
+		<int>17</int>
+		<string xml:space="preserve"> HTTP/1.1</string>
+		<hex>0d</hex>
+		<hex>0a</hex>
+		<string xml:space="preserve">Host: </string>
+
+		<label id="request3"/>
+		<int>23</int>
+		<hex>0d</hex>
+		<hex>0a</hex>
+		<string>User-Agent: OZone</string>
+		<hex>0d</hex>
+		<hex>0a</hex>
+		<hex>0d</hex>
+		<hex>0a</hex>
+
+		<var:string id="contentLength">Content-Length: </var:string>
+		<var:string id="transferEncoding">Transfer-Encoding: </var:string>
+		<var:string id="chunked">chunked</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<class:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<var:integer id="nextPortNumber">49152</var:integer>
+</cls:class>

@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="NetworkPacket"
+	type="http://metalx.org/Network/NetworkPacket"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:net="http://metalx.org/i386/Functions/Network"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
+	xmlns:cfg="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands">
+
+	<cls:field name="InternetPacket" offset="0" type="http://metalx.org/Network/Internet/InternetPacket"/>
+	<cls:field name="AddressPacket" offset="0" type="http://metalx.org/Network/Address/AddressPacket"/>
+
+	<cls:field name="Destination" offset="0" type="http://metalx.org/Network/NetworkAddress"/>
+	<cls:field name="Source" offset="6" type="http://metalx.org/Network/NetworkAddress"/>
+
+	<cls:method name="GetType" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+	
+	<!--<cls:method name="GetInternetPacket" type="http://metalx.org/Network/Internet/InternetPacket">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:PushSIToStack/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="internetPacketType" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1536</int>
+
+		<cpu:PullDIFromStack/>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="internetPacketType">http://metalx.org/Network/InternetPacket</var:string>
+	</cls:method>-->
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<clsf:GetName/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

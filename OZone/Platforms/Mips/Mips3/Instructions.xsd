@@ -1,0 +1,224 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema id="Operators"
+    targetNamespace="http://metalx.org/Mips/Mips3/Instructions"
+    elementFormDefault="qualified"
+    xmlns="http://metalx.org/Mips/Mips3/Instructions"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:element name="NoOperation">
+		<xsd:complexType/>
+	</xsd:element>
+	<xsd:element name="Memory">
+		<xsd:complexType>
+			<xsd:attribute name="Operation" use="required">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="CopySignedMemoryToRegister8"/>
+						<xsd:enumeration value="CopyMemoryToRegister8"/>
+						<xsd:enumeration value="CopyMemoryToRegister64"/>
+						<xsd:enumeration value="CopyLowMemoryToHighRegister64"/>
+						<xsd:enumeration value="CopyHighMemoryToLowRegister64"/>
+						<xsd:enumeration value="CopySignedMemoryToRegister16"/>
+						<xsd:enumeration value="CopyMemoryToRegister16"/>
+						<xsd:enumeration value="AtomicCopyMemoryToRegister32"/>
+						<xsd:enumeration value="AtomicCopyMemoryToRegister64"/>
+						<xsd:enumeration value="CopySignedMemoryToRegister32"/>
+						<xsd:enumeration value="CopyLowSignedMemoryToHighRegister32"/>
+						<xsd:enumeration value="CopyHighSignedMemoryToLowRegister32"/>
+						<xsd:enumeration value="CopyMemoryToRegister32"/>
+						<xsd:enumeration value="CopyRegisterToMemory8"/>
+						<xsd:enumeration value="AtomicCopyRegisterToMemory32"/>
+						<xsd:enumeration value="AtomicCopyRegisterToMemory64"/>
+						<xsd:enumeration value="CopyRegisterToMemory64"/>
+						<xsd:enumeration value="CopyHighRegisterToLowMemory64"/>
+						<xsd:enumeration value="CopyLowRegisterToHighMemory64"/>
+						<xsd:enumeration value="CopyRegisterToMemory16"/>
+						<xsd:enumeration value="CopyRegisterToMemory32"/>
+						<xsd:enumeration value="CopyHighRegisterToLowMemory32"/>
+						<xsd:enumeration value="CopyLowRegisterToHighMemory32"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="Register" type="Int5" use="required"/>
+			<xsd:attribute name="AddressRegister" type="Int5" use="required"/>
+			<xsd:attribute name="Offset" type="xsd:short"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ImmediateMath">
+		<xsd:complexType>
+			<xsd:attribute name="Operation" use="required">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="AddWithOverflow32"/>
+						<xsd:enumeration value="Add32"/>
+						<xsd:enumeration value="And32"/>
+						<xsd:enumeration value="AddWithOverflow64"/>
+						<xsd:enumeration value="Add64"/>
+						<xsd:enumeration value="CopyToHighRegister32"/>
+						<xsd:enumeration value="Or32"/>
+						<xsd:enumeration value="IsLessThanSigned32"/>
+						<xsd:enumeration value="IsLessThan32"/>
+						<xsd:enumeration value="ExclusiveOr32"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="Register" type="Int5"/>
+			<xsd:attribute name="Value" type="xsd:int"/>
+			<xsd:attribute name="Destination" type="Int5" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="RegisterMath">
+		<xsd:complexType>
+			<xsd:attribute name="Operation" use="required">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="AddWithOverflow32"/>
+						<xsd:enumeration value="Add32"/>
+						<xsd:enumeration value="And32"/>
+						<xsd:enumeration value="AddWithOverflow64"/>
+						<xsd:enumeration value="Add64"/>
+						<xsd:enumeration value="SignedDivide64"/>
+						<xsd:enumeration value="Divide64"/>
+						<xsd:enumeration value="SignedDivide32"/>
+						<xsd:enumeration value="Divide32"/>
+						<xsd:enumeration value="SignedMultiply64"/>
+						<xsd:enumeration value="Multiply64"/>
+						<xsd:enumeration value="SubtractWithOverflow64"/>
+						<xsd:enumeration value="Subtract64"/>
+						<xsd:enumeration value="SignedMultiply32"/>
+						<xsd:enumeration value="Multiply32"/>
+						<xsd:enumeration value="NotOr64"/>
+						<xsd:enumeration value="Or64"/>
+						<xsd:enumeration value="IsLessThanSigned64"/>
+						<xsd:enumeration value="IsLessThan64"/>
+						<xsd:enumeration value="SignedSubtract32"/>
+						<xsd:enumeration value="Subtract32"/>
+						<xsd:enumeration value="ExclusiveOr64"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="Register1" type="Int5" use="required"/>
+			<xsd:attribute name="Register2" type="Int5" use="required"/>
+			<xsd:attribute name="Destination" type="Int5" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="RegisterArithmetic">
+		<xsd:complexType>
+			<xsd:attribute name="Operation" use="required">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="SignedDivide64"/>
+						<xsd:enumeration value="Divide64"/>
+						<xsd:enumeration value="SignedDivide32"/>
+						<xsd:enumeration value="Divide32"/>
+						<xsd:enumeration value="SignedMultiply64"/>
+						<xsd:enumeration value="Multiply64"/>
+						<xsd:enumeration value="SignedMultiply32"/>
+						<xsd:enumeration value="Multiply32"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="Register1" type="Int5" use="required"/>
+			<xsd:attribute name="Register2" type="Int5" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ImmediateShift">
+		<xsd:complexType>
+			<xsd:attribute name="Operation" use="required">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="ShiftLeft64"/>
+						<xsd:enumeration value="HighShiftLeft64"/>
+						<xsd:enumeration value="SignedShiftRight64"/>
+						<xsd:enumeration value="HighSignedShiftRight64"/>
+						<xsd:enumeration value="ShiftRight64"/>
+						<xsd:enumeration value="HighShiftRight64"/>
+						<xsd:enumeration value="ShiftLeft32"/>
+						<xsd:enumeration value="SignedShiftRight32"/>
+						<xsd:enumeration value="ShiftRight32"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="Register" type="Int5" use="required"/>
+			<xsd:attribute name="Shift" type="Int5" use="required"/>
+			<xsd:attribute name="Destination" type="Int5" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="RegisterShift">
+		<xsd:complexType>
+			<xsd:attribute name="Operation" use="required">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="ShiftLeft64"/>
+						<xsd:enumeration value="SignedShiftRight64"/>
+						<xsd:enumeration value="ShiftRight64"/>
+						<xsd:enumeration value="ShiftLeft32"/>
+						<xsd:enumeration value="SignedShiftRight32"/>
+						<xsd:enumeration value="ShiftRight32"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="Register" type="Int5" use="required"/>
+			<xsd:attribute name="ShiftRegister" type="Int5" use="required"/>
+			<xsd:attribute name="Destination" type="Int5" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="CompareBranch">
+		<xsd:complexType>
+			<xsd:attribute name="Operation" use="required">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="Equal"/>
+						<xsd:enumeration value="EqualNoDelay"/>
+						<xsd:enumeration value="NotEqual"/>
+						<xsd:enumeration value="NotEqualNoDelay"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="Register1" type="Int5" use="required"/>
+			<xsd:attribute name="Register2" type="Int5" use="required"/>
+			<xsd:attribute name="ref" type="xsd:IDREF" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ConditionalBranch">
+		<xsd:complexType>
+			<xsd:attribute name="Operation" use="required">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="JumpIfNotNegative"/>
+						<xsd:enumeration value="CallIfNotNegative"/>
+						<xsd:enumeration value="CallIfNotNegativeNoDelay"/>
+						<xsd:enumeration value="JumpIfNotNegativeNoDelay"/>
+						<xsd:enumeration value="JumpIfPositive"/>
+						<xsd:enumeration value="JumpIfPositiveNoDelay"/>
+						<xsd:enumeration value="JumpIfNotPositive"/>
+						<xsd:enumeration value="JumpIfNotPositiveNoDelay"/>
+						<xsd:enumeration value="JumpIfNegative"/>
+						<xsd:enumeration value="CallIfNegative"/>
+						<xsd:enumeration value="CallIfNegativeNoDelay"/>
+						<xsd:enumeration value="JumpIfNegativeNoDelay"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="Register" type="Int5" use="required"/>
+			<xsd:attribute name="ref" type="xsd:IDREF" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="CallRegister">
+		<xsd:complexType>
+			<xsd:attribute name="Register" type="Int5" use="required"/>
+			<xsd:attribute name="ReturnRegister" type="Int5"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="JumpToRegister">
+		<xsd:complexType>
+			<xsd:attribute name="Register" type="Int5" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:simpleType name="Int5">
+		<xsd:restriction base="xsd:unsignedByte">
+			<xsd:minInclusive value="0"/>
+			<xsd:maxInclusive value="31"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+</xsd:schema>

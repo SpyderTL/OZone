@@ -1,0 +1,349 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Debug"
+	type="http://metalx.org/Debug"
+	static="true"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:date="http://metalx.org/i386/Functions/Date"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:clk="http://metalx.org/Pc/Bios/Clock"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:inc="http://metalx.org/Intel/80386/Increment"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:cmos="http://metalx.org/Pc/Cmos/Ports"
+	xmlns:cmr="http://metalx.org/Pc/Cmos/Registers"
+	xmlns:int="http://metalx.org/i386/Functions/Integer">
+
+	<cls:method name="TestBochsBreakpoint" type="http://metalx.org/Object" static="true">
+		<bochs:Break xmlns:bochs="http://metalx.org/i386/Functions/Bochs"/>
+		<cpu:ReturnToNearCaller/>
+		
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:DI-DIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="TestInvalidInstructionException" static="true">
+		<hex>0F</hex>
+		<hex>0B</hex>
+		<hex>0F</hex>
+		<hex>B9</hex>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+	
+	<cls:method name="TestDivideByZeroException" static="true">
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:ArithmeticAXOperandFunction/>
+		<ari:DivideByALRegister/>
+		
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="TestDebugger" static="true">
+		<cpu:CallDebuggerInterrupt/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+		
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="TestOverflow" static="true">
+		<cpu:CopyImmediateToAL/>
+		<byte>127</byte>
+
+		<cpu:AddImmediateToAL/>
+		<byte>127</byte>
+
+		<cpu:CallInterruptIfOverflow/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetTimerCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>00001020</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetKeyboardInterruptCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>00001021</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetDivideByZeroCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>00001000</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetDebugCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>00001001</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetNonMaskableInterruptCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>00001002</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetBreakpointCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>00001003</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetOverflowCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>00001004</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetIndexFaultCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>00001005</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetInvalidInstructionCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>00001006</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetDeviceFaultCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>00001007</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetDoubleFaultCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>00001008</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetCoprocesorSegmentFaultCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>00001009</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetTaskSwitchFaultCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>0000100a</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetSegmentFaultCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>0000100b</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetStackSegmentFaultCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>0000100c</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetGeneralProtectionFaultCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>0000100d</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetPageFaultCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>0000100e</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetCoprocessorFaultCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>00001010</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetAlignmentFaultCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>00001011</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetMachineErrorCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>00001012</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetStreamingFaultCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>00001013</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetSecurityExceptionCount" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>0000101e</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

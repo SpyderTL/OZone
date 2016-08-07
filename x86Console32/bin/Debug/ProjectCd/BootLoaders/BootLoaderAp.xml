@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<scope xmlns="http://metalx.org/Program" xmlns:cpu16="http://metalx.org/Intel/80286/Operators" xmlns:ex16="http://metalx.org/Intel/80286/ExtendedOperators" xmlns:op16="http://metalx.org/Intel/80286/Operands" xmlns:seg16="http://metalx.org/Intel/80286/Segments" xmlns:ctrl16="http://metalx.org/Intel/80286/Control" xmlns:imm16="http://metalx.org/Intel/80286/Immediate" xmlns:gdt16="http://metalx.org/Intel/80286/DescriptorTable" xmlns:logic16="http://metalx.org/Intel/80286/Logic" xmlns:math16="http://metalx.org/Intel/80286/Math" xmlns:inc16="http://metalx.org/Intel/80286/Increment" xmlns:cpu="http://metalx.org/Intel/80386/Operators" xmlns:ex="http://metalx.org/Intel/80386/ExtendedOperators" xmlns:op="http://metalx.org/Intel/80386/Operands" xmlns:seg="http://metalx.org/Intel/80386/Segments" xmlns:imm="http://metalx.org/Intel/80386/Immediate" xmlns:gdt="http://metalx.org/Intel/80386/DescriptorTable" xmlns:logic="http://metalx.org/Intel/80386/Logic" xmlns:math="http://metalx.org/Intel/80386/Math" xmlns:inc="http://metalx.org/Intel/80386/Increment" xmlns:sys="http://metalx.org/Pc/Bios/System" xmlns:bios="http://metalx.org/Pc/Bios/Functions" xmlns:pic="http://metalx.org/Pc/Pic/Ports" xmlns:cmd="http://metalx.org/Pc/Pic/Commands">
+	<!--Set CPU To Known State-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">FC</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">B8</prg:hex>
+	<hex>0000</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">8E</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">D0</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">8E</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">D8</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">8E</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">C0</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">8E</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">E0</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">8E</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">E8</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">89</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">C4</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">EA</prg:hex>
+	<addressOf ref="start" type="Pointer16" />
+	<label id="start" />
+	<!--Load Global Descriptor Table-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">FA</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">0F</prg:hex>
+	<hex>01</hex>
+	<hex>16</hex>
+	<addressOf ref="globalDescriptorTablePointer" type="Absolute16" />
+	<!--Switch To 32-Bit Protected Mode-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">0F</prg:hex>
+	<hex>20</hex>
+	<hex>c0</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">0C</prg:hex>
+	<binary>00000001</binary>
+	<prg:hex xmlns:prg="http://metalx.org/Program">0F</prg:hex>
+	<hex>22</hex>
+	<hex>c0</hex>
+	<!--Jump to segment-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">EA</prg:hex>
+	<addressOf ref="enterProtectedMode" type="Absolute16" />
+	<hex>0008</hex>
+	<!--32-bit Protected Mode-->
+	<label id="enterProtectedMode" />
+	<!--Setup Segment Registers-->
+	<hex>B8</hex>
+	<hex>00000010</hex>
+	<hex>8E</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">D0</prg:hex>
+	<hex>8E</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">D8</prg:hex>
+	<hex>8E</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">C0</prg:hex>
+	<hex>8E</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">E0</prg:hex>
+	<hex>8E</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">E8</prg:hex>
+	<label id="loop" />
+	<hex>FE</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">05</prg:hex>
+	<hex>000b8000</hex>
+	<hex>EB</hex>
+	<addressOf ref="loop" type="Relative8" />
+	<!--Global Descriptor Table Pointer-->
+	<label id="globalDescriptorTablePointer" />
+	<hex>0017</hex>
+	<addressOf ref="globalDescriptorTable" type="Absolute16" />
+	<!--Global Descriptor Table-->
+	<label id="globalDescriptorTable" />
+	<!--Null Descriptor (0000)-->
+	<!--Size-->
+	<hex>0000</hex>
+	<!--Base (Low)-->
+	<hex>0000</hex>
+	<!--Base (Mid)-->
+	<hex>00</hex>
+	<!--Access-->
+	<binary>00000000</binary>
+	<!--Flags / Size (High)-->
+	<binary>00000000</binary>
+	<!--Base (High)-->
+	<hex>00</hex>
+	<!--Code Descriptor (0008)-->
+	<!--Size-->
+	<hex>ffff</hex>
+	<!--Base (Low)-->
+	<hex>0000</hex>
+	<!--Base (Mid)-->
+	<hex>00</hex>
+	<!--Access-->
+	<binary>10011010</binary>
+	<!--Flags / Size (High)-->
+	<binary>11001111</binary>
+	<!--Base (High)-->
+	<hex>00</hex>
+	<!--Data Descriptor (0010)-->
+	<!--Size-->
+	<hex>ffff</hex>
+	<!--Base (Low)-->
+	<hex>0000</hex>
+	<!--Base (Mid)-->
+	<hex>00</hex>
+	<!--Access-->
+	<binary>10010010</binary>
+	<!--Flags / Size (High)-->
+	<binary>11001111</binary>
+	<!--Base (High)-->
+	<hex>00</hex>
+</scope>

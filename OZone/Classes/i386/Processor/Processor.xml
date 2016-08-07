@@ -1,0 +1,2154 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Processor"
+	type="http://metalx.org/Processor"
+	static="true"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:dbg="http://metalx.org/i386/Functions/Debug"
+	xmlns:con="http://metalx.org/i386/Functions/Console"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:date="http://metalx.org/i386/Functions/Date"
+	xmlns:time="http://metalx.org/i386/Functions/Time"
+	xmlns:ver="http://metalx.org/i386/Functions/Version"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:ex="http://metalx.org/Intel/80386/ExtendedOperators"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:rand="http://metalx.org/Intel/80386/Random">
+
+	<cls:field name="ProcessorID" type="http://metalx.org/Integer" offset="0"/>
+
+	<cls:method name="ResetProcessors" type="http://metalx.org/Object" static="true">
+		<cpu:CopyImmediateToCX/>
+		<hex>0000001B</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffff000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate/>
+		<hex>000000f0</hex>
+		<hex>000001ff</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate/>
+		<hex>00000300</hex>
+		<hex>000c4500</hex>
+
+		<!--<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate/>
+		<hex>00000300</hex>
+		<hex>000c4600</hex>-->
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="StartProcessors" type="http://metalx.org/Object" static="true">
+		<cpu:CopyImmediateToCX/>
+		<hex>0000001B</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffff000</hex>
+
+		<!--<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate/>
+		<hex>000000f0</hex>
+		<hex>000001ff</hex>-->
+
+		<!--<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate/>
+		<hex>00000300</hex>
+		<hex>000c4500</hex>-->
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToAXAddressPlusImmediate/>
+		<hex>00000300</hex>
+		<hex>000c4606</hex>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetApicBaseAddress" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToCX/>
+		<hex>0000001B</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffff000</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsApicEnabled" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToCX/>
+		<hex>0000001B</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>11</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>00000001</hex>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsBootstrapProcessor" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToCX/>
+		<hex>0000001B</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>8</byte>
+
+		<cpu:AndALWithImmediate/>
+		<binary>00000001</binary>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetApicID" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToCX/>
+		<hex>0000001B</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffff000</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<hex>20</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetApicVersion" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToCX/>
+		<hex>0000001B</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffff000</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<hex>30</hex>
+
+		<!--<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>-->
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetApicInterruptCommand" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToCX/>
+		<hex>0000001B</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffff000</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate/>
+		<hex>00000300</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetApicInterruptTarget" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToCX/>
+		<hex>0000001B</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffff000</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate/>
+		<hex>00000310</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetApicTaskPriority" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToCX/>
+		<hex>0000001B</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffff000</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<hex>80</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetApicArbitrationPriority" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToCX/>
+		<hex>0000001B</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffff000</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<hex>90</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetApicProcessorPriority" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToCX/>
+		<hex>0000001B</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffff000</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<hex>a0</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetApicEndOfInterrupt" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToCX/>
+		<hex>0000001B</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffff000</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<hex>b0</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetApicRemoteRead" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToCX/>
+		<hex>0000001B</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffff000</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<hex>c0</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetApicLogicalDestination" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToCX/>
+		<hex>0000001B</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffff000</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<hex>d0</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetApicDestinationFormat" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToCX/>
+		<hex>0000001B</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffff000</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<hex>e0</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetApicSpurriousInterruptVector" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToCX/>
+		<hex>0000001B</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffff000</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<hex>f0</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetApicErrorStatus" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToCX/>
+		<hex>0000001B</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffff000</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate/>
+		<hex>00000280</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetName" type="http://metalx.org/String" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>00000000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-ImmediateAddress/>
+		<addressOf ref="name1" type="Absolute32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-ImmediateAddress/>
+		<addressOf ref="name2" type="Absolute32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-ImmediateAddress/>
+		<addressOf ref="name3" type="Absolute32"/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="name" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="name"/>
+		<int>12</int>
+
+		<label id="name1"/>
+		<string xml:space="preserve">    </string>
+
+		<label id="name2"/>
+		<string xml:space="preserve">    </string>
+
+		<label id="name3"/>
+		<string xml:space="preserve">    </string>
+	</cls:method>
+
+	<cls:method name="GetFamily" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>8</byte>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetModel" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>4</byte>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetRevision" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00001111</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsFloatingPointUnitInstalled" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000001</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsRandomNumberSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>01000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetRandomNumber" type="http://metalx.org/Integer" static="true">
+		<cpu:ExtendedOperator/>
+		<ex:RandomFunction/>
+		<rand:CopyRandomNumberToAX/>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsVirtualModeExtensionsInstalled" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000010</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsSecureVirtualMachineInstalled" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>8000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000010</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsDebuggingExtensionsInstalled" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000100</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsPageExtensionsInstalled" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>00000001</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00001000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsPageSizeExtensionsInstalled" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>00000001</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000010</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsTimeStampCounterInstalled" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00010000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsModelSpecificRegistersInstalled" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00100000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsPhysicalAddressExtensionsInstalled" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>00000001</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>01000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsLongModeSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>80000001</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00100000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+	
+	<cls:method name="IsMachineCheckExtensionsInstalled" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>10000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsCompareAndExchangeInstructionSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000001</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsApicInstalled" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000010</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsFastSystemCallSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00001000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsMemoryTypeRangeRegisterInstalled" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00010000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsPageGlobalEnableSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00100000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsMachineCheckArchitectureSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000010</binary>
+		<binary>01000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsConditionalMoveSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>10000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsPageAttributeTableSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000001</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsDirectCacheAccessSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>00000001</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000010</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsSerialNumberSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000100</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsFlushSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000010</binary>
+		<binary>00000000</binary>
+		<binary>00001000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsDebugStoreSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00100000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsAcpiInstalled" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>00000001</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>01000000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetTemperature" type="http://metalx.org/Integer" static="true">
+		<cpu:CopyImmediateToCX/>
+		<hex>000001b1</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>16</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000007f</hex>
+
+		<cpu:CopyImmediateToBX/>
+		<int>100</int>
+
+		<cpu:SubtractOperandFromRegister/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsMmxSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>10000000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsMmxExtensionsSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>8000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>01000000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Is3dNowSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>8000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>10000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Is3dNowExtensionsSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>8000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>01000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsFloatingPointContextStoreSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000001</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsStreamingSimdInstructionsSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000010</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsStreamingSimdInstructions2Supported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000100</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsStreamingSimdInstructions3Supported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000001</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsStreamingSimdInstructions4aSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>00000001</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00001000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsStreamingSimdInstructions4bSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>00000001</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00010000</binary>
+		<binary>00000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsSelfSnoopSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00001000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsHyperThreadingSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00010000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsThermalMonitorInstalled" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>00000001</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00100000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsPendingBreakSupported" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>0001</hex>
+		<hex>0000</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>00000000</binary>
+		<binary>10000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notInstalled" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="notInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetBrandName" type="http://metalx.org/String" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>80000002</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="name1" type="Absolute32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-ImmediateAddress/>
+		<addressOf ref="name2" type="Absolute32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-ImmediateAddress/>
+		<addressOf ref="name3" type="Absolute32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-ImmediateAddress/>
+		<addressOf ref="name4" type="Absolute32"/>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>80000003</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="name5" type="Absolute32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-ImmediateAddress/>
+		<addressOf ref="name6" type="Absolute32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-ImmediateAddress/>
+		<addressOf ref="name7" type="Absolute32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-ImmediateAddress/>
+		<addressOf ref="name8" type="Absolute32"/>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>80000004</hex>
+
+		<cpu:ExtendedOperator/>
+		<ex:GetCpuInformation/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="name9" type="Absolute32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-ImmediateAddress/>
+		<addressOf ref="name10" type="Absolute32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-ImmediateAddress/>
+		<addressOf ref="name11" type="Absolute32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-ImmediateAddress/>
+		<addressOf ref="name12" type="Absolute32"/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="name" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="name"/>
+		<int>48</int>
+
+		<label id="name1"/>
+		<string xml:space="preserve">    </string>
+
+		<label id="name2"/>
+		<string xml:space="preserve">    </string>
+
+		<label id="name3"/>
+		<string xml:space="preserve">    </string>
+
+		<label id="name4"/>
+		<string xml:space="preserve">    </string>
+
+		<label id="name5"/>
+		<string xml:space="preserve">    </string>
+
+		<label id="name6"/>
+		<string xml:space="preserve">    </string>
+
+		<label id="name7"/>
+		<string xml:space="preserve">    </string>
+
+		<label id="name8"/>
+		<string xml:space="preserve">    </string>
+
+		<label id="name9"/>
+		<string xml:space="preserve">    </string>
+
+		<label id="name10"/>
+		<string xml:space="preserve">    </string>
+
+		<label id="name11"/>
+		<string xml:space="preserve">    </string>
+
+		<label id="name12"/>
+		<string xml:space="preserve">    </string>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="type" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="type">Processor</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+</cls:class>

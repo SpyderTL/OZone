@@ -1,0 +1,2689 @@
+oÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄo
+³ÄÄÄÄÄÄÄÄÄÄ FREELIB: The FREE Assembly Language Library ÄÄÄÄÄÄÄÄÄÄ³
+³ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Version 3.0 ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ³
+³ÄÄÄÄÄÄÄÄÄÄÄÄÄ Copyright (C) Dec. 1996  Tenie Remmel ÄÄÄÄÄÄÄÄÄÄÄÄÄ³
+oÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄo
+
+1. Introduction ................................ Line 38
+2. Terms of use/Legal disclaimer ............... Line 61
+3. Processors, calling conventions ............. Line 84
+4. Re-assembling ............................... Line 134
+5. Program Syntax .............................. Line 163
+6. !!! Major changes from v2.2 !!! ............. Line 236
+7. Procedure Reference ......................... Line 255
+    Initialization and Exit .................... Line 257
+    File Access ................................ Line 282
+    Directory and Disk ......................... Line 433
+    Bit-File Access ............................ Line 532
+    Memory Management .......................... Line 645
+    String Input/Output ........................ Line 712
+    Formatted Output ........................... Line 789
+    Alphanumeric Conversion .................... Line 881
+    Long/Fixed-Point Arithmetic ................ Line 973
+    Trigonometry ............................... Line 1130
+    String Manipulation ........................ Line 1201
+    Character Manipulation ..................... Line 1362
+    Memory-Block Manipulation .................. Line 1459
+    Searches and Sorts ......................... Line 1520
+    Text Screen Procedures ..................... Line 1629
+    VGA Graphics ............................... Line 2053
+    Virtual Memory (80386+) .................... Line 2246
+    Miscellaneous .............................. Line 2294
+8. List of contributors ........................ Line 2477
+9. History of changes .......................... Line 2494
+10. Future additions, bug reporting ............ Line 2616
+11. Example programs ........................... Line 2651
+
+
+1.  Introduction.
+
+  FREELIB is a library of 200 procedures that may be useful for
+  programming in assembly language.   As the name implies, this
+  is public domain, completely free for all non-commercial use.
+  If you find this library useful,  you are strongly encouraged
+  to contribute some of your own routines for possible addition
+  to FREELIB.  Full source code is included, so if you find any
+  bugs (!) and wish to make changes to any of the routines, you
+  can.  However, if you do make any improvements, please notify
+  the author,  so that FREELIB  can continue to be expanded and
+  improved. If you modify any part of this library, you may not
+  distribute it, for free or not, without prior permission from
+  the author (see below).   This library is certified bug-free,
+  and there is a $5.00 PRIZE for anyone who reports a new bug.
+
+  Be sure to read the sections 2, 3 and 5 carefully,  including
+  the miscellaneous notes in section 3.  Also, if you have used
+  previous versions of this library, please read section 7, the
+  error checking and returning of yes/no flags has been totally
+  changed!
+
+
+2.  Terms of use/Legal disclaimer.
+
+  This software is hereby released into the public domain,  and
+  may  therefore  be freely  copied and distributed  within the
+  following restrictions:
+
+      1).  It is distributed in its original,  unmodified form,
+           including all source code and documentation.
+
+      2).  No fee is charged for use, copying or distribution.
+
+      3).  The program may not be  included with other goods or
+           services supplied for a fee, unless specific written
+           permission to do so is obtained  in advance from the
+           author.  (E-mail: tjr19@mail.idt.net)
+
+  This software is provided AS-IS without any warranty, express
+  or implied, including  but not limited to warranty of fitness
+  for a particular purpose.
+
+  Note:   A commercial license is available for $30.00 (US).
+
+
+3.  Processors, calling conventions, string type, etc.
+
+  FREELIB is programmed in 80186 assembly language.  This is to
+  ensure compatibility with as many computers as possible,  but
+  not sacrificing very much speed.  For many of the procedures,
+  an 80386 version is supplied.   The modules 386LIB1-2 are the
+  80386 versions of FREELIB1-2,  and the 386LIB.LIB file is the
+  library file for the 80386.
+
+  FREELIB uses a modified form of the Pascal calling convention
+  with the  Carry flag available for use as an error indicator.
+  The parameters are pushed on the stack in order,  and since a
+  'RET [i8]'  return instruction is used, the calling procedure
+  does not have to worry about stack cleanup.  This seems to be
+  the fastest method,  and it also helps in debugging... if the
+  wrong number of arguments are pushed to call a procedure, the
+  program will crash, which is much more obvious than the weird
+  results produced with the 'C' convention, etc.
+
+  Notice that in the source code,  the syntax is given by a 'C'
+  style prototype.  Why a 'C' prototype?  Well, Pascal does not
+  have prototypes, and the 'C' prototype is useful to concisely
+  show the syntax of a procedure on one line.
+
+  Misc. Notes:
+
+    Many of the routines assume  DS = CS,  so make sure that this
+    is the case.   The program is intended to be a .COM file, but
+    .EXE files are OK as long as the DS = CS restriction is met.
+
+    Do not use uninitialized data,  it will interfere with memory
+    management.  Use dynamically allocated memory instead.
+
+    The fixed-point numbers are 16:16,  and signed.   The strings
+    are ASCIIZ  (null-terminated) strings,  like in C.   The long
+    integers can be either signed or unsigned, depending on which
+    multiply, divide and shift you use.
+
+    When clock  timings are given,  they will always  include the
+    call/return, and exclude the argument pushes.
+
+    Even though some  procedures require a character argument,  a
+    word-sized value must still be pushed:  it is not possible to
+    push a byte value.
+
+    The files TEXT???.INC are not for including in your programs;
+    they are internally used by the  text-mode screen routines in
+    the file FREELIB3.ASX.
+
+
+4.  Re-assembling FREELIB.
+
+  A batch file (REDO.BAT) is provided for this purpose.   These
+  source files are .ASX files (ASsembly eXtended) which contain
+  multiple modules.  A utility (SPLIT.EXE) is included to split
+  the .ASX files.  SPLIT.C is the 'C' source to SPLIT.EXE.  The
+  batch file takes care of splitting the files. However, if you
+  wish to add a new .ASX file  (in addition to FREELIB1-3), you
+  must modify the batch file, otherwise it will be ignored.
+
+  If you wish to  compile the 80386 version,  386LIB,  you must
+  use the REDO3.BAT batch file,  and use the  '386LIB*.*' files
+  instead of the 'FREELIB*.*' files (except FREELIB3.ASX).
+
+  SPLIT outputs TLIB  command file codes.   SPLIT takes zero or
+  one arguments.  When run with no arguments, it produces codes
+  that end the command file.   When run with an argument  (what
+  it is doesn't matter)  it produces codes that continue to the
+  next file.
+
+  In the .ASX files, a line starting with three tildes (~) that
+  are followed by a file name without extension will denote the
+  beginning of a new module.   Either make sure that all of the
+  module names start with 'C_' or modify the REDO.BAT file.  If
+  you put any .ASM  files with names starting with  'C_' in the
+  FREELIB directory, be warned: they will be deleted along with
+  the temporary .ASM files created by SPLIT.
+
+
+5.  Program syntax for use with FREELIB.
+
+  Your program should do a near call, or jump, to the 'startup'
+  procedure at the beginning. The main body of the program must
+  be in the procedure 'main', which must be declared public.
+
+  On entry to main, the number of arguments is in CX and a list
+  of near pointers to the arguments is at offset DI.  DS and ES
+  both equal CS.  AX, BX, DX, SI, and BP are undefined.
+
+  You must declare as  external all procedures  that you intend
+  to use.  One way to simplify this is with a macro:
+
+;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Macro       lcall p,a,b,c,d,e,f,g,h ;; library call
+
+            ifnb a
+              push a                ;; if args, push first arg
+              lcall p,b,c,d,e,f,g,h ;; and recurse . . .
+            else
+              extrn p:near          ;; declare procedure
+              call p                ;; call procedure
+            endif
+
+EndM
+
+;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  and then you would replace  'call' with  'lcall' when calling
+  library procedures.   However,  to use the  arguments feature
+  of this macro,  if an offset of a variable is used it must be
+  specified as 'offset(var)' instead of 'offset var', otherwise
+  the macro thinks it is two arguments.
+
+  This is a skeleton program:
+
+;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Ideal                               ; ideal mode
+
+Public      main                    ; declare main as public
+Extrn       startup:near            ; declare startup procedure
+
+Macro       lcall p,a,b,c,d,e,f,g,h ;; library call
+
+            ifnb a
+              push a                ;; if args, push first arg
+              lcall p,b,c,d,e,f,g,h ;; and recurse . . .
+            else
+              extrn p:near          ;; declare procedure
+              call p                ;; call procedure
+            endif
+
+EndM
+
+Model Tiny                          ; tiny model
+CodeSeg                             ; code segment
+Org 100h                            ; .COM file start
+
+Start:      jmp startup             ; start up program
+
+Proc        main                    ; main procedure
+
+            ret                     ; return
+
+EndP        main
+
+End Start                           ; entry at 'Start'
+
+;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+6.  !!!!!  MAJOR CHANGES from version 2.2, please read  !!!!!
+
+  Many functions have been changed to use the flags for
+  comparison results, yes/no values, or errors.  The old
+  routines are still available in OLD186.LIB and OLD386.LIB.
+  Here is a list of the changed functions (to find out
+  exactly what was changed, look it up in the reference).
+
+    allocmem    fopen       kbhit       ssearch
+    atexit      fputc       lsearch     strchr
+    bfopen      fputs       memchr      strcmp
+    exec        fread       memcmp      stricmp
+    faralloc    fseek       minit       strrchr
+    fdel        ftrunc      mkdir       strstr
+    fgetc       fullpath    rmdir       xsearch
+    fgets       fwrite      setdir      xsort
+    fmove       isearch     setdrive
+
+
+7.  Reference: Syntax and description of all FREELIB procedures.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄ Initialization and Exit Procedures ÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  ÄÄÄÄÄÄÄÄÄÄ startup            Start program
+
+    jmp startup
+
+    This procedure must be jumped to at the beginning of
+    your program.  (See Section 5.)
+
+    This procedure calls 'main'.  It also does internal
+    initialization, and sets null Ctrl-C and divide-error
+    handlers.
+
+  ÄÄÄÄÄÄÄÄÄÄ exit               Exit program
+
+    push retcode
+    call exit
+
+    This procedure exits your program with a return code.
+    If exit is not used, the return code is the value of
+    AX on return from main.
+
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ File Procedures ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  ÄÄÄÄÄÄÄÄÄÄ fclose             Close file
+
+    push handle
+    call fclose
+
+    This procedure closes a buffered file.  If the handle
+    is invalid, nothing happens.
+
+  ÄÄÄÄÄÄÄÄÄÄ fdel               Delete file
+
+    push offset filename
+    call fdel
+    ; return value in flags
+
+    This procedure deletes a file.  If an error occurs, the
+    carry flag is set.
+
+  ÄÄÄÄÄÄÄÄÄÄ fgetc              Get char from file
+
+    push handle
+    call fgetc
+    ; AX = char
+
+    This procedure gets a character from a buffered file.
+    If the end of file is reached or an error occurs, -1
+    is returned and the carry flag is set.
+
+  ÄÄÄÄÄÄÄÄÄÄ fmove              Move/Rename file
+
+    push offset oldname
+    push offset newname
+    call fmove
+    ; return value in flags
+
+    This procedure moves and/or renames a file.  If an error
+    occurs, the carry flag is set.
+
+  ÄÄÄÄÄÄÄÄÄÄ fopen              Open file
+
+    push offset filename
+    push filemode
+    call fopen
+    ; AX = handle
+
+    This procedure opens a buffered file.  The handle is
+    returned in AX.  This handle is NOT a DOS handle.
+    If it is used as such, the results are unpredictable.
+    If an error occurs, 0 is returned and the carry flag
+    is set.
+
+    The file modes are:
+
+    0     Open Read-Only (open if it exists, fail if not)
+    1     Open/Create (open if it exists, create if not)
+    2     Open Only (open if it exists, fail if not)
+    3     Create/Truncate (truncate if it exists, create if not)
+    4     Create Only (fail if it exists, create if not)
+
+  ÄÄÄÄÄÄÄÄÄÄ fputc              Put char to file
+
+    push handle
+    push char
+    call fputc
+    ; AX = return code
+
+    This procedure puts a character to a buffered file.
+    If the end of file is reached or an error occurs, the
+    carry flag is set.
+
+  ÄÄÄÄÄÄÄÄÄÄ fread              Read block from file
+
+    push handle
+    push size
+    push offset buf
+    call fread
+    ; AX = return code
+
+    This procedure reads a block from a buffered file.  The
+    number of characters read is returned.  If this is less
+    than the requested size, the end of file was reached or
+    an error occured.  If an error occurred, the carry flag
+    will be set.
+
+  ÄÄÄÄÄÄÄÄÄÄ fseek              Set file pointer
+
+    push handle
+    push pos_hi
+    push pos_lo
+    push mode
+    call fseek
+    ; AX = return code
+
+    This procedure sets the position of the file pointer.
+    The position is a long integer.  If an error occurs,
+    the carry flag is set.
+
+    The seek modes are:
+
+    0     Seek from beginning of file
+    1     Seek from current position
+    2     Seek from end of file
+
+  ÄÄÄÄÄÄÄÄÄÄ fsetbuf            Set file buffer size
+
+    push size
+    call fsetbuf
+
+    This procedure sets the file buffer size.  It does not
+    affect currently open files.  It only affects files that
+    are opened after this call.  The default size is 1024
+    bytes, but it may be set to from 128 to 32752 bytes.
+    If the size requested is greater than 32768, the high
+    bit is simply masked off, i.e. 33024 will produce 256.
+
+  ÄÄÄÄÄÄÄÄÄÄ ftell              Get file pointer
+
+    push handle
+    call ftell
+    ; DX:AX = file pointer
+
+    This procedure returns the position of the file pointer.
+
+  ÄÄÄÄÄÄÄÄÄÄ ftrunc             Truncate file
+
+    push handle
+    call ftrunc
+    ; AX = return code
+
+    This procedure truncates a buffered file at the current
+    position.  The byte pointed to by the file pointer does
+    not remain part of the file.  If an error occurs, the
+    carry flag is set.
+
+  ÄÄÄÄÄÄÄÄÄÄ fwrite             Write block to file
+
+    push handle
+    push size
+    push offset buf
+    call fwrite
+    ; AX = return code
+
+    This procedure writes a block to a buffered file.  The
+    number of characters written is returned.  If this is
+    less than the requested size, an error occured.  If an
+    error occurs, the carry flag is set.
+
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Directory and Disk Procedures ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  ÄÄÄÄÄÄÄÄÄÄ fullpath           Convert to Full Path
+
+    push offset dest_str
+    push offset src_str
+    call fullpath
+    ; dest_str = full path name
+    ; return value in flags
+
+    This procedure converts a partial path name into a full
+    normalized path name with drive specifier.  Only the
+    directory portion is affected; the file name, if any, is
+    changed to uppercase but is not otherwise processed.
+    If an error occurs, the carry flag is set.
+
+  ÄÄÄÄÄÄÄÄÄÄ getdfree           Get Free Disk Space
+
+    push dr_num
+    call getdfree
+    ; DX:AX = amount of free space
+
+    This procedure returns the amount of free disk space
+    on a drive.  The number returned is in bytes.
+
+  ÄÄÄÄÄÄÄÄÄÄ getdir             Get Current Directory
+
+    push offset buffer
+    call getdir
+
+    This procedure returns the current directory.
+    The full path is returned in 'buffer'.
+
+  ÄÄÄÄÄÄÄÄÄÄ getdrive           Get Current Drive
+
+    call getdrive
+    ; AX = drive number
+
+    This procedure returns the current drive.  The numbers
+    are the same as the DOS drive numbers.  (0 = default,
+    1 = A, 2 = B, 3 = C, etc.)
+
+  ÄÄÄÄÄÄÄÄÄÄ getpdir            Get Program Directory
+
+    push offset buffer
+    call getpdir
+
+    This procedure returns the directory in which the
+    program's executable file resides.  The full path is
+    returned in 'buffer'.
+
+  ÄÄÄÄÄÄÄÄÄÄ getpname           Get Program Name
+
+    push offset buffer
+    call getpname
+
+    This procedure returns the full path to the program's
+    executable file, including the file name.
+
+  ÄÄÄÄÄÄÄÄÄÄ mkdir              Make Directory
+
+    push offset dirname
+    call mkdir
+    ; return value in flags
+
+    This procedure creates a directory.  If an error occurs,
+    the carry flag is set.
+
+  ÄÄÄÄÄÄÄÄÄÄ rmdir              Remove Directory
+
+    push offset dirname
+    call rmdir
+    ; return value in flags
+
+    This procedure removes a directory.  If an error occurs,
+    the carry flag is set.
+
+  ÄÄÄÄÄÄÄÄÄÄ setdir             Set Current Directory
+
+    push offset dirname
+    call setdir
+    ; return value in flags
+
+    This procedure sets the current directory.  If an error
+    occurs, the carry flag is set.
+
+  ÄÄÄÄÄÄÄÄÄÄ setdrive           Set Current Drive
+
+    push dr_num
+    call setdrive
+
+    This procedure sets the current drive.  The numbers are
+    the same as the DOS drive numbers.  (0 = default, 1 = A,
+    2 = B, 3 = C, etc.)  If an error occurs, the carry flag
+    is set.
+
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Bit-Oriented File Procedures ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  ÄÄÄÄÄÄÄÄÄÄ bfclose            Close Bit-File
+
+    push handle
+    call bfclose
+
+    This procedure closes a bit-oriented file.
+
+  ÄÄÄÄÄÄÄÄÄÄ bfopen             Open Bit-File
+
+    push offset filename
+    push filemode
+    call bfopen
+    ; AX = handle
+
+    This procedure opens a bit-oriented file.  The handle
+    is returned in AX.  This handle is NOT a DOS handle, or
+    a standard FREELIB handle.  If it is used as such, the
+    results are unpredictable.  If an error occurs, 0 is
+    returned and the carry flag is set.
+
+    Bit-oriented files are useful for many compression and
+    encryption methods, and simply to reduce space, say, by
+    writing 9 bits each for data that ranges from 0 to 500
+    instead of using a word (16 bits) to store it.
+
+    The file modes are:
+
+    0     Open Input Bit File (read-only)
+    1     Open Output Bit File (write-only)
+
+  ÄÄÄÄÄÄÄÄÄÄ getbit             Get Bit from Bit-File
+
+    push handle
+    call getbit
+    ; AX = bit (0 or 1)
+
+    This procedure returns the next bit from a bit-oriented
+    file in input mode.  The bit is returned in AX.  If the
+    file is in output mode, nothing happens, but the return
+    value is undefined.
+
+  ÄÄÄÄÄÄÄÄÄÄ getbits            Get Bits from Bit-File
+
+    push handle
+    push count
+    call getbits
+    ; AX = value
+
+    This procedure inputs a value of size 'count' bits from
+    a bit-oriented file.  The value is returned in AX.  If
+    the file is in output mode, nothing happens, but the
+    return value is undefined.
+
+  ÄÄÄÄÄÄÄÄÄÄ getcode            Get Code from Bit-File
+
+    push handle
+    push max
+    call getcode
+    ; AX = value
+
+    This procedure inputs an optimal binary code for a value
+    less than 'max' from a bit-oriented file.  The value is
+    returned in AX.  If the file is in output mode, nothing
+    happens, but the return value is undefined.  If 'max' is
+    specified as 0 or 1, the results will be unpredictable.
+
+    An optimal binary code saves a bit versus the standard
+    one for some values.  It can be useful for saving space.
+
+  ÄÄÄÄÄÄÄÄÄÄ putbit             Put Bit to Bit-File
+
+    push handle
+    push bit
+    call putbit
+
+    This procedure outputs a bit to a bit-oriented file in
+    output mode.  The bit is considered a 0 if the number is
+    zero, otherwise it is considered a 1.  If the file is in
+    input mode, nothing happens.
+
+  ÄÄÄÄÄÄÄÄÄÄ putbits            Put Bits to Bit-File
+
+    push handle
+    push value
+    push count
+    call putbits
+
+    This procedure outputs the low 'count' bits of 'value'
+    to a bit-oriented file.  The bits are output in order
+    from MSB to LSB.  If the file is in input mode, nothing
+    happens.
+
+
+  ÄÄÄÄÄÄÄÄÄÄ putcode            Put Code to Bit-File
+
+    push handle
+    push value
+    push max
+    call putcode
+
+    This procedure outputs the optimal binary code for a
+    value less than 'max' to a bit-oriented file.  If the
+    file is in input mode, nothing happens.  If 'max' is
+    specified as 0 or 1, the results will be unpredictable.
+
+    An optimal binary code saves a bit versus the standard
+    one for some values.  It can be useful for saving space.
+
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Memory Manager Procedures ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  ÄÄÄÄÄÄÄÄÄÄ allocmem           Allocate Memory
+
+    push size
+    call allocmem
+    ; AX = pointer
+
+    This procedure allocates memory.  If there was not a big
+    enough block of memory, a null pointer (0) is returned
+    and the carry flag is set, otherwise a pointer to the
+    block of memory is returned.
+
+  ÄÄÄÄÄÄÄÄÄÄ faralloc           Allocate Far Memory
+
+    push size
+    call faralloc
+    ; AX = segment
+
+    This procedure allocates far memory.  If there was not
+    a big enough block of memory, -1 is returned and the
+    carry flag is set, otherwise the segment of the memory
+    block is returned.  The size must be specified in
+    paragraphs (16 bytes each).  This procedure uses the
+    DOS allocate memory service.
+
+  ÄÄÄÄÄÄÄÄÄÄ farfree            Free Far Memory
+
+    push seg
+    call freemem
+
+    This procedure frees far memory.  If 'seg' is not the
+    segment of a valid memory block, the results will be
+    undefined.  If free blocks abut the block to be freed,
+    they are coalesced.  This procedure uses the DOS free
+    memory service.
+
+  ÄÄÄÄÄÄÄÄÄÄ freemem            Free Memory
+
+    push ptr
+    call freemem
+
+    This procedure frees memory.  If 'ptr' does not point to
+    a valid block, nothing happens.  If free blocks abut the
+    block to be freed, they are coalesced.
+
+  ÄÄÄÄÄÄÄÄÄÄ getfarfree         Get Free Far Memory
+
+    call getfarfree
+    ; AX = size of largest free block
+
+    This procedure returns the size of the largest free
+    block of far memory.  If there are no free blocks, 0
+    is returned.  The size is in paragraphs.
+
+  ÄÄÄÄÄÄÄÄÄÄ getmfree           Get Free Memory
+
+    call getmfree
+    ; AX = size of largest free block
+
+    This procedure returns the size of the largest free
+    block of memory.  If there are no free blocks, 0 is
+    returned.
+
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Put/Get String Procedures ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  ÄÄÄÄÄÄÄÄÄÄ fgets              Get String from File
+
+    push handle
+    push offset buffer
+    push max
+    call fgets
+    ; return value in flags
+
+    This procedure reads a line from a file.  The string of
+    maximum 'max' chars will be read into 'buffer'.  The
+    line must end with a CR/LF pair.  An entire line will be
+    input even if it exceeds 'max' characters.  Any excess
+    will be discarded.  The handle is a FREELIB handle, not
+    a DOS handle.  If the end of file is reached or an error
+    occurs, the carry flag is be set.
+
+  ÄÄÄÄÄÄÄÄÄÄ fputs              Put String to File
+
+    push handle
+    push offset string
+    call fputs
+
+    This procedure writes a string to a file.  If an error
+    occurs, the carry flag will be set.  The handle is a
+    FREELIB handle, not a DOS handle.
+
+  ÄÄÄÄÄÄÄÄÄÄ gets               Get String
+
+    push offset buffer
+    push max
+    call gets
+
+    This procedure inputs a string from the keyboard.  The
+    string of maximum 'max' chars will be put into 'buffer'.
+    Any excess characters will be discarded.  This procedure
+    allows simple editing using the <BkSp> key.
+
+  ÄÄÄÄÄÄÄÄÄÄ puts               Put String
+
+    push offset string
+    call puts
+
+    This procedure writes a string to STDOUT.
+
+  ÄÄÄÄÄÄÄÄÄÄ xgets              Get String, Generalized
+
+    push offset outfunc
+    push offset buffer
+    push max
+    push terminator
+    call xgets
+
+    This procedure reads a logical line using a user-defined
+    function.  The function must take zero arguments and
+    return in AL the character input.  No register except
+    AX may be changed.  The value 'terminator' must be
+    returned on end of logical line.  The string of maximum
+    'max' chars will be read into 'buffer'.  An entire
+    logical line will be input even if it exceeds 'max'
+    characters.  Any excess will be discarded.
+
+  ÄÄÄÄÄÄÄÄÄÄ xputs              Put String, Generalized
+
+    push offset outfunc
+    push offset string
+    call xputs
+
+    This procedure outputs a string using a user-defined
+    function.  The function must take one word argument,
+    the character to output, save all registers, and return
+    with a 'Ret 2' to clean up the stack.
+
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄ Formatted String Print Procedures ÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  ÄÄÄÄÄÄÄÄÄÄ printf             Print Formatted String
+
+    push offset fmtstr
+    push offset arglist
+    call printf
+
+    This procedure prints a formatted string to the screen.
+    It is similar to the 'printf()' in 'C'.  In the format
+    string, the '%' character is special.  The '%' character
+    can be followed by the following characters, which
+    indicate what type of argument to print:
+
+      %d        Integer
+      %x        Hex integer
+      %s        String
+      %c        Character
+      %ld       Long integer
+      %lx       Long hex integer
+
+    The parameter 'arglist' is a list of arguments, in
+    order.  Their types are taken from the format string.
+    If the wrong type is specified in the format string,
+    printf has no way of knowing, so the results will be
+    unpredictable.
+
+    Example of using printf:
+
+;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+            ...
+
+FmtStr      db '%d %s %c %lx',0
+
+ArgList     dw 15600
+            db 'This is a string',0
+            db 'X'
+            dd 1A2B3C4Dh
+
+            ...
+
+            push offset FmtStr
+            push offset ArgList
+            call printf
+
+            ...
+
+;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+    This example will output '15600 This is a string X 1A2B3C4D'.
+
+  ÄÄÄÄÄÄÄÄÄÄ fprintf            Print Formatted String to File
+
+    push handle
+    push offset fmtstr
+    push offset arglist
+    call printf
+
+    This procedure prints a formatted string to a file.  It
+    works the same way printf does.  See 'printf' for more
+    information.
+
+  ÄÄÄÄÄÄÄÄÄÄ sprintf            Print Formatted String to String
+
+    push offset dest_str
+    push offset fmtstr
+    push offset arglist
+    call printf
+
+    This procedure prints a formatted string to a string.
+    The string output will be null terminated.  This
+    procedure works the same way printf does.  See 'printf'
+    for more information.
+
+  ÄÄÄÄÄÄÄÄÄÄ xprintf            Print Formatted String, Generalized
+
+    push offset outfunc
+    push offset fmtstr
+    push offset arglist
+    call printf
+
+    This procedure prints a formatted string using a user
+    defined function.  The function must take one word
+    argument, the character to output, save all registers,
+    and return with a 'Ret 2' to clean up the stack.  This
+    procedure works the same way printf does.  See 'printf'
+    for more information.
+
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄ Alphanumeric Conversion Procedures ÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  ÄÄÄÄÄÄÄÄÄÄ atofix             Convert String to Fixed-Point
+
+    push offset string
+    call atofix
+    ; DX:AX = result
+
+    This procedure converts a string to a fixed-point
+    number.  Itrecognizes the '-' and '+' signs and the
+    decimal point, but it will stop on any other non-digit.
+    The fixed-point number corresponding to the string is
+    returned.  If the result overflows, the value returned
+    will have the correct fractional part, and the integer
+    part will be the low 16 bits of the true value.
+
+  ÄÄÄÄÄÄÄÄÄÄ atoi               Convert String to Integer
+
+    push offset string
+    call atoi
+    ; AX = result
+
+    This procedure converts a string to an integer.  It
+    recognizes the '-' and '+' signs, but it will stop on
+    any other non-digit.  The integer corresponding to the
+    string is returned.  If the result overflows, the low
+    16 bits of the result are returned.
+
+  ÄÄÄÄÄÄÄÄÄÄ atol               Convert String to Long
+
+    push offset string
+    call atol
+    ; DX:AX = result
+
+    This procedure converts a string to a long integer.
+    It recognizes the '-' and '+' signs, but it will stop on
+    any other non-digit.  The long integer corresponding to
+    the string is returned.  If the result overflows, the
+    low 32 bits of the result are returned.
+
+  ÄÄÄÄÄÄÄÄÄÄ fixtoa             Convert Fixed-Point to String
+
+    push num_hi
+    push num_lo
+    push offset buffer
+    call fixtoa
+
+    This procedure converts a fixed-point number to a
+    string.  On return, 'buffer' will contain the decimal
+    representation of the number.  The string will be null
+    terminated.  If the number is negative, this will be
+    handled correctly.  Fractions will also be handled
+    correctly.
+
+  ÄÄÄÄÄÄÄÄÄÄ itoa               Convert Integer to String
+
+    push number
+    push offset buffer
+    call itoa
+
+    This procedure converts an integer to a string.  On
+    return, 'buffer' will contain the decimal representation
+    of 'number'.  The string will be null terminated.  If
+    the number is negative, this will be handled correctly.
+
+  ÄÄÄÄÄÄÄÄÄÄ ltoa               Convert Long to String
+
+    push num_hi
+    push num_lo
+    push offset buffer
+    call ltoa
+
+    This procedure converts a long integer to a string.  On
+    return, 'buffer' will contain the decimal representation
+    of the number.  The string will be null terminated.  If
+    the number is negative, this will be handled correctly.
+
+  ÄÄÄÄÄÄÄÄÄÄ roman              Convert Integer to Roman Numerals
+
+    push number
+    push offset buffer
+    call roman
+
+    This procedure converts an integer to Roman Numerals.
+    On return, 'buffer' will contain the Roman Numeral
+    representation of 'number'.  The string will be null
+    terminated.  If the number is negative or zero, a null
+    string will be output.
+
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄ Long Integer/Fixed Point Arithmetic Procedures ÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  ÄÄÄÄÄÄÄÄÄÄ fixdiv             Fixed-Point Divide
+
+    push num1_hi
+    push num1_lo
+    push num2_hi
+    push num2_lo
+    call fixdiv
+    ; DX:AX = result
+
+    This procedure divides fixed-point numbers.
+    It divides 'num1' by 'num2'.
+
+  ÄÄÄÄÄÄÄÄÄÄ fixmul             Fixed-Point Multiply
+
+    push num1_hi
+    push num1_lo
+    push num2_hi
+    push num2_lo
+    call fixmul
+    ; DX:AX = result
+
+    This procedure multiplies fixed-point numbers.
+    It takes 101-109 clock ticks on a 486, including
+    the call/return but not the argument pushes.
+
+  ÄÄÄÄÄÄÄÄÄÄ fixtoi             Round Fixed-Point to Integer
+
+    push num1_hi
+    push num1_lo
+    call fixmul
+    ; AX = result
+
+    This procedure converts a fixed-point number to an
+    integer.  It is rounded to the nearest integer.  If the
+    fractional part is exactly 1/2 (0.8000h), the number is
+    rounded up.
+
+  ÄÄÄÄÄÄÄÄÄÄ ldiv               Long Divide
+
+    push num1_hi
+    push num1_lo
+    push num2_hi
+    push num2_lo
+    call ldiv
+    ; DX:AX = result
+
+    This procedure divides unsigned long integers.
+    It divides 'num1' by 'num2'.
+
+  ÄÄÄÄÄÄÄÄÄÄ lidiv              Long Divide, Signed
+
+    push num1_hi
+    push num1_lo
+    push num2_hi
+    push num2_lo
+    call lidiv
+    ; DX:AX = result
+
+    This procedure divides signed long integers.
+    It divides 'num1' by 'num2'.
+
+  ÄÄÄÄÄÄÄÄÄÄ limod              Long Modulo, Signed
+
+    push num1_hi
+    push num1_lo
+    push num2_hi
+    push num2_lo
+    call limod
+    ; DX:AX = result
+
+    This procedure does the modulo operation on signed long
+    integers.   It divides 'num1' by 'num2' and returns the
+    remainder.
+
+  ÄÄÄÄÄÄÄÄÄÄ limul              Long Multiply, Signed
+
+    push num1_hi
+    push num1_lo
+    push num2_hi
+    push num2_lo
+    call limul
+    ; DX:AX = result
+
+    This procedure multiplies signed long integers.
+    It takes 89-97 clock ticks on a 486, including the
+    call/return but not the argument pushes.
+
+  ÄÄÄÄÄÄÄÄÄÄ lmod               Long Modulo
+
+    push num1_hi
+    push num1_lo
+    push num2_hi
+    push num2_lo
+    call lmod
+    ; DX:AX = result
+
+    This procedure does the modulo operation on unsigned
+    long integers.   It divides 'num1' by 'num2' and returns
+    the remainder.
+
+  ÄÄÄÄÄÄÄÄÄÄ lmul               Long Multiply
+
+    push num1_hi
+    push num1_lo
+    push num2_hi
+    push num2_lo
+    call lmul
+    ; DX:AX = result
+
+    This procedure multiplies unsigned long integers.
+    It takes 70 clock ticks on a 486, including the
+    call/return but not the argument pushes.
+
+  ÄÄÄÄÄÄÄÄÄÄ lsar               Long Shift Right, Signed
+
+    push num_hi
+    push num_lo
+    push dist
+    call lsar
+    ; DX:AX = result
+
+    This procedure shifts a signed long integer to the
+    right.  It shifts 'num' by 'dist', and takes 39 clock
+    ticks on a 486, including the call/return but not
+    the argument pushes.
+
+  ÄÄÄÄÄÄÄÄÄÄ lshl               Long Shift Left
+
+    push num_hi
+    push num_lo
+    push dist
+    call lshl
+    ; DX:AX = result
+
+    This procedure shifts a long integer to the left.
+    It shifts 'num' by 'dist', and takes 37 clock
+    ticks on a 486, including the call/return but not
+    the argument pushes.
+
+  ÄÄÄÄÄÄÄÄÄÄ lshr               Long Shift Right
+
+    push num_hi
+    push num_lo
+    push dist
+    call lshr
+    ; DX:AX = result
+
+    This procedure shifts an unsigned long integer to the
+    right.  It shifts 'num' by 'dist', and takes 37 clock
+    ticks on a 486, including the call/return but not
+    the argument pushes.
+
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Trigonometric Procedures ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  ÄÄÄÄÄÄÄÄÄÄ cosecant           Cosecant
+
+    push num_hi
+    push num_lo
+    call cosecant
+    ; DX:AX = result
+
+    This procedure calculates the trigonometric cosecant of
+    'num'.  It operates on fixed-point numbers.  The input
+    value should be in radians.
+
+  ÄÄÄÄÄÄÄÄÄÄ cosine             Cosine
+
+    push num_hi
+    push num_lo
+    call cosine
+    ; DX:AX = result
+
+    This procedure calculates the trigonometric cosine of
+    'num'.  It operates on fixed-point numbers.  The input
+    value should be in radians.
+
+  ÄÄÄÄÄÄÄÄÄÄ cotangent          Cotangent
+
+    push num_hi
+    push num_lo
+    call cotangent
+    ; DX:AX = result
+
+    This procedure calculates the trigonometric cotangent of
+    'num'.  It operates on fixed-point numbers.  The input
+    value should be in radians.
+
+  ÄÄÄÄÄÄÄÄÄÄ secant             Secant
+
+    push num_hi
+    push num_lo
+    call secant
+    ; DX:AX = result
+
+    This procedure calculates the trigonometric secant of
+    'num'.  It operates on fixed-point numbers.  The input
+    value should be in radians.
+
+  ÄÄÄÄÄÄÄÄÄÄ sine               Sine
+
+    push num_hi
+    push num_lo
+    call sine
+    ; DX:AX = result
+
+    This procedure calculates the trigonometric sine of
+    'num'.  It operates on fixed-point numbers.  The input
+    value should be in radians.
+
+  ÄÄÄÄÄÄÄÄÄÄ tangent            Tangent
+
+    push num_hi
+    push num_lo
+    call tangent
+    ; DX:AX = result
+
+    This procedure calculates the trigonometric tangent of
+    'num'.  It operates on fixed-point numbers.  The input
+    value should be in radians.
+
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ String Procedures ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  ÄÄÄÄÄÄÄÄÄÄ strcat             Concatenate Strings
+
+    push offset dest_str
+    push offset src_str
+    call strcat
+
+    This procedure concatenates 'src_str' onto 'dest_str',
+    including the null terminator.  There is no checking to
+    see if the string fits, so be careful.
+
+  ÄÄÄÄÄÄÄÄÄÄ strchr             Search String for Char
+
+    push offset string
+    push char
+    call strchr
+    ; AX = return value
+
+    This procedure searches for 'char' in 'string'.  If the
+    character is not found, -1 is returned and the carry
+    flag is set, otherwise the position of the first
+    instance of the character in the string is returned.
+
+  ÄÄÄÄÄÄÄÄÄÄ strcmp             Compare Strings
+
+    push offset string1
+    push offset string2
+    call strcmp
+    ; return value in flags
+
+    This procedure compares 'string1' and 'string2'.  The
+    flags are set as if it was a CMP instruction.
+
+  ÄÄÄÄÄÄÄÄÄÄ strcpy             Copy String
+
+    push offset dest_str
+    push offset src_str
+    call strcpy
+
+    This procedure copies 'src_str' to 'dest_str', including
+    the null terminator.  There is no checking to see if the
+    string fits, so be careful.
+
+  ÄÄÄÄÄÄÄÄÄÄ stricmp            Compare Strings, Case Insensitive
+
+    push offset string1
+    push offset string2
+    call stricmp
+    ; return value in flags
+
+    This procedure compares 'string1' and 'string2' ignoring
+    differences in case.  The flags are set as if it was an
+    integer compare.  All letters are treated as uppercase.
+
+  ÄÄÄÄÄÄÄÄÄÄ strlen             String Length
+
+    push offset string
+    call strlen
+    ; AX = length
+
+    This procedure returns the length of a string, not
+    including the null terminator.
+
+  ÄÄÄÄÄÄÄÄÄÄ strltrim           Trim Leading Spaces
+
+    push offset string
+    call strltrim
+
+    This procedure trims leading spaces from a string.  If
+    there are no leading spaces, nothing happens.
+
+  ÄÄÄÄÄÄÄÄÄÄ strlwr             Convert String to Lowercase
+
+    push offset string
+    call strlwr
+
+    This procedure converts a string to lowercase.  Any
+    character in the string that is already lowercase or
+    that is not a letter will not be affected.
+
+  ÄÄÄÄÄÄÄÄÄÄ strncat            Concatenate Strings with Max Length
+
+    push offset dest_str
+    push offset src_str
+    push length
+    call strncat
+
+    This procedure concatenates 'src_str' onto 'dest_str',
+    including the null terminator.  If the resulting string
+    (with null terminator) is longer than 'length', only
+    'length' bytes are copied.  This is useful to prevent
+    buffer overflow.
+
+  ÄÄÄÄÄÄÄÄÄÄ strncpy            Copy String with Max Length
+
+    push offset dest_str
+    push offset src_str
+    push length
+    call strncpy
+
+    This procedure copies 'src_str' to 'dest_str', including
+    the null terminator. If 'src_str' (with null terminator)
+    is longer than 'length', only 'length' bytes are copied.
+    This is useful to prevent buffer overflow.
+
+  ÄÄÄÄÄÄÄÄÄÄ strrchr            Search String for Char, Reverse
+
+    push offset string
+    push char
+    call strrchr
+    ; AX = return value
+
+    This procedure searches for 'char' in 'string'.  If the
+    character is not found, -1 is returned and the carry
+    flag is set, otherwise the position of the last instance
+    of the character in the string is returned.
+
+  ÄÄÄÄÄÄÄÄÄÄ strrtrim           Trim Trailing Spaces
+
+    push offset string
+    call strrtrim
+
+    This procedure trims trailing spaces from a string.  If
+    there are no trailing spaces, nothing happens.
+
+  ÄÄÄÄÄÄÄÄÄÄ strstr             Search String for Substring
+
+    push offset string
+    push offset substr
+    call strchr
+    ; AX  = return value
+
+    This procedure searches for 'substr' in 'string'.  If
+    the substring is not found, -1 is returned and the carry
+    flag is set, otherwise the position of the substring in
+    the main string is returned.
+
+  ÄÄÄÄÄÄÄÄÄÄ strupr             Convert String to Uppercase
+
+    push offset string
+    call strupr
+
+    This procedure converts a string to uppercase.  Any
+    character in the string that is already uppercase or
+    that is not a letter will not be affected.
+
+  ÄÄÄÄÄÄÄÄÄÄ replace            Replace Substring
+
+    push offset main_str
+    push offset sub_str1
+    push offset sub_str2
+    call replace
+
+    This procedure replaces all instances of 'sub_str1' in
+    'main_str' with 'sub_str2'.  There is no checking to see
+    if the string fits, so be careful.
+
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄ Character Manipulation Procedures ÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  ÄÄÄÄÄÄÄÄÄÄ isalnum            Is Alphanumeric
+
+    push char
+    call isalnum
+    ; return value in flags
+
+    This procedure sets the carry flag if the specified char
+    is a digit or letter.
+
+  ÄÄÄÄÄÄÄÄÄÄ isalpha            Is Alphabetic
+
+    push char
+    call isalpha
+    ; return value in flags
+
+    This procedure sets the carry flag if the specified char
+    is a letter.
+
+  ÄÄÄÄÄÄÄÄÄÄ isascii            Is ASCII
+
+    push char
+    call isascii
+    ; return value in flags
+
+    This procedure sets the carry flag if the specified char
+    is a standard ASCII char (20h through 7Eh).
+
+  ÄÄÄÄÄÄÄÄÄÄ isdigit            Is Digit
+
+    push char
+    call isdigit
+    ; return value in flags
+
+    This procedure sets the carry flag if the specified char
+    is a digit.
+
+  ÄÄÄÄÄÄÄÄÄÄ islower            Is Lowercase
+
+    push char
+    call islower
+    ; return value in flags
+
+    This procedure sets the carry flag if the specified char
+    is a lowercase letter.
+
+  ÄÄÄÄÄÄÄÄÄÄ isupper            Is Uppercase
+
+    push char
+    call isupper
+    ; return value in flags
+
+    This procedure sets the carry flag if the specified char
+    is an uppercase letter.
+
+  ÄÄÄÄÄÄÄÄÄÄ isxascii           Is Extended ASCII
+
+    push char
+    call isxascii
+    ; return value in flags
+
+    This procedure sets the carry flag if the specified char
+    is an extended ASCII char (20h through FFh).
+
+  ÄÄÄÄÄÄÄÄÄÄ isxdigit           Is Hex Digit
+
+    push char
+    call isxdigit
+    ; return value in flags
+
+    This procedure sets the carry flag if the specified char
+    is a HEX digit (a digit or a letter from A to F).
+
+  ÄÄÄÄÄÄÄÄÄÄ tolower            Convert to Lowercase
+
+    push char
+    call tolower
+    ; AL = result
+
+    This procedure converts a character to lowercase.  If
+    the character is not an uppercase letter, the original
+    character is returned.
+
+  ÄÄÄÄÄÄÄÄÄÄ toupper            Convert to Uppercase
+
+    push char
+    call toupper
+    ; AL = result
+
+    This procedure converts a character to uppercase.  If
+    the character is not an lowercase letter, the original
+    character is returned.
+
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Memory Block Procedures ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  ÄÄÄÄÄÄÄÄÄÄ memchr             Search Memory Block
+
+    push mem_offset
+    push length
+    push byte
+    call memchr
+
+    This procedure searches a block of memory of length
+    'length' at 'src_offset' for 'byte'.  If the byte is
+    found, its position within the block is returned,
+    otherwise -1 is returned and the carry flag is set.
+
+  ÄÄÄÄÄÄÄÄÄÄ memcmp             Compare Memory Blocks
+
+    push dest_offset
+    push src_offset
+    push length
+    call memcmp
+    ; return value in flags
+
+    This procedure compares two blocks of memory at offsets
+    'src_offset' and 'dest_offset'.  The blocks are of
+    length 'length'.  The flags are set as if it was a CMP
+    instruction.  This is basically a REPE CMPSB.
+
+  ÄÄÄÄÄÄÄÄÄÄ memcpy             Copy Memory Block
+
+    push dest_offset
+    push src_offset
+    push length
+    call memcpy
+
+    This procedure copies a block of memory from
+    'src_offset' to 'dest_offset'.  The block is of length
+    'length'.  This procedure will work correctly if the
+    blocks overlap.
+
+  ÄÄÄÄÄÄÄÄÄÄ memmove            Move Memory Block
+
+    push dest_offset
+    push src_offset
+    push length
+    call memmove
+
+    This procedure is identical to 'memcpy', see above.
+
+  ÄÄÄÄÄÄÄÄÄÄ memset             Set Memory Block
+
+    push mem_offset
+    push length
+    push byte
+    call memset
+
+    This procedure fills a block of memory of length
+    'length' at 'mem_offset' with 'byte'.
+
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Search and Sort Procedures ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  ÄÄÄÄÄÄÄÄÄÄ isearch            Search Array of Integers
+
+    push offset array
+    push size
+    push elem
+    call isearch
+    ; AX = return code
+
+    This procedure searches an array of integers of size
+    'size' for 'elem'.  This procedure assumes that the
+    array is sorted.  If the element is found, its position
+    in the array is returned, otherwise -1 is returned and
+    the carry flag is set.
+
+  ÄÄÄÄÄÄÄÄÄÄ isort              Sort Array of Integers
+
+    push offset array
+    push size
+    call isort
+
+    This procedure sorts an array of integers of size
+    'size' in ascending order.
+
+  ÄÄÄÄÄÄÄÄÄÄ lsearch            Search Array of Longs
+
+    push offset array
+    push size
+    push elem_hi
+    push elem_lo
+    call lsearch
+    ; AX = return code
+
+    This procedure searches an array of long integers of
+    size 'size' for 'elem'.  This procedure assumes that the
+    array is sorted.  If the element is found, its position
+    in the array is returned, otherwise -1 is returned.
+
+  ÄÄÄÄÄÄÄÄÄÄ lsort              Sort Array of Longs
+
+    push offset array
+    push size
+    call lsort
+
+    This procedure sorts an array of long integers of size
+    'size' in ascending order.
+
+  ÄÄÄÄÄÄÄÄÄÄ ssearch            Search Array of Strings
+
+    push offset array
+    push size
+    push offset elem
+    call ssearch
+    ; AX = return code
+
+    This procedure searches an array of strings of size
+    'size' for 'elem'.  This procedure assumes that the
+    array is sorted.  If the element is found, its position
+    in the array is returned, otherwise -1 is returned and
+    the carry flag is set.
+
+  ÄÄÄÄÄÄÄÄÄÄ ssort              Sort Array of Strings
+
+    push offset array
+    push size
+    call ssort
+
+    This procedure sorts an array of strings of size
+    'size' in alphabetical order.
+
+  ÄÄÄÄÄÄÄÄÄÄ xsearch            Search Array, Generalized
+
+    push offset array
+    push size
+    push offset elem
+    push offset cmpfunc
+    call xsearch
+    ; AX = return code
+
+    This procedure searches an array of pointers of size
+    'size' for 'elem'.  It assumes that the array is sorted.
+    If the element is found, its position in the array is
+    returned, otherwise -1 is returned and the carry flag is
+    set.
+
+    This procedure uses a user-defined function.  The
+    function must take two word-sized pointer arguments.
+    It must return the result of the comparison in the
+    flags as if a CMP instruction was used.
+
+  ÄÄÄÄÄÄÄÄÄÄ xsort              Sort Array, Generalized
+
+    push offset array
+    push size
+    push offset cmpfunc
+    call xsort
+
+    This procedure sorts an array of pointers of size
+    'size'.  This is the generalized sort procedure.
+
+    This procedure uses a user-defined function.  The
+    function must take two word-sized pointer arguments.
+    It must return the result of the comparison in the
+    flags as if a CMP instruction was used.
+
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ- Text Screen Procedures ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  ÄÄÄÄÄÄÄÄÄÄ inittext           Initialize Text System
+
+    call inittext
+
+    This procedure initializes the text screen system in the
+    normal (EGA compatible) mode.
+
+  ÄÄÄÄÄÄÄÄÄÄ inittexthi         Initialize Text System, Hi-Res
+
+    call inittexthi
+
+    This procedure initializes the text screen system in the
+    extended VGA 90x34 mode.
+
+  ÄÄÄÄÄÄÄÄÄÄ box                Draw Box
+
+    push x1 y1
+    push x2 y2
+    push char
+    call box
+
+    This procedure draws a box with character 'char'.  The
+    box is clipped to the current window.
+
+  ÄÄÄÄÄÄÄÄÄÄ closetext          Close Text System
+
+    call closetext
+
+    This procedure closes the text screen system, and clears
+    the screen.
+
+  ÄÄÄÄÄÄÄÄÄÄ clrscr             Clear Screen
+
+    call clrscr
+
+    This procedure clears the screen on the current video
+    page.
+
+  ÄÄÄÄÄÄÄÄÄÄ clrwin             Clear Window
+
+    call clrwin
+
+    This procedure clears the current window.
+
+  ÄÄÄÄÄÄÄÄÄÄ delline            Delete Line
+
+    push y
+    call delline
+
+    This procedure deletes a line (at 'y') from the current
+    window.  All text below the line is scrolled up, and the
+    bottom line is cleared.
+
+  ÄÄÄÄÄÄÄÄÄÄ fbox               Draw Filled Box
+
+    push x1 y1
+    push x2 y2
+    push char
+    call fbox
+
+    This procedure draws a filled box with character 'char'.
+    The box is clipped to the current window.
+
+  ÄÄÄÄÄÄÄÄÄÄ getcolor           Get Color
+
+    call getcolor
+    ; AX = current color
+
+    This procedure returns the current text color.
+
+  ÄÄÄÄÄÄÄÄÄÄ getctype           Get Cursor Type
+
+    call getctype
+    ; AX = cursor type
+
+    This procedure returns the current cursor type.  The
+    format is: 0XXYYh, where XX is the starting line (0-13)
+    and YY is the ending line (0-13).
+
+  ÄÄÄÄÄÄÄÄÄÄ getline            Get Line of Text
+
+    push x y
+    push offset buffer
+    push min
+    push max
+    call getline
+
+    This procedure inputs a line of text from the user.
+    A field is drawn at (x, y) extending for (max - 1)
+    characters, and the string is input there.  Full
+    editing, i.e. insert/delete, etc., is supported.
+    A string of minimum 'min' and maximum (max - 1)
+    characters will be put into 'buffer'.
+
+  ÄÄÄÄÄÄÄÄÄÄ getpage            Get Video Page
+
+    call getpage
+    ; AX = current page
+
+    This procedure returns the current video page.
+
+  ÄÄÄÄÄÄÄÄÄÄ gettext            Get Block of Text
+
+    push offset buffer
+    push x1 y1
+    push x2 y2
+    call gettext
+
+    This procedure captures a rectangular block of text into
+    'buffer'.  No clipping is performed.
+
+  ÄÄÄÄÄÄÄÄÄÄ getx               Get Cursor X
+
+    call getx
+    ; AX = current X position
+
+    This procedure returns the X position of the cursor.  If
+    the window relative flag is set, the position will be
+    relative to the current window.
+
+  ÄÄÄÄÄÄÄÄÄÄ gety               Get Cursor Y
+
+    call gety
+    ; AX = current Y position
+
+    This procedure returns the Y position of the cursor.  If
+    the window relative flag is set, the position will be
+    relative to the current window.
+
+  ÄÄÄÄÄÄÄÄÄÄ gotoxy             Set Cursor Position
+
+    push x y
+    call gotoxy
+
+    This procedure sets the position of the cursor.  It is
+    clipped to the current window.
+
+  ÄÄÄÄÄÄÄÄÄÄ hline              Draw Horizontal Line
+
+    push x1 x2
+    push y
+    push char
+    call hline
+
+    This procedure draws a horizontal line with character
+    'char'.  The line is clipped to the current window.
+
+  ÄÄÄÄÄÄÄÄÄÄ hsline             Draw Horizontal Style Line
+
+    push x1 x2
+    push y
+    push style
+    call hsline
+
+    This procedure draws a horizontal style line.  The line
+    is clipped to the current window.  See the description
+    for 'sbox' for a list of the styles.
+
+  ÄÄÄÄÄÄÄÄÄÄ insline            Insert Line
+
+    push y
+    call insline
+
+    This procedure inserts a line (at 'y') from the current
+    window.  All text below the line is scrolled down, and
+    the inserted line is cleared.
+
+  ÄÄÄÄÄÄÄÄÄÄ movetext           Move Block of Text
+
+    push x1 y1
+    push x2 y2
+    push x y
+    call movetext
+
+    This procedure moves a rectangular block of text from
+    (x1, y1)-(x2, y2) to (x, y).  If the blocks overlap,
+    it will be handled correctly.  No clipping is performed
+    and the window relative flag is ignored.
+
+  ÄÄÄÄÄÄÄÄÄÄ puttext            Put Block of Text
+
+    push offset buffer
+    push x1 y1
+    call puttext
+
+    This procedure displays a rectangular block of text from
+    'buffer' at (x1, y1).  Output is clipped to the current
+    window.
+
+  ÄÄÄÄÄÄÄÄÄÄ readcha            Read Char & Attr.
+
+    push x y
+    call readcha
+    ; AL = char, AH = attr
+
+    This procedure returns the character and attribute
+    at (x, y).
+
+  ÄÄÄÄÄÄÄÄÄÄ sbox               Draw Style Box
+
+    push x1 y1
+    push x2 y2
+    push style
+    call sbox
+
+    This procedure draws a style box.  The box is clipped
+    to the current window.  Here is the list of styles:
+
+    0       Blank
+    1       Single Line
+    2       Double Line
+    3       Single/Double
+    4       Double/Single
+
+  ÄÄÄÄÄÄÄÄÄÄ scroll             Scroll Window
+
+    push dir
+    call scroll
+
+    This procedure scrolls the current window.  The values
+    for the direction 'dir' are:
+
+    0       Scroll Up
+    1       Scroll Down
+    2       Scroll Left
+    3       Scroll Right
+
+  ÄÄÄÄÄÄÄÄÄÄ setat              Set Attribute
+
+    push x y
+    push attr
+    call setat
+
+    This procedure sets the attribute at (x, y) to 'attr'.
+    The output is clipped to the current window.
+
+  ÄÄÄÄÄÄÄÄÄÄ setch              Set Character
+
+    push x y
+    push char
+    call setch
+
+    This procedure sets the character at (x, y) to 'char'.
+    The output is clipped to the current window.
+
+  ÄÄÄÄÄÄÄÄÄÄ setcha             Set Char & Attr.
+
+    push x y
+    push char
+    push attr
+    call setcha
+
+    This procedure sets the character at (x, y) to 'char',
+    and the attribute to 'attr'.  The output is clipped to
+    the current window.
+
+  ÄÄÄÄÄÄÄÄÄÄ setcolor           Set Color
+
+    push color
+    call setcolor
+
+    This procedure sets the current text color.  The color
+    is a byte, 0XYh, where X is the background color and Y
+    is the foreground color.
+
+  ÄÄÄÄÄÄÄÄÄÄ setctype           Set Cursor Type
+
+    push cur_type
+    call setctype
+
+    This procedure sets the type of the cursor.  The format
+    is: 0XXYYh, where XX is the starting line (0-13) and YY
+    is the ending line (0-13).
+
+  ÄÄÄÄÄÄÄÄÄÄ setglchar          Set Char for 'getline'
+
+    push char
+    call setglchar
+
+    This sets the character used to clear the input field in
+    'getline'.  The default value is a space (20h).  Another
+    useful value is the small bullet (0FAh).
+
+  ÄÄÄÄÄÄÄÄÄÄ setpage            Set Video Page
+
+    push page_num
+    call setpage
+
+    This procedure sets the current video page.  The page
+    number must be between 0 and 3 (there are four pages).
+
+  ÄÄÄÄÄÄÄÄÄÄ setwin             Set Window
+
+    push x1 y1
+    push x2 y2
+    push rel_flag
+    call setwin
+
+    This procedure sets the clipping window.  'rel_flag'
+    indicates whether coordinates will be relative to the
+    window or not.
+
+  ÄÄÄÄÄÄÄÄÄÄ tprintf            Print Formatted String at (X, Y)
+
+    push x y
+    push offset fmtstr
+    push offset arglist
+    call tprintf
+
+    This procedure prints a formatted string at (x, y).
+    It is equivalent to a 'sprintf' followed by 'tputs'.
+    See 'sprintf' and 'tputs' for more information.
+
+  ÄÄÄÄÄÄÄÄÄÄ tputs              Put String at (X, Y)
+
+    push x y
+    push offset string
+    call tputs
+
+    This procedure prints 'string' at (x, y).  Output is
+    clipped to the current window.  Output will not wrap
+    around lines.  Control characters will be displayed
+    literally.
+
+  ÄÄÄÄÄÄÄÄÄÄ vline              Draw Vertical Line
+
+    push y1 y2
+    push x
+    push char
+    call vline
+
+    This procedure draws a vertical line with character
+    'char'.  The line is clipped to the current window.
+
+  ÄÄÄÄÄÄÄÄÄÄ vsline             Draw Vertical Style Line
+
+    push y1 y2
+    push x
+    push style
+    call vsline
+
+    This procedure draws a horizontal style line.  The line
+    is clipped to the current window.  See the description
+    for 'sbox' for a list of the styles.
+
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Text Mode Mouse Procedures ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  ÄÄÄÄÄÄÄÄÄÄ minit              Initialize Mouse System
+
+    call minit
+    ; AX = return code
+
+    This procedure initializes the text mode mouse driver.
+    If an error occurs or the mouse is not found, the carry
+    flag will be set.
+
+  ÄÄÄÄÄÄÄÄÄÄ mclose             Close Mouse System
+
+    call mclose
+
+    This procedure closes the mouse system.
+
+  ÄÄÄÄÄÄÄÄÄÄ mshow              Show Mouse Cursor
+
+    call mshow
+
+    This procedure displays the mouse cursor on the screen.
+
+  ÄÄÄÄÄÄÄÄÄÄ mhide              Hide Mouse Cursor
+
+    call mhide
+
+    This procedure hides the mouse cursor.
+
+  ÄÄÄÄÄÄÄÄÄÄ mget               Get Mouse Position
+
+    call mget
+    ; AX = button status
+    ; BX = mouse X position
+    ; CX = mouse Y position
+
+    This procedure returns the position and status of the
+    mouse.  The format for the button status is:
+
+    Bit     Meaning
+
+     0     Left button
+     1     Right button
+     2     Middle button
+
+  ÄÄÄÄÄÄÄÄÄÄ mgetdn             Get Mouse Presses
+
+    push button
+    call mgetdn
+    ; AX = press count
+    ; BX = X position at last press
+    ; CX = Y position at last press
+
+    This procedure returns the status of a particular mouse
+    button, for presses.  The button values are as follows:
+
+    0       Left button
+    1       Right button
+    2       Middle button
+
+  ÄÄÄÄÄÄÄÄÄÄ mgetup             Get Mouse Releases
+
+    push button
+    call mgetup
+    ; AX = release count
+    ; BX = X position at last release
+    ; CX = Y position at last release
+
+    This procedure returns the status of a particular mouse
+    button, for releases.  See 'mgetup' for button values.
+
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄ Integrated VGA Graphics Procedures ÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  ÄÄÄÄÄÄÄÄÄÄ initgraph          Initialize Graphics System
+
+    push mode
+    call initgraph
+
+    This procedure initializes the graphics system.  'mode'
+    can be 0, 1, or 2, as follows:
+
+    0       320x200x256     VGA lo-res graphics
+    1       640x480x16      VGA hi-res graphics
+    2       320x400x256     VGA med-res graphics
+
+  ÄÄÄÄÄÄÄÄÄÄ circle             Draw Circle
+
+    push x y rad
+    call circle
+
+    This procedure draws a circle with center (x, y) and
+    radius 'rad'.  Output is clipped to the current window.
+
+    The radius specifies the Y radius.  The actual X radius
+    may be different to compensate for the aspect ratio.
+
+  ÄÄÄÄÄÄÄÄÄÄ closegraph         Close Graphics System
+
+    This procedure closes the graphics system, and returns
+    to the standard text mode.
+
+  ÄÄÄÄÄÄÄÄÄÄ clrgwin            Clear Graphics Window
+
+    call clrgwin
+
+    This procedure clears the current graphics window (using
+    the current drawing color).
+
+  ÄÄÄÄÄÄÄÄÄÄ cls                Clear Graphics Screen
+
+    call cls
+
+    This procedure clears the screen in graphics mode.
+
+  ÄÄÄÄÄÄÄÄÄÄ ellipse            Draw Ellipse
+
+    push x y xr yr
+    call ellipse
+
+    This procedure draws an ellipse with center (x, y) and
+    radii 'xr' and 'yr'.  Output is clipped to the current
+    window.
+
+  ÄÄÄÄÄÄÄÄÄÄ fcircle            Draw Filled Circle
+
+    push x y rad
+    call fcircle
+
+    This procedure draws a filled circle with center (x, y)
+    and radius 'rad'.  Output is clipped to the current
+    window.
+
+    The radius specifies the Y radius.  The actual X radius
+    may be different to compensate for the aspect ratio.
+
+  ÄÄÄÄÄÄÄÄÄÄ fellipse           Draw Filled Ellipse
+
+    push x y xr yr
+    call fellipse
+
+    This procedure draws a filled ellipse with center (x, y)
+    and radii 'xr' and 'yr'.  Output is clipped to the
+    current window.
+
+  ÄÄÄÄÄÄÄÄÄÄ frect              Draw Filled Rectangle
+
+    push x1 y1
+    push x2 y2
+    call frect
+
+    This procedure draws a filled rectangle from (x1, y1)
+    to (x2, y2) in the current drawing color.  Output is
+    clipped to the current window.
+
+  ÄÄÄÄÄÄÄÄÄÄ getgcolor          Get Drawing Color
+
+    call getgcolor
+    ; AX = current color
+
+    This procedure returns the current drawing color.
+
+  ÄÄÄÄÄÄÄÄÄÄ getimage           Get Image
+
+    push offset buffer
+    push x1 y1
+    push x2 y2
+    call getimage
+
+    This procedure captures a rectangular block of pixels
+    into 'buffer'.  No clipping is performed.
+
+  ÄÄÄÄÄÄÄÄÄÄ getpix             Get Pixel
+
+    push x y
+    call getpix
+    ; AX = color at (x, y)
+
+    This procedure returns the color of the pixel at (x, y).
+
+  ÄÄÄÄÄÄÄÄÄÄ line               Draw Line
+
+    push x1 y1
+    push x2 y2
+    call line
+
+    This procedure draws a line from (x1, y1) to (x2, y2) in
+    the current drawing color.  Output is clipped to the
+    current window.
+
+  ÄÄÄÄÄÄÄÄÄÄ outstr             Output String
+
+    push x y
+    push offset string
+    call outstr
+
+    This procedure prints 'string' on the screen, starting
+    at (x, y).  Output is clipped to the current window.
+
+  ÄÄÄÄÄÄÄÄÄÄ putimage           Put Image
+
+    push offset buffer
+    push x1 y1
+    call putimage
+
+    This procedure displays a rectangular block of pixels
+    from 'buffer' at (x1, y1).  Output is clipped to the
+    current window.
+
+  ÄÄÄÄÄÄÄÄÄÄ putpix             Put Pixel
+
+    push x y
+    call putpix
+
+    This procedure puts a pixel at (x, y) in the current
+    drawing color.  Output is clipped to the current window.
+
+  ÄÄÄÄÄÄÄÄÄÄ putrow             Put Row of Pixels
+
+    push x1 x2 y
+    call putrow
+
+    This procedure puts a row of pixels (basically like a
+    horizontal line) from (x1, y) to (x2, y), in the current
+    drawing color.
+
+  ÄÄÄÄÄÄÄÄÄÄ rect               Draw Rectangle
+
+    push x1 y1
+    push x2 y2
+    call rect
+
+    This procedure draws a rectangle from (x1, y1) to
+    (x2, y2) in the current drawing color.  Output is
+    clipped to the current window.
+
+  ÄÄÄÄÄÄÄÄÄÄ setgcolor          Set Drawing Color
+
+    push color
+    call setgcolor
+
+    This procedure sets the current drawing color.
+
+  ÄÄÄÄÄÄÄÄÄÄ setgwin            Set Graphics Window
+
+    push x1 y1
+    push x2 y2
+    call setgwin
+
+    This procedure sets the graphics clipping window.
+
+  ÄÄÄÄÄÄÄÄÄÄ triangle           Draw Triangle
+
+    push x1 y1
+    push x2 y2
+    push x3 y3
+    call triangle
+
+    This procedure draws a filled triangle with corners at
+    (x1, y1), (x2, y2), and (x3, y3).  Output is clipped to
+    the current window.
+
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄ Virtual Memory Procedures (80386 only) ÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  ÄÄÄÄÄÄÄÄÄÄ vminit             Initialize Virtual Memory
+
+    call vminit
+    ; AX = return value
+
+    This procedure initializes the virtual memory system.
+    If an error occurs, 0 is returned, otherwise a nonzero
+    value is returned.
+
+  ÄÄÄÄÄÄÄÄÄÄ vmclose            Close Virtual Memory
+
+    call vmclose
+
+    This procedure closes the virtual memory system.
+
+  ÄÄÄÄÄÄÄÄÄÄ vmread             Read Virtual Memory
+
+    push offset buffer
+    push vm_offset      ; offset is 32 bits
+    push length
+    call vmread
+    ; AX = return value
+
+    This procedure reads the block of virtual memory that
+    begins at 'vm_offset' into 'buffer'.  The size of the
+    block is specified by 'length'.  Both the offset and
+    the length must be even.  If an error occurs, 0 is
+    returned, otherwise a nonzero value is returned.
+
+  ÄÄÄÄÄÄÄÄÄÄ vmwrite            Write Virtual Memory
+
+    push offset buffer
+    push vm_offset      ; offset is 32 bits
+    push length
+    call vmwrite
+    ; AX = return value
+
+    This procedure writes data from 'buffer' into virtual
+    memory starting at 'vm_offset'.  The size of the block
+    is specified by 'length'.  Both the offset and the
+    length must be even.  If an error occurs, 0 is returned,
+    otherwise a nonzero value is returned.
+
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Miscellaneous Procedures ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  ÄÄÄÄÄÄÄÄÄÄ atexit             Register Exit Function
+
+    push offset func
+    call atexit
+
+    This procedure registers a function for calling on exit.
+    If an error occurs, the carry flag is set.
+
+  ÄÄÄÄÄÄÄÄÄÄ bitcnt             Count Bits
+
+    push number
+    call bitcnt
+    ; AX = number of set bits
+
+    This procedure returns the number of set bits in an
+    integer.
+
+  ÄÄÄÄÄÄÄÄÄÄ cputype            Get CPU Type
+
+    call cputype
+    ; AX = CPU type
+
+    This procedure returns the CPU type (0 = 8086, 1 = 186,
+    etc.)  It cannot detect SX/DX variations.
+
+  ÄÄÄÄÄÄÄÄÄÄ crc16              16-Bit CRC
+
+    push offset buf
+    push count
+    call crc16
+    ; AX = CRC16 value
+
+    This procedure returns the CRC16 checksum of the block
+    of memory at 'buf' of length 'count'.
+
+  ÄÄÄÄÄÄÄÄÄÄ crc32              32-Bit CRC
+
+    push offset buf
+    push count
+    call crc32
+    ; DX:AX = CRC32 value
+
+    This procedure returns the CRC32 checksum of the block
+    of memory at 'buf' of length 'count'.
+
+  ÄÄÄÄÄÄÄÄÄÄ delay              Delay
+
+    push delaytime
+    call delay
+
+    This procedure delays for a specified number of
+    milliseconds before returning.
+
+  ÄÄÄÄÄÄÄÄÄÄ exec               Execute Program
+
+    push offset progname
+    push offset cmdline
+    call exec
+    ; AX = return code
+
+    This procedure executes another program as a child
+    process, with arguments in 'cmdline'.  If an error
+    occurs, the carry flag is set.
+
+  ÄÄÄÄÄÄÄÄÄÄ fputype            Get FPU Type
+
+    call fputype
+    ; AX = FPU type
+
+    This procedure returns the FPU type (0 = 8087, 1 = 187,
+    etc.)  If there is no FPU, -1 is returned.
+
+  ÄÄÄÄÄÄÄÄÄÄ getenv             Get Environment String
+
+    push offset buffer
+    push offset key_str
+    call getenv
+    ; return value in flags
+
+    This procedure copies the environment string for the key
+    'key_str' into 'buffer'.  If the string was not found,
+    the carry flag is be set.
+
+  ÄÄÄÄÄÄÄÄÄÄ getkey             Read Key
+
+    call getkey
+    ; AX = key
+
+    This procedure reads one key from the keyboard.  This is
+    identical to BIOS Int 16h function 0.
+
+  ÄÄÄÄÄÄÄÄÄÄ highbit            Find High Bit
+
+    push number
+    call highbit
+    ; AX = highest bit
+
+    This procedure returns the positon of the highest set
+    bit in an integer.  -1 is returned if it is zero.
+
+  ÄÄÄÄÄÄÄÄÄÄ kbhit              Check for Key
+
+    call kbhit
+    ; return value in flags
+
+    This procedure checks whether a key has been pressed.
+    If a key was pressed, the carry flag is set.
+
+  ÄÄÄÄÄÄÄÄÄÄ kflush             Flush Key Buffer
+
+    call kflush
+
+    This procedure flushes the BIOS keyboard buffer.
+
+  ÄÄÄÄÄÄÄÄÄÄ nosound            Turn Speaker Off
+
+    call nosound
+
+    This procedure turns the speaker off.
+
+  ÄÄÄÄÄÄÄÄÄÄ rand               Random Number
+
+    push max
+    call rand
+    ; AX = result
+
+    This procedure returns a random number below 'max'.
+
+  ÄÄÄÄÄÄÄÄÄÄ reboot             Reboot
+
+    call reboot
+
+    This procedure reboots the computer.  All disk buffers
+    will be flushed.
+
+  ÄÄÄÄÄÄÄÄÄÄ sound              Set Speaker
+
+    push freq
+    call sound
+
+    This procedure turns on the speaker at a specified
+    frequency.
+
+  ÄÄÄÄÄÄÄÄÄÄ sqrt               Square Root
+
+    push num_hi
+    push num_lo
+    call sqrt
+    ; AX = result
+
+    This procedure returns the square root of a long
+    integer.  The result is a normal integer.  This
+    procedure treats all values as unsigned.
+
+  ÄÄÄÄÄÄÄÄÄÄ srand              Seed Random Numbers
+
+    call srand
+
+    This procedure seeds the random number generator with
+    the system clock.
+
+  ÄÄÄÄÄÄÄÄÄÄ truerand           True Random Number
+
+    push max
+    call truerand
+    ; AX = result
+
+    This procedure returns a true random number below 'max'.
+
+    This is not a pseudo-random RNG.  This procedure reads
+    random bits of the system timer to generate the numbers,
+    so the number is truly random.  This procedure has been
+    tested for randomness by exhaustively analyzing 140 MB
+    of random data.
+
+    However, this routine is extremely slow.  It generates
+    only about 760 random numbers per second on a 486DX2/66.
+
+
+8.  List of contributors (credits).
+
+    Author:     Tenie Remmel.
+
+    Major contributors:
+
+      Tylisha C. Andersen -- VGA graphics library
+                             Virtual memory system
+
+    Minor contributors:
+
+      David Deganchi -- suggested fix for fgetc bug
+      Leia Kasija -- size optimization of many routines
+      Russell Leidich -- algorithm in 'truerand'
+      Mark J. Restifo -- found redirection bug
+
+
+9.  History of changes.
+
+  ÄÄÄÄÄÄÄÄÄÄ Version 1.1 Bug Fixes
+
+    A bug in the 'STDIO' output was fixed.  It used Int 29h,
+    which does not allow redirection.  Int 21h is being used
+    instead.  This was pointed out by Mark J. Restifo.
+
+    The random number code had a lot of problems.  Fixed.
+
+    The procedure  'allocmem' would not allocate the largest
+    block as returned from 'getmfree'.  Fixed.
+
+    The procedure 'fgets' would crash, because it pushed the
+    wrong number of arguments in calling 'fgetc'.  Fixed.
+
+    If a file read crossed a buffer boundary, and writes had
+    occurred to the buffer,  the buffer would  be discarded.
+    This was due to the fgetc bug.  Fixed.
+
+
+  ÄÄÄÄÄÄÄÄÄÄ Version 1.1 Additions
+
+    A set of integrated graphics procedures  (using VGA) was
+    added.   They use the  320x200x256, 320x400x256, and the
+    640x480x16 modes.   The graphics procedures were written
+    by Tylisha C. Andersen.
+
+    Many of the routines  now have an 80386 version.   These
+    are in the files '386LIB?.ASX'.  And yes, they have been
+    optimized for the 80386, not just translated to 32-bit.
+
+    Several example programs  have been added.   See section
+    10 for more information.
+
+    Another file access mode (mode 4) has been added.   This
+    mode fails if the file exists.   This is useful when the
+    file must not already exist,  for example using multiple
+    temporary files.  Also, the file routines were optimized
+    and fixed up  (i.e. fixed the fgetc bug).   The speed of
+    the file read routines has been doubled.
+
+
+  ÄÄÄÄÄÄÄÄÄÄ Version 2.0 Additions
+
+    Bit-oriented file  procedures were added.   These can be
+    useful for compression and encryption programs.  Now can
+    anyone contribute some compression routines?
+
+    A true random number procedure has been added.   This is
+    not a pseudo-random RNG, this one works by reading timer
+    countdown bits.   See the reference entry 'truerand' for
+    more information.
+
+    CRC routines  have been added for both 16 and 32-bit CRC
+    values.   These routines are not table based.
+
+    DOS version checking  has been added.   Now, the startup
+    code checks to make sure DOS v4.0 is running.
+
+    Trigonometric procedures  (sine, cosine, etc.) have been
+    added.   These work on fixed-point numbers.   The method
+    used is Taylor-series (slow, but very accurate).
+
+  ÄÄÄÄÄÄÄÄÄÄ Version 2.1 Bug Fixes
+
+    The 80386 code would not load due to an error.  Fixed.
+
+
+  ÄÄÄÄÄÄÄÄÄÄ Version 2.2 Additions
+
+    Ugly constructs such as  'mov es,ax/popa/mov ax,es' have
+    been replaced with cleaner versions, saving a few bytes.
+
+    A complete virtual memory system providing a simulated
+    infinite address space has been added.  This was written
+    by Tylisha C. Andersen.
+
+
+  ÄÄÄÄÄÄÄÄÄÄ Version 2.2 Bug Fixes
+
+    The 80386 version of 'nosound' would crash.  Fixed.
+
+    'getdfree' would not return -1 on error.  Fixed.
+
+
+  ÄÄÄÄÄÄÄÄÄÄ Version 3.0 Additions
+
+    The error handling has been completely rewritten to use
+    the carry flag instead of returning values in AX.  The
+    original routines are still avaliable; they are in the
+    files OLD186.LIB and OLD386.LIB.
+
+    The 'rand' and 'truerand' procedures have been changed
+    so as to greatly reduce round-off errors, which can
+    reduce randomness if the maximum is large.
+
+    An EGA compatible version of the text screen library has
+    been added.  Also, the enhanced colorset in the Hi-Res
+    text mode library was removed.
+
+    Key routines (getkey, kbhit, kflush) have been added.
+
+    Character manipulation procedures have been added.
+    These are the 'isalnum', 'isalpha', etc. character tests
+    and 'tolower', 'toupper' for case conversion.
+
+    The rebuild process has been sped up by re-writing the
+    splitter program SPLIT.C to use file buffers.
+
+    Several new string manipulation procedures have been
+    added, and the original ones optimized for size.  The
+    new procedures are 'strrchr', 'strncpy', 'strncat',
+    and 'replace'.
+
+
+  ÄÄÄÄÄÄÄÄÄÄ Version 3.0 Bug Fixes
+
+    The 'puts' procedure was not documented correctly.  It
+    actually does support redirection.  Fixed.
+
+
+10.  Future additions, bug reporting, etc.
+
+  Bugs may be reported to the author at:  tjr19@mail.idt.net.
+  Please include your street address, you could win $5.00 if
+  the bug you found is new.
+
+  In the future, a Compact model edition may be provided (this
+  means near code but far pointers for data).
+
+  This is a list of the routines wanted for future addition:
+
+    (1) Low-level disk routines (read/write sector, format
+        floppy).
+
+    (2) VGA graphics mode mouse routines to go with the VGA
+        graphics code.  (16 AND 256 color mode)
+
+    (3) General data compression: deflate, etc.
+
+    (4) Routines to read and write configuration data from
+        the program's executable file.
+
+    (5) Inter-procedure jumps, like the 'C' setjmp()/longjmp().
+
+    (6) Sound card interface routines.
+
+    (7) Indefinite long arithmetic, 256 bytes at least.
+
+    (8) Anything else that might be useful!!!
+
+
+  Note that encryption routines will NOT be accepted due to
+  possible restrictions on export of encryption material.
+
+
+11.  Description of examples.
+
+    Several example programs have been provided to demonstrate
+    the capabilities of FREELIB:
+
+    3XP1            Solves 3X+1 problem.  Demonstrates long integer
+                    arithmetic and numeric output.
+
+    BIN2HEX         Binary to hexadecimal filter.
+
+    GRTEST          Simple demo of graphics system, random numbers.
+
+    HEX2BIN         Hexadecimal to binary filter.
+
+    SHOWGY          Program to display *.GY files  (16K grayscale).
+                    Does resolution enhancement to 320x200.  Two of
+                    these files are included (FACE.GY, ROSE.GY).
+
+    SQUASH          Simple executable file compressor,  but it only
+                    works with .COM files.
+
+    TEST            Skeleton program that does nothing (294 bytes).
+                    You can use this for testing small fragments of
+                    code.
+
+    VIEW            File viewer.  Demonstrates text mode screen and
+                    the buffered file-access facilities.  Also uses
+                    memory allocation.  Now supports the EGA cards.
+
+    ZE, ZD          UUencode replacement, expands files by only 26%
+                    instead of 40% like UUencode does.  ZE encodes,
+                    and ZD decodes.
+
+
+    These files can be found in the directory 'PROGS'.  To assemble
+    the example programs, a batch file (REDO_EX.BAT) is provided.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ

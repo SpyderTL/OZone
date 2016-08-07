@@ -1,0 +1,221 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="List"
+	type="http://metalx.org/List"
+	xmlns="http://metalx.org/Program"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:dbg="http://metalx.org/i386/Functions/Debug"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:con="http://metalx.org/i386/Functions/Console"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:cls="http://metalx.org/Class">
+
+	<cls:field name="Count" offset="0" type="http://metalx.org/Integer"/>
+
+	<cls:method name="Skip" type="http://metalx.org/ListIterator">
+		<cls:parameter name="Count" type="http://metalx.org/Integer"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:PushAXToStack/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="className" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<mm:CheckOut length="8"/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddress/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>8</int>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="className">http://metalx.org/ListIterator</var:string>
+	</cls:method>
+
+	<cls:method name="First" type="http://metalx.org/Object">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:PushDIToStack/>
+
+		<str:Create length="2048"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-BXRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:GetData/>
+
+		<lst:ForEach>
+			<cpu:PushCXToStack/>
+			<cpu:PushDXToStack/>
+			<cpu:PushSIToStack/>
+			<cpu:PushCXToStack/>
+			<cpu:PushSIToStack/>
+
+			<obj:GetType/>
+
+			<cpu:CallRelative/>
+			<addressOf ref="findMethod" type="Relative32"/>
+
+			<clsf:GetMethodEntryPoint/>
+
+			<cpu:PullDIFromStack/>
+
+			<cpu:PushBXToStack/>
+
+			<cpu:LogicFunction/>
+			<logic:CallSIRegister/>
+
+			<cpu:PullBXFromStack/>
+
+			<cpu:CopyRegisterToOperand/>
+			<op:DI-SIRegister/>
+
+			<obj:GetData/>
+
+			<cpu:CopyRegisterToOperand/>
+			<op:BX-DIRegister/>
+
+			<str:AppendString/>
+
+			<cpu:PullAXFromStack/>
+
+			<cpu:CompareAXToImmediate/>
+			<int>1</int>
+
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="skip" type="Relative8"/>
+
+			<cpu:CopyImmediateToAL/>
+			<asc:CarriageReturn/>
+
+			<cpu:CopyRegisterToOperand/>
+			<op:BX-SIRegister/>
+
+			<cpu:PushBXToStack/>
+			<str:AppendCharacter/>
+			<cpu:PullBXFromStack/>
+
+			<cpu:CopyImmediateToAL/>
+			<asc:LineFeed/>
+
+			<cpu:CopyRegisterToOperand/>
+			<op:BX-SIRegister/>
+
+			<cpu:PushBXToStack/>
+			<str:AppendCharacter/>
+			<cpu:PullBXFromStack/>
+
+			<label id="skip"/>
+
+			<cpu:PullSIFromStack/>
+			<cpu:PullDXFromStack/>
+			<cpu:PullCXFromStack/>
+		</lst:ForEach>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="findMethod"/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="methodName" type="Absolute32"/>
+
+		<clsf:FindMethod/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="methodName"/>
+		<int>8</int>
+		<string>ToString</string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:inc="http://metalx.org/Intel/80386/Increment"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic">
+
+	<label id="showMessageBox" segment="0000" offset="00400193"/>
+	
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="helloWorld" type="Absolute32"/>
+
+	<cpu:CopyImmediateToDX/>
+	<int>0</int>
+
+	<cpu:PushDXToStack/>
+	<cpu:PushAXToStack/>
+	<cpu:PushAXToStack/>
+	<cpu:PushDXToStack/>
+
+	<cpu:LogicFunction/>
+	<logic:CallImmediateAddress/>
+	<addressOf ref="showMessageBox" type="Absolute32"/>
+
+	<cpu:ReturnToNearCaller/>
+
+	<label id="helloWorld"/>
+	<string>Hello World!</string>
+	<byte>0</byte>
+</scope>

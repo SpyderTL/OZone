@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema
+    targetNamespace="http://metalx.org/i386/Functions/MemoryManager"
+    elementFormDefault="qualified"
+    xmlns="http://metalx.org/i386/Functions/MemoryManager"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:element name="Reset">
+		<xsd:annotation>
+			<xsd:documentation>
+				Initializes a memory block for use by the memory manager.
+				
+				Modifies: AX
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="CheckOut">
+		<xsd:annotation>
+			<xsd:documentation>
+				Requests a pointer to a memory segment.
+
+				Input:
+				AX=Length
+
+				Output:
+				DI=Address
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="length" type="xsd:int"/>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="CheckIn">
+		<xsd:annotation>
+			<xsd:documentation>
+				Releases a memory segment for reuse.
+
+				Input:
+				AX=Length
+				DI=Address
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="length" type="xsd:int"/>
+		</xsd:complexType>
+	</xsd:element>
+
+</xsd:schema>

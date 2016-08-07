@@ -1,0 +1,2339 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="OhciUsbInterface"
+	type="http://metalx.org/Usb/Ohci/OhciUsbInterface"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:date="http://metalx.org/i386/Functions/Date"
+	xmlns:time="http://metalx.org/i386/Functions/Time"
+	xmlns:clk="http://metalx.org/i386/Functions/Clock"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:index="http://metalx.org/Intel/80386/Index"
+	xmlns:usb="http://metalx.org/Usb/Ohci/Registers"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
+	xmlns:cfg="http://metalx.org/Pc/Pci/Configuration">
+
+	<cls:field name="Configuration" type="http://metalx.org/Usb/Ohci/OhciUsbConfiguration" offset="0"/>
+	<cls:field name="Index" type="http://metalx.org/Integer" offset="12"/>
+
+	<cls:method name="GetEndpoints" type="http://metalx.org/Usb/Ohci/OhciUsbEndpointList">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DXRegister/>		
+		
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:PushDXToStack/>
+		
+		<pcif:GetBaseAddress0/>
+
+		<cpu:PullDXFromStack/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<!--Get Configuration Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200010</hex>
+		<!--Request Type (Get, Device)-->
+		<hex>80</hex>
+		<!--Request (Get Descriptor)-->
+		<hex>06</hex>
+		<!--Descriptor Index (Will Be Updated Below)-->
+		<hex>00</hex>
+		<!--Descriptor Type (Configuration Descriptor)-->
+		<hex>02</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200014</hex>
+		<!--Language ID (0)-->
+		<short>0</short>
+		<!--Descriptor Length (9)-->
+		<short>9</short>
+
+		<!--Create Setup Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210030</hex>
+		<hex>e0e00000</hex>
+
+		<!--First Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210034</hex>
+		<hex>00200010</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210038</hex>
+		<hex>00210040</hex>
+
+		<!--Last Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021003c</hex>
+		<hex>00200017</hex>
+
+		<!--Create Result Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210040</hex>
+		<hex>e0f00000</hex>
+
+		<!--First Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210044</hex>
+		<hex>00200020</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210048</hex>
+		<hex>00210050</hex>
+
+		<!--Last Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021004c</hex>
+		<hex>00200028</hex>
+
+		<!--Create Terminator Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210050</hex>
+		<hex>e2000000</hex>
+
+		<!--First Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210054</hex>
+		<hex>00000000</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210058</hex>
+		<hex>00000000</hex>
+
+		<!--Last Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021005c</hex>
+		<hex>00000000</hex>
+
+		<!--Queue Transfer Descriptors-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220014</hex>
+		<hex>00210050</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210030</hex>
+
+		<!--Enable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AndWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>ffffbfff</hex>
+
+		<!--Notify Controller-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<usb:CommandStatus/>
+		<hex>00000002</hex>
+
+		<!--Wait For Data-->
+		<label id="wait"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210050</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wait" type="Relative8"/>
+
+		<!--Disable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:OrWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>00004000</hex>
+
+		<!--Update Request With Actual Length-->
+		<cpu:Operand16/>
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<hex>00200022</hex>
+
+		<cpu:Operand16/>
+		<cpu:CopyAXToAbsoluteMemory/>
+		<hex>00200016</hex>
+
+		<!--Create Setup Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210060</hex>
+		<hex>e0e00000</hex>
+
+		<!--First Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210064</hex>
+		<hex>00200010</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210068</hex>
+		<hex>00210070</hex>
+
+		<!--Last Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021006c</hex>
+		<hex>00200017</hex>
+
+		<!--Create Result Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210070</hex>
+		<hex>e0f00000</hex>
+
+		<!--First Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210074</hex>
+		<hex>00200020</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210078</hex>
+		<hex>00210080</hex>
+
+		<!--Last Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021007c</hex>
+		<hex>0020001f</hex>
+
+		<cpu:Operand16/>
+		<cpu:AddRegisterToOperand/>
+		<op:AX-ImmediateAddress/>
+		<hex>0021007c</hex>
+
+		<!--Create Terminator Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210080</hex>
+		<hex>e2000000</hex>
+
+		<!--First Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210084</hex>
+		<hex>00000000</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210088</hex>
+		<hex>00000000</hex>
+
+		<!--Last Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021008c</hex>
+		<hex>00000000</hex>
+
+		<!--Queue Transfer Descriptors-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220014</hex>
+		<hex>00210080</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210060</hex>
+
+		<!--Enable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AndWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>ffffbfff</hex>
+
+		<!--Notify Controller-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<usb:CommandStatus/>
+		<hex>00000002</hex>
+
+		<!--Wait For Data-->
+		<label id="wait2"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210080</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wait2" type="Relative8"/>
+
+		<!--Disable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:OrWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>00004000</hex>
+
+		<!--Read Data-->
+		<cpu:Operand16/>
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<hex>00200022</hex>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<!--Find Descriptors-->
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:CopyImmediateToSI/>
+		<hex>00200020</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:CopyImmediateToBX/>
+		<int>0</int>
+
+		<label id="nextDescriptor"/>
+
+		<cpu:MathImmediateToOperandFunction8/>
+		<math:CompareWithSIAddressPlusImmediate8/>
+		<byte>1</byte>
+		<byte>5</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notEndpoint" type="Relative8"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<label id="notEndpoint"/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:BranchToRelative8IfCXIsZero/>
+		<addressOf ref="createList" type="Relative8"/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="nextDescriptor" type="Relative8"/>
+
+		<label id="createList"/>
+
+		<!--Create List-->
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:PushDXToStack/>
+		
+		<lst:Create/>
+
+		<cpu:PullDXFromStack/>
+
+		<!--Find Class-->
+		<cpu:PushDIToStack/>
+
+		<cpu:PushDXToStack/>
+		
+		<sys:GetCatalog/>
+
+		<cpu:PullDXFromStack/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="ohciUsbEndpoint" type="Absolute32"/>
+
+		<cpu:PushDXToStack/>
+
+		<cat:FindType/>
+
+		<cpu:PullDXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-CXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<!--Create Objects-->
+		<label id="forEachDescriptor"/>
+
+		<cpu:PushDXToStack/>
+		
+		<mm:CheckOut length="24"/>
+
+		<cpu:PullDXFromStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-DXAddress/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-DXAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-DXAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-DXAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddress/>
+		<index:SP/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-AXAddressPlusImmediate8/>
+		<byte>2</byte>
+		
+		<cpu:AndALWithImmediate/>
+		<binary>00001111</binary>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>18</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddress/>
+		<index:SP/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-AXAddressPlusImmediate8/>
+		<byte>2</byte>
+		
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterRight/>
+		<byte>7</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>20</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddress/>
+		<index:SP/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-AXAddressPlusImmediate8/>
+		<byte>3</byte>
+		
+		<cpu:AndALWithImmediate/>
+		<binary>00000011</binary>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>19</byte>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:CopyImmediateToAX/>
+		<int>24</int>
+
+		<cpu:PushDXToStack/>
+		
+		<obj:Create/>
+
+		<cpu:PullDXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:DecrementAX/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:PushDXToStack/>
+		
+		<lst:SetItem/>
+
+		<cpu:PullDXFromStack/>
+
+		<cpu:PullSIFromStack/>
+
+		<!--<cpu:LoopToRelative8/>
+		<addressOf ref="forEachDescriptor" type="Relative8"/>-->
+		
+		<cpu:DecrementCX/>
+		
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="createListObject" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="forEachDescriptor" type="Relative32"/>
+
+		<!--Create List Object-->
+		<label id="createListObject"/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:IncrementAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:PushAXToStack/>
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="ohciUsbEndpointList" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullAXFromStack/>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="ohciUsbEndpoint">http://metalx.org/Usb/Ohci/OhciUsbEndpoint</var:string>
+		<var:string id="ohciUsbEndpointList">http://metalx.org/Usb/Ohci/OhciUsbEndpointList</var:string>
+	</cls:method>
+	
+	<cls:method name="GetNumber" type="http://metalx.org/Integer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<!--Get Configuration Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200010</hex>
+		<!--Type-->
+		<hex>80</hex>
+		<!--Request-->
+		<hex>06</hex>
+		<!--Value (Descriptor Index)-->
+		<hex>00</hex>
+		<!--Value (Descriptor Type)-->
+		<hex>02</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200014</hex>
+		<!--Index-->
+		<short>0</short>
+		<!--Length-->
+		<short>66</short>
+
+		<!--Create Setup Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210030</hex>
+		<hex>e0e00000</hex>
+
+		<!--Buffer Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210034</hex>
+		<hex>00200010</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210038</hex>
+		<hex>00210040</hex>
+
+		<!--Buffer End Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021003c</hex>
+		<hex>00200017</hex>
+
+		<!--Create Result Transfer Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210040</hex>
+		<hex>e0f00000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210044</hex>
+		<hex>00200020</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210048</hex>
+		<hex>00210050</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021004c</hex>
+		<hex>00200061</hex>
+
+		<!--Create Terminator Transfer Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210050</hex>
+		<hex>e0000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210054</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210058</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021005c</hex>
+		<hex>00000000</hex>
+
+		<!--Queue Transfer Descriptors-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220014</hex>
+		<hex>00210050</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210030</hex>
+
+		<!--Enable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AndWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>ffffbfff</hex>
+
+		<!--Notify Controller-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<usb:CommandStatus/>
+		<hex>00000002</hex>
+
+		<!--Wait For Data-->
+		<label id="wait"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210050</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wait" type="Relative8"/>
+
+		<!--Disable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:OrWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>00004000</hex>
+
+		<!--Read Data-->
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>0020002b</hex>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetAlternateSetting" type="http://metalx.org/Integer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<!--Get Configuration Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200010</hex>
+		<!--Type-->
+		<hex>80</hex>
+		<!--Request-->
+		<hex>06</hex>
+		<!--Value (Descriptor Index)-->
+		<hex>00</hex>
+		<!--Value (Descriptor Type)-->
+		<hex>02</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200014</hex>
+		<!--Index-->
+		<short>0</short>
+		<!--Length-->
+		<short>66</short>
+
+		<!--Create Setup Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210030</hex>
+		<hex>e0e00000</hex>
+
+		<!--Buffer Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210034</hex>
+		<hex>00200010</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210038</hex>
+		<hex>00210040</hex>
+
+		<!--Buffer End Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021003c</hex>
+		<hex>00200017</hex>
+
+		<!--Create Result Transfer Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210040</hex>
+		<hex>e0f00000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210044</hex>
+		<hex>00200020</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210048</hex>
+		<hex>00210050</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021004c</hex>
+		<hex>00200061</hex>
+
+		<!--Create Terminator Transfer Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210050</hex>
+		<hex>e0000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210054</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210058</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021005c</hex>
+		<hex>00000000</hex>
+
+		<!--Queue Transfer Descriptors-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220014</hex>
+		<hex>00210050</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210030</hex>
+
+		<!--Enable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AndWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>ffffbfff</hex>
+
+		<!--Notify Controller-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<usb:CommandStatus/>
+		<hex>00000002</hex>
+
+		<!--Wait For Data-->
+		<label id="wait"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210050</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wait" type="Relative8"/>
+
+		<!--Disable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:OrWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>00004000</hex>
+
+		<!--Read Data-->
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>0020002c</hex>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetEndpointCount" type="http://metalx.org/Integer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<!--Get Configuration Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200010</hex>
+		<!--Type-->
+		<hex>80</hex>
+		<!--Request-->
+		<hex>06</hex>
+		<!--Value (Descriptor Index)-->
+		<hex>00</hex>
+		<!--Value (Descriptor Type)-->
+		<hex>02</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200014</hex>
+		<!--Index-->
+		<short>0</short>
+		<!--Length-->
+		<short>66</short>
+
+		<!--Create Setup Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210030</hex>
+		<hex>e0e00000</hex>
+
+		<!--Buffer Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210034</hex>
+		<hex>00200010</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210038</hex>
+		<hex>00210040</hex>
+
+		<!--Buffer End Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021003c</hex>
+		<hex>00200017</hex>
+
+		<!--Create Result Transfer Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210040</hex>
+		<hex>e0f00000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210044</hex>
+		<hex>00200020</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210048</hex>
+		<hex>00210050</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021004c</hex>
+		<hex>00200061</hex>
+
+		<!--Create Terminator Transfer Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210050</hex>
+		<hex>e0000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210054</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210058</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021005c</hex>
+		<hex>00000000</hex>
+
+		<!--Queue Transfer Descriptors-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220014</hex>
+		<hex>00210050</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210030</hex>
+
+		<!--Enable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AndWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>ffffbfff</hex>
+
+		<!--Notify Controller-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<usb:CommandStatus/>
+		<hex>00000002</hex>
+
+		<!--Wait For Data-->
+		<label id="wait"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210050</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wait" type="Relative8"/>
+
+		<!--Disable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:OrWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>00004000</hex>
+
+		<!--Read Data-->
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>0020002d</hex>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClassID" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<!--Get Configuration Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200010</hex>
+		<!--Type-->
+		<hex>80</hex>
+		<!--Request-->
+		<hex>06</hex>
+		<!--Value (Descriptor Index)-->
+		<hex>00</hex>
+		<!--Value (Descriptor Type)-->
+		<hex>02</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200014</hex>
+		<!--Index-->
+		<short>0</short>
+		<!--Length-->
+		<short>66</short>
+
+		<!--Create Setup Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210030</hex>
+		<hex>e0e00000</hex>
+
+		<!--Buffer Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210034</hex>
+		<hex>00200010</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210038</hex>
+		<hex>00210040</hex>
+
+		<!--Buffer End Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021003c</hex>
+		<hex>00200017</hex>
+
+		<!--Create Result Transfer Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210040</hex>
+		<hex>e0f00000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210044</hex>
+		<hex>00200020</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210048</hex>
+		<hex>00210050</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021004c</hex>
+		<hex>00200061</hex>
+
+		<!--Create Terminator Transfer Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210050</hex>
+		<hex>e0000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210054</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210058</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021005c</hex>
+		<hex>00000000</hex>
+
+		<!--Queue Transfer Descriptors-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220014</hex>
+		<hex>00210050</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210030</hex>
+
+		<!--Enable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AndWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>ffffbfff</hex>
+
+		<!--Notify Controller-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<usb:CommandStatus/>
+		<hex>00000002</hex>
+
+		<!--Wait For Data-->
+		<label id="wait"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210050</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wait" type="Relative8"/>
+
+		<!--Disable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:OrWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>00004000</hex>
+
+		<!--Read Data-->
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>0020002e</hex>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetSubclassID" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<!--Get Configuration Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200010</hex>
+		<!--Type-->
+		<hex>80</hex>
+		<!--Request-->
+		<hex>06</hex>
+		<!--Value (Descriptor Index)-->
+		<hex>00</hex>
+		<!--Value (Descriptor Type)-->
+		<hex>02</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200014</hex>
+		<!--Index-->
+		<short>0</short>
+		<!--Length-->
+		<short>66</short>
+
+		<!--Create Setup Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210030</hex>
+		<hex>e0e00000</hex>
+
+		<!--Buffer Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210034</hex>
+		<hex>00200010</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210038</hex>
+		<hex>00210040</hex>
+
+		<!--Buffer End Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021003c</hex>
+		<hex>00200017</hex>
+
+		<!--Create Result Transfer Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210040</hex>
+		<hex>e0f00000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210044</hex>
+		<hex>00200020</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210048</hex>
+		<hex>00210050</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021004c</hex>
+		<hex>00200061</hex>
+
+		<!--Create Terminator Transfer Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210050</hex>
+		<hex>e0000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210054</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210058</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021005c</hex>
+		<hex>00000000</hex>
+
+		<!--Queue Transfer Descriptors-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220014</hex>
+		<hex>00210050</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210030</hex>
+
+		<!--Enable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AndWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>ffffbfff</hex>
+
+		<!--Notify Controller-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<usb:CommandStatus/>
+		<hex>00000002</hex>
+
+		<!--Wait For Data-->
+		<label id="wait"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210050</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wait" type="Relative8"/>
+
+		<!--Disable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:OrWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>00004000</hex>
+
+		<!--Read Data-->
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>0020002f</hex>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetProtocolID" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<!--Get Configuration Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200010</hex>
+		<!--Type-->
+		<hex>80</hex>
+		<!--Request-->
+		<hex>06</hex>
+		<!--Value (Descriptor Index)-->
+		<hex>00</hex>
+		<!--Value (Descriptor Type)-->
+		<hex>02</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200014</hex>
+		<!--Index-->
+		<short>0</short>
+		<!--Length-->
+		<short>66</short>
+
+		<!--Create Setup Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210030</hex>
+		<hex>e0e00000</hex>
+
+		<!--Buffer Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210034</hex>
+		<hex>00200010</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210038</hex>
+		<hex>00210040</hex>
+
+		<!--Buffer End Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021003c</hex>
+		<hex>00200017</hex>
+
+		<!--Create Result Transfer Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210040</hex>
+		<hex>e0f00000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210044</hex>
+		<hex>00200020</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210048</hex>
+		<hex>00210050</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021004c</hex>
+		<hex>00200061</hex>
+
+		<!--Create Terminator Transfer Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210050</hex>
+		<hex>e0000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210054</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210058</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021005c</hex>
+		<hex>00000000</hex>
+
+		<!--Queue Transfer Descriptors-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220014</hex>
+		<hex>00210050</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210030</hex>
+
+		<!--Enable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AndWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>ffffbfff</hex>
+
+		<!--Notify Controller-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<usb:CommandStatus/>
+		<hex>00000002</hex>
+
+		<!--Wait For Data-->
+		<label id="wait"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210050</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wait" type="Relative8"/>
+
+		<!--Disable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:OrWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>00004000</hex>
+
+		<!--Read Data-->
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>00200030</hex>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetName" type="http://metalx.org/String">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<!--Get Configuration Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200010</hex>
+		<!--Request Type (Get, Device)-->
+		<hex>80</hex>
+		<!--Request (Get Descriptor)-->
+		<hex>06</hex>
+		<!--Descriptor Index (0)-->
+		<hex>00</hex>
+		<!--Descriptor Type (Configuration Descriptor)-->
+		<hex>02</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200014</hex>
+		<!--Index (0)-->
+		<short>0</short>
+		<!--Descriptor Length (66)-->
+		<short>66</short>
+
+		<!--Create Setup Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210030</hex>
+		<hex>e0e00000</hex>
+
+		<!--First Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210034</hex>
+		<hex>00200010</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210038</hex>
+		<hex>00210040</hex>
+
+		<!--Last Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021003c</hex>
+		<hex>00200017</hex>
+
+		<!--Create Result Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210040</hex>
+		<hex>e0f00000</hex>
+
+		<!--First Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210044</hex>
+		<hex>00200020</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210048</hex>
+		<hex>00210050</hex>
+
+		<!--Last Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021004c</hex>
+		<hex>00200061</hex>
+
+		<!--Create Terminator Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210050</hex>
+		<hex>e0000000</hex>
+
+		<!--First Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210054</hex>
+		<hex>00000000</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210058</hex>
+		<hex>00000000</hex>
+
+		<!--Last Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021005c</hex>
+		<hex>00000000</hex>
+
+		<!--Queue Transfer Descriptors-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220014</hex>
+		<hex>00210050</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210030</hex>
+
+		<!--Enable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AndWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>ffffbfff</hex>
+
+		<!--Notify Controller-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<usb:CommandStatus/>
+		<hex>00000002</hex>
+
+		<!--Wait For Data-->
+		<label id="wait"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210050</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wait" type="Relative8"/>
+
+		<!--Disable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:OrWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>00004000</hex>
+
+		<!--Read Data-->
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>00200031</hex>
+
+		<!--Get String Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200010</hex>
+		<hex>80</hex>
+		<hex>06</hex>
+		<hex>00</hex>
+		<hex>03</hex>
+
+		<cpu:CopyALToAbsoluteMemory/>
+		<hex>00200012</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200014</hex>
+		<short>1033</short>
+		<short>66</short>
+
+		<!--Create Setup Transfer Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210060</hex>
+		<hex>e0e00000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210064</hex>
+		<hex>00200010</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210068</hex>
+		<hex>00210070</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021006c</hex>
+		<hex>00200017</hex>
+
+		<!--Create Result Transfer Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210070</hex>
+		<hex>e0f00000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210074</hex>
+		<hex>00200020</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210078</hex>
+		<hex>00210080</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021007c</hex>
+		<hex>00200061</hex>
+
+		<!--Create Terminator Transfer Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210080</hex>
+		<hex>e0000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210084</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210088</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021008c</hex>
+		<hex>00000000</hex>
+
+		<!--Queue Transfer Descriptors-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220014</hex>
+		<hex>00210080</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210060</hex>
+
+		<!--Enable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AndWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>ffffbfff</hex>
+
+		<!--Notify Controller-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<usb:CommandStatus/>
+		<hex>00000002</hex>
+
+		<!--Wait For Data-->
+		<label id="wait2"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210080</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wait2" type="Relative8"/>
+
+		<!--Disable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:OrWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>00004000</hex>
+
+		<!--Read Data-->
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>00200020</hex>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<cpu:ShiftRegisterByOneFunction/>
+		<shift:ShiftAXRegisterRight/>
+
+		<cpu:DecrementAX/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BXRegister/>
+
+		<str:Create/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyImmediateToSI/>
+		<hex>00200022</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<label id="readString"/>
+
+		<cpu:Operand16/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:CopyALToDIAddressAndIncrementDI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="readString" type="Relative8"/>
+
+		<cpu:PullDIFromStack/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Enable" type="http://metalx.org/Usb/Ohci/OhciUsbConfiguration">
+		<cpu:PushDIToStack/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<!--Get Configuration Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200010</hex>
+		<!--Request Type (Get, Device)-->
+		<hex>80</hex>
+		<!--Request (Get Descriptor)-->
+		<hex>06</hex>
+		<!--Descriptor Index (Will Be Updated Below)-->
+		<hex>00</hex>
+		<!--Descriptor Type (Configuration Descriptor)-->
+		<hex>02</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00200014</hex>
+		<!--Language ID (0)-->
+		<short>0</short>
+		<!--Descriptor Length (9)-->
+		<short>9</short>
+
+		<!--Create Setup Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210030</hex>
+		<hex>e0e00000</hex>
+
+		<!--First Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210034</hex>
+		<hex>00200010</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210038</hex>
+		<hex>00210040</hex>
+
+		<!--Last Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021003c</hex>
+		<hex>00200017</hex>
+
+		<!--Create Result Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210040</hex>
+		<hex>e0f00000</hex>
+
+		<!--First Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210044</hex>
+		<hex>00200020</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210048</hex>
+		<hex>00210050</hex>
+
+		<!--Last Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021004c</hex>
+		<hex>00200028</hex>
+
+		<!--Create Terminator Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210050</hex>
+		<hex>e2000000</hex>
+
+		<!--First Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210054</hex>
+		<hex>00000000</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210058</hex>
+		<hex>00000000</hex>
+
+		<!--Last Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021005c</hex>
+		<hex>00000000</hex>
+
+		<!--Queue Transfer Descriptors-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220014</hex>
+		<hex>00210050</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210030</hex>
+
+		<!--Enable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AndWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>ffffbfff</hex>
+
+		<!--Notify Controller-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<usb:CommandStatus/>
+		<hex>00000002</hex>
+
+		<!--Wait For Data-->
+		<label id="wait"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210050</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wait" type="Relative8"/>
+
+		<!--Disable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:OrWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>00004000</hex>
+
+		<!--Update Request With Actual Length-->
+		<cpu:Operand16/>
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<hex>00200022</hex>
+
+		<cpu:Operand16/>
+		<cpu:CopyAXToAbsoluteMemory/>
+		<hex>00200016</hex>
+
+		<!--Create Setup Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210060</hex>
+		<hex>e0e00000</hex>
+
+		<!--First Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210064</hex>
+		<hex>00200010</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210068</hex>
+		<hex>00210070</hex>
+
+		<!--Last Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021006c</hex>
+		<hex>00200017</hex>
+
+		<!--Create Result Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210070</hex>
+		<hex>e0f00000</hex>
+
+		<!--First Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210074</hex>
+		<hex>00200020</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210078</hex>
+		<hex>00210080</hex>
+
+		<!--Last Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021007c</hex>
+		<hex>0020001f</hex>
+
+		<cpu:Operand16/>
+		<cpu:AddRegisterToOperand/>
+		<op:AX-ImmediateAddress/>
+		<hex>0021007c</hex>
+
+		<!--Create Terminator Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210080</hex>
+		<hex>e2000000</hex>
+
+		<!--First Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210084</hex>
+		<hex>00000000</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00210088</hex>
+		<hex>00000000</hex>
+
+		<!--Last Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0021008c</hex>
+		<hex>00000000</hex>
+
+		<!--Queue Transfer Descriptors-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220014</hex>
+		<hex>00210080</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210060</hex>
+
+		<!--Enable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AndWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>ffffbfff</hex>
+
+		<!--Notify Controller-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<usb:CommandStatus/>
+		<hex>00000002</hex>
+
+		<!--Wait For Data-->
+		<label id="wait2"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithImmediateAddress/>
+		<hex>00220018</hex>
+		<hex>00210080</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wait2" type="Relative8"/>
+
+		<!--Disable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:OrWithImmediateAddress/>
+		<hex>00220010</hex>
+		<hex>00004000</hex>
+
+		<!--Read Data-->
+		<cpu:Operand16/>
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<hex>00200022</hex>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<!--Find Interface Descriptor-->
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:CopyImmediateToSI/>
+		<hex>00200020</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:CopyImmediateToBX/>
+		<int>0</int>
+
+		<label id="nextDescriptor"/>
+
+		<cpu:MathImmediateToOperandFunction8/>
+		<math:CompareWithSIAddressPlusImmediate8/>
+		<byte>1</byte>
+		<byte>5</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notEndpointDescriptor" type="Relative8"/>
+
+		<cpu:PushSIToStack/>
+		
+		<cpu:IncrementBX/>
+
+		<label id="notEndpointDescriptor"/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:BranchToRelative8IfCXIsZero/>
+		<addressOf ref="createDescriptors" type="Relative8"/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="nextDescriptor" type="Relative8"/>
+		
+		<label id="createDescriptors"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-CXRegister/>
+
+		<cpu:CopyImmediateToDI/>
+		<hex>00250000</hex>
+
+		<label id="nextEndpoint"/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>3</byte>
+
+		<cpu:AndALWithImmediate/>
+		<binary>00000011</binary>
+
+		<cpu:CompareALToImmediate/>
+		<byte>2</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notBulk" type="Relative8"/>
+		
+		<!--Add Bulk Endpoint-->
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-DIAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<hex>10</hex>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIRegister/>
+		<hex>10</hex>
+
+		<cpu:CopyImmediateToBX/>
+		<hex>00404001</hex>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>2</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000000f</hex>
+		<!--<binary>00001111</binary>-->
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>7</byte>
+
+		<cpu:OrRegisterWithOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIAddressPlusImmediate8/>
+		<hex>00</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<hex>04</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<hex>08</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<hex>0c</hex>
+		<hex>00000000</hex>
+
+		<label id="notBulk"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextEndpoint" type="Relative8"/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullDIFromStack/>
+		
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="deviceName" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="deviceName">Universal Serial Bus 1.0 Device Interface (OHCI)</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

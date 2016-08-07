@@ -1,0 +1,176 @@
+		.386
+		option	segment:use16, proc:private
+
+		include	consts.a
+
+		ifndef	$stdin_a
+$stdin_a	=	0
+		echo	stdin.a
+
+$segStdIO	segment	para public 'STDIO'
+
+; Floating point conversion routine.
+
+externdef	$T2FP:near
+
+; Buffered character input routines.
+
+		xtrn	getc,CS,Stk
+getc		macro	Operand
+		bCSStk	Getc, Operand
+		endm
+
+
+		xtrn	Peekc,CS,Stk
+Peekc		macro	Operand
+		bCSStk	Peekc, Operand
+		endm
+
+
+		xtrn	geth,CS,Stk
+geth		macro	Operand
+		bCSStk	Geth, Operand
+		endm
+
+
+		xtrn	gets,CS,Stk
+gets		macro	Operand
+		bCSStk	Gets, Operand
+		endm
+
+
+		xtrn	rawgets,CS,Stk
+rawgets		macro	Operand
+		bCSStk	rawGets, Operand
+		endm
+
+
+		xtrn	GetcLen,CS,Stk
+GetcLen		macro	Operand
+		wCSStk	GetcLen, Operand
+		endm
+
+
+		xtrn	Getw,CS,Stk
+Getw		macro	Operand
+		wCSStk	Getw, Operand
+		endm
+
+
+		xtrn	Geti,CS,Stk
+Geti		macro	Operand
+		wCSStk	Geti, Operand
+		endm
+
+
+		xtrn	Getu,CS,Stk
+Getu		macro	Operand
+		wCSStk	Getu, Operand
+		endm
+
+
+		xtrn	Getul,CS,Stk
+Getul		macro	Operand
+		LCSStk	Getul, Operand
+		endm
+
+
+		xtrn	Getl,CS,Stk
+Getl		macro	Operand
+		LCSStk	Getl, Operand
+		endm
+
+
+		xtrn	Gethl,CS,Stk
+Gethl		macro	Operand
+		LCSStk	Gethl, Operand
+		endm
+
+
+
+
+xscanf		macro	which, fmtStr, OtherParms:vararg
+
+		call	$&which&
+
+		if	IsStrConst( fmtStr )
+		byte	fmtStr
+		byte	0
+
+		for	arg, <OtherParms>
+		
+		ifnb	IsVar( arg )
+		 
+		dword	arg
+		
+		else
+		
+%		echo	Illegal &which& operand.
+		echo	First operand must be a string, 
+		echo	subsequent operands must be variable names.		
+		err
+		exitm
+
+		endif	;IsVar
+
+		endm	;for
+
+		else	;Is not str const
+
+%		echo	Illegal &which& format string operand.
+		echo	First operand must be a string constant.
+		err
+		exitm
+
+		endif	;IsStrConst
+		
+		endm	;xscanf
+
+
+
+
+
+		externdef $scanf:far
+		externdef $scanff:far
+
+scanf		macro	FmtStr, args:vararg
+		ifb	<FmtStr>
+		call	$scanf
+		else
+		xscanf	scanf, FmtStr, <args>
+		endif
+		endm
+		
+scanff		macro	 FmtStr, args:vararg
+		ifb	<FmtStr>
+		call	$scanff
+		else
+		xscanf	scanff, FmtStr, <args>
+		endif
+		endm
+		
+
+
+		xtrn	Getf
+		xtrn	FlushGetc
+		xtrn	SetTermCH
+		xtrn	GetTermCH
+		xtrn	RawGetc
+		xtrn	SetInAdrs
+		xtrn	GetInAdrs
+		xtrn	PushInAdrs
+		xtrn	PopInAdrs
+		xtrn	SetInBIOS
+		xtrn	SetInStd
+		xtrn	ResetStdIn
+		xtrn	GetcBIOS
+		xtrn	GetcStdIn
+		xtrn	RawGetsm
+		xtrn	TstKbd
+		xtrn	TstInput
+
+
+
+$segSTDIO	ends
+
+		endif	;ifndef $stdin_a

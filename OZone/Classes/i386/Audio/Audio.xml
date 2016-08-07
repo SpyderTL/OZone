@@ -1,0 +1,463 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Audio"
+	static="true"
+	type="http://metalx.org/Audio"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
+	xmlns:pcir="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:pcis="http://metalx.org/Pc/Pci/Status"
+	xmlns:pcic="http://metalx.org/Pc/Pci/Classes"
+	xmlns:sbc="http://metalx.org/Creative/SoundBlaster/Commands"
+	xmlns:pcnet="http://metalx.org/i386/Functions/PcNet"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:con="http://metalx.org/i386/Functions/Console"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands">
+
+	<cls:method name="GetDevices" type="http://metalx.org/Audio/AudioDeviceList" static="true">
+		<!--Find PCI Devices-->
+		<cpu:CopyImmediateToSI/>
+		<int>0</int>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>00001000</hex>
+
+		<cpu:CopyImmediateToBX/>
+		<int>0</int>
+
+		<label id="forEachSlot"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-AXRegister/>
+
+		<pcif:GetDeviceID/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>8086</hex>
+		<hex>2415</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="hdAudio" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="ac97Class" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="slotEmpty" type="Relative32"/>
+
+		<label id="hdAudio"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>8086</hex>
+		<hex>2668</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="hdAudio2" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="hdAudioClass" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="slotEmpty" type="Relative32"/>
+
+		<label id="hdAudio2"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>8086</hex>
+		<hex>1c20</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="hdAudio3" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="hdAudioClass" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="slotEmpty" type="Relative32"/>
+
+		<label id="hdAudio3"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>10de</hex>
+		<hex>055c</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="hdAudio4" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="hdAudioClass" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="slotEmpty" type="Relative32"/>
+
+		<label id="hdAudio4"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>10de</hex>
+		<hex>055d</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="es1371" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="hdAudioClass" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="slotEmpty" type="Relative32"/>
+
+		<label id="es1371"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>1274</hex>
+		<hex>1371</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="slotEmpty" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="es1371Class" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="slotEmpty" type="Relative32"/>
+
+		<label id="slotEmpty"/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:DecrementCX/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="findIsaDevices" type="Relative8"/>
+		
+		<cpu:JumpToRelative/>
+		<addressOf ref="forEachSlot" type="Relative32"/>
+		
+		<!--Find ISA Devices-->
+		<label id="findIsaDevices"/>
+		
+		<!--<cpu:CopyImmediateToDX/>
+		<hex>00000226</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>1</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>0000022e</hex>
+
+		<label id="waitForReady"/>
+		
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:TestALWithImmediate/>
+		<binary>10000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="waitForReady" type="Relative8"/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>0000022a</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:CompareALToImmediate/>
+		<hex>aa</hex>-->
+
+		<cpu:CopyImmediateToDX/>
+		<hex>0000022c</hex>
+
+		<cpu:PushCXToStack/>
+
+		<cpu:CopyImmediateToCX/>
+		<int>1000</int>
+
+		<label id="waitForReady"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>10000000</binary>
+
+		<cpu:LoopToRelative8WhileNotZero/>
+		<!--<cpu:BranchToRelative8IfNotZero/>-->
+		<addressOf ref="waitForReady" type="Relative8"/>
+
+		<cpu:PullCXFromStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbc:GetDspVersion/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<byte>2</byte>
+
+		<label id="waitForData"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>10000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="waitForData" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<byte>4</byte>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<byte>4</byte>
+
+		<label id="waitForData2"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>10000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="waitForData2" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<byte>4</byte>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:CompareAXToImmediate/>
+		<hex>0405</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="createList" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="soundBlasterClass" type="Absolute32"/>
+		
+		<cpu:PushImmediateToStack/>
+		<hex>00000220</hex>
+
+		<cpu:IncrementBX/>
+
+		<!--Create List-->
+		<label id="createList"/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<lst:Create/>
+
+		<!--Find Classes-->
+		<cpu:PushDIToStack/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="ac97Name" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="ac97Class" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="hdAudioName" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="hdAudioClass" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="soundBlasterName" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="soundBlasterClass" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="es1371Name" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="es1371Class" type="Absolute32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-CXRegister/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:CompareAXToImmediate/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="createListObject" type="Relative8"/>
+
+		<!--Create PciDevice Object-->
+		<label id="forEachDevice"/>
+
+		<cpu:PushDIToStack/>
+
+		<mm:CheckOut length="4"/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:PullBXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddress/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>4</int>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-BXAddress/>
+
+		<obj:Create/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:DecrementAX/>
+
+		<lst:SetItem/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachDevice" type="Relative8"/>
+
+		<!--Create List Object-->
+		<label id="createListObject"/>
+
+		<!--Get Item Count-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-DIAddress/>
+
+		<cpu:IncrementAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:PushAXToStack/>
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="audioDeviceList" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+		<cpu:PullAXFromStack/>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<var:string id="audioDeviceList">http://metalx.org/Audio/AudioDeviceList</var:string>
+	<var:string id="ac97Name">http://metalx.org/Audio/Intel/Ac97/Ac97Device</var:string>
+	<var:integer id="ac97Class">0</var:integer>
+	<var:string id="hdAudioName">http://metalx.org/Audio/Intel/HdAudio/HdAudioDevice</var:string>
+	<var:integer id="hdAudioClass">0</var:integer>
+	<var:string id="soundBlasterName">http://metalx.org/Audio/Creative/SoundBlaster</var:string>
+	<var:integer id="soundBlasterClass">0</var:integer>
+	<var:string id="es1371Name">http://metalx.org/Audio/Ensoniq/Es1371</var:string>
+	<var:integer id="es1371Class">0</var:integer>
+</cls:class>

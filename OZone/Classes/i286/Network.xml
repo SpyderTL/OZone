@@ -1,0 +1,570 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Network"
+	static="true"
+	type="http://metalx.org/Network"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/i286/Structures/Class"
+	xmlns:sys="http://metalx.org/i286/Functions/System"
+	xmlns:bool="http://metalx.org/i286/Functions/Boolean"
+	xmlns:pci="http://metalx.org/Pc/Pci/Functions"
+	xmlns:pcic="http://metalx.org/Pc/Pci/Command"
+	xmlns:pcir="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:pcis="http://metalx.org/Pc/Pci/Status"
+	xmlns:pcn="http://metalx.org/Amd/PcNet/Ports"
+	xmlns:pcs="http://metalx.org/Amd/PcNet/ControlStatus"
+	xmlns:pcb="http://metalx.org/Amd/PcNet/BusConfiguration"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:vid="http://metalx.org/Pc/Bios/Video"
+	xmlns:vesa="http://metalx.org/Pc/Vesa/SuperVga"
+	xmlns:hex="http://metalx.org/i286/Functions/Hexadecimal"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:ari="http://metalx.org/Intel/80286/Arithmetic"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands">
+
+	<cls:method name="FindNetworkAdapter" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToAX/>
+		<pci:FindPciDevice/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>1022</hex>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>2000</hex>
+
+		<cpu:CopyImmediateToSI/>
+		<hex>0000</hex>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:PciFunctions/>
+
+		<cpu:CopyImmediateToAX/>
+		<pci:ReadConfigurationShort/>
+
+		<cpu:CopyImmediateToDI/>
+		<pcir:BaseAddress0/>
+		<hex>00</hex>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:PciFunctions/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:CX-AXRegister/>
+
+		<!--<cpu:CopyImmediateToAH/>
+		<byte>0</byte>-->
+
+		<sys:GetMemoryManager/>
+
+		<hex:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsNetworkCableConnected" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToDX/>
+		<hex>d012</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<pcb:PhyAddress/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>d016</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<short>1</short>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>d012</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<pcb:PhyManagementData/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>d016</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<short>1</short>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:TestAXWithImmediate/>
+		<binary>0000000000000100</binary>
+
+		<cpu:BranchToRelativeIfZero8/>
+		<addressOf ref="networkCableConnected" type="Relative8"/>
+
+		<cpu:JumpToRelative16/>
+		<addressOf ref="networkCableNotConnected" type="Relative16"/>
+		
+		<label id="networkCableConnected"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<sys:GetMemoryManager/>
+
+		<bool:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="networkCableNotConnected"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<sys:GetMemoryManager/>
+
+		<bool:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetMacAddress" static="true">
+		<cpu:CopyImmediateToDX/>
+		<hex>d012</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<pcs:PhysicalAddress0/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>d010</hex>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AH-ALRegister/>
+
+		<con:WriteShortHex digits="4"/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>d012</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<pcs:PhysicalAddress1/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>d010</hex>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AH-ALRegister/>
+
+		<con:WriteShortHex digits="4"/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>d012</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<pcs:PhysicalAddress2/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>d010</hex>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AH-ALRegister/>
+
+		<con:WriteShortHex digits="4" endLine="true"/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetNetworkStatus" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToDX/>
+		<hex>d012</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<pcs:ControlAndStatus/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>d010</hex>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<sys:GetMemoryManager/>
+
+		<hex:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Test" static="true">
+		<!--Setup Receive Buffer Descriptor Ring-->
+		<cpu:CopyImmediateToDI/>
+		<hex>8000</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>a000</hex>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyImmediateToAX/>
+		<binary>1000000000000000</binary>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyImmediateToAX/>
+		<binary>1111000000000000</binary>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<!--Setup Transmit Buffer Descriptor Ring-->
+		<cpu:CopyImmediateToDI/>
+		<hex>9000</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>b000</hex>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyImmediateToAX/>
+		<binary>0010001100000000</binary>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyImmediateToAX/>
+		<binary>1111000000000000</binary>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<!--Initialize Mode-->
+		<cpu:CopyImmediateToDX/>
+		<hex>d012</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<pcs:Mode/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>d010</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<binary>1000000110000000</binary>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Initialize ReceiveRingLower-->
+		<cpu:CopyImmediateToDX/>
+		<hex>d012</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<pcs:ReceiveRingLower/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>d010</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>8000</hex>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Initialize ReceiveRingUpper-->
+		<cpu:CopyImmediateToDX/>
+		<hex>d012</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<pcs:ReceiveRingUpper/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>d010</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Initialize TransmitRingLower-->
+		<cpu:CopyImmediateToDX/>
+		<hex>d012</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<pcs:TransmitRingLower/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>d010</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>9000</hex>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Initialize TransmitRingUpper-->
+		<cpu:CopyImmediateToDX/>
+		<hex>d012</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<pcs:TransmitRingUpper/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>d010</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Initialize TransmitPollInterval-->
+		<!--<cpu:CopyImmediateToDX/>
+		<hex>d012</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<pcs:TransmitPollInterval/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>d010</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:WriteAXToDXPort/>-->
+
+		<!--Initialize ReceivePollInterval-->
+		<!--<cpu:CopyImmediateToDX/>
+		<hex>d012</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<pcs:ReceivePollInterval/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>d010</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:WriteAXToDXPort/>-->
+
+		<!--Initialize ReceiveRingLength-->
+		<cpu:CopyImmediateToDX/>
+		<hex>d012</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<pcs:ReceiveRingLength/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>d010</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>ffff</hex>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Initialize TransmitRingLength-->
+		<cpu:CopyImmediateToDX/>
+		<hex>d012</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<pcs:TransmitRingLength/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>d010</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>ffff</hex>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set START bit on CSR0-->
+		<cpu:CopyImmediateToDX/>
+		<hex>d012</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<pcs:ControlAndStatus/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>d010</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<binary>0000000000000010</binary>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToSI/>
+		<hex>8002</hex>
+
+		<label id="checkBuffer"/>
+
+		<cpu:CopyOperandToRegister16/>
+		<op:AX-SIAddress/>
+
+		<cpu:TestAXWithImmediate/>
+		<binary>1000000000000000</binary>
+
+		<cpu:BranchToRelativeIfZero8/>
+		<addressOf ref="validatePacket" type="Relative8"/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="checkBuffer" type="Relative8"/>
+
+		<!--Validate Packet Data-->
+		<label id="validatePacket"/>
+		
+		<cpu:CopyOperandToRegister16/>
+		<op:BX-ImmediateAddress/>
+		<hex>a018</hex>
+
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<hex>a00e</hex>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000f</hex>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:AX-CXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<short>0</short>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:AX-ImmediateAddress/>
+		<hex>a018</hex>
+
+		<cpu:CopyImmediateToDI/>
+		<hex>a00e</hex>
+
+		<label id="calculateChecksum"/>
+
+		<cpu:AddOperandToRegisterWithCarry16/>
+		<op:AX-DIAddress/>
+
+		<cpu:IncrementDI/>
+		<cpu:IncrementDI/>
+
+		<cpu:AddOperandToRegisterWithCarry16/>
+		<op:AX-DIAddress/>
+
+		<cpu:IncrementDI/>
+		<cpu:IncrementDI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="calculateChecksum" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<short>0</short>
+
+		<cpu:AddOperandToRegisterWithCarry16/>
+		<op:AX-DIRegister/>
+
+		<cpu:ExclusiveOrAXWithImmediate/>
+		<hex>ffff</hex>
+
+		<cpu:CompareRegisterToOperand16/>
+		<op:AX-BXRegister/>
+
+		<cpu:BranchToRelativeIfEqual8/>
+		<addressOf ref="showPacket" type="Relative8"/>
+
+		<cpu:JumpToRelative16/>
+		<addressOf ref="resetBuffer" type="Relative16"/>
+
+		<!--Show Packet Data-->
+		<label id="showPacket"/>
+
+		<cpu:CopyImmediateToDI/>
+		<hex>8006</hex>
+
+		<!--Get Packet Length-->
+		<cpu:CopyOperandToRegister16/>
+		<op:CX-DIAddress/>
+
+		<cpu:CopyImmediateToDI/>
+		<hex>a000</hex>
+
+		<label id="displayByte"/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-DIAddress/>
+
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:PushAllRegistersToStack/>
+		<con:WriteShortHex digits="2"/>
+		<cpu:PullAllRegistersFromStack/>
+
+		<cpu:IncrementDI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="displayByte" type="Relative8"/>
+
+		<cpu:PushAllRegistersToStack/>
+		<!--<con:WriteStream endLine="true"/>-->
+		<!--<con:WriteShortHex endLine="true"/>-->
+		<!--<con:WriteCharacters>.</con:WriteCharacters>-->
+		<con:WriteCharacters endLine="true"/>
+		<cpu:PullAllRegistersFromStack/>
+
+		<label id="resetBuffer"/>
+
+		<cpu:CopyImmediateToAX/>
+		<binary>1000000000000000</binary>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:AX-SIAddress/>
+
+		<cpu:JumpToRelative16/>
+		<addressOf ref="checkBuffer" type="Relative16"/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

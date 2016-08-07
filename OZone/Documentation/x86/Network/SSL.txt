@@ -1,0 +1,43 @@
+﻿Secure Socket Layer / Transport Layer Security
+
+TLS Connection
+	bool IsClient
+	enum HashAlgorithm
+	enum RecordProtectionAlgorithm
+	byte[48] MasterSecret
+	byte[48] HSMasterSecret?
+	byte[32] ClientRandom
+	byte[32] ServerRandom
+	byte EncodingKeyLength
+	byte InitializationVectorLength
+
+TlsRecord
+	TlsHeader				5 bytes
+		ContentType				1 byte				(0x14 = ChangeCipherSpec, 0x16 = Handshake, 0x17 = Application)
+		VersionMajor				1 byte
+		VersionMinor				1 byte
+		MessageLength			2 bytes
+	TlsMessage[]											(May be encrypted)
+		TlsChangeCipherSpecMessage
+			ProtocolType				1 byte			(1 = Default)
+		TlsHandshakeMessage
+			MessageType			1 byte			(0 = HelloRequest, 1 = ClientHello, 2 = ServerHello, 4 = NewSessionTicket, 11 = Certificate, 12 = ServerKeyExchange, 13 = CertificateRequest, 14 = ServerHelloDone, 15 = CertificateVerify, 16 = ClientKeyExchange, 20 = Finished)
+			Message
+		TlsApplicationMessage
+			Data[]
+			AuthenticationCode[]
+			Padding[]
+
+ServerAuthentication
+	Client.Handshake.ClientHello(TlsVersion, RandomNumber, CipherSuite[], CompressionMethod[], SessionId?)
+	Server.Handshake.ServerHello(TlsVersion, RandomNumber, CipherSuite, CompressionMethod, SessionId?)
+	Server.Handshake.Certificate(PublicKey)
+	Server.Handshake.ServerKeyExchange()
+	Server.Handshake.ServerHelloDone()
+	Client.Handshake.ClientKeyExchange(Encrypt(PreMasterSecret, Server.Certificate.PublicKey))
+	Client.ChangeCipherSpec(ProtocolType)
+	Client.Handshake.Finished(AuthenticationCode)
+	Server.ChangeCipherSpec(ProtocolType)
+	Server.Handshake.Finished(AuthenticationCode)
+	Client.Application(Data[])
+	Server.Application(Data[])

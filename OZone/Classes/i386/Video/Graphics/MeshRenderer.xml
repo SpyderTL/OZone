@@ -1,0 +1,731 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="MeshRenderer"
+	type="http://metalx.org/Video/Graphics/MeshRenderer"
+	static="true"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
+	xmlns:pcic="http://metalx.org/Pc/Pci/Command"
+	xmlns:pcir="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:pcis="http://metalx.org/Pc/Pci/Status"
+	xmlns:pcn="http://metalx.org/Amd/PcNet/Ports"
+	xmlns:pcs="http://metalx.org/Amd/PcNet/ControlStatus"
+	xmlns:pcb="http://metalx.org/Amd/PcNet/BusConfiguration"
+	xmlns:pcnet="http://metalx.org/i386/Functions/PcNet"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:con="http://metalx.org/i386/Functions/Console"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:index="http://metalx.org/Intel/80386/Index"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands">
+
+	<cls:field name="Device" type="http://metalx.org/Reference" offset="0"/>
+	<cls:field name="Viewport" type="http://metalx.org/Video/Graphics/Viewport" offset="4"/>
+
+	<cls:method name="Create" type="http://metalx.org/Video/Graphics/MeshRenderer" static="true">
+		<cls:parameter name="Device" type="http://metalx.org/Video/VideoDevice"/>
+
+		<mm:CheckOut length="28"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIAddress/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>768</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<float>0.1</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<float>1000.1</float>
+
+		<obj:Create length="28"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="DrawTriangle" type="http://metalx.org/Video/Graphics/MeshRenderer">
+		<cls:parameter name="Point1" type="http://metalx.org/Video/Graphics/Vector2"/>
+		<cls:parameter name="Point2" type="http://metalx.org/Video/Graphics/Vector2"/>
+		<cls:parameter name="Point3" type="http://metalx.org/Video/Graphics/Vector2"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="vertexBuffer" type="Absolute32"/>
+
+		<!--Point 1-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<!--Point 2-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>20</byte>
+
+		<!--Point 3-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>32</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>36</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>12</byte>
+
+		<cpu:CopyImmediateToSI/>
+		<addressOf ref="renderMeshesParameter" type="Absolute32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="renderMeshes" type="Relative32"/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="vertexBuffer"/>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>1.0</float>
+
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>1.0</float>
+
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>1.0</float>
+
+		<label id="indexBuffer"/>
+		<int>0</int>
+		<int>1</int>
+		<int>2</int>
+
+		<label id="renderMeshesParameter"/>
+		<int>1</int>
+		<int>1</int>
+		<int>0</int>
+
+		<!--Vertex Format 1-->
+		<int>3</int>
+		<int>0</int>
+		<int>0</int>
+		<int>0</int>
+		<addressOf ref="vertexBuffer" type="Absolute64"/>
+		<int>16</int>
+		<int>0</int>
+		<int>0</int>
+
+		<!--Mesh 1-->
+		<int>1</int>
+		<int>1</int>
+		<addressOf ref="indexBuffer" type="Absolute64"/>
+		<int>4</int>
+		<int>4</int>
+		<int>0</int>
+	</cls:method>
+
+	<cls:method name="SetViewport" type="http://metalx.org/Video/Graphics/MeshRenderer">
+		<cls:parameter name="Viewport" type="http://metalx.org/Video/Graphics/Viewport"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="SetRenderState" type="http://metalx.org/Video/Graphics/MeshRenderer">
+		<cls:parameter name="RenderState" type="http://metalx.org/Video/Graphics/RenderState"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="SetRenderStates" type="http://metalx.org/Video/Graphics/MeshRenderer">
+		<cls:parameter name="RenderStateList" type="http://metalx.org/Video/Graphics/RenderStateList"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="SetTextureState" type="http://metalx.org/Video/Graphics/MeshRenderer">
+		<cls:parameter name="TextureState" type="http://metalx.org/Video/Graphics/TextureState"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="SetTextureStates" type="http://metalx.org/Video/Graphics/MeshRenderer">
+		<cls:parameter name="TextureStateList" type="http://metalx.org/Video/Graphics/TextureStateList"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="LoadVertexShader" type="http://metalx.org/Video/Graphics/MeshRenderer">
+		<cls:parameter name="VertexShader" type="http://metalx.org/Video/Graphics/VertexShader"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="SetVertexShader" type="http://metalx.org/Video/Graphics/MeshRenderer">
+		<cls:parameter name="VertexShader" type="http://metalx.org/Video/Graphics/VertexShader"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="SetVertexShaderRegister" type="http://metalx.org/Video/Graphics/MeshRenderer">
+		<cls:parameter name="Register" type="http://metalx.org/Integer"/>
+		<cls:parameter name="Value" type="http://metalx.org/Object"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>8</byte>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="LoadPixelShader" type="http://metalx.org/Video/Graphics/MeshRenderer">
+		<cls:parameter name="PixelShader" type="http://metalx.org/Video/Graphics/PixelShader"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="SetPixelShader" type="http://metalx.org/Video/Graphics/MeshRenderer">
+		<cls:parameter name="PixelShader" type="http://metalx.org/Video/Graphics/PixelShader"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="SetPixelShaderRegister" type="http://metalx.org/Video/Graphics/MeshRenderer">
+		<cls:parameter name="Register" type="http://metalx.org/Integer"/>
+		<cls:parameter name="Value" type="http://metalx.org/Object"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>8</byte>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="LoadMesh" type="http://metalx.org/Video/Graphics/MeshRenderer">
+		<cls:parameter name="Mesh" type="http://metalx.org/Video/Graphics/Mesh"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="RenderMesh" type="http://metalx.org/Video/Graphics/MeshRenderer">
+		<cls:parameter name="Mesh" type="http://metalx.org/Video/Graphics/Mesh"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="RenderMeshes" type="http://metalx.org/Video/Graphics/MeshRenderer">
+		<cls:parameter name="Meshes" type="http://metalx.org/Video/Graphics/MeshList"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="UpdateScreen" type="http://metalx.org/Video/Graphics/MeshRenderer">
+		<cpu:PushDIToStack/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="className" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="className">Mesh Renderer</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<label id="renderMeshes">
+		<cpu:PushSIToStack/>
+
+		<!--Get SetPixel Method-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<obj:GetType/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="setPixel" type="Absolute32"/>
+
+		<clsf:FindMethod/>
+
+		<clsf:GetMethodEntryPoint/>
+
+		<cpu:PushSIToStack/>
+
+		<mm:CheckOut length="12"/>
+
+		<obj:Create type="http://metalx.org/Video/Graphics/Pixel" length="12"/>
+
+		<cpu:PushDIToStack/>
+
+		<!--Get Mesh Count-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:BranchToRelative8IfCXIsZero/>
+		<addressOf ref="empty" type="Relative8"/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="notEmpty" type="Relative8"/>
+
+		<label id="empty"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSPRegister/>
+		<byte>12</byte>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="notEmpty"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByImmediateAddress/>
+		<addressOf ref="vertexFormatLength" type="Absolute32"/>
+
+		<cpu:AddImmediateToAX/>
+		<int>12</int>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<!--Draw Meshes-->
+		<label id="nextMesh"/>
+
+		<cpu:PushCXToStack/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="renderMesh" type="Relative32"/>
+
+		<cpu:PullCXFromStack/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextMesh" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSPRegister/>
+		<byte>12</byte>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="setPixel">SetPixel</var:string>
+		<var:integer id="vertexFormatLength">36</var:integer>
+	</label>
+
+	<label id="renderMesh">
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:CompareWithSIAddress/>
+		<byte>1</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notTriangleList" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="renderTriangleListMesh" type="Relative32"/>
+
+		<label id="notTriangleList"/>
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+
+	<label id="renderTriangleListMesh">
+		<!--Get Primitive Count-->
+		<cpu:CopyOperandToRegister/>
+		<op:CX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<!--Get Index Stride-->
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<!--Get Index Buffer-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<label id="nextPrimitive"/>
+
+		<cpu:PushCXToStack/>
+
+		<!--Get Vertex Formats-->
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>24</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-DIAddress/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIRegister/>
+		<byte>12</byte>
+
+		<label id="nextVertexElement"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:CompareWithDIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notPosition" type="Relative8"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="readPosition" type="Relative32"/>
+
+		<label id="notPosition"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextVertexElement" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIRegister/>
+		<byte>36</byte>
+
+		<cpu:PullCXFromStack/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextPrimitive" type="Relative8"/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="readPosition"/>
+
+		<cpu:PushSIToStack/>
+		
+		<!--Find Vertex 1-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+		
+		
+		
+		<cpu:AddRegisterToOperand/>
+		<op:BX-SIRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="TriangleBuffer"/>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>1.0</float>
+
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>1.0</float>
+
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>0.0</float>
+		<float>1.0</float>
+	</label>
+
+	<label id="renderTriangle">
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>512</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>384</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<hex>ff0000ff</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<!--Call Method-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>24</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>12</byte>
+
+		<cpu:LogicFunction/>
+		<logic:CallSIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+</cls:class>

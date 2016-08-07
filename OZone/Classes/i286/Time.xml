@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Time"
+	type="http://metalx.org/Time"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/i286/Structures/Class"
+	xmlns:hex="http://metalx.org/i286/Functions/Hexadecimal"
+	xmlns:time="http://metalx.org/i286/Functions/Time"
+	xmlns:obj="http://metalx.org/i286/Functions/Object"
+	xmlns:lst="http://metalx.org/i286/Functions/List"
+	xmlns:str="http://metalx.org/i286/Functions/String"
+	xmlns:mm="http://metalx.org/i286/Functions/MemoryManager"
+	xmlns:sys="http://metalx.org/i286/Functions/System"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:clk="http://metalx.org/Pc/Bios/Clock"
+	xmlns:ari="http://metalx.org/Intel/80286/Arithmetic"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands">
+
+	<cls:field name="Hours" type="http://metalx.org/Byte" offset="0"/>
+	<cls:field name="Minutes" type="http://metalx.org/Byte" offset="1"/>
+	<cls:field name="Seconds" type="http://metalx.org/Byte" offset="2"/>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:PushSIToStack/>
+
+		<sys:GetMemoryManager/>
+
+		<str:Create length="10"/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:GetData/>
+
+		<!--Store Seconds-->
+		<cpu:IncrementSI/>
+		<cpu:IncrementSI/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:PushAXToStack/>
+
+		<!--Store Minutes-->
+		<cpu:DecrementSI/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:PushAXToStack/>
+
+		<!--Get Hours-->
+		<cpu:DecrementSI/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<!--Write Hours-->
+		<cpu:PushDIToStack/>
+
+		<sys:GetMemoryManager/>
+
+		<hex:ToString/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PushDIToStack/>
+
+		<str:AppendString/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<str:AppendByte  value=":"/>
+
+		<!--Write Minutes-->
+		<cpu:PullAXFromStack/>
+		<cpu:PushDIToStack/>
+
+		<sys:GetMemoryManager/>
+
+		<hex:ToString digits="2"/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PushDIToStack/>
+
+		<str:AppendString/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<str:AppendByte value=":"/>
+
+		<!--Write Seconds-->
+		<cpu:PullAXFromStack/>
+		<cpu:PushDIToStack/>
+
+		<sys:GetMemoryManager/>
+
+		<hex:ToString digits="2"/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PushDIToStack/>
+
+		<str:AppendString/>
+
+		<cpu:PullDIFromStack/>
+
+		<sys:GetMemoryManager/>
+
+		<str:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

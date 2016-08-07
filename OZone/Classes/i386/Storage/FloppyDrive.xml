@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="FloppyDrive"
+	type="http://metalx.org/Storage/FloppyDrive"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:flp="http://metalx.org/i386/Functions/FloppyDrive"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
+	xmlns:cfg="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:dsk="http://metalx.org/Pc/Floppy/Ports"
+	xmlns:fcmd="http://metalx.org/Pc/Floppy/Commands"
+	xmlns:fdr="http://metalx.org/Pc/Floppy/DataRate"
+	xmlns:fdo="http://metalx.org/Pc/Floppy/DigitalOutput"
+	xmlns:fst="http://metalx.org/Pc/Floppy/Status"
+	xmlns:kbd="http://metalx.org/Pc/Keyboard">
+
+	<cls:method name="GetReader" type="http://metalx.org/Reader">
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+		
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="deviceName" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="deviceName">Floppy Drive</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

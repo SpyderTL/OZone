@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Reference"
+	type="http://metalx.org/Reference"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:ref="http://metalx.org/i386/Functions/Reference"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands">
+
+	<cls:field name="Address" type="http://metalx.org/Hexadecimal" offset="0"/>
+
+	<cls:method name="GetObject" type="http://metalx.org/Object">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-SIAddress/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<cpu:PushSIToStack/>
+
+		<obj:GetType/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="methodName" type="Absolute32"/>
+
+		<clsf:FindMethod/>
+
+		<clsf:GetMethodEntryPoint/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:LogicFunction/>
+		<logic:CallSIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="methodName">ToString</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

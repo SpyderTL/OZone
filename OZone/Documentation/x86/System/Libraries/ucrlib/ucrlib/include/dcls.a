@@ -1,0 +1,834 @@
+
+		ifndef	$DCLS_a
+$DCLS_a		=	0
+		echo	dcls.a
+
+; DCLS.A
+;
+; This include file handle "C" style variable declarations in assembly language.
+;
+; Syntax for a declaration:
+;
+;	var
+;		<type> <varlist>
+;		<type> <varlist>
+;		 .
+;		 .
+;		 .
+;	endvar
+;
+; <type> 	can be any of the following: integer, char, unsigned, long, 
+;		float, double.
+;
+; <varlist> 	is a sequence of one or more variable declarations that can 
+;		take the following forms:
+;
+;			id		  Dcl a variable of specified type.
+;			id[size]	  Array of items.
+;			id[size][size]	  Two-D array of items.
+;			id[size]size][... Any number of dimensions.
+;			*id		  Pointer to object (far ptr).
+;			*id[size]...	  Array of pointers.
+;
+;
+; Examples:
+;
+; var
+;	integer i,j,k
+;	char input[128], answer
+;	integer m=0, n=-1
+;	float *f
+; endvar
+;
+;		You can also specify an initial value as follows:
+;
+;			id=<initial value>
+;
+;		If you want to specify a list of initial values, you should 
+;		use the following syntax:
+;
+;			id=InitList(<comma separated list of values>)
+;
+;		The reason for the InitList function is because MASM uses 
+;		commas to separate macro parameters (the variable declarations).
+;		Simply enclosing the list of initial values between < and > or 
+;		{ and } doesn't hide these commas from MASM.  The InitList 
+;		function will succesfully do this.
+;
+; Examples:
+;
+; var
+;	integer i=0, j, k=-2
+;	integer m=InitList(0,1,2,3)
+; endvar
+;
+;		The m example creates an array of integers with four elements, 
+;		initialized to the values 0, 1, 2, and 3.  Note that the 
+;		following "C" style syntax does not do the same thing:
+;
+;			integer m[4]=InitList(0,1,2,3)
+;
+;		Because of limitations in the parsing algorithm, this will 
+;		create two dimensional array containing four rows, with each 
+;		row containing the values 0, 1, 2, and 3.  This is because 
+;		the integer macro generates the following code for the above 
+;		declaration:
+;
+;			m	sword	4 dup (0,1,2,3)
+;
+;		The parsing algorithm *will* let you enter something like the 
+;		following:
+;
+;			integer m[]=InitList(0,1,2,3)
+;
+;
+;		If you specify the name of another variable as an initializer, 
+;		MASM substitutes the address of that object, not its run-time 
+;		value.  Such initializers are only valid for integer, unsigned,
+;		and dword variables.  Typically, the correct address 
+;		initializer is assigned to a pointer variable as follows:
+;
+; var
+;	integer a, *p=a, b, d, e
+;	integer *f[]=InitList(a,b,d,e)
+; endvar
+;
+;		Remember that these declarations always use *far* pointers.  
+;		You must modify the DclType macro.
+;
+;
+; Note:
+;
+;	The var..endvar sequence may appear anywhere (even in the middle of 
+;	code). All variables declared between var..endvar are static variables 
+;	that these macros put in the data segment (dseg).
+;
+;
+; The VAR and ENDVAR macros simply slap a data segment declaration around the 
+; variables the user is about to supply.  Note that if the user leaves off the
+; ENDVAR statement, the following statements will assemble into the data segment.
+; This can be a disaster;  the caller of these macros must make sure to close
+; off the variable declarations with ENDVAR.
+
+var		macro
+dseg		segment	para public 'data'
+		endm
+
+endvar		macro
+dseg		ends
+		endm
+
+
+; wl- 	Simple macro function that returns the position of the first "[" symbol
+;	it finds in its operand (Op).  This function returns zero if there is
+;	no "[" symbol in Op.
+
+$wl		macro	Op
+		exitm	@instr(1,<&Op&>,<[>)
+		endm
+
+; wr-	As above, except this function locates a right bracket ("]").
+
+$wr		macro	Op
+		exitm	@instr(1,<&Op&>,<]>)
+		endm
+
+; tail-	This macro function returns the sequence of characters in Op that
+;	immediately follow the first "]" symbol in Op.
+
+$tail		macro	Op
+		exitm	@substr(<&Op&>,$wr(Op)+1)
+		endm
+
+; GetName-	This macro function extracts the name portion of a definition.
+;		It does not handle pointer declarations (declarations beginning
+;		with a "*");  It assumes someone else handles such declarations.
+;		It grabs everything from the first character to either:
+;
+;			(1) the end of the string,
+;			(2) through to the first "[" character (if array dcl),
+;			(3) through to the first "=" character (if initializer).
+
+$GetName	macro	Op
+
+		if	$wl(Op) eq 0		  ;;"[" character?
+		if	@instr(1,<&Op&>,<=>) eq 0 ;;"=" character?
+
+		exitm	<&Op&>			  ;;Just return name.
+
+		else 	;;Extract everything up to the "=".
+
+		exitm	@substr(<&Op&>,1,@instr(1,<&Op&>,<=>)-1)
+
+		endif
+
+		else	;;Extract everything up to the ("[")
+
+		exitm	<@substr(<&Op&>,1,$wl(Op)-1)>
+
+		endif		
+		endm
+
+
+; GetDim-	This function returns all the characters between the first pair
+;		of "[" and "]" symbols in Op.  This corresponds to the array 
+;		dimension information.  If there is nothing between these two 
+;		brackets, this function returns "1".  This handles the case 
+;		where someone declares a variable like 
+;			"integer m[]=InitList(0,1,2,3)"
+
+$GetDim		macro	Op
+		ifb	@substr(<&Op&>, $wl(Op)+1, $wr(Op) - $wl(Op) - 1)
+		exitm	<1>
+		else
+		exitm	<@substr(<&Op&>, $wl(Op)+1, $wr(Op) - $wl(Op) - 1)>
+		endif
+		endm
+
+
+; GetOp-	Handles array and initializer operands.  It returns a textual 
+;		string to plug into the operand field of a byte, word, sword, 
+;		dword, etc., pseudo-opcode.  For an initializer ("=<data>") 
+;		this call simply returns the data value.  For an array 
+;		initializer, this call returns a string of the form 
+;		"<arraysize> dup (<operand>)" where operand is either
+;		"?", an initializer value, or another array dimension bound.
+
+$GetOp		macro	Op,DefaultSpec
+
+		if	$wl(Op) eq 0			;;"[" not present?
+
+		if	@instr(1,Op,<=>) ne 0		;;See if "=" present.
+
+		ifb	<DefaultSpec>			;;No DefaultSpec.
+		exitm	@substr(Op,@instr(1,Op,<=>)+1)	;;Return everything
+		else					;; after the "=".
+		exitm	@catstr(<{>,@substr(Op,@instr(1,Op,<=>)+1),<}>)
+		endif
+
+		else	;;No initializer, no "[", so just return "{}" or "?".
+
+		ifb	<DefaultSpec>
+		exitm	<?>
+		else
+		exitm	<{}>
+		endif
+
+		endif
+
+		else	;;We do have an array dimension ("[").
+
+;;		The following IF statement is true if there are additional 
+;;		characters after the "]" symbol.  These additional characters 
+;;		would normally be either an initializer ("=") or another array 
+;;		dimension ("[").  In either case, output the data for the 
+;;		current array bound and then recursively call GetOp to process 
+;;		the following data on the line.
+
+		if	$wr(Op) lt @sizestr(<&Op&>)
+
+		exitm	@catstr($GetDim(<&Op&>),< dup (>,$GetOp($tail(Op)),<)>)
+
+		else
+
+;;		Drop down here if the "]" is the last symbol in this 
+;;		declaration.  That being the case, close up the array 
+;;		declaration and set all the array elements to "uninitialized".
+
+		exitm	<@catstr(<%$GetDim(<&Op&>)>, < dup (?)>)>
+
+		endif
+		endif
+		endm
+
+
+
+; DclType-	This macro writes other macros.  In particular, it creates 
+;		macros that let you declare new types.  You supply a type name 
+;		and the directive to use to allocate storage for these types.  
+;		DclTemplate creates a new macro that lets you declare variables 
+;		of that type within the VAR..ENDVAR section.  The DefaultSpec 
+;		parameter lets you specify whether braces should surround the 
+;		default value (i.e., for creating structure types).
+
+DclType		macro	TypeName, TheType, DefaultSpec
+%TypeName	macro	Vars:vararg
+		local	VarName
+
+		for	VarName, <Vars>
+;;		local	TypeID
+
+;; 		Check to see if we have a pointer variable.  If so, create a 
+;;		dword object.  If not, create a variable of the appropriate 
+;;		type.
+;;		Note: if you want to use near pointers rather than far ptrs, 
+;;		change the "dword" directive below to "word".
+
+		ifidn	@substr(<&VarName&>,1,1), <*>
+
+TypeID		textequ	$GetName(@substr(<&VarName&>,2))
+		ifb	<&DefaultSpec&>
+%$GetName(@substr(<&VarName&>,2)) dword $GetOp(@substr(<&VarName&>,2),DefaultSpec)
+		else
+		ifidn	$GetOp(@substr(<&VarName&>,2),DefaultSpec), <&DefaultSpec&>
+%$GetName(@substr(<&VarName&>,2)) dword ?
+		else
+%$GetName(@substr(<&VarName&>,2)) dword $GetOp(@substr(<&VarName&>,2),<>)
+		endif
+		endif
+%$?&TypeID&	catstr	<*>,<&TypeName&>
+
+
+		else
+
+TypeID		textequ	$GetName(<&VarName&>)
+%&TypeID&	TheType $GetOp(<&VarName&>,DefaultSpec)
+%$?&TypeID& textequ <&TypeName&>
+
+		endif
+
+		endm
+		endm
+		endm
+
+
+; $MulBy-	Multiplies some value by adds or shifts if a power of two 
+;		(1..256).
+;		What should be a register.
+;		Value should be a constant.
+
+$MulBy		macro	What, Value
+		if	Value eq 1
+		exitm
+		endif
+
+		if	Value eq 2
+		add	What, What
+		exitm
+		endif
+
+		if	Value eq 4
+		shl	What, 2
+		exitm
+		endif
+
+		if	Value eq 8
+		shl	What, 3
+		exitm
+		endif
+
+		if	Value eq 16
+		shl	What, 4
+		exitm
+		endif
+
+		if	Value eq 32
+		shl	What, 5
+		exitm
+		endif
+
+		if	Value eq 64
+		shl	What, 6
+		exitm
+		endif
+
+		if	Value eq 128
+		shl	What, 7
+		exitm
+		endif
+
+		if	Value eq 256
+		shl	What, 8
+		exitm
+		endif
+
+		imul	What, Value
+		endm
+
+		
+
+
+; Index-	This macro computes the index into a two-dimensional array.
+;		The call is the following:
+;
+;			index	array, row/Y, column/X, register
+;
+;		It returns the array index in the BX register, by default.
+;		You can select a different register by specifying the optional
+;		fourth operand.
+
+
+Index		macro	array:req, row:req, column:req, reg
+		local	where
+
+		ifb	<reg>
+where		textequ	<bx>
+		else
+		if	(opattr reg) and 10000b
+where		textequ	<&reg&>
+		else
+		echo	Fourth INDEX operand must be a register.
+		err
+		exitm
+		endif
+		endif
+
+		mov	where, row
+		$MulBy	where, %(lengthof array)/(length array)
+		add	where, column
+		$MulBy	where, %(type array)
+
+		endm
+		
+
+
+; InitList-	This macro lets you pass a list of arguments as an initializer
+;		string.  Normally you cannot do something like the following:
+;
+;			integer i=0,1,2, j
+;
+;		because the integer macro will interpret the "1" and the "2" as
+;		separate variable declarations (which generates an error).
+;		You can, however, do the following to achieve this:
+;
+;			integer i=InitList(0,1,2), j
+
+InitList	macro	arg1, args:vararg
+		local	var, result
+result		textequ	<&arg1&>
+		for	var, <args>
+result		catstr	result, <,>
+result		catstr	result, <&var&>
+		endm
+		exitm	<result>
+		endm
+
+
+; You can also create "enum" constant lists as follows:
+;
+;	enum	typename, <item1, item2, item3, ...>
+;
+; The first item is given the value zero, other items follow sequentially.
+;
+; Example:
+;
+;	enum	colors, <red, green, blue>
+;
+;
+;
+; Enum macro.
+;
+; The first parameter is the type of the data type.  Enum creates a new type
+; (byte) to hold values of this type.  The remaining parameters are the symbolic
+; constants to create.  The for loop below assigns sequential values to these
+; names starting at value zero.
+
+enum		macro	typename:req, consts:vararg
+		local	constItem, Value
+
+
+Value		=	0			;;Output constant definitions
+		for	constItem, <consts>	;; for each of the symbols
+%&constItem&	=	Value			;; the caller supplies.
+Value		=	Value+1			;;Use sequential values.
+		endm
+		
+		DclType	&typename&, byte
+		endm
+
+
+
+
+
+
+; Some predefined types for the Standard Library
+
+		DclType	integer, sword
+		DclType	unsigned, word
+		DclType	long, sdword
+		DclType	ulong, dword
+		DclType	char, byte
+		DclType	string, byte
+		DclType	hex, word
+		DclType	shex, byte
+		DclType	float, real4
+		DclType	double, real8
+		DclType	extended, real10
+
+		enum	Boolean, <false, true>
+
+
+
+
+; The stream I/O package needs the following definitions:
+
+$$Integer	=	2
+
+$$PV_Integer	macro	Int2Prt
+		mov	ax, Int2Prt
+		puti
+		endm
+
+$$PP_Integer	macro	Int2Prt
+		les	di, Int2Prt
+		mov	ax, es:[di]
+		puti
+		endm
+
+$$GV_Integer	macro	Int2Get
+		geti
+		mov	Int2Get, ax
+		endm
+
+
+$$GP_Integer	macro	Int2Get
+		geti
+		les	di, Int2Get
+		mov	es:[di], ax
+		endm
+
+
+
+
+
+$$Unsigned	=	2
+$$PV_Unsigned	macro	Uns2Prt
+		mov	ax, Uns2Prt
+		putu
+		endm
+
+$$PP_Unsigned	macro	Uns2Prt
+		les	di, Uns2Prt
+		mov	ax, es:[di]
+		putu
+		endm
+
+
+$$GV_Unsigned	macro	Uns2Get
+		getu
+		mov	Uns2Get, ax
+		endm
+
+
+$$GP_Unsigned	macro	Uns2Get
+		getu
+		les	di, Uns2Get
+		mov	es:[di], ax
+		endm
+
+
+
+
+$$Long		=	4
+
+$$PV_Long	macro	L2Prt
+		mov	eax, L2Prt
+		putl
+		endm
+
+$$PP_Long	macro	L2Prt
+		les	di, L2Prt
+		mov	eax, es:[di]
+		putl
+		endm
+
+$$GV_Long	macro	Long2Get
+		getl
+		mov	Long2Get, eax
+		endm
+
+
+$$GP_Long	macro	Long2Get
+		getl
+		les	di, Long2Get
+		mov	es:[di], eax
+		endm
+
+
+
+
+$$ULong		=	4
+
+$$PV_ULong	macro	UL2Prt
+		mov	eax, UL2Prt
+		putul
+		endm
+
+$$PP_ULong	macro	UL2Prt
+		les	di, UL2Prt
+		mov	eax, es:[di]
+		putul
+		endm
+
+$$GV_ULong	macro	UL2Get
+		getul
+		mov	UL2Get, eax
+		endm
+
+
+$$GP_ULong	macro	UL2Get
+		getul
+		les	di, UL2Get
+		mov	es:[di], eax
+		endm
+
+
+
+
+
+$$Char		=	1
+
+$$PV_Char	macro	C2Prt
+		mov	al, C2Prt
+		putc
+		endm
+
+$$PP_Char	macro	C2Prt
+		les	di, C2Prt
+		mov	al, es:[di]
+		putc
+		endm
+
+$$GV_Char	macro	Char2Get
+		getc
+		mov	Char2Get, al
+		endm
+
+
+$$GP_Char	macro	Char2Get
+		getc
+		les	di, Char2Get
+		mov	es:[di], al
+		endm
+
+
+
+
+
+$$String	=	1
+
+$$PV_String	macro	S2Prt
+		lesi	S2Prt
+		puts
+		endm
+
+$$PP_String	macro	S2Prt
+		les	di, C2Prt
+		puts
+		endm
+
+$$GV_String	macro	Str2Get
+		lesi	Str2Get
+		gets
+		endm
+
+
+$$GP_String	macro	Str2Get
+		les	di, Str2Get
+		gets
+		endm
+
+
+
+
+
+
+$$Hex		=	2
+$$PV_Hex	macro	Hex2Prt
+		mov	ax, Hex2Prt
+		putw
+		endm
+
+$$PP_Hex	macro	Hex2Prt
+		les	di, Hex2Prt
+		mov	ax, es:[di]
+		putw
+		endm
+
+$$GV_Hex	macro	Hex2Get
+		getw
+		mov	Hex2Get, ax
+		endm
+
+
+$$GP_Hex	macro	Hex2Get
+		getw
+		les	di, Hex2Get
+		mov	es:[di], ax
+		endm
+
+
+
+
+
+$$SHex		=	1
+
+$$PV_SHex	macro	SHex2Prt
+		mov	al, Shex2Prt
+		puth
+		endm
+
+$$PP_SHex	macro	SHex2Prt
+		les	di, SHex2Prt
+		mov	al, es:[di]
+		puth
+		endm
+
+$$GV_SHex	macro	SHex2Get
+		geth
+		mov	SHex2Get, al
+		endm
+
+
+$$GP_SHex	macro	SHex2Get
+		geth
+		les	di, SHex2Get
+		mov	es:[di], al
+		endm
+
+
+
+
+
+$$Boolean	=	1
+
+$$PV_Boolean	macro	Bool2Prt
+		local	IsFalse
+		mov	al, 'F'
+		cmp	Bool2Prt,0
+		je	IsFalse
+		mov	al, 'T'
+IsFalse:	putc
+		endm
+
+$$PP_Boolean	macro	Bool2Prt
+		local	IsFalse
+		mov	al, 'F'
+		les	di, Bool2Prt
+		cmp	byte ptr es:[di], 0
+		je	IsFalse
+		mov	al, 'T'
+IsFalse:	putc
+		endm
+
+
+$$GV_Boolean	macro	Bool2Get
+		getc
+		and	al, 5fh
+		cmp	al, 'T'
+		sete	AL
+		mov	Bool2Get, al
+		endm
+
+
+$$GP_Boolean	macro	Bool2Get
+		getc
+		and	al, 5fh
+		cmp	al, 'T'
+		sete	AL
+		les	di, Bool2Get
+		mov	es:[di], al
+		endm
+
+
+
+
+$$Float		=	4
+
+$$PV_Float	macro	F2Prt
+		fld	F2Prt
+		mov	ax, 13
+		pute
+		endm
+
+$$PP_Float	macro	f2Prt
+		les	di, F2Prt
+		fld	real4 ptr es:[di]
+		mov	ax, 13
+		pute
+		endm
+
+$$GV_Float	macro	Flt2Get
+		getf
+		fstp	real4 ptr Flt2Get
+		endm
+
+
+$$GP_Float	macro	Flt2Get
+		getf
+		les	di, Flt2Get
+		fstp	real4 ptr es:[di]
+		endm
+
+
+
+
+
+$$Double	=	8
+
+$$PV_Double	macro	D2Prt
+		fld	D2Prt
+		mov	ax, 20
+		pute
+		endm
+
+$$PP_Double	macro	D2Prt
+		les	di, d2Prt
+		fld	real8 ptr es:[di]
+		mov	ax, 20
+		pute
+		endm
+
+$$GV_Double	macro	Double2Get
+		getf
+		fstp	real8 ptr Double2Get
+		endm
+
+
+$$GP_Double	macro	Double2Get
+		getf
+		les	di, Double2Get
+		fstp	real8 ptr es:[di]
+		endm
+
+
+
+
+
+$$Extended	=	10
+
+$$PV_Extended	macro	X2Prt
+		fld	X2Prt
+		mov	ax, 24
+		pute
+		endm
+
+$$PP_Extended	macro	X2Prt
+		les	di, X2Prt
+		fld	real10 ptr es:[di]
+		mov	ax, 24
+		pute
+		endm
+
+$$GV_Extended	macro	Flt2Get
+		echo	Error- Cannot read EXTENDED values
+		err
+		endm
+
+
+$$GP_Extended	macro	Bool2Get
+		echo	Error- Cannot read EXTENDED values
+		err
+		endm
+
+
+
+
+
+
+
+
+
+
+		endif	;ifndef $DCLS_a
+

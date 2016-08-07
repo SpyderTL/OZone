@@ -1,0 +1,1368 @@
+<!doctype html public "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>/linux/drivers/scsi/BusLogic.h</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<base href="http://www.cs.fsu.edu/~baker/devices/lxr/http/">
+<link rel="stylesheet" type="text/css" href="http://www.cs.fsu.edu/~baker/style.css" title="StyleSheet">
+</head>
+<body bgcolor=white>
+
+<table width="100%"><tr>
+<td bgcolor="660000" align=right>
+<a href="../../index.html"><u><font color="cccc99" size=2>
+Linux kernel &amp; device driver programming</font></u></a>
+</td></tr></table>
+
+<h2 align=center> Cross-Referenced
+<A HREF="http://kernel.org">Linux</A> and <A HREF="http://examples.oreilly.com/linuxdrive3/">Device Driver</A> Code</h2>
+
+<table width="100%"><tr><td bgcolor="cccc99" align="center">
+   <b> [</b> <b><i>source navigation</i></b> <b>] </b> <b> [</b> <a href="diff/linux/drivers/scsi/BusLogic.h">diff markup</a> <b>] </b> <b> [</b> <a href="ident">identifier search</a> <b>] </b> <b> [</b> <a href="search">freetext search</a> <b>] </b> <b> [</b> <a href="find">file search</a> <b>] </b>
+</td></tr></table>
+
+<div align=center>
+  
+  <b>Version:</b>  <b>[</b>&nbsp;<a href="source/linux/drivers/scsi/BusLogic.h?v=2.6.11.8">2.6.11.8</a>&nbsp;<b>]</b> <b>[</b>&nbsp;<a href="source/linux/drivers/scsi/BusLogic.h?v=2.6.25">2.6.25</a>&nbsp;<b>]</b> <b>[</b>&nbsp;<a href="source/linux/drivers/scsi/BusLogic.h?v=2.6.25.8">2.6.25.8</a>&nbsp;<b>]</b> <b>[</b>&nbsp;<b><i>2.6.31.13</i></b>&nbsp;<b>]</b>
+  <b>Architecture:</b>  <b>[</b>&nbsp;<b><i>i386</i></b>&nbsp;<b>]</b>
+</div>
+
+<pre>  <a name=L1 href="source/linux/drivers/scsi/BusLogic.h#L1">1</a> <b><i>/*</i></b>
+  <a name=L2 href="source/linux/drivers/scsi/BusLogic.h#L2">2</a> <b><i></i></b>
+  <a name=L3 href="source/linux/drivers/scsi/BusLogic.h#L3">3</a> <b><i>  Linux Driver for BusLogic MultiMaster and FlashPoint SCSI Host Adapters</i></b>
+  <a name=L4 href="source/linux/drivers/scsi/BusLogic.h#L4">4</a> <b><i></i></b>
+  <a name=L5 href="source/linux/drivers/scsi/BusLogic.h#L5">5</a> <b><i>  Copyright 1995-1998 by Leonard N. Zubkoff &lt;lnz@dandelion.com&gt;</i></b>
+  <a name=L6 href="source/linux/drivers/scsi/BusLogic.h#L6">6</a> <b><i></i></b>
+  <a name=L7 href="source/linux/drivers/scsi/BusLogic.h#L7">7</a> <b><i>  This program is free software; you may redistribute and/or modify it under</i></b>
+  <a name=L8 href="source/linux/drivers/scsi/BusLogic.h#L8">8</a> <b><i>  the terms of the GNU General Public License Version 2 as published by the</i></b>
+  <a name=L9 href="source/linux/drivers/scsi/BusLogic.h#L9">9</a> <b><i>  Free Software Foundation.</i></b>
+ <a name=L10 href="source/linux/drivers/scsi/BusLogic.h#L10">10</a> <b><i></i></b>
+ <a name=L11 href="source/linux/drivers/scsi/BusLogic.h#L11">11</a> <b><i>  This program is distributed in the hope that it will be useful, but</i></b>
+ <a name=L12 href="source/linux/drivers/scsi/BusLogic.h#L12">12</a> <b><i>  WITHOUT ANY WARRANTY, without even the implied warranty of MERCHANTABILITY</i></b>
+ <a name=L13 href="source/linux/drivers/scsi/BusLogic.h#L13">13</a> <b><i>  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License</i></b>
+ <a name=L14 href="source/linux/drivers/scsi/BusLogic.h#L14">14</a> <b><i>  for complete details.</i></b>
+ <a name=L15 href="source/linux/drivers/scsi/BusLogic.h#L15">15</a> <b><i></i></b>
+ <a name=L16 href="source/linux/drivers/scsi/BusLogic.h#L16">16</a> <b><i>  The author respectfully requests that any modifications to this software be</i></b>
+ <a name=L17 href="source/linux/drivers/scsi/BusLogic.h#L17">17</a> <b><i>  sent directly to him for evaluation and testing.</i></b>
+ <a name=L18 href="source/linux/drivers/scsi/BusLogic.h#L18">18</a> <b><i></i></b>
+ <a name=L19 href="source/linux/drivers/scsi/BusLogic.h#L19">19</a> <b><i>  Special thanks to Wayne Yen, Jin-Lon Hon, and Alex Win of BusLogic, whose</i></b>
+ <a name=L20 href="source/linux/drivers/scsi/BusLogic.h#L20">20</a> <b><i>  advice has been invaluable, to David Gentzel, for writing the original Linux</i></b>
+ <a name=L21 href="source/linux/drivers/scsi/BusLogic.h#L21">21</a> <b><i>  BusLogic driver, and to Paul Gortmaker, for being such a dedicated test site.</i></b>
+ <a name=L22 href="source/linux/drivers/scsi/BusLogic.h#L22">22</a> <b><i></i></b>
+ <a name=L23 href="source/linux/drivers/scsi/BusLogic.h#L23">23</a> <b><i>  Finally, special thanks to Mylex/BusLogic for making the FlashPoint SCCB</i></b>
+ <a name=L24 href="source/linux/drivers/scsi/BusLogic.h#L24">24</a> <b><i>  Manager available as freely redistributable source code.</i></b>
+ <a name=L25 href="source/linux/drivers/scsi/BusLogic.h#L25">25</a> <b><i></i></b>
+ <a name=L26 href="source/linux/drivers/scsi/BusLogic.h#L26">26</a> <b><i>*/</i></b>
+ <a name=L27 href="source/linux/drivers/scsi/BusLogic.h#L27">27</a> 
+ <a name=L28 href="source/linux/drivers/scsi/BusLogic.h#L28">28</a> #ifndef <a href="ident?i=_BUSLOGIC_H">_BUSLOGIC_H</a>
+ <a name=L29 href="source/linux/drivers/scsi/BusLogic.h#L29">29</a> #define <a href="ident?i=_BUSLOGIC_H">_BUSLOGIC_H</a>
+ <a name=L30 href="source/linux/drivers/scsi/BusLogic.h#L30">30</a> 
+ <a name=L31 href="source/linux/drivers/scsi/BusLogic.h#L31">31</a> 
+ <a name=L32 href="source/linux/drivers/scsi/BusLogic.h#L32">32</a> #ifndef <a href="ident?i=PACKED">PACKED</a>
+ <a name=L33 href="source/linux/drivers/scsi/BusLogic.h#L33">33</a> #define <a href="ident?i=PACKED">PACKED</a> <a href="ident?i=__attribute__">__attribute__</a>((packed))
+ <a name=L34 href="source/linux/drivers/scsi/BusLogic.h#L34">34</a> #endif
+ <a name=L35 href="source/linux/drivers/scsi/BusLogic.h#L35">35</a> 
+ <a name=L36 href="source/linux/drivers/scsi/BusLogic.h#L36">36</a> <b><i>/*</i></b>
+ <a name=L37 href="source/linux/drivers/scsi/BusLogic.h#L37">37</a> <b><i>  Define the maximum number of BusLogic Host Adapters supported by this driver.</i></b>
+ <a name=L38 href="source/linux/drivers/scsi/BusLogic.h#L38">38</a> <b><i>*/</i></b>
+ <a name=L39 href="source/linux/drivers/scsi/BusLogic.h#L39">39</a> 
+ <a name=L40 href="source/linux/drivers/scsi/BusLogic.h#L40">40</a> #define <a href="ident?i=BusLogic_MaxHostAdapters">BusLogic_MaxHostAdapters</a>                16
+ <a name=L41 href="source/linux/drivers/scsi/BusLogic.h#L41">41</a> 
+ <a name=L42 href="source/linux/drivers/scsi/BusLogic.h#L42">42</a> 
+ <a name=L43 href="source/linux/drivers/scsi/BusLogic.h#L43">43</a> <b><i>/*</i></b>
+ <a name=L44 href="source/linux/drivers/scsi/BusLogic.h#L44">44</a> <b><i>  Define the maximum number of Target Devices supported by this driver.</i></b>
+ <a name=L45 href="source/linux/drivers/scsi/BusLogic.h#L45">45</a> <b><i>*/</i></b>
+ <a name=L46 href="source/linux/drivers/scsi/BusLogic.h#L46">46</a> 
+ <a name=L47 href="source/linux/drivers/scsi/BusLogic.h#L47">47</a> #define <a href="ident?i=BusLogic_MaxTargetDevices">BusLogic_MaxTargetDevices</a>               16
+ <a name=L48 href="source/linux/drivers/scsi/BusLogic.h#L48">48</a> 
+ <a name=L49 href="source/linux/drivers/scsi/BusLogic.h#L49">49</a> 
+ <a name=L50 href="source/linux/drivers/scsi/BusLogic.h#L50">50</a> <b><i>/*</i></b>
+ <a name=L51 href="source/linux/drivers/scsi/BusLogic.h#L51">51</a> <b><i>  Define the maximum number of Scatter/Gather Segments used by this driver.</i></b>
+ <a name=L52 href="source/linux/drivers/scsi/BusLogic.h#L52">52</a> <b><i>  For optimal performance, it is important that this limit be at least as</i></b>
+ <a name=L53 href="source/linux/drivers/scsi/BusLogic.h#L53">53</a> <b><i>  large as the largest single request generated by the I/O Subsystem.</i></b>
+ <a name=L54 href="source/linux/drivers/scsi/BusLogic.h#L54">54</a> <b><i>*/</i></b>
+ <a name=L55 href="source/linux/drivers/scsi/BusLogic.h#L55">55</a> 
+ <a name=L56 href="source/linux/drivers/scsi/BusLogic.h#L56">56</a> #define <a href="ident?i=BusLogic_ScatterGatherLimit">BusLogic_ScatterGatherLimit</a>             128
+ <a name=L57 href="source/linux/drivers/scsi/BusLogic.h#L57">57</a> 
+ <a name=L58 href="source/linux/drivers/scsi/BusLogic.h#L58">58</a> 
+ <a name=L59 href="source/linux/drivers/scsi/BusLogic.h#L59">59</a> <b><i>/*</i></b>
+ <a name=L60 href="source/linux/drivers/scsi/BusLogic.h#L60">60</a> <b><i>  Define the maximum, maximum automatic, minimum automatic, and default Queue</i></b>
+ <a name=L61 href="source/linux/drivers/scsi/BusLogic.h#L61">61</a> <b><i>  Depth to allow for Target Devices depending on whether or not they support</i></b>
+ <a name=L62 href="source/linux/drivers/scsi/BusLogic.h#L62">62</a> <b><i>  Tagged Queuing and whether or not ISA Bounce Buffers are required.</i></b>
+ <a name=L63 href="source/linux/drivers/scsi/BusLogic.h#L63">63</a> <b><i>*/</i></b>
+ <a name=L64 href="source/linux/drivers/scsi/BusLogic.h#L64">64</a> 
+ <a name=L65 href="source/linux/drivers/scsi/BusLogic.h#L65">65</a> #define <a href="ident?i=BusLogic_MaxTaggedQueueDepth">BusLogic_MaxTaggedQueueDepth</a>            64
+ <a name=L66 href="source/linux/drivers/scsi/BusLogic.h#L66">66</a> #define <a href="ident?i=BusLogic_MaxAutomaticTaggedQueueDepth">BusLogic_MaxAutomaticTaggedQueueDepth</a>   28
+ <a name=L67 href="source/linux/drivers/scsi/BusLogic.h#L67">67</a> #define <a href="ident?i=BusLogic_MinAutomaticTaggedQueueDepth">BusLogic_MinAutomaticTaggedQueueDepth</a>   7
+ <a name=L68 href="source/linux/drivers/scsi/BusLogic.h#L68">68</a> #define <a href="ident?i=BusLogic_TaggedQueueDepthBB">BusLogic_TaggedQueueDepthBB</a>             3
+ <a name=L69 href="source/linux/drivers/scsi/BusLogic.h#L69">69</a> #define <a href="ident?i=BusLogic_UntaggedQueueDepth">BusLogic_UntaggedQueueDepth</a>             3
+ <a name=L70 href="source/linux/drivers/scsi/BusLogic.h#L70">70</a> #define <a href="ident?i=BusLogic_UntaggedQueueDepthBB">BusLogic_UntaggedQueueDepthBB</a>           2
+ <a name=L71 href="source/linux/drivers/scsi/BusLogic.h#L71">71</a> 
+ <a name=L72 href="source/linux/drivers/scsi/BusLogic.h#L72">72</a> 
+ <a name=L73 href="source/linux/drivers/scsi/BusLogic.h#L73">73</a> <b><i>/*</i></b>
+ <a name=L74 href="source/linux/drivers/scsi/BusLogic.h#L74">74</a> <b><i>  Define the default amount of time in seconds to wait between a Host Adapter</i></b>
+ <a name=L75 href="source/linux/drivers/scsi/BusLogic.h#L75">75</a> <b><i>  Hard Reset which initiates a SCSI Bus Reset and issuing any SCSI commands.</i></b>
+ <a name=L76 href="source/linux/drivers/scsi/BusLogic.h#L76">76</a> <b><i>  Some SCSI devices get confused if they receive SCSI commands too soon after</i></b>
+ <a name=L77 href="source/linux/drivers/scsi/BusLogic.h#L77">77</a> <b><i>  a SCSI Bus Reset.</i></b>
+ <a name=L78 href="source/linux/drivers/scsi/BusLogic.h#L78">78</a> <b><i>*/</i></b>
+ <a name=L79 href="source/linux/drivers/scsi/BusLogic.h#L79">79</a> 
+ <a name=L80 href="source/linux/drivers/scsi/BusLogic.h#L80">80</a> #define <a href="ident?i=BusLogic_DefaultBusSettleTime">BusLogic_DefaultBusSettleTime</a>           2
+ <a name=L81 href="source/linux/drivers/scsi/BusLogic.h#L81">81</a> 
+ <a name=L82 href="source/linux/drivers/scsi/BusLogic.h#L82">82</a> 
+ <a name=L83 href="source/linux/drivers/scsi/BusLogic.h#L83">83</a> <b><i>/*</i></b>
+ <a name=L84 href="source/linux/drivers/scsi/BusLogic.h#L84">84</a> <b><i>  Define the maximum number of Mailboxes that should be used for MultiMaster</i></b>
+ <a name=L85 href="source/linux/drivers/scsi/BusLogic.h#L85">85</a> <b><i>  Host Adapters.  This number is chosen to be larger than the maximum Host</i></b>
+ <a name=L86 href="source/linux/drivers/scsi/BusLogic.h#L86">86</a> <b><i>  Adapter Queue Depth and small enough so that the Host Adapter structure</i></b>
+ <a name=L87 href="source/linux/drivers/scsi/BusLogic.h#L87">87</a> <b><i>  does not cross an allocation block size boundary.</i></b>
+ <a name=L88 href="source/linux/drivers/scsi/BusLogic.h#L88">88</a> <b><i>*/</i></b>
+ <a name=L89 href="source/linux/drivers/scsi/BusLogic.h#L89">89</a> 
+ <a name=L90 href="source/linux/drivers/scsi/BusLogic.h#L90">90</a> #define <a href="ident?i=BusLogic_MaxMailboxes">BusLogic_MaxMailboxes</a>                   211
+ <a name=L91 href="source/linux/drivers/scsi/BusLogic.h#L91">91</a> 
+ <a name=L92 href="source/linux/drivers/scsi/BusLogic.h#L92">92</a> 
+ <a name=L93 href="source/linux/drivers/scsi/BusLogic.h#L93">93</a> <b><i>/*</i></b>
+ <a name=L94 href="source/linux/drivers/scsi/BusLogic.h#L94">94</a> <b><i>  Define the number of CCBs that should be allocated as a group to optimize</i></b>
+ <a name=L95 href="source/linux/drivers/scsi/BusLogic.h#L95">95</a> <b><i>  Kernel memory allocation.</i></b>
+ <a name=L96 href="source/linux/drivers/scsi/BusLogic.h#L96">96</a> <b><i>*/</i></b>
+ <a name=L97 href="source/linux/drivers/scsi/BusLogic.h#L97">97</a> 
+ <a name=L98 href="source/linux/drivers/scsi/BusLogic.h#L98">98</a> #define <a href="ident?i=BusLogic_CCB_AllocationGroupSize">BusLogic_CCB_AllocationGroupSize</a>        7
+ <a name=L99 href="source/linux/drivers/scsi/BusLogic.h#L99">99</a> 
+<a name=L100 href="source/linux/drivers/scsi/BusLogic.h#L100">100</a> 
+<a name=L101 href="source/linux/drivers/scsi/BusLogic.h#L101">101</a> <b><i>/*</i></b>
+<a name=L102 href="source/linux/drivers/scsi/BusLogic.h#L102">102</a> <b><i>  Define the Host Adapter Line and Message Buffer Sizes.</i></b>
+<a name=L103 href="source/linux/drivers/scsi/BusLogic.h#L103">103</a> <b><i>*/</i></b>
+<a name=L104 href="source/linux/drivers/scsi/BusLogic.h#L104">104</a> 
+<a name=L105 href="source/linux/drivers/scsi/BusLogic.h#L105">105</a> #define <a href="ident?i=BusLogic_LineBufferSize">BusLogic_LineBufferSize</a>                 100
+<a name=L106 href="source/linux/drivers/scsi/BusLogic.h#L106">106</a> #define <a href="ident?i=BusLogic_MessageBufferSize">BusLogic_MessageBufferSize</a>              9700
+<a name=L107 href="source/linux/drivers/scsi/BusLogic.h#L107">107</a> 
+<a name=L108 href="source/linux/drivers/scsi/BusLogic.h#L108">108</a> 
+<a name=L109 href="source/linux/drivers/scsi/BusLogic.h#L109">109</a> <b><i>/*</i></b>
+<a name=L110 href="source/linux/drivers/scsi/BusLogic.h#L110">110</a> <b><i>  Define the Driver Message Levels.</i></b>
+<a name=L111 href="source/linux/drivers/scsi/BusLogic.h#L111">111</a> <b><i>*/</i></b>
+<a name=L112 href="source/linux/drivers/scsi/BusLogic.h#L112">112</a> 
+<a name=L113 href="source/linux/drivers/scsi/BusLogic.h#L113">113</a> enum <a href="ident?i=BusLogic_MessageLevel">BusLogic_MessageLevel</a> {
+<a name=L114 href="source/linux/drivers/scsi/BusLogic.h#L114">114</a>         BusLogic_AnnounceLevel = 0,
+<a name=L115 href="source/linux/drivers/scsi/BusLogic.h#L115">115</a>         BusLogic_InfoLevel = 1,
+<a name=L116 href="source/linux/drivers/scsi/BusLogic.h#L116">116</a>         BusLogic_NoticeLevel = 2,
+<a name=L117 href="source/linux/drivers/scsi/BusLogic.h#L117">117</a>         BusLogic_WarningLevel = 3,
+<a name=L118 href="source/linux/drivers/scsi/BusLogic.h#L118">118</a>         BusLogic_ErrorLevel = 4
+<a name=L119 href="source/linux/drivers/scsi/BusLogic.h#L119">119</a> };
+<a name=L120 href="source/linux/drivers/scsi/BusLogic.h#L120">120</a> 
+<a name=L121 href="source/linux/drivers/scsi/BusLogic.h#L121">121</a> static char *<a href="ident?i=BusLogic_MessageLevelMap">BusLogic_MessageLevelMap</a>[] = { <a href="ident?i=KERN_NOTICE">KERN_NOTICE</a>, <a href="ident?i=KERN_NOTICE">KERN_NOTICE</a>, <a href="ident?i=KERN_NOTICE">KERN_NOTICE</a>, <a href="ident?i=KERN_WARNING">KERN_WARNING</a>, <a href="ident?i=KERN_ERR">KERN_ERR</a> };
+<a name=L122 href="source/linux/drivers/scsi/BusLogic.h#L122">122</a> 
+<a name=L123 href="source/linux/drivers/scsi/BusLogic.h#L123">123</a> 
+<a name=L124 href="source/linux/drivers/scsi/BusLogic.h#L124">124</a> <b><i>/*</i></b>
+<a name=L125 href="source/linux/drivers/scsi/BusLogic.h#L125">125</a> <b><i>  Define Driver Message macros.</i></b>
+<a name=L126 href="source/linux/drivers/scsi/BusLogic.h#L126">126</a> <b><i>*/</i></b>
+<a name=L127 href="source/linux/drivers/scsi/BusLogic.h#L127">127</a> 
+<a name=L128 href="source/linux/drivers/scsi/BusLogic.h#L128">128</a> #define <a href="ident?i=BusLogic_Announce">BusLogic_Announce</a>(Format, Arguments...) \
+<a name=L129 href="source/linux/drivers/scsi/BusLogic.h#L129">129</a>   <a href="ident?i=BusLogic_Message">BusLogic_Message</a>(BusLogic_AnnounceLevel, Format, ##Arguments)
+<a name=L130 href="source/linux/drivers/scsi/BusLogic.h#L130">130</a> 
+<a name=L131 href="source/linux/drivers/scsi/BusLogic.h#L131">131</a> #define <a href="ident?i=BusLogic_Info">BusLogic_Info</a>(Format, Arguments...) \
+<a name=L132 href="source/linux/drivers/scsi/BusLogic.h#L132">132</a>   <a href="ident?i=BusLogic_Message">BusLogic_Message</a>(BusLogic_InfoLevel, Format, ##Arguments)
+<a name=L133 href="source/linux/drivers/scsi/BusLogic.h#L133">133</a> 
+<a name=L134 href="source/linux/drivers/scsi/BusLogic.h#L134">134</a> #define <a href="ident?i=BusLogic_Notice">BusLogic_Notice</a>(Format, Arguments...) \
+<a name=L135 href="source/linux/drivers/scsi/BusLogic.h#L135">135</a>   <a href="ident?i=BusLogic_Message">BusLogic_Message</a>(BusLogic_NoticeLevel, Format, ##Arguments)
+<a name=L136 href="source/linux/drivers/scsi/BusLogic.h#L136">136</a> 
+<a name=L137 href="source/linux/drivers/scsi/BusLogic.h#L137">137</a> #define <a href="ident?i=BusLogic_Warning">BusLogic_Warning</a>(Format, Arguments...) \
+<a name=L138 href="source/linux/drivers/scsi/BusLogic.h#L138">138</a>   <a href="ident?i=BusLogic_Message">BusLogic_Message</a>(BusLogic_WarningLevel, Format, ##Arguments)
+<a name=L139 href="source/linux/drivers/scsi/BusLogic.h#L139">139</a> 
+<a name=L140 href="source/linux/drivers/scsi/BusLogic.h#L140">140</a> #define <a href="ident?i=BusLogic_Error">BusLogic_Error</a>(Format, Arguments...) \
+<a name=L141 href="source/linux/drivers/scsi/BusLogic.h#L141">141</a>   <a href="ident?i=BusLogic_Message">BusLogic_Message</a>(BusLogic_ErrorLevel, Format, ##Arguments)
+<a name=L142 href="source/linux/drivers/scsi/BusLogic.h#L142">142</a> 
+<a name=L143 href="source/linux/drivers/scsi/BusLogic.h#L143">143</a> 
+<a name=L144 href="source/linux/drivers/scsi/BusLogic.h#L144">144</a> <b><i>/*</i></b>
+<a name=L145 href="source/linux/drivers/scsi/BusLogic.h#L145">145</a> <b><i>  Define the types of BusLogic Host Adapters that are supported and the number</i></b>
+<a name=L146 href="source/linux/drivers/scsi/BusLogic.h#L146">146</a> <b><i>  of I/O Addresses required by each type.</i></b>
+<a name=L147 href="source/linux/drivers/scsi/BusLogic.h#L147">147</a> <b><i>*/</i></b>
+<a name=L148 href="source/linux/drivers/scsi/BusLogic.h#L148">148</a> 
+<a name=L149 href="source/linux/drivers/scsi/BusLogic.h#L149">149</a> enum <a href="ident?i=BusLogic_HostAdapterType">BusLogic_HostAdapterType</a> {
+<a name=L150 href="source/linux/drivers/scsi/BusLogic.h#L150">150</a>         BusLogic_MultiMaster = 1,
+<a name=L151 href="source/linux/drivers/scsi/BusLogic.h#L151">151</a>         BusLogic_FlashPoint = 2
+<a name=L152 href="source/linux/drivers/scsi/BusLogic.h#L152">152</a> } <a href="ident?i=PACKED">PACKED</a>;
+<a name=L153 href="source/linux/drivers/scsi/BusLogic.h#L153">153</a> 
+<a name=L154 href="source/linux/drivers/scsi/BusLogic.h#L154">154</a> #define <a href="ident?i=BusLogic_MultiMasterAddressCount">BusLogic_MultiMasterAddressCount</a>        4
+<a name=L155 href="source/linux/drivers/scsi/BusLogic.h#L155">155</a> #define <a href="ident?i=BusLogic_FlashPointAddressCount">BusLogic_FlashPointAddressCount</a>         256
+<a name=L156 href="source/linux/drivers/scsi/BusLogic.h#L156">156</a> 
+<a name=L157 href="source/linux/drivers/scsi/BusLogic.h#L157">157</a> static int <a href="ident?i=BusLogic_HostAdapterAddressCount">BusLogic_HostAdapterAddressCount</a>[3] = { 0, <a href="ident?i=BusLogic_MultiMasterAddressCount">BusLogic_MultiMasterAddressCount</a>, <a href="ident?i=BusLogic_FlashPointAddressCount">BusLogic_FlashPointAddressCount</a> };
+<a name=L158 href="source/linux/drivers/scsi/BusLogic.h#L158">158</a> 
+<a name=L159 href="source/linux/drivers/scsi/BusLogic.h#L159">159</a> 
+<a name=L160 href="source/linux/drivers/scsi/BusLogic.h#L160">160</a> <b><i>/*</i></b>
+<a name=L161 href="source/linux/drivers/scsi/BusLogic.h#L161">161</a> <b><i>  Define macros for testing the Host Adapter Type.</i></b>
+<a name=L162 href="source/linux/drivers/scsi/BusLogic.h#L162">162</a> <b><i>*/</i></b>
+<a name=L163 href="source/linux/drivers/scsi/BusLogic.h#L163">163</a> 
+<a name=L164 href="source/linux/drivers/scsi/BusLogic.h#L164">164</a> #ifdef CONFIG_SCSI_FLASHPOINT
+<a name=L165 href="source/linux/drivers/scsi/BusLogic.h#L165">165</a> 
+<a name=L166 href="source/linux/drivers/scsi/BusLogic.h#L166">166</a> #define <a href="ident?i=BusLogic_MultiMasterHostAdapterP">BusLogic_MultiMasterHostAdapterP</a>(HostAdapter) \
+<a name=L167 href="source/linux/drivers/scsi/BusLogic.h#L167">167</a>   (HostAdapter-&gt;HostAdapterType == BusLogic_MultiMaster)
+<a name=L168 href="source/linux/drivers/scsi/BusLogic.h#L168">168</a> 
+<a name=L169 href="source/linux/drivers/scsi/BusLogic.h#L169">169</a> #define <a href="ident?i=BusLogic_FlashPointHostAdapterP">BusLogic_FlashPointHostAdapterP</a>(HostAdapter) \
+<a name=L170 href="source/linux/drivers/scsi/BusLogic.h#L170">170</a>   (HostAdapter-&gt;HostAdapterType == BusLogic_FlashPoint)
+<a name=L171 href="source/linux/drivers/scsi/BusLogic.h#L171">171</a> 
+<a name=L172 href="source/linux/drivers/scsi/BusLogic.h#L172">172</a> #else
+<a name=L173 href="source/linux/drivers/scsi/BusLogic.h#L173">173</a> 
+<a name=L174 href="source/linux/drivers/scsi/BusLogic.h#L174">174</a> #define <a href="ident?i=BusLogic_MultiMasterHostAdapterP">BusLogic_MultiMasterHostAdapterP</a>(HostAdapter) \
+<a name=L175 href="source/linux/drivers/scsi/BusLogic.h#L175">175</a>   (<a href="ident?i=true">true</a>)
+<a name=L176 href="source/linux/drivers/scsi/BusLogic.h#L176">176</a> 
+<a name=L177 href="source/linux/drivers/scsi/BusLogic.h#L177">177</a> #define <a href="ident?i=BusLogic_FlashPointHostAdapterP">BusLogic_FlashPointHostAdapterP</a>(HostAdapter) \
+<a name=L178 href="source/linux/drivers/scsi/BusLogic.h#L178">178</a>   (<a href="ident?i=false">false</a>)
+<a name=L179 href="source/linux/drivers/scsi/BusLogic.h#L179">179</a> 
+<a name=L180 href="source/linux/drivers/scsi/BusLogic.h#L180">180</a> #endif
+<a name=L181 href="source/linux/drivers/scsi/BusLogic.h#L181">181</a> 
+<a name=L182 href="source/linux/drivers/scsi/BusLogic.h#L182">182</a> 
+<a name=L183 href="source/linux/drivers/scsi/BusLogic.h#L183">183</a> <b><i>/*</i></b>
+<a name=L184 href="source/linux/drivers/scsi/BusLogic.h#L184">184</a> <b><i>  Define the possible Host Adapter Bus Types.</i></b>
+<a name=L185 href="source/linux/drivers/scsi/BusLogic.h#L185">185</a> <b><i>*/</i></b>
+<a name=L186 href="source/linux/drivers/scsi/BusLogic.h#L186">186</a> 
+<a name=L187 href="source/linux/drivers/scsi/BusLogic.h#L187">187</a> enum <a href="ident?i=BusLogic_HostAdapterBusType">BusLogic_HostAdapterBusType</a> {
+<a name=L188 href="source/linux/drivers/scsi/BusLogic.h#L188">188</a>         BusLogic_Unknown_Bus = 0,
+<a name=L189 href="source/linux/drivers/scsi/BusLogic.h#L189">189</a>         BusLogic_ISA_Bus = 1,
+<a name=L190 href="source/linux/drivers/scsi/BusLogic.h#L190">190</a>         BusLogic_EISA_Bus = 2,
+<a name=L191 href="source/linux/drivers/scsi/BusLogic.h#L191">191</a>         BusLogic_PCI_Bus = 3,
+<a name=L192 href="source/linux/drivers/scsi/BusLogic.h#L192">192</a>         BusLogic_VESA_Bus = 4,
+<a name=L193 href="source/linux/drivers/scsi/BusLogic.h#L193">193</a>         BusLogic_MCA_Bus = 5
+<a name=L194 href="source/linux/drivers/scsi/BusLogic.h#L194">194</a> } <a href="ident?i=PACKED">PACKED</a>;
+<a name=L195 href="source/linux/drivers/scsi/BusLogic.h#L195">195</a> 
+<a name=L196 href="source/linux/drivers/scsi/BusLogic.h#L196">196</a> static char *<a href="ident?i=BusLogic_HostAdapterBusNames">BusLogic_HostAdapterBusNames</a>[] = { <i>"Unknown"</i>, <i>"ISA"</i>, <i>"EISA"</i>, <i>"PCI"</i>, <i>"VESA"</i>, <i>"MCA"</i> };
+<a name=L197 href="source/linux/drivers/scsi/BusLogic.h#L197">197</a> 
+<a name=L198 href="source/linux/drivers/scsi/BusLogic.h#L198">198</a> static enum <a href="ident?i=BusLogic_HostAdapterBusType">BusLogic_HostAdapterBusType</a> <a href="ident?i=BusLogic_HostAdapterBusTypes">BusLogic_HostAdapterBusTypes</a>[] = {
+<a name=L199 href="source/linux/drivers/scsi/BusLogic.h#L199">199</a>         BusLogic_VESA_Bus,      <b><i>/* BT-4xx */</i></b>
+<a name=L200 href="source/linux/drivers/scsi/BusLogic.h#L200">200</a>         BusLogic_ISA_Bus,       <b><i>/* BT-5xx */</i></b>
+<a name=L201 href="source/linux/drivers/scsi/BusLogic.h#L201">201</a>         BusLogic_MCA_Bus,       <b><i>/* BT-6xx */</i></b>
+<a name=L202 href="source/linux/drivers/scsi/BusLogic.h#L202">202</a>         BusLogic_EISA_Bus,      <b><i>/* BT-7xx */</i></b>
+<a name=L203 href="source/linux/drivers/scsi/BusLogic.h#L203">203</a>         BusLogic_Unknown_Bus,   <b><i>/* BT-8xx */</i></b>
+<a name=L204 href="source/linux/drivers/scsi/BusLogic.h#L204">204</a>         BusLogic_PCI_Bus        <b><i>/* BT-9xx */</i></b>
+<a name=L205 href="source/linux/drivers/scsi/BusLogic.h#L205">205</a> };
+<a name=L206 href="source/linux/drivers/scsi/BusLogic.h#L206">206</a> 
+<a name=L207 href="source/linux/drivers/scsi/BusLogic.h#L207">207</a> <b><i>/*</i></b>
+<a name=L208 href="source/linux/drivers/scsi/BusLogic.h#L208">208</a> <b><i>  Define the possible Host Adapter BIOS Disk Geometry Translations.</i></b>
+<a name=L209 href="source/linux/drivers/scsi/BusLogic.h#L209">209</a> <b><i>*/</i></b>
+<a name=L210 href="source/linux/drivers/scsi/BusLogic.h#L210">210</a> 
+<a name=L211 href="source/linux/drivers/scsi/BusLogic.h#L211">211</a> enum <a href="ident?i=BusLogic_BIOS_DiskGeometryTranslation">BusLogic_BIOS_DiskGeometryTranslation</a> {
+<a name=L212 href="source/linux/drivers/scsi/BusLogic.h#L212">212</a>         BusLogic_BIOS_Disk_Not_Installed = 0,
+<a name=L213 href="source/linux/drivers/scsi/BusLogic.h#L213">213</a>         BusLogic_BIOS_Disk_Installed_64x32 = 1,
+<a name=L214 href="source/linux/drivers/scsi/BusLogic.h#L214">214</a>         BusLogic_BIOS_Disk_Installed_128x32 = 2,
+<a name=L215 href="source/linux/drivers/scsi/BusLogic.h#L215">215</a>         BusLogic_BIOS_Disk_Installed_255x63 = 3
+<a name=L216 href="source/linux/drivers/scsi/BusLogic.h#L216">216</a> } <a href="ident?i=PACKED">PACKED</a>;
+<a name=L217 href="source/linux/drivers/scsi/BusLogic.h#L217">217</a> 
+<a name=L218 href="source/linux/drivers/scsi/BusLogic.h#L218">218</a> 
+<a name=L219 href="source/linux/drivers/scsi/BusLogic.h#L219">219</a> <b><i>/*</i></b>
+<a name=L220 href="source/linux/drivers/scsi/BusLogic.h#L220">220</a> <b><i>  Define a 10^18 Statistics Byte Counter data type.</i></b>
+<a name=L221 href="source/linux/drivers/scsi/BusLogic.h#L221">221</a> <b><i>*/</i></b>
+<a name=L222 href="source/linux/drivers/scsi/BusLogic.h#L222">222</a> 
+<a name=L223 href="source/linux/drivers/scsi/BusLogic.h#L223">223</a> struct <a href="ident?i=BusLogic_ByteCounter">BusLogic_ByteCounter</a> {
+<a name=L224 href="source/linux/drivers/scsi/BusLogic.h#L224">224</a>         unsigned int Units;
+<a name=L225 href="source/linux/drivers/scsi/BusLogic.h#L225">225</a>         unsigned int Billions;
+<a name=L226 href="source/linux/drivers/scsi/BusLogic.h#L226">226</a> };
+<a name=L227 href="source/linux/drivers/scsi/BusLogic.h#L227">227</a> 
+<a name=L228 href="source/linux/drivers/scsi/BusLogic.h#L228">228</a> 
+<a name=L229 href="source/linux/drivers/scsi/BusLogic.h#L229">229</a> <b><i>/*</i></b>
+<a name=L230 href="source/linux/drivers/scsi/BusLogic.h#L230">230</a> <b><i>  Define the structure for I/O Address and Bus Probing Information.</i></b>
+<a name=L231 href="source/linux/drivers/scsi/BusLogic.h#L231">231</a> <b><i>*/</i></b>
+<a name=L232 href="source/linux/drivers/scsi/BusLogic.h#L232">232</a> 
+<a name=L233 href="source/linux/drivers/scsi/BusLogic.h#L233">233</a> struct <a href="ident?i=BusLogic_ProbeInfo">BusLogic_ProbeInfo</a> {
+<a name=L234 href="source/linux/drivers/scsi/BusLogic.h#L234">234</a>         enum <a href="ident?i=BusLogic_HostAdapterType">BusLogic_HostAdapterType</a> HostAdapterType;
+<a name=L235 href="source/linux/drivers/scsi/BusLogic.h#L235">235</a>         enum <a href="ident?i=BusLogic_HostAdapterBusType">BusLogic_HostAdapterBusType</a> HostAdapterBusType;
+<a name=L236 href="source/linux/drivers/scsi/BusLogic.h#L236">236</a>         unsigned long IO_Address;
+<a name=L237 href="source/linux/drivers/scsi/BusLogic.h#L237">237</a>         unsigned long PCI_Address;
+<a name=L238 href="source/linux/drivers/scsi/BusLogic.h#L238">238</a>         struct <a href="ident?i=pci_dev">pci_dev</a> *PCI_Device;
+<a name=L239 href="source/linux/drivers/scsi/BusLogic.h#L239">239</a>         unsigned char Bus;
+<a name=L240 href="source/linux/drivers/scsi/BusLogic.h#L240">240</a>         unsigned char Device;
+<a name=L241 href="source/linux/drivers/scsi/BusLogic.h#L241">241</a>         unsigned char IRQ_Channel;
+<a name=L242 href="source/linux/drivers/scsi/BusLogic.h#L242">242</a> };
+<a name=L243 href="source/linux/drivers/scsi/BusLogic.h#L243">243</a> 
+<a name=L244 href="source/linux/drivers/scsi/BusLogic.h#L244">244</a> <b><i>/*</i></b>
+<a name=L245 href="source/linux/drivers/scsi/BusLogic.h#L245">245</a> <b><i>  Define the Probe Options.</i></b>
+<a name=L246 href="source/linux/drivers/scsi/BusLogic.h#L246">246</a> <b><i>*/</i></b>
+<a name=L247 href="source/linux/drivers/scsi/BusLogic.h#L247">247</a> 
+<a name=L248 href="source/linux/drivers/scsi/BusLogic.h#L248">248</a> struct <a href="ident?i=BusLogic_ProbeOptions">BusLogic_ProbeOptions</a> {
+<a name=L249 href="source/linux/drivers/scsi/BusLogic.h#L249">249</a>         <a href="ident?i=bool">bool</a> NoProbe:1;         <b><i>/* Bit 0 */</i></b>
+<a name=L250 href="source/linux/drivers/scsi/BusLogic.h#L250">250</a>         <a href="ident?i=bool">bool</a> NoProbeISA:1;      <b><i>/* Bit 1 */</i></b>
+<a name=L251 href="source/linux/drivers/scsi/BusLogic.h#L251">251</a>         <a href="ident?i=bool">bool</a> NoProbePCI:1;      <b><i>/* Bit 2 */</i></b>
+<a name=L252 href="source/linux/drivers/scsi/BusLogic.h#L252">252</a>         <a href="ident?i=bool">bool</a> NoSortPCI:1;       <b><i>/* Bit 3 */</i></b>
+<a name=L253 href="source/linux/drivers/scsi/BusLogic.h#L253">253</a>         <a href="ident?i=bool">bool</a> MultiMasterFirst:1;<b><i>/* Bit 4 */</i></b>
+<a name=L254 href="source/linux/drivers/scsi/BusLogic.h#L254">254</a>         <a href="ident?i=bool">bool</a> FlashPointFirst:1; <b><i>/* Bit 5 */</i></b>
+<a name=L255 href="source/linux/drivers/scsi/BusLogic.h#L255">255</a>         <a href="ident?i=bool">bool</a> LimitedProbeISA:1; <b><i>/* Bit 6 */</i></b>
+<a name=L256 href="source/linux/drivers/scsi/BusLogic.h#L256">256</a>         <a href="ident?i=bool">bool</a> Probe330:1;        <b><i>/* Bit 7 */</i></b>
+<a name=L257 href="source/linux/drivers/scsi/BusLogic.h#L257">257</a>         <a href="ident?i=bool">bool</a> Probe334:1;        <b><i>/* Bit 8 */</i></b>
+<a name=L258 href="source/linux/drivers/scsi/BusLogic.h#L258">258</a>         <a href="ident?i=bool">bool</a> Probe230:1;        <b><i>/* Bit 9 */</i></b>
+<a name=L259 href="source/linux/drivers/scsi/BusLogic.h#L259">259</a>         <a href="ident?i=bool">bool</a> Probe234:1;        <b><i>/* Bit 10 */</i></b>
+<a name=L260 href="source/linux/drivers/scsi/BusLogic.h#L260">260</a>         <a href="ident?i=bool">bool</a> Probe130:1;        <b><i>/* Bit 11 */</i></b>
+<a name=L261 href="source/linux/drivers/scsi/BusLogic.h#L261">261</a>         <a href="ident?i=bool">bool</a> Probe134:1;        <b><i>/* Bit 12 */</i></b>
+<a name=L262 href="source/linux/drivers/scsi/BusLogic.h#L262">262</a> };
+<a name=L263 href="source/linux/drivers/scsi/BusLogic.h#L263">263</a> 
+<a name=L264 href="source/linux/drivers/scsi/BusLogic.h#L264">264</a> <b><i>/*</i></b>
+<a name=L265 href="source/linux/drivers/scsi/BusLogic.h#L265">265</a> <b><i>  Define the Global Options.</i></b>
+<a name=L266 href="source/linux/drivers/scsi/BusLogic.h#L266">266</a> <b><i>*/</i></b>
+<a name=L267 href="source/linux/drivers/scsi/BusLogic.h#L267">267</a> 
+<a name=L268 href="source/linux/drivers/scsi/BusLogic.h#L268">268</a> struct <a href="ident?i=BusLogic_GlobalOptions">BusLogic_GlobalOptions</a> {
+<a name=L269 href="source/linux/drivers/scsi/BusLogic.h#L269">269</a>         <a href="ident?i=bool">bool</a> TraceProbe:1;      <b><i>/* Bit 0 */</i></b>
+<a name=L270 href="source/linux/drivers/scsi/BusLogic.h#L270">270</a>         <a href="ident?i=bool">bool</a> TraceHardwareReset:1;      <b><i>/* Bit 1 */</i></b>
+<a name=L271 href="source/linux/drivers/scsi/BusLogic.h#L271">271</a>         <a href="ident?i=bool">bool</a> TraceConfiguration:1;      <b><i>/* Bit 2 */</i></b>
+<a name=L272 href="source/linux/drivers/scsi/BusLogic.h#L272">272</a>         <a href="ident?i=bool">bool</a> TraceErrors:1;     <b><i>/* Bit 3 */</i></b>
+<a name=L273 href="source/linux/drivers/scsi/BusLogic.h#L273">273</a> };
+<a name=L274 href="source/linux/drivers/scsi/BusLogic.h#L274">274</a> 
+<a name=L275 href="source/linux/drivers/scsi/BusLogic.h#L275">275</a> <b><i>/*</i></b>
+<a name=L276 href="source/linux/drivers/scsi/BusLogic.h#L276">276</a> <b><i>  Define the Local Options.</i></b>
+<a name=L277 href="source/linux/drivers/scsi/BusLogic.h#L277">277</a> <b><i>*/</i></b>
+<a name=L278 href="source/linux/drivers/scsi/BusLogic.h#L278">278</a> 
+<a name=L279 href="source/linux/drivers/scsi/BusLogic.h#L279">279</a> struct <a href="ident?i=BusLogic_LocalOptions">BusLogic_LocalOptions</a> {
+<a name=L280 href="source/linux/drivers/scsi/BusLogic.h#L280">280</a>         <a href="ident?i=bool">bool</a> InhibitTargetInquiry:1;    <b><i>/* Bit 0 */</i></b>
+<a name=L281 href="source/linux/drivers/scsi/BusLogic.h#L281">281</a> };
+<a name=L282 href="source/linux/drivers/scsi/BusLogic.h#L282">282</a> 
+<a name=L283 href="source/linux/drivers/scsi/BusLogic.h#L283">283</a> <b><i>/*</i></b>
+<a name=L284 href="source/linux/drivers/scsi/BusLogic.h#L284">284</a> <b><i>  Define the BusLogic SCSI Host Adapter I/O Register Offsets.</i></b>
+<a name=L285 href="source/linux/drivers/scsi/BusLogic.h#L285">285</a> <b><i>*/</i></b>
+<a name=L286 href="source/linux/drivers/scsi/BusLogic.h#L286">286</a> 
+<a name=L287 href="source/linux/drivers/scsi/BusLogic.h#L287">287</a> #define <a href="ident?i=BusLogic_ControlRegisterOffset">BusLogic_ControlRegisterOffset</a>          0       <b><i>/* WO register */</i></b>
+<a name=L288 href="source/linux/drivers/scsi/BusLogic.h#L288">288</a> #define <a href="ident?i=BusLogic_StatusRegisterOffset">BusLogic_StatusRegisterOffset</a>           0       <b><i>/* RO register */</i></b>
+<a name=L289 href="source/linux/drivers/scsi/BusLogic.h#L289">289</a> #define <a href="ident?i=BusLogic_CommandParameterRegisterOffset">BusLogic_CommandParameterRegisterOffset</a> 1       <b><i>/* WO register */</i></b>
+<a name=L290 href="source/linux/drivers/scsi/BusLogic.h#L290">290</a> #define <a href="ident?i=BusLogic_DataInRegisterOffset">BusLogic_DataInRegisterOffset</a>           1       <b><i>/* RO register */</i></b>
+<a name=L291 href="source/linux/drivers/scsi/BusLogic.h#L291">291</a> #define <a href="ident?i=BusLogic_InterruptRegisterOffset">BusLogic_InterruptRegisterOffset</a>        2       <b><i>/* RO register */</i></b>
+<a name=L292 href="source/linux/drivers/scsi/BusLogic.h#L292">292</a> #define <a href="ident?i=BusLogic_GeometryRegisterOffset">BusLogic_GeometryRegisterOffset</a>         3       <b><i>/* RO register */</i></b>
+<a name=L293 href="source/linux/drivers/scsi/BusLogic.h#L293">293</a> 
+<a name=L294 href="source/linux/drivers/scsi/BusLogic.h#L294">294</a> <b><i>/*</i></b>
+<a name=L295 href="source/linux/drivers/scsi/BusLogic.h#L295">295</a> <b><i>  Define the structure of the write-only Control Register.</i></b>
+<a name=L296 href="source/linux/drivers/scsi/BusLogic.h#L296">296</a> <b><i>*/</i></b>
+<a name=L297 href="source/linux/drivers/scsi/BusLogic.h#L297">297</a> 
+<a name=L298 href="source/linux/drivers/scsi/BusLogic.h#L298">298</a> union <a href="ident?i=BusLogic_ControlRegister">BusLogic_ControlRegister</a> {
+<a name=L299 href="source/linux/drivers/scsi/BusLogic.h#L299">299</a>         unsigned char All;
+<a name=L300 href="source/linux/drivers/scsi/BusLogic.h#L300">300</a>         struct {
+<a name=L301 href="source/linux/drivers/scsi/BusLogic.h#L301">301</a>                 unsigned char:4;        <b><i>/* Bits 0-3 */</i></b>
+<a name=L302 href="source/linux/drivers/scsi/BusLogic.h#L302">302</a>                 <a href="ident?i=bool">bool</a> SCSIBusReset:1;    <b><i>/* Bit 4 */</i></b>
+<a name=L303 href="source/linux/drivers/scsi/BusLogic.h#L303">303</a>                 <a href="ident?i=bool">bool</a> InterruptReset:1;  <b><i>/* Bit 5 */</i></b>
+<a name=L304 href="source/linux/drivers/scsi/BusLogic.h#L304">304</a>                 <a href="ident?i=bool">bool</a> SoftReset:1;       <b><i>/* Bit 6 */</i></b>
+<a name=L305 href="source/linux/drivers/scsi/BusLogic.h#L305">305</a>                 <a href="ident?i=bool">bool</a> HardReset:1;       <b><i>/* Bit 7 */</i></b>
+<a name=L306 href="source/linux/drivers/scsi/BusLogic.h#L306">306</a>         } <a href="ident?i=cr">cr</a>;
+<a name=L307 href="source/linux/drivers/scsi/BusLogic.h#L307">307</a> };
+<a name=L308 href="source/linux/drivers/scsi/BusLogic.h#L308">308</a> 
+<a name=L309 href="source/linux/drivers/scsi/BusLogic.h#L309">309</a> <b><i>/*</i></b>
+<a name=L310 href="source/linux/drivers/scsi/BusLogic.h#L310">310</a> <b><i>  Define the structure of the read-only Status Register.</i></b>
+<a name=L311 href="source/linux/drivers/scsi/BusLogic.h#L311">311</a> <b><i>*/</i></b>
+<a name=L312 href="source/linux/drivers/scsi/BusLogic.h#L312">312</a> 
+<a name=L313 href="source/linux/drivers/scsi/BusLogic.h#L313">313</a> union <a href="ident?i=BusLogic_StatusRegister">BusLogic_StatusRegister</a> {
+<a name=L314 href="source/linux/drivers/scsi/BusLogic.h#L314">314</a>         unsigned char All;
+<a name=L315 href="source/linux/drivers/scsi/BusLogic.h#L315">315</a>         struct {
+<a name=L316 href="source/linux/drivers/scsi/BusLogic.h#L316">316</a>                 <a href="ident?i=bool">bool</a> CommandInvalid:1;          <b><i>/* Bit 0 */</i></b>
+<a name=L317 href="source/linux/drivers/scsi/BusLogic.h#L317">317</a>                 <a href="ident?i=bool">bool</a> <a href="ident?i=Reserved">Reserved</a>:1;                <b><i>/* Bit 1 */</i></b>
+<a name=L318 href="source/linux/drivers/scsi/BusLogic.h#L318">318</a>                 <a href="ident?i=bool">bool</a> DataInRegisterReady:1;     <b><i>/* Bit 2 */</i></b>
+<a name=L319 href="source/linux/drivers/scsi/BusLogic.h#L319">319</a>                 <a href="ident?i=bool">bool</a> CommandParameterRegisterBusy:1;    <b><i>/* Bit 3 */</i></b>
+<a name=L320 href="source/linux/drivers/scsi/BusLogic.h#L320">320</a>                 <a href="ident?i=bool">bool</a> HostAdapterReady:1;        <b><i>/* Bit 4 */</i></b>
+<a name=L321 href="source/linux/drivers/scsi/BusLogic.h#L321">321</a>                 <a href="ident?i=bool">bool</a> InitializationRequired:1;  <b><i>/* Bit 5 */</i></b>
+<a name=L322 href="source/linux/drivers/scsi/BusLogic.h#L322">322</a>                 <a href="ident?i=bool">bool</a> DiagnosticFailure:1;       <b><i>/* Bit 6 */</i></b>
+<a name=L323 href="source/linux/drivers/scsi/BusLogic.h#L323">323</a>                 <a href="ident?i=bool">bool</a> DiagnosticActive:1;        <b><i>/* Bit 7 */</i></b>
+<a name=L324 href="source/linux/drivers/scsi/BusLogic.h#L324">324</a>         } sr;
+<a name=L325 href="source/linux/drivers/scsi/BusLogic.h#L325">325</a> };
+<a name=L326 href="source/linux/drivers/scsi/BusLogic.h#L326">326</a> 
+<a name=L327 href="source/linux/drivers/scsi/BusLogic.h#L327">327</a> <b><i>/*</i></b>
+<a name=L328 href="source/linux/drivers/scsi/BusLogic.h#L328">328</a> <b><i>  Define the structure of the read-only Interrupt Register.</i></b>
+<a name=L329 href="source/linux/drivers/scsi/BusLogic.h#L329">329</a> <b><i>*/</i></b>
+<a name=L330 href="source/linux/drivers/scsi/BusLogic.h#L330">330</a> 
+<a name=L331 href="source/linux/drivers/scsi/BusLogic.h#L331">331</a> union <a href="ident?i=BusLogic_InterruptRegister">BusLogic_InterruptRegister</a> {
+<a name=L332 href="source/linux/drivers/scsi/BusLogic.h#L332">332</a>         unsigned char All;
+<a name=L333 href="source/linux/drivers/scsi/BusLogic.h#L333">333</a>         struct {
+<a name=L334 href="source/linux/drivers/scsi/BusLogic.h#L334">334</a>                 <a href="ident?i=bool">bool</a> IncomingMailboxLoaded:1;   <b><i>/* Bit 0 */</i></b>
+<a name=L335 href="source/linux/drivers/scsi/BusLogic.h#L335">335</a>                 <a href="ident?i=bool">bool</a> OutgoingMailboxAvailable:1;<b><i>/* Bit 1 */</i></b>
+<a name=L336 href="source/linux/drivers/scsi/BusLogic.h#L336">336</a>                 <a href="ident?i=bool">bool</a> CommandComplete:1;         <b><i>/* Bit 2 */</i></b>
+<a name=L337 href="source/linux/drivers/scsi/BusLogic.h#L337">337</a>                 <a href="ident?i=bool">bool</a> ExternalBusReset:1;        <b><i>/* Bit 3 */</i></b>
+<a name=L338 href="source/linux/drivers/scsi/BusLogic.h#L338">338</a>                 unsigned char <a href="ident?i=Reserved">Reserved</a>:3;       <b><i>/* Bits 4-6 */</i></b>
+<a name=L339 href="source/linux/drivers/scsi/BusLogic.h#L339">339</a>                 <a href="ident?i=bool">bool</a> InterruptValid:1;          <b><i>/* Bit 7 */</i></b>
+<a name=L340 href="source/linux/drivers/scsi/BusLogic.h#L340">340</a>         } ir;
+<a name=L341 href="source/linux/drivers/scsi/BusLogic.h#L341">341</a> };
+<a name=L342 href="source/linux/drivers/scsi/BusLogic.h#L342">342</a> 
+<a name=L343 href="source/linux/drivers/scsi/BusLogic.h#L343">343</a> <b><i>/*</i></b>
+<a name=L344 href="source/linux/drivers/scsi/BusLogic.h#L344">344</a> <b><i>  Define the structure of the read-only Geometry Register.</i></b>
+<a name=L345 href="source/linux/drivers/scsi/BusLogic.h#L345">345</a> <b><i>*/</i></b>
+<a name=L346 href="source/linux/drivers/scsi/BusLogic.h#L346">346</a> 
+<a name=L347 href="source/linux/drivers/scsi/BusLogic.h#L347">347</a> union <a href="ident?i=BusLogic_GeometryRegister">BusLogic_GeometryRegister</a> {
+<a name=L348 href="source/linux/drivers/scsi/BusLogic.h#L348">348</a>         unsigned char All;
+<a name=L349 href="source/linux/drivers/scsi/BusLogic.h#L349">349</a>         struct {
+<a name=L350 href="source/linux/drivers/scsi/BusLogic.h#L350">350</a>                 enum <a href="ident?i=BusLogic_BIOS_DiskGeometryTranslation">BusLogic_BIOS_DiskGeometryTranslation</a> Drive0Geometry:2;    <b><i>/* Bits 0-1 */</i></b>
+<a name=L351 href="source/linux/drivers/scsi/BusLogic.h#L351">351</a>                 enum <a href="ident?i=BusLogic_BIOS_DiskGeometryTranslation">BusLogic_BIOS_DiskGeometryTranslation</a> Drive1Geometry:2;    <b><i>/* Bits 2-3 */</i></b>
+<a name=L352 href="source/linux/drivers/scsi/BusLogic.h#L352">352</a>                 unsigned char:3;        <b><i>/* Bits 4-6 */</i></b>
+<a name=L353 href="source/linux/drivers/scsi/BusLogic.h#L353">353</a>                 <a href="ident?i=bool">bool</a> ExtendedTranslationEnabled:1;      <b><i>/* Bit 7 */</i></b>
+<a name=L354 href="source/linux/drivers/scsi/BusLogic.h#L354">354</a>         } gr;
+<a name=L355 href="source/linux/drivers/scsi/BusLogic.h#L355">355</a> };
+<a name=L356 href="source/linux/drivers/scsi/BusLogic.h#L356">356</a> 
+<a name=L357 href="source/linux/drivers/scsi/BusLogic.h#L357">357</a> <b><i>/*</i></b>
+<a name=L358 href="source/linux/drivers/scsi/BusLogic.h#L358">358</a> <b><i>  Define the BusLogic SCSI Host Adapter Command Register Operation Codes.</i></b>
+<a name=L359 href="source/linux/drivers/scsi/BusLogic.h#L359">359</a> <b><i>*/</i></b>
+<a name=L360 href="source/linux/drivers/scsi/BusLogic.h#L360">360</a> 
+<a name=L361 href="source/linux/drivers/scsi/BusLogic.h#L361">361</a> enum <a href="ident?i=BusLogic_OperationCode">BusLogic_OperationCode</a> {
+<a name=L362 href="source/linux/drivers/scsi/BusLogic.h#L362">362</a>         BusLogic_TestCommandCompleteInterrupt = 0x00,
+<a name=L363 href="source/linux/drivers/scsi/BusLogic.h#L363">363</a>         BusLogic_InitializeMailbox = 0x01,
+<a name=L364 href="source/linux/drivers/scsi/BusLogic.h#L364">364</a>         BusLogic_ExecuteMailboxCommand = 0x02,
+<a name=L365 href="source/linux/drivers/scsi/BusLogic.h#L365">365</a>         BusLogic_ExecuteBIOSCommand = 0x03,
+<a name=L366 href="source/linux/drivers/scsi/BusLogic.h#L366">366</a>         BusLogic_InquireBoardID = 0x04,
+<a name=L367 href="source/linux/drivers/scsi/BusLogic.h#L367">367</a>         BusLogic_EnableOutgoingMailboxAvailableInt = 0x05,
+<a name=L368 href="source/linux/drivers/scsi/BusLogic.h#L368">368</a>         BusLogic_SetSCSISelectionTimeout = 0x06,
+<a name=L369 href="source/linux/drivers/scsi/BusLogic.h#L369">369</a>         BusLogic_SetPreemptTimeOnBus = 0x07,
+<a name=L370 href="source/linux/drivers/scsi/BusLogic.h#L370">370</a>         BusLogic_SetTimeOffBus = 0x08,
+<a name=L371 href="source/linux/drivers/scsi/BusLogic.h#L371">371</a>         BusLogic_SetBusTransferRate = 0x09,
+<a name=L372 href="source/linux/drivers/scsi/BusLogic.h#L372">372</a>         BusLogic_InquireInstalledDevicesID0to7 = 0x0A,
+<a name=L373 href="source/linux/drivers/scsi/BusLogic.h#L373">373</a>         BusLogic_InquireConfiguration = 0x0B,
+<a name=L374 href="source/linux/drivers/scsi/BusLogic.h#L374">374</a>         BusLogic_EnableTargetMode = 0x0C,
+<a name=L375 href="source/linux/drivers/scsi/BusLogic.h#L375">375</a>         BusLogic_InquireSetupInformation = 0x0D,
+<a name=L376 href="source/linux/drivers/scsi/BusLogic.h#L376">376</a>         BusLogic_WriteAdapterLocalRAM = 0x1A,
+<a name=L377 href="source/linux/drivers/scsi/BusLogic.h#L377">377</a>         BusLogic_ReadAdapterLocalRAM = 0x1B,
+<a name=L378 href="source/linux/drivers/scsi/BusLogic.h#L378">378</a>         BusLogic_WriteBusMasterChipFIFO = 0x1C,
+<a name=L379 href="source/linux/drivers/scsi/BusLogic.h#L379">379</a>         BusLogic_ReadBusMasterChipFIFO = 0x1D,
+<a name=L380 href="source/linux/drivers/scsi/BusLogic.h#L380">380</a>         BusLogic_EchoCommandData = 0x1F,
+<a name=L381 href="source/linux/drivers/scsi/BusLogic.h#L381">381</a>         BusLogic_HostAdapterDiagnostic = 0x20,
+<a name=L382 href="source/linux/drivers/scsi/BusLogic.h#L382">382</a>         BusLogic_SetAdapterOptions = 0x21,
+<a name=L383 href="source/linux/drivers/scsi/BusLogic.h#L383">383</a>         BusLogic_InquireInstalledDevicesID8to15 = 0x23,
+<a name=L384 href="source/linux/drivers/scsi/BusLogic.h#L384">384</a>         BusLogic_InquireTargetDevices = 0x24,
+<a name=L385 href="source/linux/drivers/scsi/BusLogic.h#L385">385</a>         BusLogic_DisableHostAdapterInterrupt = 0x25,
+<a name=L386 href="source/linux/drivers/scsi/BusLogic.h#L386">386</a>         BusLogic_InitializeExtendedMailbox = 0x81,
+<a name=L387 href="source/linux/drivers/scsi/BusLogic.h#L387">387</a>         BusLogic_ExecuteSCSICommand = 0x83,
+<a name=L388 href="source/linux/drivers/scsi/BusLogic.h#L388">388</a>         BusLogic_InquireFirmwareVersion3rdDigit = 0x84,
+<a name=L389 href="source/linux/drivers/scsi/BusLogic.h#L389">389</a>         BusLogic_InquireFirmwareVersionLetter = 0x85,
+<a name=L390 href="source/linux/drivers/scsi/BusLogic.h#L390">390</a>         BusLogic_InquirePCIHostAdapterInformation = 0x86,
+<a name=L391 href="source/linux/drivers/scsi/BusLogic.h#L391">391</a>         BusLogic_InquireHostAdapterModelNumber = 0x8B,
+<a name=L392 href="source/linux/drivers/scsi/BusLogic.h#L392">392</a>         BusLogic_InquireSynchronousPeriod = 0x8C,
+<a name=L393 href="source/linux/drivers/scsi/BusLogic.h#L393">393</a>         BusLogic_InquireExtendedSetupInformation = 0x8D,
+<a name=L394 href="source/linux/drivers/scsi/BusLogic.h#L394">394</a>         BusLogic_EnableStrictRoundRobinMode = 0x8F,
+<a name=L395 href="source/linux/drivers/scsi/BusLogic.h#L395">395</a>         BusLogic_StoreHostAdapterLocalRAM = 0x90,
+<a name=L396 href="source/linux/drivers/scsi/BusLogic.h#L396">396</a>         BusLogic_FetchHostAdapterLocalRAM = 0x91,
+<a name=L397 href="source/linux/drivers/scsi/BusLogic.h#L397">397</a>         BusLogic_StoreLocalDataInEEPROM = 0x92,
+<a name=L398 href="source/linux/drivers/scsi/BusLogic.h#L398">398</a>         BusLogic_UploadAutoSCSICode = 0x94,
+<a name=L399 href="source/linux/drivers/scsi/BusLogic.h#L399">399</a>         BusLogic_ModifyIOAddress = 0x95,
+<a name=L400 href="source/linux/drivers/scsi/BusLogic.h#L400">400</a>         BusLogic_SetCCBFormat = 0x96,
+<a name=L401 href="source/linux/drivers/scsi/BusLogic.h#L401">401</a>         BusLogic_WriteInquiryBuffer = 0x9A,
+<a name=L402 href="source/linux/drivers/scsi/BusLogic.h#L402">402</a>         BusLogic_ReadInquiryBuffer = 0x9B,
+<a name=L403 href="source/linux/drivers/scsi/BusLogic.h#L403">403</a>         BusLogic_FlashROMUploadDownload = 0xA7,
+<a name=L404 href="source/linux/drivers/scsi/BusLogic.h#L404">404</a>         BusLogic_ReadSCAMData = 0xA8,
+<a name=L405 href="source/linux/drivers/scsi/BusLogic.h#L405">405</a>         BusLogic_WriteSCAMData = 0xA9
+<a name=L406 href="source/linux/drivers/scsi/BusLogic.h#L406">406</a> };
+<a name=L407 href="source/linux/drivers/scsi/BusLogic.h#L407">407</a> 
+<a name=L408 href="source/linux/drivers/scsi/BusLogic.h#L408">408</a> <b><i>/*</i></b>
+<a name=L409 href="source/linux/drivers/scsi/BusLogic.h#L409">409</a> <b><i>  Define the Inquire Board ID reply structure.</i></b>
+<a name=L410 href="source/linux/drivers/scsi/BusLogic.h#L410">410</a> <b><i>*/</i></b>
+<a name=L411 href="source/linux/drivers/scsi/BusLogic.h#L411">411</a> 
+<a name=L412 href="source/linux/drivers/scsi/BusLogic.h#L412">412</a> struct <a href="ident?i=BusLogic_BoardID">BusLogic_BoardID</a> {
+<a name=L413 href="source/linux/drivers/scsi/BusLogic.h#L413">413</a>         unsigned char BoardType;        <b><i>/* Byte 0 */</i></b>
+<a name=L414 href="source/linux/drivers/scsi/BusLogic.h#L414">414</a>         unsigned char CustomFeatures;   <b><i>/* Byte 1 */</i></b>
+<a name=L415 href="source/linux/drivers/scsi/BusLogic.h#L415">415</a>         unsigned char FirmwareVersion1stDigit;  <b><i>/* Byte 2 */</i></b>
+<a name=L416 href="source/linux/drivers/scsi/BusLogic.h#L416">416</a>         unsigned char FirmwareVersion2ndDigit;  <b><i>/* Byte 3 */</i></b>
+<a name=L417 href="source/linux/drivers/scsi/BusLogic.h#L417">417</a> };
+<a name=L418 href="source/linux/drivers/scsi/BusLogic.h#L418">418</a> 
+<a name=L419 href="source/linux/drivers/scsi/BusLogic.h#L419">419</a> <b><i>/*</i></b>
+<a name=L420 href="source/linux/drivers/scsi/BusLogic.h#L420">420</a> <b><i>  Define the Inquire Configuration reply structure.</i></b>
+<a name=L421 href="source/linux/drivers/scsi/BusLogic.h#L421">421</a> <b><i>*/</i></b>
+<a name=L422 href="source/linux/drivers/scsi/BusLogic.h#L422">422</a> 
+<a name=L423 href="source/linux/drivers/scsi/BusLogic.h#L423">423</a> struct <a href="ident?i=BusLogic_Configuration">BusLogic_Configuration</a> {
+<a name=L424 href="source/linux/drivers/scsi/BusLogic.h#L424">424</a>         unsigned char:5;        <b><i>/* Byte 0 Bits 0-4 */</i></b>
+<a name=L425 href="source/linux/drivers/scsi/BusLogic.h#L425">425</a>         <a href="ident?i=bool">bool</a> DMA_Channel5:1;    <b><i>/* Byte 0 Bit 5 */</i></b>
+<a name=L426 href="source/linux/drivers/scsi/BusLogic.h#L426">426</a>         <a href="ident?i=bool">bool</a> DMA_Channel6:1;    <b><i>/* Byte 0 Bit 6 */</i></b>
+<a name=L427 href="source/linux/drivers/scsi/BusLogic.h#L427">427</a>         <a href="ident?i=bool">bool</a> DMA_Channel7:1;    <b><i>/* Byte 0 Bit 7 */</i></b>
+<a name=L428 href="source/linux/drivers/scsi/BusLogic.h#L428">428</a>         <a href="ident?i=bool">bool</a> IRQ_Channel9:1;    <b><i>/* Byte 1 Bit 0 */</i></b>
+<a name=L429 href="source/linux/drivers/scsi/BusLogic.h#L429">429</a>         <a href="ident?i=bool">bool</a> IRQ_Channel10:1;   <b><i>/* Byte 1 Bit 1 */</i></b>
+<a name=L430 href="source/linux/drivers/scsi/BusLogic.h#L430">430</a>         <a href="ident?i=bool">bool</a> IRQ_Channel11:1;   <b><i>/* Byte 1 Bit 2 */</i></b>
+<a name=L431 href="source/linux/drivers/scsi/BusLogic.h#L431">431</a>         <a href="ident?i=bool">bool</a> IRQ_Channel12:1;   <b><i>/* Byte 1 Bit 3 */</i></b>
+<a name=L432 href="source/linux/drivers/scsi/BusLogic.h#L432">432</a>         unsigned char:1;        <b><i>/* Byte 1 Bit 4 */</i></b>
+<a name=L433 href="source/linux/drivers/scsi/BusLogic.h#L433">433</a>         <a href="ident?i=bool">bool</a> IRQ_Channel14:1;   <b><i>/* Byte 1 Bit 5 */</i></b>
+<a name=L434 href="source/linux/drivers/scsi/BusLogic.h#L434">434</a>         <a href="ident?i=bool">bool</a> IRQ_Channel15:1;   <b><i>/* Byte 1 Bit 6 */</i></b>
+<a name=L435 href="source/linux/drivers/scsi/BusLogic.h#L435">435</a>         unsigned char:1;        <b><i>/* Byte 1 Bit 7 */</i></b>
+<a name=L436 href="source/linux/drivers/scsi/BusLogic.h#L436">436</a>         unsigned char HostAdapterID:4;  <b><i>/* Byte 2 Bits 0-3 */</i></b>
+<a name=L437 href="source/linux/drivers/scsi/BusLogic.h#L437">437</a>         unsigned char:4;        <b><i>/* Byte 2 Bits 4-7 */</i></b>
+<a name=L438 href="source/linux/drivers/scsi/BusLogic.h#L438">438</a> };
+<a name=L439 href="source/linux/drivers/scsi/BusLogic.h#L439">439</a> 
+<a name=L440 href="source/linux/drivers/scsi/BusLogic.h#L440">440</a> <b><i>/*</i></b>
+<a name=L441 href="source/linux/drivers/scsi/BusLogic.h#L441">441</a> <b><i>  Define the Inquire Setup Information reply structure.</i></b>
+<a name=L442 href="source/linux/drivers/scsi/BusLogic.h#L442">442</a> <b><i>*/</i></b>
+<a name=L443 href="source/linux/drivers/scsi/BusLogic.h#L443">443</a> 
+<a name=L444 href="source/linux/drivers/scsi/BusLogic.h#L444">444</a> struct <a href="ident?i=BusLogic_SynchronousValue">BusLogic_SynchronousValue</a> {
+<a name=L445 href="source/linux/drivers/scsi/BusLogic.h#L445">445</a>         unsigned char Offset:4; <b><i>/* Bits 0-3 */</i></b>
+<a name=L446 href="source/linux/drivers/scsi/BusLogic.h#L446">446</a>         unsigned char TransferPeriod:3; <b><i>/* Bits 4-6 */</i></b>
+<a name=L447 href="source/linux/drivers/scsi/BusLogic.h#L447">447</a>         <a href="ident?i=bool">bool</a> Synchronous:1;     <b><i>/* Bit 7 */</i></b>
+<a name=L448 href="source/linux/drivers/scsi/BusLogic.h#L448">448</a> };
+<a name=L449 href="source/linux/drivers/scsi/BusLogic.h#L449">449</a> 
+<a name=L450 href="source/linux/drivers/scsi/BusLogic.h#L450">450</a> struct <a href="ident?i=BusLogic_SetupInformation">BusLogic_SetupInformation</a> {
+<a name=L451 href="source/linux/drivers/scsi/BusLogic.h#L451">451</a>         <a href="ident?i=bool">bool</a> SynchronousInitiationEnabled:1;    <b><i>/* Byte 0 Bit 0 */</i></b>
+<a name=L452 href="source/linux/drivers/scsi/BusLogic.h#L452">452</a>         <a href="ident?i=bool">bool</a> ParityCheckingEnabled:1;           <b><i>/* Byte 0 Bit 1 */</i></b>
+<a name=L453 href="source/linux/drivers/scsi/BusLogic.h#L453">453</a>         unsigned char:6;        <b><i>/* Byte 0 Bits 2-7 */</i></b>
+<a name=L454 href="source/linux/drivers/scsi/BusLogic.h#L454">454</a>         unsigned char BusTransferRate;  <b><i>/* Byte 1 */</i></b>
+<a name=L455 href="source/linux/drivers/scsi/BusLogic.h#L455">455</a>         unsigned char PreemptTimeOnBus; <b><i>/* Byte 2 */</i></b>
+<a name=L456 href="source/linux/drivers/scsi/BusLogic.h#L456">456</a>         unsigned char TimeOffBus;       <b><i>/* Byte 3 */</i></b>
+<a name=L457 href="source/linux/drivers/scsi/BusLogic.h#L457">457</a>         unsigned char MailboxCount;     <b><i>/* Byte 4 */</i></b>
+<a name=L458 href="source/linux/drivers/scsi/BusLogic.h#L458">458</a>         unsigned char MailboxAddress[3];        <b><i>/* Bytes 5-7 */</i></b>
+<a name=L459 href="source/linux/drivers/scsi/BusLogic.h#L459">459</a>         struct <a href="ident?i=BusLogic_SynchronousValue">BusLogic_SynchronousValue</a> SynchronousValuesID0to7[8];    <b><i>/* Bytes 8-15 */</i></b>
+<a name=L460 href="source/linux/drivers/scsi/BusLogic.h#L460">460</a>         unsigned char DisconnectPermittedID0to7;        <b><i>/* Byte 16 */</i></b>
+<a name=L461 href="source/linux/drivers/scsi/BusLogic.h#L461">461</a>         unsigned char <a href="ident?i=Signature">Signature</a>;        <b><i>/* Byte 17 */</i></b>
+<a name=L462 href="source/linux/drivers/scsi/BusLogic.h#L462">462</a>         unsigned char CharacterD;       <b><i>/* Byte 18 */</i></b>
+<a name=L463 href="source/linux/drivers/scsi/BusLogic.h#L463">463</a>         unsigned char HostBusType;      <b><i>/* Byte 19 */</i></b>
+<a name=L464 href="source/linux/drivers/scsi/BusLogic.h#L464">464</a>         unsigned char WideTransfersPermittedID0to7;     <b><i>/* Byte 20 */</i></b>
+<a name=L465 href="source/linux/drivers/scsi/BusLogic.h#L465">465</a>         unsigned char WideTransfersActiveID0to7;        <b><i>/* Byte 21 */</i></b>
+<a name=L466 href="source/linux/drivers/scsi/BusLogic.h#L466">466</a>         struct <a href="ident?i=BusLogic_SynchronousValue">BusLogic_SynchronousValue</a> SynchronousValuesID8to15[8];   <b><i>/* Bytes 22-29 */</i></b>
+<a name=L467 href="source/linux/drivers/scsi/BusLogic.h#L467">467</a>         unsigned char DisconnectPermittedID8to15;       <b><i>/* Byte 30 */</i></b>
+<a name=L468 href="source/linux/drivers/scsi/BusLogic.h#L468">468</a>         unsigned char:8;        <b><i>/* Byte 31 */</i></b>
+<a name=L469 href="source/linux/drivers/scsi/BusLogic.h#L469">469</a>         unsigned char WideTransfersPermittedID8to15;    <b><i>/* Byte 32 */</i></b>
+<a name=L470 href="source/linux/drivers/scsi/BusLogic.h#L470">470</a>         unsigned char WideTransfersActiveID8to15;       <b><i>/* Byte 33 */</i></b>
+<a name=L471 href="source/linux/drivers/scsi/BusLogic.h#L471">471</a> };
+<a name=L472 href="source/linux/drivers/scsi/BusLogic.h#L472">472</a> 
+<a name=L473 href="source/linux/drivers/scsi/BusLogic.h#L473">473</a> <b><i>/*</i></b>
+<a name=L474 href="source/linux/drivers/scsi/BusLogic.h#L474">474</a> <b><i>  Define the Initialize Extended Mailbox request structure.</i></b>
+<a name=L475 href="source/linux/drivers/scsi/BusLogic.h#L475">475</a> <b><i>*/</i></b>
+<a name=L476 href="source/linux/drivers/scsi/BusLogic.h#L476">476</a> 
+<a name=L477 href="source/linux/drivers/scsi/BusLogic.h#L477">477</a> struct <a href="ident?i=BusLogic_ExtendedMailboxRequest">BusLogic_ExtendedMailboxRequest</a> {
+<a name=L478 href="source/linux/drivers/scsi/BusLogic.h#L478">478</a>         unsigned char MailboxCount;     <b><i>/* Byte 0 */</i></b>
+<a name=L479 href="source/linux/drivers/scsi/BusLogic.h#L479">479</a>         <a href="ident?i=u32">u32</a> BaseMailboxAddress; <b><i>/* Bytes 1-4 */</i></b>
+<a name=L480 href="source/linux/drivers/scsi/BusLogic.h#L480">480</a> } <a href="ident?i=PACKED">PACKED</a>;
+<a name=L481 href="source/linux/drivers/scsi/BusLogic.h#L481">481</a> 
+<a name=L482 href="source/linux/drivers/scsi/BusLogic.h#L482">482</a> 
+<a name=L483 href="source/linux/drivers/scsi/BusLogic.h#L483">483</a> <b><i>/*</i></b>
+<a name=L484 href="source/linux/drivers/scsi/BusLogic.h#L484">484</a> <b><i>  Define the Inquire PCI Host Adapter Information reply type.  The ISA</i></b>
+<a name=L485 href="source/linux/drivers/scsi/BusLogic.h#L485">485</a> <b><i>  Compatible I/O Port values are defined here and are also used with</i></b>
+<a name=L486 href="source/linux/drivers/scsi/BusLogic.h#L486">486</a> <b><i>  the Modify I/O Address command.</i></b>
+<a name=L487 href="source/linux/drivers/scsi/BusLogic.h#L487">487</a> <b><i>*/</i></b>
+<a name=L488 href="source/linux/drivers/scsi/BusLogic.h#L488">488</a> 
+<a name=L489 href="source/linux/drivers/scsi/BusLogic.h#L489">489</a> enum <a href="ident?i=BusLogic_ISACompatibleIOPort">BusLogic_ISACompatibleIOPort</a> {
+<a name=L490 href="source/linux/drivers/scsi/BusLogic.h#L490">490</a>         BusLogic_IO_330 = 0,
+<a name=L491 href="source/linux/drivers/scsi/BusLogic.h#L491">491</a>         BusLogic_IO_334 = 1,
+<a name=L492 href="source/linux/drivers/scsi/BusLogic.h#L492">492</a>         BusLogic_IO_230 = 2,
+<a name=L493 href="source/linux/drivers/scsi/BusLogic.h#L493">493</a>         BusLogic_IO_234 = 3,
+<a name=L494 href="source/linux/drivers/scsi/BusLogic.h#L494">494</a>         BusLogic_IO_130 = 4,
+<a name=L495 href="source/linux/drivers/scsi/BusLogic.h#L495">495</a>         BusLogic_IO_134 = 5,
+<a name=L496 href="source/linux/drivers/scsi/BusLogic.h#L496">496</a>         BusLogic_IO_Disable = 6,
+<a name=L497 href="source/linux/drivers/scsi/BusLogic.h#L497">497</a>         BusLogic_IO_Disable2 = 7
+<a name=L498 href="source/linux/drivers/scsi/BusLogic.h#L498">498</a> } <a href="ident?i=PACKED">PACKED</a>;
+<a name=L499 href="source/linux/drivers/scsi/BusLogic.h#L499">499</a> 
+<a name=L500 href="source/linux/drivers/scsi/BusLogic.h#L500">500</a> struct <a href="ident?i=BusLogic_PCIHostAdapterInformation">BusLogic_PCIHostAdapterInformation</a> {
+<a name=L501 href="source/linux/drivers/scsi/BusLogic.h#L501">501</a>         enum <a href="ident?i=BusLogic_ISACompatibleIOPort">BusLogic_ISACompatibleIOPort</a> ISACompatibleIOPort;  <b><i>/* Byte 0 */</i></b>
+<a name=L502 href="source/linux/drivers/scsi/BusLogic.h#L502">502</a>         unsigned char PCIAssignedIRQChannel;    <b><i>/* Byte 1 */</i></b>
+<a name=L503 href="source/linux/drivers/scsi/BusLogic.h#L503">503</a>         <a href="ident?i=bool">bool</a> LowByteTerminated:1;       <b><i>/* Byte 2 Bit 0 */</i></b>
+<a name=L504 href="source/linux/drivers/scsi/BusLogic.h#L504">504</a>         <a href="ident?i=bool">bool</a> HighByteTerminated:1;      <b><i>/* Byte 2 Bit 1 */</i></b>
+<a name=L505 href="source/linux/drivers/scsi/BusLogic.h#L505">505</a>         unsigned char:2;        <b><i>/* Byte 2 Bits 2-3 */</i></b>
+<a name=L506 href="source/linux/drivers/scsi/BusLogic.h#L506">506</a>         <a href="ident?i=bool">bool</a> JP1:1;             <b><i>/* Byte 2 Bit 4 */</i></b>
+<a name=L507 href="source/linux/drivers/scsi/BusLogic.h#L507">507</a>         <a href="ident?i=bool">bool</a> JP2:1;             <b><i>/* Byte 2 Bit 5 */</i></b>
+<a name=L508 href="source/linux/drivers/scsi/BusLogic.h#L508">508</a>         <a href="ident?i=bool">bool</a> JP3:1;             <b><i>/* Byte 2 Bit 6 */</i></b>
+<a name=L509 href="source/linux/drivers/scsi/BusLogic.h#L509">509</a>         <a href="ident?i=bool">bool</a> GenericInfoValid:1;<b><i>/* Byte 2 Bit 7 */</i></b>
+<a name=L510 href="source/linux/drivers/scsi/BusLogic.h#L510">510</a>         unsigned char:8;        <b><i>/* Byte 3 */</i></b>
+<a name=L511 href="source/linux/drivers/scsi/BusLogic.h#L511">511</a> };
+<a name=L512 href="source/linux/drivers/scsi/BusLogic.h#L512">512</a> 
+<a name=L513 href="source/linux/drivers/scsi/BusLogic.h#L513">513</a> <b><i>/*</i></b>
+<a name=L514 href="source/linux/drivers/scsi/BusLogic.h#L514">514</a> <b><i>  Define the Inquire Extended Setup Information reply structure.</i></b>
+<a name=L515 href="source/linux/drivers/scsi/BusLogic.h#L515">515</a> <b><i>*/</i></b>
+<a name=L516 href="source/linux/drivers/scsi/BusLogic.h#L516">516</a> 
+<a name=L517 href="source/linux/drivers/scsi/BusLogic.h#L517">517</a> struct <a href="ident?i=BusLogic_ExtendedSetupInformation">BusLogic_ExtendedSetupInformation</a> {
+<a name=L518 href="source/linux/drivers/scsi/BusLogic.h#L518">518</a>         unsigned char BusType;  <b><i>/* Byte 0 */</i></b>
+<a name=L519 href="source/linux/drivers/scsi/BusLogic.h#L519">519</a>         unsigned char BIOS_Address;     <b><i>/* Byte 1 */</i></b>
+<a name=L520 href="source/linux/drivers/scsi/BusLogic.h#L520">520</a>         unsigned short ScatterGatherLimit;      <b><i>/* Bytes 2-3 */</i></b>
+<a name=L521 href="source/linux/drivers/scsi/BusLogic.h#L521">521</a>         unsigned char MailboxCount;     <b><i>/* Byte 4 */</i></b>
+<a name=L522 href="source/linux/drivers/scsi/BusLogic.h#L522">522</a>         <a href="ident?i=u32">u32</a> BaseMailboxAddress; <b><i>/* Bytes 5-8 */</i></b>
+<a name=L523 href="source/linux/drivers/scsi/BusLogic.h#L523">523</a>         struct {
+<a name=L524 href="source/linux/drivers/scsi/BusLogic.h#L524">524</a>                 unsigned char:2;        <b><i>/* Byte 9 Bits 0-1 */</i></b>
+<a name=L525 href="source/linux/drivers/scsi/BusLogic.h#L525">525</a>                 <a href="ident?i=bool">bool</a> FastOnEISA:1;      <b><i>/* Byte 9 Bit 2 */</i></b>
+<a name=L526 href="source/linux/drivers/scsi/BusLogic.h#L526">526</a>                 unsigned char:3;        <b><i>/* Byte 9 Bits 3-5 */</i></b>
+<a name=L527 href="source/linux/drivers/scsi/BusLogic.h#L527">527</a>                 <a href="ident?i=bool">bool</a> LevelSensitiveInterrupt:1; <b><i>/* Byte 9 Bit 6 */</i></b>
+<a name=L528 href="source/linux/drivers/scsi/BusLogic.h#L528">528</a>                 unsigned char:1;        <b><i>/* Byte 9 Bit 7 */</i></b>
+<a name=L529 href="source/linux/drivers/scsi/BusLogic.h#L529">529</a>         } Misc;
+<a name=L530 href="source/linux/drivers/scsi/BusLogic.h#L530">530</a>         unsigned char FirmwareRevision[3];      <b><i>/* Bytes 10-12 */</i></b>
+<a name=L531 href="source/linux/drivers/scsi/BusLogic.h#L531">531</a>         <a href="ident?i=bool">bool</a> HostWideSCSI:1;            <b><i>/* Byte 13 Bit 0 */</i></b>
+<a name=L532 href="source/linux/drivers/scsi/BusLogic.h#L532">532</a>         <a href="ident?i=bool">bool</a> HostDifferentialSCSI:1;    <b><i>/* Byte 13 Bit 1 */</i></b>
+<a name=L533 href="source/linux/drivers/scsi/BusLogic.h#L533">533</a>         <a href="ident?i=bool">bool</a> HostSupportsSCAM:1;        <b><i>/* Byte 13 Bit 2 */</i></b>
+<a name=L534 href="source/linux/drivers/scsi/BusLogic.h#L534">534</a>         <a href="ident?i=bool">bool</a> HostUltraSCSI:1;           <b><i>/* Byte 13 Bit 3 */</i></b>
+<a name=L535 href="source/linux/drivers/scsi/BusLogic.h#L535">535</a>         <a href="ident?i=bool">bool</a> HostSmartTermination:1;    <b><i>/* Byte 13 Bit 4 */</i></b>
+<a name=L536 href="source/linux/drivers/scsi/BusLogic.h#L536">536</a>         unsigned char:3;        <b><i>/* Byte 13 Bits 5-7 */</i></b>
+<a name=L537 href="source/linux/drivers/scsi/BusLogic.h#L537">537</a> } <a href="ident?i=PACKED">PACKED</a>;
+<a name=L538 href="source/linux/drivers/scsi/BusLogic.h#L538">538</a> 
+<a name=L539 href="source/linux/drivers/scsi/BusLogic.h#L539">539</a> <b><i>/*</i></b>
+<a name=L540 href="source/linux/drivers/scsi/BusLogic.h#L540">540</a> <b><i>  Define the Enable Strict Round Robin Mode request type.</i></b>
+<a name=L541 href="source/linux/drivers/scsi/BusLogic.h#L541">541</a> <b><i>*/</i></b>
+<a name=L542 href="source/linux/drivers/scsi/BusLogic.h#L542">542</a> 
+<a name=L543 href="source/linux/drivers/scsi/BusLogic.h#L543">543</a> enum <a href="ident?i=BusLogic_RoundRobinModeRequest">BusLogic_RoundRobinModeRequest</a> {
+<a name=L544 href="source/linux/drivers/scsi/BusLogic.h#L544">544</a>         BusLogic_AggressiveRoundRobinMode = 0,
+<a name=L545 href="source/linux/drivers/scsi/BusLogic.h#L545">545</a>         BusLogic_StrictRoundRobinMode = 1
+<a name=L546 href="source/linux/drivers/scsi/BusLogic.h#L546">546</a> } <a href="ident?i=PACKED">PACKED</a>;
+<a name=L547 href="source/linux/drivers/scsi/BusLogic.h#L547">547</a> 
+<a name=L548 href="source/linux/drivers/scsi/BusLogic.h#L548">548</a> 
+<a name=L549 href="source/linux/drivers/scsi/BusLogic.h#L549">549</a> <b><i>/*</i></b>
+<a name=L550 href="source/linux/drivers/scsi/BusLogic.h#L550">550</a> <b><i>  Define the Fetch Host Adapter Local RAM request type.</i></b>
+<a name=L551 href="source/linux/drivers/scsi/BusLogic.h#L551">551</a> <b><i>*/</i></b>
+<a name=L552 href="source/linux/drivers/scsi/BusLogic.h#L552">552</a> 
+<a name=L553 href="source/linux/drivers/scsi/BusLogic.h#L553">553</a> #define <a href="ident?i=BusLogic_BIOS_BaseOffset">BusLogic_BIOS_BaseOffset</a>                0
+<a name=L554 href="source/linux/drivers/scsi/BusLogic.h#L554">554</a> #define <a href="ident?i=BusLogic_AutoSCSI_BaseOffset">BusLogic_AutoSCSI_BaseOffset</a>            64
+<a name=L555 href="source/linux/drivers/scsi/BusLogic.h#L555">555</a> 
+<a name=L556 href="source/linux/drivers/scsi/BusLogic.h#L556">556</a> struct <a href="ident?i=BusLogic_FetchHostAdapterLocalRAMRequest">BusLogic_FetchHostAdapterLocalRAMRequest</a> {
+<a name=L557 href="source/linux/drivers/scsi/BusLogic.h#L557">557</a>         unsigned char ByteOffset;       <b><i>/* Byte 0 */</i></b>
+<a name=L558 href="source/linux/drivers/scsi/BusLogic.h#L558">558</a>         unsigned char ByteCount;        <b><i>/* Byte 1 */</i></b>
+<a name=L559 href="source/linux/drivers/scsi/BusLogic.h#L559">559</a> };
+<a name=L560 href="source/linux/drivers/scsi/BusLogic.h#L560">560</a> 
+<a name=L561 href="source/linux/drivers/scsi/BusLogic.h#L561">561</a> <b><i>/*</i></b>
+<a name=L562 href="source/linux/drivers/scsi/BusLogic.h#L562">562</a> <b><i>  Define the Host Adapter Local RAM AutoSCSI structure.</i></b>
+<a name=L563 href="source/linux/drivers/scsi/BusLogic.h#L563">563</a> <b><i>*/</i></b>
+<a name=L564 href="source/linux/drivers/scsi/BusLogic.h#L564">564</a> 
+<a name=L565 href="source/linux/drivers/scsi/BusLogic.h#L565">565</a> struct <a href="ident?i=BusLogic_AutoSCSIData">BusLogic_AutoSCSIData</a> {
+<a name=L566 href="source/linux/drivers/scsi/BusLogic.h#L566">566</a>         unsigned char InternalFactorySignature[2];      <b><i>/* Bytes 0-1 */</i></b>
+<a name=L567 href="source/linux/drivers/scsi/BusLogic.h#L567">567</a>         unsigned char InformationByteCount;     <b><i>/* Byte 2 */</i></b>
+<a name=L568 href="source/linux/drivers/scsi/BusLogic.h#L568">568</a>         unsigned char HostAdapterType[6];       <b><i>/* Bytes 3-8 */</i></b>
+<a name=L569 href="source/linux/drivers/scsi/BusLogic.h#L569">569</a>         unsigned char:8;        <b><i>/* Byte 9 */</i></b>
+<a name=L570 href="source/linux/drivers/scsi/BusLogic.h#L570">570</a>         <a href="ident?i=bool">bool</a> FloppyEnabled:1;           <b><i>/* Byte 10 Bit 0 */</i></b>
+<a name=L571 href="source/linux/drivers/scsi/BusLogic.h#L571">571</a>         <a href="ident?i=bool">bool</a> FloppySecondary:1;         <b><i>/* Byte 10 Bit 1 */</i></b>
+<a name=L572 href="source/linux/drivers/scsi/BusLogic.h#L572">572</a>         <a href="ident?i=bool">bool</a> LevelSensitiveInterrupt:1; <b><i>/* Byte 10 Bit 2 */</i></b>
+<a name=L573 href="source/linux/drivers/scsi/BusLogic.h#L573">573</a>         unsigned char:2;        <b><i>/* Byte 10 Bits 3-4 */</i></b>
+<a name=L574 href="source/linux/drivers/scsi/BusLogic.h#L574">574</a>         unsigned char SystemRAMAreaForBIOS:3;   <b><i>/* Byte 10 Bits 5-7 */</i></b>
+<a name=L575 href="source/linux/drivers/scsi/BusLogic.h#L575">575</a>         unsigned char DMA_Channel:7;    <b><i>/* Byte 11 Bits 0-6 */</i></b>
+<a name=L576 href="source/linux/drivers/scsi/BusLogic.h#L576">576</a>         <a href="ident?i=bool">bool</a> DMA_AutoConfiguration:1;   <b><i>/* Byte 11 Bit 7 */</i></b>
+<a name=L577 href="source/linux/drivers/scsi/BusLogic.h#L577">577</a>         unsigned char IRQ_Channel:7;    <b><i>/* Byte 12 Bits 0-6 */</i></b>
+<a name=L578 href="source/linux/drivers/scsi/BusLogic.h#L578">578</a>         <a href="ident?i=bool">bool</a> IRQ_AutoConfiguration:1;   <b><i>/* Byte 12 Bit 7 */</i></b>
+<a name=L579 href="source/linux/drivers/scsi/BusLogic.h#L579">579</a>         unsigned char DMA_TransferRate; <b><i>/* Byte 13 */</i></b>
+<a name=L580 href="source/linux/drivers/scsi/BusLogic.h#L580">580</a>         unsigned char SCSI_ID;  <b><i>/* Byte 14 */</i></b>
+<a name=L581 href="source/linux/drivers/scsi/BusLogic.h#L581">581</a>         <a href="ident?i=bool">bool</a> LowByteTerminated:1;       <b><i>/* Byte 15 Bit 0 */</i></b>
+<a name=L582 href="source/linux/drivers/scsi/BusLogic.h#L582">582</a>         <a href="ident?i=bool">bool</a> ParityCheckingEnabled:1;   <b><i>/* Byte 15 Bit 1 */</i></b>
+<a name=L583 href="source/linux/drivers/scsi/BusLogic.h#L583">583</a>         <a href="ident?i=bool">bool</a> HighByteTerminated:1;      <b><i>/* Byte 15 Bit 2 */</i></b>
+<a name=L584 href="source/linux/drivers/scsi/BusLogic.h#L584">584</a>         <a href="ident?i=bool">bool</a> NoisyCablingEnvironment:1; <b><i>/* Byte 15 Bit 3 */</i></b>
+<a name=L585 href="source/linux/drivers/scsi/BusLogic.h#L585">585</a>         <a href="ident?i=bool">bool</a> FastSynchronousNegotiation:1;      <b><i>/* Byte 15 Bit 4 */</i></b>
+<a name=L586 href="source/linux/drivers/scsi/BusLogic.h#L586">586</a>         <a href="ident?i=bool">bool</a> BusResetEnabled:1;         <b><i>/* Byte 15 Bit 5 */</i></b>
+<a name=L587 href="source/linux/drivers/scsi/BusLogic.h#L587">587</a>          <a href="ident?i=bool">bool</a>:1;                <b><i>/* Byte 15 Bit 6 */</i></b>
+<a name=L588 href="source/linux/drivers/scsi/BusLogic.h#L588">588</a>         <a href="ident?i=bool">bool</a> ActiveNegationEnabled:1;   <b><i>/* Byte 15 Bit 7 */</i></b>
+<a name=L589 href="source/linux/drivers/scsi/BusLogic.h#L589">589</a>         unsigned char BusOnDelay;       <b><i>/* Byte 16 */</i></b>
+<a name=L590 href="source/linux/drivers/scsi/BusLogic.h#L590">590</a>         unsigned char BusOffDelay;      <b><i>/* Byte 17 */</i></b>
+<a name=L591 href="source/linux/drivers/scsi/BusLogic.h#L591">591</a>         <a href="ident?i=bool">bool</a> HostAdapterBIOSEnabled:1;          <b><i>/* Byte 18 Bit 0 */</i></b>
+<a name=L592 href="source/linux/drivers/scsi/BusLogic.h#L592">592</a>         <a href="ident?i=bool">bool</a> BIOSRedirectionOfINT19Enabled:1;   <b><i>/* Byte 18 Bit 1 */</i></b>
+<a name=L593 href="source/linux/drivers/scsi/BusLogic.h#L593">593</a>         <a href="ident?i=bool">bool</a> ExtendedTranslationEnabled:1;      <b><i>/* Byte 18 Bit 2 */</i></b>
+<a name=L594 href="source/linux/drivers/scsi/BusLogic.h#L594">594</a>         <a href="ident?i=bool">bool</a> MapRemovableAsFixedEnabled:1;      <b><i>/* Byte 18 Bit 3 */</i></b>
+<a name=L595 href="source/linux/drivers/scsi/BusLogic.h#L595">595</a>          <a href="ident?i=bool">bool</a>:1;                <b><i>/* Byte 18 Bit 4 */</i></b>
+<a name=L596 href="source/linux/drivers/scsi/BusLogic.h#L596">596</a>         <a href="ident?i=bool">bool</a> BIOSSupportsMoreThan2DrivesEnabled:1;      <b><i>/* Byte 18 Bit 5 */</i></b>
+<a name=L597 href="source/linux/drivers/scsi/BusLogic.h#L597">597</a>         <a href="ident?i=bool">bool</a> BIOSInterruptModeEnabled:1;        <b><i>/* Byte 18 Bit 6 */</i></b>
+<a name=L598 href="source/linux/drivers/scsi/BusLogic.h#L598">598</a>         <a href="ident?i=bool">bool</a> FlopticalSupportEnabled:1;         <b><i>/* Byte 19 Bit 7 */</i></b>
+<a name=L599 href="source/linux/drivers/scsi/BusLogic.h#L599">599</a>         unsigned short DeviceEnabled;   <b><i>/* Bytes 19-20 */</i></b>
+<a name=L600 href="source/linux/drivers/scsi/BusLogic.h#L600">600</a>         unsigned short WidePermitted;   <b><i>/* Bytes 21-22 */</i></b>
+<a name=L601 href="source/linux/drivers/scsi/BusLogic.h#L601">601</a>         unsigned short FastPermitted;   <b><i>/* Bytes 23-24 */</i></b>
+<a name=L602 href="source/linux/drivers/scsi/BusLogic.h#L602">602</a>         unsigned short SynchronousPermitted;    <b><i>/* Bytes 25-26 */</i></b>
+<a name=L603 href="source/linux/drivers/scsi/BusLogic.h#L603">603</a>         unsigned short DisconnectPermitted;     <b><i>/* Bytes 27-28 */</i></b>
+<a name=L604 href="source/linux/drivers/scsi/BusLogic.h#L604">604</a>         unsigned short SendStartUnitCommand;    <b><i>/* Bytes 29-30 */</i></b>
+<a name=L605 href="source/linux/drivers/scsi/BusLogic.h#L605">605</a>         unsigned short IgnoreInBIOSScan;        <b><i>/* Bytes 31-32 */</i></b>
+<a name=L606 href="source/linux/drivers/scsi/BusLogic.h#L606">606</a>         unsigned char PCIInterruptPin:2;        <b><i>/* Byte 33 Bits 0-1 */</i></b>
+<a name=L607 href="source/linux/drivers/scsi/BusLogic.h#L607">607</a>         unsigned char HostAdapterIOPortAddress:2;       <b><i>/* Byte 33 Bits 2-3 */</i></b>
+<a name=L608 href="source/linux/drivers/scsi/BusLogic.h#L608">608</a>         <a href="ident?i=bool">bool</a> StrictRoundRobinModeEnabled:1;     <b><i>/* Byte 33 Bit 4 */</i></b>
+<a name=L609 href="source/linux/drivers/scsi/BusLogic.h#L609">609</a>         <a href="ident?i=bool">bool</a> VESABusSpeedGreaterThan33MHz:1;    <b><i>/* Byte 33 Bit 5 */</i></b>
+<a name=L610 href="source/linux/drivers/scsi/BusLogic.h#L610">610</a>         <a href="ident?i=bool">bool</a> VESABurstWriteEnabled:1;   <b><i>/* Byte 33 Bit 6 */</i></b>
+<a name=L611 href="source/linux/drivers/scsi/BusLogic.h#L611">611</a>         <a href="ident?i=bool">bool</a> VESABurstReadEnabled:1;    <b><i>/* Byte 33 Bit 7 */</i></b>
+<a name=L612 href="source/linux/drivers/scsi/BusLogic.h#L612">612</a>         unsigned short UltraPermitted;  <b><i>/* Bytes 34-35 */</i></b>
+<a name=L613 href="source/linux/drivers/scsi/BusLogic.h#L613">613</a>         unsigned int:32;        <b><i>/* Bytes 36-39 */</i></b>
+<a name=L614 href="source/linux/drivers/scsi/BusLogic.h#L614">614</a>         unsigned char:8;        <b><i>/* Byte 40 */</i></b>
+<a name=L615 href="source/linux/drivers/scsi/BusLogic.h#L615">615</a>         unsigned char AutoSCSIMaximumLUN;       <b><i>/* Byte 41 */</i></b>
+<a name=L616 href="source/linux/drivers/scsi/BusLogic.h#L616">616</a>          <a href="ident?i=bool">bool</a>:1;                <b><i>/* Byte 42 Bit 0 */</i></b>
+<a name=L617 href="source/linux/drivers/scsi/BusLogic.h#L617">617</a>         <a href="ident?i=bool">bool</a> SCAM_Dominant:1;   <b><i>/* Byte 42 Bit 1 */</i></b>
+<a name=L618 href="source/linux/drivers/scsi/BusLogic.h#L618">618</a>         <a href="ident?i=bool">bool</a> SCAM_Enabled:1;    <b><i>/* Byte 42 Bit 2 */</i></b>
+<a name=L619 href="source/linux/drivers/scsi/BusLogic.h#L619">619</a>         <a href="ident?i=bool">bool</a> SCAM_Level2:1;     <b><i>/* Byte 42 Bit 3 */</i></b>
+<a name=L620 href="source/linux/drivers/scsi/BusLogic.h#L620">620</a>         unsigned char:4;        <b><i>/* Byte 42 Bits 4-7 */</i></b>
+<a name=L621 href="source/linux/drivers/scsi/BusLogic.h#L621">621</a>         <a href="ident?i=bool">bool</a> INT13ExtensionEnabled:1;   <b><i>/* Byte 43 Bit 0 */</i></b>
+<a name=L622 href="source/linux/drivers/scsi/BusLogic.h#L622">622</a>          <a href="ident?i=bool">bool</a>:1;                <b><i>/* Byte 43 Bit 1 */</i></b>
+<a name=L623 href="source/linux/drivers/scsi/BusLogic.h#L623">623</a>         <a href="ident?i=bool">bool</a> CDROMBootEnabled:1;        <b><i>/* Byte 43 Bit 2 */</i></b>
+<a name=L624 href="source/linux/drivers/scsi/BusLogic.h#L624">624</a>         unsigned char:5;        <b><i>/* Byte 43 Bits 3-7 */</i></b>
+<a name=L625 href="source/linux/drivers/scsi/BusLogic.h#L625">625</a>         unsigned char BootTargetID:4;   <b><i>/* Byte 44 Bits 0-3 */</i></b>
+<a name=L626 href="source/linux/drivers/scsi/BusLogic.h#L626">626</a>         unsigned char BootChannel:4;    <b><i>/* Byte 44 Bits 4-7 */</i></b>
+<a name=L627 href="source/linux/drivers/scsi/BusLogic.h#L627">627</a>         unsigned char ForceBusDeviceScanningOrder:1;    <b><i>/* Byte 45 Bit 0 */</i></b>
+<a name=L628 href="source/linux/drivers/scsi/BusLogic.h#L628">628</a>         unsigned char:7;        <b><i>/* Byte 45 Bits 1-7 */</i></b>
+<a name=L629 href="source/linux/drivers/scsi/BusLogic.h#L629">629</a>         unsigned short NonTaggedToAlternateLUNPermitted;        <b><i>/* Bytes 46-47 */</i></b>
+<a name=L630 href="source/linux/drivers/scsi/BusLogic.h#L630">630</a>         unsigned short RenegotiateSyncAfterCheckCondition;      <b><i>/* Bytes 48-49 */</i></b>
+<a name=L631 href="source/linux/drivers/scsi/BusLogic.h#L631">631</a>         unsigned char <a href="ident?i=Reserved">Reserved</a>[10];     <b><i>/* Bytes 50-59 */</i></b>
+<a name=L632 href="source/linux/drivers/scsi/BusLogic.h#L632">632</a>         unsigned char ManufacturingDiagnostic[2];       <b><i>/* Bytes 60-61 */</i></b>
+<a name=L633 href="source/linux/drivers/scsi/BusLogic.h#L633">633</a>         unsigned short Checksum;        <b><i>/* Bytes 62-63 */</i></b>
+<a name=L634 href="source/linux/drivers/scsi/BusLogic.h#L634">634</a> } <a href="ident?i=PACKED">PACKED</a>;
+<a name=L635 href="source/linux/drivers/scsi/BusLogic.h#L635">635</a> 
+<a name=L636 href="source/linux/drivers/scsi/BusLogic.h#L636">636</a> <b><i>/*</i></b>
+<a name=L637 href="source/linux/drivers/scsi/BusLogic.h#L637">637</a> <b><i>  Define the Host Adapter Local RAM Auto SCSI Byte 45 structure.</i></b>
+<a name=L638 href="source/linux/drivers/scsi/BusLogic.h#L638">638</a> <b><i>*/</i></b>
+<a name=L639 href="source/linux/drivers/scsi/BusLogic.h#L639">639</a> 
+<a name=L640 href="source/linux/drivers/scsi/BusLogic.h#L640">640</a> struct <a href="ident?i=BusLogic_AutoSCSIByte45">BusLogic_AutoSCSIByte45</a> {
+<a name=L641 href="source/linux/drivers/scsi/BusLogic.h#L641">641</a>         unsigned char ForceBusDeviceScanningOrder:1;    <b><i>/* Bit 0 */</i></b>
+<a name=L642 href="source/linux/drivers/scsi/BusLogic.h#L642">642</a>         unsigned char:7;        <b><i>/* Bits 1-7 */</i></b>
+<a name=L643 href="source/linux/drivers/scsi/BusLogic.h#L643">643</a> };
+<a name=L644 href="source/linux/drivers/scsi/BusLogic.h#L644">644</a> 
+<a name=L645 href="source/linux/drivers/scsi/BusLogic.h#L645">645</a> <b><i>/*</i></b>
+<a name=L646 href="source/linux/drivers/scsi/BusLogic.h#L646">646</a> <b><i>  Define the Host Adapter Local RAM BIOS Drive Map Byte structure.</i></b>
+<a name=L647 href="source/linux/drivers/scsi/BusLogic.h#L647">647</a> <b><i>*/</i></b>
+<a name=L648 href="source/linux/drivers/scsi/BusLogic.h#L648">648</a> 
+<a name=L649 href="source/linux/drivers/scsi/BusLogic.h#L649">649</a> #define <a href="ident?i=BusLogic_BIOS_DriveMapOffset">BusLogic_BIOS_DriveMapOffset</a>            17
+<a name=L650 href="source/linux/drivers/scsi/BusLogic.h#L650">650</a> 
+<a name=L651 href="source/linux/drivers/scsi/BusLogic.h#L651">651</a> struct <a href="ident?i=BusLogic_BIOSDriveMapByte">BusLogic_BIOSDriveMapByte</a> {
+<a name=L652 href="source/linux/drivers/scsi/BusLogic.h#L652">652</a>         unsigned char TargetIDBit3:1;   <b><i>/* Bit 0 */</i></b>
+<a name=L653 href="source/linux/drivers/scsi/BusLogic.h#L653">653</a>         unsigned char:2;        <b><i>/* Bits 1-2 */</i></b>
+<a name=L654 href="source/linux/drivers/scsi/BusLogic.h#L654">654</a>         enum <a href="ident?i=BusLogic_BIOS_DiskGeometryTranslation">BusLogic_BIOS_DiskGeometryTranslation</a> DiskGeometry:2;      <b><i>/* Bits 3-4 */</i></b>
+<a name=L655 href="source/linux/drivers/scsi/BusLogic.h#L655">655</a>         unsigned char TargetID:3;       <b><i>/* Bits 5-7 */</i></b>
+<a name=L656 href="source/linux/drivers/scsi/BusLogic.h#L656">656</a> };
+<a name=L657 href="source/linux/drivers/scsi/BusLogic.h#L657">657</a> 
+<a name=L658 href="source/linux/drivers/scsi/BusLogic.h#L658">658</a> <b><i>/*</i></b>
+<a name=L659 href="source/linux/drivers/scsi/BusLogic.h#L659">659</a> <b><i>  Define the Set CCB Format request type.  Extended LUN Format CCBs are</i></b>
+<a name=L660 href="source/linux/drivers/scsi/BusLogic.h#L660">660</a> <b><i>  necessary to support more than 8 Logical Units per Target Device.</i></b>
+<a name=L661 href="source/linux/drivers/scsi/BusLogic.h#L661">661</a> <b><i>*/</i></b>
+<a name=L662 href="source/linux/drivers/scsi/BusLogic.h#L662">662</a> 
+<a name=L663 href="source/linux/drivers/scsi/BusLogic.h#L663">663</a> enum <a href="ident?i=BusLogic_SetCCBFormatRequest">BusLogic_SetCCBFormatRequest</a> {
+<a name=L664 href="source/linux/drivers/scsi/BusLogic.h#L664">664</a>         BusLogic_LegacyLUNFormatCCB = 0,
+<a name=L665 href="source/linux/drivers/scsi/BusLogic.h#L665">665</a>         BusLogic_ExtendedLUNFormatCCB = 1
+<a name=L666 href="source/linux/drivers/scsi/BusLogic.h#L666">666</a> } <a href="ident?i=PACKED">PACKED</a>;
+<a name=L667 href="source/linux/drivers/scsi/BusLogic.h#L667">667</a> 
+<a name=L668 href="source/linux/drivers/scsi/BusLogic.h#L668">668</a> <b><i>/*</i></b>
+<a name=L669 href="source/linux/drivers/scsi/BusLogic.h#L669">669</a> <b><i>  Define the Outgoing Mailbox Action Codes.</i></b>
+<a name=L670 href="source/linux/drivers/scsi/BusLogic.h#L670">670</a> <b><i>*/</i></b>
+<a name=L671 href="source/linux/drivers/scsi/BusLogic.h#L671">671</a> 
+<a name=L672 href="source/linux/drivers/scsi/BusLogic.h#L672">672</a> enum <a href="ident?i=BusLogic_ActionCode">BusLogic_ActionCode</a> {
+<a name=L673 href="source/linux/drivers/scsi/BusLogic.h#L673">673</a>         BusLogic_OutgoingMailboxFree = 0x00,
+<a name=L674 href="source/linux/drivers/scsi/BusLogic.h#L674">674</a>         BusLogic_MailboxStartCommand = 0x01,
+<a name=L675 href="source/linux/drivers/scsi/BusLogic.h#L675">675</a>         BusLogic_MailboxAbortCommand = 0x02
+<a name=L676 href="source/linux/drivers/scsi/BusLogic.h#L676">676</a> } <a href="ident?i=PACKED">PACKED</a>;
+<a name=L677 href="source/linux/drivers/scsi/BusLogic.h#L677">677</a> 
+<a name=L678 href="source/linux/drivers/scsi/BusLogic.h#L678">678</a> 
+<a name=L679 href="source/linux/drivers/scsi/BusLogic.h#L679">679</a> <b><i>/*</i></b>
+<a name=L680 href="source/linux/drivers/scsi/BusLogic.h#L680">680</a> <b><i>  Define the Incoming Mailbox Completion Codes.  The MultiMaster Firmware</i></b>
+<a name=L681 href="source/linux/drivers/scsi/BusLogic.h#L681">681</a> <b><i>  only uses codes 0 - 4.  The FlashPoint SCCB Manager has no mailboxes, so</i></b>
+<a name=L682 href="source/linux/drivers/scsi/BusLogic.h#L682">682</a> <b><i>  completion codes are stored in the CCB; it only uses codes 1, 2, 4, and 5.</i></b>
+<a name=L683 href="source/linux/drivers/scsi/BusLogic.h#L683">683</a> <b><i>*/</i></b>
+<a name=L684 href="source/linux/drivers/scsi/BusLogic.h#L684">684</a> 
+<a name=L685 href="source/linux/drivers/scsi/BusLogic.h#L685">685</a> enum <a href="ident?i=BusLogic_CompletionCode">BusLogic_CompletionCode</a> {
+<a name=L686 href="source/linux/drivers/scsi/BusLogic.h#L686">686</a>         BusLogic_IncomingMailboxFree = 0x00,
+<a name=L687 href="source/linux/drivers/scsi/BusLogic.h#L687">687</a>         BusLogic_CommandCompletedWithoutError = 0x01,
+<a name=L688 href="source/linux/drivers/scsi/BusLogic.h#L688">688</a>         BusLogic_CommandAbortedAtHostRequest = 0x02,
+<a name=L689 href="source/linux/drivers/scsi/BusLogic.h#L689">689</a>         BusLogic_AbortedCommandNotFound = 0x03,
+<a name=L690 href="source/linux/drivers/scsi/BusLogic.h#L690">690</a>         BusLogic_CommandCompletedWithError = 0x04,
+<a name=L691 href="source/linux/drivers/scsi/BusLogic.h#L691">691</a>         BusLogic_InvalidCCB = 0x05
+<a name=L692 href="source/linux/drivers/scsi/BusLogic.h#L692">692</a> } <a href="ident?i=PACKED">PACKED</a>;
+<a name=L693 href="source/linux/drivers/scsi/BusLogic.h#L693">693</a> 
+<a name=L694 href="source/linux/drivers/scsi/BusLogic.h#L694">694</a> <b><i>/*</i></b>
+<a name=L695 href="source/linux/drivers/scsi/BusLogic.h#L695">695</a> <b><i>  Define the Command Control Block (CCB) Opcodes.</i></b>
+<a name=L696 href="source/linux/drivers/scsi/BusLogic.h#L696">696</a> <b><i>*/</i></b>
+<a name=L697 href="source/linux/drivers/scsi/BusLogic.h#L697">697</a> 
+<a name=L698 href="source/linux/drivers/scsi/BusLogic.h#L698">698</a> enum <a href="ident?i=BusLogic_CCB_Opcode">BusLogic_CCB_Opcode</a> {
+<a name=L699 href="source/linux/drivers/scsi/BusLogic.h#L699">699</a>         BusLogic_InitiatorCCB = 0x00,
+<a name=L700 href="source/linux/drivers/scsi/BusLogic.h#L700">700</a>         BusLogic_TargetCCB = 0x01,
+<a name=L701 href="source/linux/drivers/scsi/BusLogic.h#L701">701</a>         BusLogic_InitiatorCCB_ScatterGather = 0x02,
+<a name=L702 href="source/linux/drivers/scsi/BusLogic.h#L702">702</a>         BusLogic_InitiatorCCB_ResidualDataLength = 0x03,
+<a name=L703 href="source/linux/drivers/scsi/BusLogic.h#L703">703</a>         BusLogic_InitiatorCCB_ScatterGatherResidual = 0x04,
+<a name=L704 href="source/linux/drivers/scsi/BusLogic.h#L704">704</a>         BusLogic_BusDeviceReset = 0x81
+<a name=L705 href="source/linux/drivers/scsi/BusLogic.h#L705">705</a> } <a href="ident?i=PACKED">PACKED</a>;
+<a name=L706 href="source/linux/drivers/scsi/BusLogic.h#L706">706</a> 
+<a name=L707 href="source/linux/drivers/scsi/BusLogic.h#L707">707</a> 
+<a name=L708 href="source/linux/drivers/scsi/BusLogic.h#L708">708</a> <b><i>/*</i></b>
+<a name=L709 href="source/linux/drivers/scsi/BusLogic.h#L709">709</a> <b><i>  Define the CCB Data Direction Codes.</i></b>
+<a name=L710 href="source/linux/drivers/scsi/BusLogic.h#L710">710</a> <b><i>*/</i></b>
+<a name=L711 href="source/linux/drivers/scsi/BusLogic.h#L711">711</a> 
+<a name=L712 href="source/linux/drivers/scsi/BusLogic.h#L712">712</a> enum <a href="ident?i=BusLogic_DataDirection">BusLogic_DataDirection</a> {
+<a name=L713 href="source/linux/drivers/scsi/BusLogic.h#L713">713</a>         BusLogic_UncheckedDataTransfer = 0,
+<a name=L714 href="source/linux/drivers/scsi/BusLogic.h#L714">714</a>         BusLogic_DataInLengthChecked = 1,
+<a name=L715 href="source/linux/drivers/scsi/BusLogic.h#L715">715</a>         BusLogic_DataOutLengthChecked = 2,
+<a name=L716 href="source/linux/drivers/scsi/BusLogic.h#L716">716</a>         BusLogic_NoDataTransfer = 3
+<a name=L717 href="source/linux/drivers/scsi/BusLogic.h#L717">717</a> };
+<a name=L718 href="source/linux/drivers/scsi/BusLogic.h#L718">718</a> 
+<a name=L719 href="source/linux/drivers/scsi/BusLogic.h#L719">719</a> 
+<a name=L720 href="source/linux/drivers/scsi/BusLogic.h#L720">720</a> <b><i>/*</i></b>
+<a name=L721 href="source/linux/drivers/scsi/BusLogic.h#L721">721</a> <b><i>  Define the Host Adapter Status Codes.  The MultiMaster Firmware does not</i></b>
+<a name=L722 href="source/linux/drivers/scsi/BusLogic.h#L722">722</a> <b><i>  return status code 0x0C; it uses 0x12 for both overruns and underruns.</i></b>
+<a name=L723 href="source/linux/drivers/scsi/BusLogic.h#L723">723</a> <b><i>*/</i></b>
+<a name=L724 href="source/linux/drivers/scsi/BusLogic.h#L724">724</a> 
+<a name=L725 href="source/linux/drivers/scsi/BusLogic.h#L725">725</a> enum <a href="ident?i=BusLogic_HostAdapterStatus">BusLogic_HostAdapterStatus</a> {
+<a name=L726 href="source/linux/drivers/scsi/BusLogic.h#L726">726</a>         BusLogic_CommandCompletedNormally = 0x00,
+<a name=L727 href="source/linux/drivers/scsi/BusLogic.h#L727">727</a>         BusLogic_LinkedCommandCompleted = 0x0A,
+<a name=L728 href="source/linux/drivers/scsi/BusLogic.h#L728">728</a>         BusLogic_LinkedCommandCompletedWithFlag = 0x0B,
+<a name=L729 href="source/linux/drivers/scsi/BusLogic.h#L729">729</a>         BusLogic_DataUnderRun = 0x0C,
+<a name=L730 href="source/linux/drivers/scsi/BusLogic.h#L730">730</a>         BusLogic_SCSISelectionTimeout = 0x11,
+<a name=L731 href="source/linux/drivers/scsi/BusLogic.h#L731">731</a>         BusLogic_DataOverRun = 0x12,
+<a name=L732 href="source/linux/drivers/scsi/BusLogic.h#L732">732</a>         BusLogic_UnexpectedBusFree = 0x13,
+<a name=L733 href="source/linux/drivers/scsi/BusLogic.h#L733">733</a>         BusLogic_InvalidBusPhaseRequested = 0x14,
+<a name=L734 href="source/linux/drivers/scsi/BusLogic.h#L734">734</a>         BusLogic_InvalidOutgoingMailboxActionCode = 0x15,
+<a name=L735 href="source/linux/drivers/scsi/BusLogic.h#L735">735</a>         BusLogic_InvalidCommandOperationCode = 0x16,
+<a name=L736 href="source/linux/drivers/scsi/BusLogic.h#L736">736</a>         BusLogic_LinkedCCBhasInvalidLUN = 0x17,
+<a name=L737 href="source/linux/drivers/scsi/BusLogic.h#L737">737</a>         BusLogic_InvalidCommandParameter = 0x1A,
+<a name=L738 href="source/linux/drivers/scsi/BusLogic.h#L738">738</a>         BusLogic_AutoRequestSenseFailed = 0x1B,
+<a name=L739 href="source/linux/drivers/scsi/BusLogic.h#L739">739</a>         BusLogic_TaggedQueuingMessageRejected = 0x1C,
+<a name=L740 href="source/linux/drivers/scsi/BusLogic.h#L740">740</a>         BusLogic_UnsupportedMessageReceived = 0x1D,
+<a name=L741 href="source/linux/drivers/scsi/BusLogic.h#L741">741</a>         BusLogic_HostAdapterHardwareFailed = 0x20,
+<a name=L742 href="source/linux/drivers/scsi/BusLogic.h#L742">742</a>         BusLogic_TargetFailedResponseToATN = 0x21,
+<a name=L743 href="source/linux/drivers/scsi/BusLogic.h#L743">743</a>         BusLogic_HostAdapterAssertedRST = 0x22,
+<a name=L744 href="source/linux/drivers/scsi/BusLogic.h#L744">744</a>         BusLogic_OtherDeviceAssertedRST = 0x23,
+<a name=L745 href="source/linux/drivers/scsi/BusLogic.h#L745">745</a>         BusLogic_TargetDeviceReconnectedImproperly = 0x24,
+<a name=L746 href="source/linux/drivers/scsi/BusLogic.h#L746">746</a>         BusLogic_HostAdapterAssertedBusDeviceReset = 0x25,
+<a name=L747 href="source/linux/drivers/scsi/BusLogic.h#L747">747</a>         BusLogic_AbortQueueGenerated = 0x26,
+<a name=L748 href="source/linux/drivers/scsi/BusLogic.h#L748">748</a>         BusLogic_HostAdapterSoftwareError = 0x27,
+<a name=L749 href="source/linux/drivers/scsi/BusLogic.h#L749">749</a>         BusLogic_HostAdapterHardwareTimeoutError = 0x30,
+<a name=L750 href="source/linux/drivers/scsi/BusLogic.h#L750">750</a>         BusLogic_SCSIParityErrorDetected = 0x34
+<a name=L751 href="source/linux/drivers/scsi/BusLogic.h#L751">751</a> } <a href="ident?i=PACKED">PACKED</a>;
+<a name=L752 href="source/linux/drivers/scsi/BusLogic.h#L752">752</a> 
+<a name=L753 href="source/linux/drivers/scsi/BusLogic.h#L753">753</a> 
+<a name=L754 href="source/linux/drivers/scsi/BusLogic.h#L754">754</a> <b><i>/*</i></b>
+<a name=L755 href="source/linux/drivers/scsi/BusLogic.h#L755">755</a> <b><i>  Define the SCSI Target Device Status Codes.</i></b>
+<a name=L756 href="source/linux/drivers/scsi/BusLogic.h#L756">756</a> <b><i>*/</i></b>
+<a name=L757 href="source/linux/drivers/scsi/BusLogic.h#L757">757</a> 
+<a name=L758 href="source/linux/drivers/scsi/BusLogic.h#L758">758</a> enum <a href="ident?i=BusLogic_TargetDeviceStatus">BusLogic_TargetDeviceStatus</a> {
+<a name=L759 href="source/linux/drivers/scsi/BusLogic.h#L759">759</a>         BusLogic_OperationGood = 0x00,
+<a name=L760 href="source/linux/drivers/scsi/BusLogic.h#L760">760</a>         BusLogic_CheckCondition = 0x02,
+<a name=L761 href="source/linux/drivers/scsi/BusLogic.h#L761">761</a>         BusLogic_DeviceBusy = 0x08
+<a name=L762 href="source/linux/drivers/scsi/BusLogic.h#L762">762</a> } <a href="ident?i=PACKED">PACKED</a>;
+<a name=L763 href="source/linux/drivers/scsi/BusLogic.h#L763">763</a> 
+<a name=L764 href="source/linux/drivers/scsi/BusLogic.h#L764">764</a> <b><i>/*</i></b>
+<a name=L765 href="source/linux/drivers/scsi/BusLogic.h#L765">765</a> <b><i>  Define the Queue Tag Codes.</i></b>
+<a name=L766 href="source/linux/drivers/scsi/BusLogic.h#L766">766</a> <b><i>*/</i></b>
+<a name=L767 href="source/linux/drivers/scsi/BusLogic.h#L767">767</a> 
+<a name=L768 href="source/linux/drivers/scsi/BusLogic.h#L768">768</a> enum <a href="ident?i=BusLogic_QueueTag">BusLogic_QueueTag</a> {
+<a name=L769 href="source/linux/drivers/scsi/BusLogic.h#L769">769</a>         BusLogic_SimpleQueueTag = 0,
+<a name=L770 href="source/linux/drivers/scsi/BusLogic.h#L770">770</a>         BusLogic_HeadOfQueueTag = 1,
+<a name=L771 href="source/linux/drivers/scsi/BusLogic.h#L771">771</a>         BusLogic_OrderedQueueTag = 2,
+<a name=L772 href="source/linux/drivers/scsi/BusLogic.h#L772">772</a>         BusLogic_ReservedQT = 3
+<a name=L773 href="source/linux/drivers/scsi/BusLogic.h#L773">773</a> };
+<a name=L774 href="source/linux/drivers/scsi/BusLogic.h#L774">774</a> 
+<a name=L775 href="source/linux/drivers/scsi/BusLogic.h#L775">775</a> <b><i>/*</i></b>
+<a name=L776 href="source/linux/drivers/scsi/BusLogic.h#L776">776</a> <b><i>  Define the SCSI Command Descriptor Block (CDB).</i></b>
+<a name=L777 href="source/linux/drivers/scsi/BusLogic.h#L777">777</a> <b><i>*/</i></b>
+<a name=L778 href="source/linux/drivers/scsi/BusLogic.h#L778">778</a> 
+<a name=L779 href="source/linux/drivers/scsi/BusLogic.h#L779">779</a> #define <a href="ident?i=BusLogic_CDB_MaxLength">BusLogic_CDB_MaxLength</a>                  12
+<a name=L780 href="source/linux/drivers/scsi/BusLogic.h#L780">780</a> 
+<a name=L781 href="source/linux/drivers/scsi/BusLogic.h#L781">781</a> typedef unsigned char <a href="ident?i=SCSI_CDB_T">SCSI_CDB_T</a>[<a href="ident?i=BusLogic_CDB_MaxLength">BusLogic_CDB_MaxLength</a>];
+<a name=L782 href="source/linux/drivers/scsi/BusLogic.h#L782">782</a> 
+<a name=L783 href="source/linux/drivers/scsi/BusLogic.h#L783">783</a> 
+<a name=L784 href="source/linux/drivers/scsi/BusLogic.h#L784">784</a> <b><i>/*</i></b>
+<a name=L785 href="source/linux/drivers/scsi/BusLogic.h#L785">785</a> <b><i>  Define the Scatter/Gather Segment structure required by the MultiMaster</i></b>
+<a name=L786 href="source/linux/drivers/scsi/BusLogic.h#L786">786</a> <b><i>  Firmware Interface and the FlashPoint SCCB Manager.</i></b>
+<a name=L787 href="source/linux/drivers/scsi/BusLogic.h#L787">787</a> <b><i>*/</i></b>
+<a name=L788 href="source/linux/drivers/scsi/BusLogic.h#L788">788</a> 
+<a name=L789 href="source/linux/drivers/scsi/BusLogic.h#L789">789</a> struct <a href="ident?i=BusLogic_ScatterGatherSegment">BusLogic_ScatterGatherSegment</a> {
+<a name=L790 href="source/linux/drivers/scsi/BusLogic.h#L790">790</a>         <a href="ident?i=u32">u32</a> SegmentByteCount;   <b><i>/* Bytes 0-3 */</i></b>
+<a name=L791 href="source/linux/drivers/scsi/BusLogic.h#L791">791</a>         <a href="ident?i=u32">u32</a> SegmentDataPointer; <b><i>/* Bytes 4-7 */</i></b>
+<a name=L792 href="source/linux/drivers/scsi/BusLogic.h#L792">792</a> };
+<a name=L793 href="source/linux/drivers/scsi/BusLogic.h#L793">793</a> 
+<a name=L794 href="source/linux/drivers/scsi/BusLogic.h#L794">794</a> <b><i>/*</i></b>
+<a name=L795 href="source/linux/drivers/scsi/BusLogic.h#L795">795</a> <b><i>  Define the Driver CCB Status Codes.</i></b>
+<a name=L796 href="source/linux/drivers/scsi/BusLogic.h#L796">796</a> <b><i>*/</i></b>
+<a name=L797 href="source/linux/drivers/scsi/BusLogic.h#L797">797</a> 
+<a name=L798 href="source/linux/drivers/scsi/BusLogic.h#L798">798</a> enum <a href="ident?i=BusLogic_CCB_Status">BusLogic_CCB_Status</a> {
+<a name=L799 href="source/linux/drivers/scsi/BusLogic.h#L799">799</a>         BusLogic_CCB_Free = 0,
+<a name=L800 href="source/linux/drivers/scsi/BusLogic.h#L800">800</a>         BusLogic_CCB_Active = 1,
+<a name=L801 href="source/linux/drivers/scsi/BusLogic.h#L801">801</a>         BusLogic_CCB_Completed = 2,
+<a name=L802 href="source/linux/drivers/scsi/BusLogic.h#L802">802</a>         BusLogic_CCB_Reset = 3
+<a name=L803 href="source/linux/drivers/scsi/BusLogic.h#L803">803</a> } <a href="ident?i=PACKED">PACKED</a>;
+<a name=L804 href="source/linux/drivers/scsi/BusLogic.h#L804">804</a> 
+<a name=L805 href="source/linux/drivers/scsi/BusLogic.h#L805">805</a> 
+<a name=L806 href="source/linux/drivers/scsi/BusLogic.h#L806">806</a> <b><i>/*</i></b>
+<a name=L807 href="source/linux/drivers/scsi/BusLogic.h#L807">807</a> <b><i>  Define the 32 Bit Mode Command Control Block (CCB) structure.  The first 40</i></b>
+<a name=L808 href="source/linux/drivers/scsi/BusLogic.h#L808">808</a> <b><i>  bytes are defined by and common to both the MultiMaster Firmware and the</i></b>
+<a name=L809 href="source/linux/drivers/scsi/BusLogic.h#L809">809</a> <b><i>  FlashPoint SCCB Manager.  The next 60 bytes are defined by the FlashPoint</i></b>
+<a name=L810 href="source/linux/drivers/scsi/BusLogic.h#L810">810</a> <b><i>  SCCB Manager.  The remaining components are defined by the Linux BusLogic</i></b>
+<a name=L811 href="source/linux/drivers/scsi/BusLogic.h#L811">811</a> <b><i>  Driver.  Extended LUN Format CCBs differ from Legacy LUN Format 32 Bit Mode</i></b>
+<a name=L812 href="source/linux/drivers/scsi/BusLogic.h#L812">812</a> <b><i>  CCBs only in having the TagEnable and QueueTag fields moved from byte 17 to</i></b>
+<a name=L813 href="source/linux/drivers/scsi/BusLogic.h#L813">813</a> <b><i>  byte 1, and the Logical Unit field in byte 17 expanded to 6 bits.  In theory,</i></b>
+<a name=L814 href="source/linux/drivers/scsi/BusLogic.h#L814">814</a> <b><i>  Extended LUN Format CCBs can support up to 64 Logical Units, but in practice</i></b>
+<a name=L815 href="source/linux/drivers/scsi/BusLogic.h#L815">815</a> <b><i>  many devices will respond improperly to Logical Units between 32 and 63, and</i></b>
+<a name=L816 href="source/linux/drivers/scsi/BusLogic.h#L816">816</a> <b><i>  the SCSI-2 specification defines Bit 5 as LUNTAR.  Extended LUN Format CCBs</i></b>
+<a name=L817 href="source/linux/drivers/scsi/BusLogic.h#L817">817</a> <b><i>  are used by recent versions of the MultiMaster Firmware, as well as by the</i></b>
+<a name=L818 href="source/linux/drivers/scsi/BusLogic.h#L818">818</a> <b><i>  FlashPoint SCCB Manager; the FlashPoint SCCB Manager only supports 32 Logical</i></b>
+<a name=L819 href="source/linux/drivers/scsi/BusLogic.h#L819">819</a> <b><i>  Units.  Since 64 Logical Units are unlikely to be needed in practice, and</i></b>
+<a name=L820 href="source/linux/drivers/scsi/BusLogic.h#L820">820</a> <b><i>  since they are problematic for the above reasons, and since limiting them to</i></b>
+<a name=L821 href="source/linux/drivers/scsi/BusLogic.h#L821">821</a> <b><i>  5 bits simplifies the CCB structure definition, this driver only supports</i></b>
+<a name=L822 href="source/linux/drivers/scsi/BusLogic.h#L822">822</a> <b><i>  32 Logical Units per Target Device.</i></b>
+<a name=L823 href="source/linux/drivers/scsi/BusLogic.h#L823">823</a> <b><i>*/</i></b>
+<a name=L824 href="source/linux/drivers/scsi/BusLogic.h#L824">824</a> 
+<a name=L825 href="source/linux/drivers/scsi/BusLogic.h#L825">825</a> struct <a href="ident?i=BusLogic_CCB">BusLogic_CCB</a> {
+<a name=L826 href="source/linux/drivers/scsi/BusLogic.h#L826">826</a>         <b><i>/*</i></b>
+<a name=L827 href="source/linux/drivers/scsi/BusLogic.h#L827">827</a> <b><i>           MultiMaster Firmware and FlashPoint SCCB Manager Common Portion.</i></b>
+<a name=L828 href="source/linux/drivers/scsi/BusLogic.h#L828">828</a> <b><i>         */</i></b>
+<a name=L829 href="source/linux/drivers/scsi/BusLogic.h#L829">829</a>         enum <a href="ident?i=BusLogic_CCB_Opcode">BusLogic_CCB_Opcode</a> Opcode;        <b><i>/* Byte 0 */</i></b>
+<a name=L830 href="source/linux/drivers/scsi/BusLogic.h#L830">830</a>         unsigned char:3;        <b><i>/* Byte 1 Bits 0-2 */</i></b>
+<a name=L831 href="source/linux/drivers/scsi/BusLogic.h#L831">831</a>         enum <a href="ident?i=BusLogic_DataDirection">BusLogic_DataDirection</a> DataDirection:2;    <b><i>/* Byte 1 Bits 3-4 */</i></b>
+<a name=L832 href="source/linux/drivers/scsi/BusLogic.h#L832">832</a>         <a href="ident?i=bool">bool</a> TagEnable:1;       <b><i>/* Byte 1 Bit 5 */</i></b>
+<a name=L833 href="source/linux/drivers/scsi/BusLogic.h#L833">833</a>         enum <a href="ident?i=BusLogic_QueueTag">BusLogic_QueueTag</a> QueueTag:2;      <b><i>/* Byte 1 Bits 6-7 */</i></b>
+<a name=L834 href="source/linux/drivers/scsi/BusLogic.h#L834">834</a>         unsigned char CDB_Length;       <b><i>/* Byte 2 */</i></b>
+<a name=L835 href="source/linux/drivers/scsi/BusLogic.h#L835">835</a>         unsigned char SenseDataLength;  <b><i>/* Byte 3 */</i></b>
+<a name=L836 href="source/linux/drivers/scsi/BusLogic.h#L836">836</a>         <a href="ident?i=u32">u32</a> DataLength;         <b><i>/* Bytes 4-7 */</i></b>
+<a name=L837 href="source/linux/drivers/scsi/BusLogic.h#L837">837</a>         <a href="ident?i=u32">u32</a> DataPointer;        <b><i>/* Bytes 8-11 */</i></b>
+<a name=L838 href="source/linux/drivers/scsi/BusLogic.h#L838">838</a>         unsigned char:8;        <b><i>/* Byte 12 */</i></b>
+<a name=L839 href="source/linux/drivers/scsi/BusLogic.h#L839">839</a>         unsigned char:8;        <b><i>/* Byte 13 */</i></b>
+<a name=L840 href="source/linux/drivers/scsi/BusLogic.h#L840">840</a>         enum <a href="ident?i=BusLogic_HostAdapterStatus">BusLogic_HostAdapterStatus</a> HostAdapterStatus;      <b><i>/* Byte 14 */</i></b>
+<a name=L841 href="source/linux/drivers/scsi/BusLogic.h#L841">841</a>         enum <a href="ident?i=BusLogic_TargetDeviceStatus">BusLogic_TargetDeviceStatus</a> TargetDeviceStatus;    <b><i>/* Byte 15 */</i></b>
+<a name=L842 href="source/linux/drivers/scsi/BusLogic.h#L842">842</a>         unsigned char TargetID; <b><i>/* Byte 16 */</i></b>
+<a name=L843 href="source/linux/drivers/scsi/BusLogic.h#L843">843</a>         unsigned char LogicalUnit:5;    <b><i>/* Byte 17 Bits 0-4 */</i></b>
+<a name=L844 href="source/linux/drivers/scsi/BusLogic.h#L844">844</a>         <a href="ident?i=bool">bool</a> LegacyTagEnable:1; <b><i>/* Byte 17 Bit 5 */</i></b>
+<a name=L845 href="source/linux/drivers/scsi/BusLogic.h#L845">845</a>         enum <a href="ident?i=BusLogic_QueueTag">BusLogic_QueueTag</a> LegacyQueueTag:2;        <b><i>/* Byte 17 Bits 6-7 */</i></b>
+<a name=L846 href="source/linux/drivers/scsi/BusLogic.h#L846">846</a>         <a href="ident?i=SCSI_CDB_T">SCSI_CDB_T</a> <a href="ident?i=CDB">CDB</a>;         <b><i>/* Bytes 18-29 */</i></b>
+<a name=L847 href="source/linux/drivers/scsi/BusLogic.h#L847">847</a>         unsigned char:8;        <b><i>/* Byte 30 */</i></b>
+<a name=L848 href="source/linux/drivers/scsi/BusLogic.h#L848">848</a>         unsigned char:8;        <b><i>/* Byte 31 */</i></b>
+<a name=L849 href="source/linux/drivers/scsi/BusLogic.h#L849">849</a>         unsigned int:32;        <b><i>/* Bytes 32-35 */</i></b>
+<a name=L850 href="source/linux/drivers/scsi/BusLogic.h#L850">850</a>         <a href="ident?i=u32">u32</a> SenseDataPointer;   <b><i>/* Bytes 36-39 */</i></b>
+<a name=L851 href="source/linux/drivers/scsi/BusLogic.h#L851">851</a>         <b><i>/*</i></b>
+<a name=L852 href="source/linux/drivers/scsi/BusLogic.h#L852">852</a> <b><i>           FlashPoint SCCB Manager Defined Portion.</i></b>
+<a name=L853 href="source/linux/drivers/scsi/BusLogic.h#L853">853</a> <b><i>         */</i></b>
+<a name=L854 href="source/linux/drivers/scsi/BusLogic.h#L854">854</a>         void (*CallbackFunction) (struct <a href="ident?i=BusLogic_CCB">BusLogic_CCB</a> *);       <b><i>/* Bytes 40-43 */</i></b>
+<a name=L855 href="source/linux/drivers/scsi/BusLogic.h#L855">855</a>         <a href="ident?i=u32">u32</a> BaseAddress;        <b><i>/* Bytes 44-47 */</i></b>
+<a name=L856 href="source/linux/drivers/scsi/BusLogic.h#L856">856</a>         enum <a href="ident?i=BusLogic_CompletionCode">BusLogic_CompletionCode</a> CompletionCode;    <b><i>/* Byte 48 */</i></b>
+<a name=L857 href="source/linux/drivers/scsi/BusLogic.h#L857">857</a> #ifdef CONFIG_SCSI_FLASHPOINT
+<a name=L858 href="source/linux/drivers/scsi/BusLogic.h#L858">858</a>         unsigned char:8;        <b><i>/* Byte 49 */</i></b>
+<a name=L859 href="source/linux/drivers/scsi/BusLogic.h#L859">859</a>         unsigned short OS_Flags;        <b><i>/* Bytes 50-51 */</i></b>
+<a name=L860 href="source/linux/drivers/scsi/BusLogic.h#L860">860</a>         unsigned char <a href="ident?i=Private">Private</a>[48];      <b><i>/* Bytes 52-99 */</i></b>
+<a name=L861 href="source/linux/drivers/scsi/BusLogic.h#L861">861</a> #endif
+<a name=L862 href="source/linux/drivers/scsi/BusLogic.h#L862">862</a>         <b><i>/*</i></b>
+<a name=L863 href="source/linux/drivers/scsi/BusLogic.h#L863">863</a> <b><i>           BusLogic Linux Driver Defined Portion.</i></b>
+<a name=L864 href="source/linux/drivers/scsi/BusLogic.h#L864">864</a> <b><i>         */</i></b>
+<a name=L865 href="source/linux/drivers/scsi/BusLogic.h#L865">865</a>         <a href="ident?i=dma_addr_t">dma_addr_t</a> AllocationGroupHead;
+<a name=L866 href="source/linux/drivers/scsi/BusLogic.h#L866">866</a>         unsigned int AllocationGroupSize;
+<a name=L867 href="source/linux/drivers/scsi/BusLogic.h#L867">867</a>         <a href="ident?i=u32">u32</a> DMA_Handle;
+<a name=L868 href="source/linux/drivers/scsi/BusLogic.h#L868">868</a>         enum <a href="ident?i=BusLogic_CCB_Status">BusLogic_CCB_Status</a> <a href="ident?i=Status">Status</a>;
+<a name=L869 href="source/linux/drivers/scsi/BusLogic.h#L869">869</a>         unsigned long <a href="ident?i=SerialNumber">SerialNumber</a>;
+<a name=L870 href="source/linux/drivers/scsi/BusLogic.h#L870">870</a>         struct <a href="ident?i=scsi_cmnd">scsi_cmnd</a> *<a href="ident?i=Command">Command</a>;
+<a name=L871 href="source/linux/drivers/scsi/BusLogic.h#L871">871</a>         struct <a href="ident?i=BusLogic_HostAdapter">BusLogic_HostAdapter</a> *HostAdapter;
+<a name=L872 href="source/linux/drivers/scsi/BusLogic.h#L872">872</a>         struct <a href="ident?i=BusLogic_CCB">BusLogic_CCB</a> *Next;
+<a name=L873 href="source/linux/drivers/scsi/BusLogic.h#L873">873</a>         struct <a href="ident?i=BusLogic_CCB">BusLogic_CCB</a> *NextAll;
+<a name=L874 href="source/linux/drivers/scsi/BusLogic.h#L874">874</a>         struct <a href="ident?i=BusLogic_ScatterGatherSegment">BusLogic_ScatterGatherSegment</a>
+<a name=L875 href="source/linux/drivers/scsi/BusLogic.h#L875">875</a>          ScatterGatherList[<a href="ident?i=BusLogic_ScatterGatherLimit">BusLogic_ScatterGatherLimit</a>];
+<a name=L876 href="source/linux/drivers/scsi/BusLogic.h#L876">876</a> };
+<a name=L877 href="source/linux/drivers/scsi/BusLogic.h#L877">877</a> 
+<a name=L878 href="source/linux/drivers/scsi/BusLogic.h#L878">878</a> <b><i>/*</i></b>
+<a name=L879 href="source/linux/drivers/scsi/BusLogic.h#L879">879</a> <b><i>  Define the 32 Bit Mode Outgoing Mailbox structure.</i></b>
+<a name=L880 href="source/linux/drivers/scsi/BusLogic.h#L880">880</a> <b><i>*/</i></b>
+<a name=L881 href="source/linux/drivers/scsi/BusLogic.h#L881">881</a> 
+<a name=L882 href="source/linux/drivers/scsi/BusLogic.h#L882">882</a> struct <a href="ident?i=BusLogic_OutgoingMailbox">BusLogic_OutgoingMailbox</a> {
+<a name=L883 href="source/linux/drivers/scsi/BusLogic.h#L883">883</a>         <a href="ident?i=u32">u32</a> CCB;                <b><i>/* Bytes 0-3 */</i></b>
+<a name=L884 href="source/linux/drivers/scsi/BusLogic.h#L884">884</a>         unsigned int:24;        <b><i>/* Bytes 4-6 */</i></b>
+<a name=L885 href="source/linux/drivers/scsi/BusLogic.h#L885">885</a>         enum <a href="ident?i=BusLogic_ActionCode">BusLogic_ActionCode</a> ActionCode;    <b><i>/* Byte 7 */</i></b>
+<a name=L886 href="source/linux/drivers/scsi/BusLogic.h#L886">886</a> };
+<a name=L887 href="source/linux/drivers/scsi/BusLogic.h#L887">887</a> 
+<a name=L888 href="source/linux/drivers/scsi/BusLogic.h#L888">888</a> <b><i>/*</i></b>
+<a name=L889 href="source/linux/drivers/scsi/BusLogic.h#L889">889</a> <b><i>  Define the 32 Bit Mode Incoming Mailbox structure.</i></b>
+<a name=L890 href="source/linux/drivers/scsi/BusLogic.h#L890">890</a> <b><i>*/</i></b>
+<a name=L891 href="source/linux/drivers/scsi/BusLogic.h#L891">891</a> 
+<a name=L892 href="source/linux/drivers/scsi/BusLogic.h#L892">892</a> struct <a href="ident?i=BusLogic_IncomingMailbox">BusLogic_IncomingMailbox</a> {
+<a name=L893 href="source/linux/drivers/scsi/BusLogic.h#L893">893</a>         <a href="ident?i=u32">u32</a> CCB;                <b><i>/* Bytes 0-3 */</i></b>
+<a name=L894 href="source/linux/drivers/scsi/BusLogic.h#L894">894</a>         enum <a href="ident?i=BusLogic_HostAdapterStatus">BusLogic_HostAdapterStatus</a> HostAdapterStatus;      <b><i>/* Byte 4 */</i></b>
+<a name=L895 href="source/linux/drivers/scsi/BusLogic.h#L895">895</a>         enum <a href="ident?i=BusLogic_TargetDeviceStatus">BusLogic_TargetDeviceStatus</a> TargetDeviceStatus;    <b><i>/* Byte 5 */</i></b>
+<a name=L896 href="source/linux/drivers/scsi/BusLogic.h#L896">896</a>         unsigned char:8;        <b><i>/* Byte 6 */</i></b>
+<a name=L897 href="source/linux/drivers/scsi/BusLogic.h#L897">897</a>         enum <a href="ident?i=BusLogic_CompletionCode">BusLogic_CompletionCode</a> CompletionCode;    <b><i>/* Byte 7 */</i></b>
+<a name=L898 href="source/linux/drivers/scsi/BusLogic.h#L898">898</a> };
+<a name=L899 href="source/linux/drivers/scsi/BusLogic.h#L899">899</a> 
+<a name=L900 href="source/linux/drivers/scsi/BusLogic.h#L900">900</a> 
+<a name=L901 href="source/linux/drivers/scsi/BusLogic.h#L901">901</a> <b><i>/*</i></b>
+<a name=L902 href="source/linux/drivers/scsi/BusLogic.h#L902">902</a> <b><i>  Define the BusLogic Driver Options structure.</i></b>
+<a name=L903 href="source/linux/drivers/scsi/BusLogic.h#L903">903</a> <b><i>*/</i></b>
+<a name=L904 href="source/linux/drivers/scsi/BusLogic.h#L904">904</a> 
+<a name=L905 href="source/linux/drivers/scsi/BusLogic.h#L905">905</a> struct <a href="ident?i=BusLogic_DriverOptions">BusLogic_DriverOptions</a> {
+<a name=L906 href="source/linux/drivers/scsi/BusLogic.h#L906">906</a>         unsigned short TaggedQueuingPermitted;
+<a name=L907 href="source/linux/drivers/scsi/BusLogic.h#L907">907</a>         unsigned short TaggedQueuingPermittedMask;
+<a name=L908 href="source/linux/drivers/scsi/BusLogic.h#L908">908</a>         unsigned short BusSettleTime;
+<a name=L909 href="source/linux/drivers/scsi/BusLogic.h#L909">909</a>         struct <a href="ident?i=BusLogic_LocalOptions">BusLogic_LocalOptions</a> LocalOptions;
+<a name=L910 href="source/linux/drivers/scsi/BusLogic.h#L910">910</a>         unsigned char CommonQueueDepth;
+<a name=L911 href="source/linux/drivers/scsi/BusLogic.h#L911">911</a>         unsigned char QueueDepth[<a href="ident?i=BusLogic_MaxTargetDevices">BusLogic_MaxTargetDevices</a>];
+<a name=L912 href="source/linux/drivers/scsi/BusLogic.h#L912">912</a> };
+<a name=L913 href="source/linux/drivers/scsi/BusLogic.h#L913">913</a> 
+<a name=L914 href="source/linux/drivers/scsi/BusLogic.h#L914">914</a> <b><i>/*</i></b>
+<a name=L915 href="source/linux/drivers/scsi/BusLogic.h#L915">915</a> <b><i>  Define the Host Adapter Target Flags structure.</i></b>
+<a name=L916 href="source/linux/drivers/scsi/BusLogic.h#L916">916</a> <b><i>*/</i></b>
+<a name=L917 href="source/linux/drivers/scsi/BusLogic.h#L917">917</a> 
+<a name=L918 href="source/linux/drivers/scsi/BusLogic.h#L918">918</a> struct <a href="ident?i=BusLogic_TargetFlags">BusLogic_TargetFlags</a> {
+<a name=L919 href="source/linux/drivers/scsi/BusLogic.h#L919">919</a>         <a href="ident?i=bool">bool</a> TargetExists:1;
+<a name=L920 href="source/linux/drivers/scsi/BusLogic.h#L920">920</a>         <a href="ident?i=bool">bool</a> TaggedQueuingSupported:1;
+<a name=L921 href="source/linux/drivers/scsi/BusLogic.h#L921">921</a>         <a href="ident?i=bool">bool</a> WideTransfersSupported:1;
+<a name=L922 href="source/linux/drivers/scsi/BusLogic.h#L922">922</a>         <a href="ident?i=bool">bool</a> TaggedQueuingActive:1;
+<a name=L923 href="source/linux/drivers/scsi/BusLogic.h#L923">923</a>         <a href="ident?i=bool">bool</a> WideTransfersActive:1;
+<a name=L924 href="source/linux/drivers/scsi/BusLogic.h#L924">924</a>         <a href="ident?i=bool">bool</a> CommandSuccessfulFlag:1;
+<a name=L925 href="source/linux/drivers/scsi/BusLogic.h#L925">925</a>         <a href="ident?i=bool">bool</a> TargetInfoReported:1;
+<a name=L926 href="source/linux/drivers/scsi/BusLogic.h#L926">926</a> };
+<a name=L927 href="source/linux/drivers/scsi/BusLogic.h#L927">927</a> 
+<a name=L928 href="source/linux/drivers/scsi/BusLogic.h#L928">928</a> <b><i>/*</i></b>
+<a name=L929 href="source/linux/drivers/scsi/BusLogic.h#L929">929</a> <b><i>  Define the Host Adapter Target Statistics structure.</i></b>
+<a name=L930 href="source/linux/drivers/scsi/BusLogic.h#L930">930</a> <b><i>*/</i></b>
+<a name=L931 href="source/linux/drivers/scsi/BusLogic.h#L931">931</a> 
+<a name=L932 href="source/linux/drivers/scsi/BusLogic.h#L932">932</a> #define <a href="ident?i=BusLogic_SizeBuckets">BusLogic_SizeBuckets</a>                    10
+<a name=L933 href="source/linux/drivers/scsi/BusLogic.h#L933">933</a> 
+<a name=L934 href="source/linux/drivers/scsi/BusLogic.h#L934">934</a> typedef unsigned int <a href="ident?i=BusLogic_CommandSizeBuckets_T">BusLogic_CommandSizeBuckets_T</a>[<a href="ident?i=BusLogic_SizeBuckets">BusLogic_SizeBuckets</a>];
+<a name=L935 href="source/linux/drivers/scsi/BusLogic.h#L935">935</a> 
+<a name=L936 href="source/linux/drivers/scsi/BusLogic.h#L936">936</a> struct <a href="ident?i=BusLogic_TargetStatistics">BusLogic_TargetStatistics</a> {
+<a name=L937 href="source/linux/drivers/scsi/BusLogic.h#L937">937</a>         unsigned int CommandsAttempted;
+<a name=L938 href="source/linux/drivers/scsi/BusLogic.h#L938">938</a>         unsigned int CommandsCompleted;
+<a name=L939 href="source/linux/drivers/scsi/BusLogic.h#L939">939</a>         unsigned int ReadCommands;
+<a name=L940 href="source/linux/drivers/scsi/BusLogic.h#L940">940</a>         unsigned int WriteCommands;
+<a name=L941 href="source/linux/drivers/scsi/BusLogic.h#L941">941</a>         struct <a href="ident?i=BusLogic_ByteCounter">BusLogic_ByteCounter</a> TotalBytesRead;
+<a name=L942 href="source/linux/drivers/scsi/BusLogic.h#L942">942</a>         struct <a href="ident?i=BusLogic_ByteCounter">BusLogic_ByteCounter</a> TotalBytesWritten;
+<a name=L943 href="source/linux/drivers/scsi/BusLogic.h#L943">943</a>         <a href="ident?i=BusLogic_CommandSizeBuckets_T">BusLogic_CommandSizeBuckets_T</a> ReadCommandSizeBuckets;
+<a name=L944 href="source/linux/drivers/scsi/BusLogic.h#L944">944</a>         <a href="ident?i=BusLogic_CommandSizeBuckets_T">BusLogic_CommandSizeBuckets_T</a> WriteCommandSizeBuckets;
+<a name=L945 href="source/linux/drivers/scsi/BusLogic.h#L945">945</a>         unsigned short CommandAbortsRequested;
+<a name=L946 href="source/linux/drivers/scsi/BusLogic.h#L946">946</a>         unsigned short CommandAbortsAttempted;
+<a name=L947 href="source/linux/drivers/scsi/BusLogic.h#L947">947</a>         unsigned short CommandAbortsCompleted;
+<a name=L948 href="source/linux/drivers/scsi/BusLogic.h#L948">948</a>         unsigned short BusDeviceResetsRequested;
+<a name=L949 href="source/linux/drivers/scsi/BusLogic.h#L949">949</a>         unsigned short BusDeviceResetsAttempted;
+<a name=L950 href="source/linux/drivers/scsi/BusLogic.h#L950">950</a>         unsigned short BusDeviceResetsCompleted;
+<a name=L951 href="source/linux/drivers/scsi/BusLogic.h#L951">951</a>         unsigned short HostAdapterResetsRequested;
+<a name=L952 href="source/linux/drivers/scsi/BusLogic.h#L952">952</a>         unsigned short HostAdapterResetsAttempted;
+<a name=L953 href="source/linux/drivers/scsi/BusLogic.h#L953">953</a>         unsigned short HostAdapterResetsCompleted;
+<a name=L954 href="source/linux/drivers/scsi/BusLogic.h#L954">954</a> };
+<a name=L955 href="source/linux/drivers/scsi/BusLogic.h#L955">955</a> 
+<a name=L956 href="source/linux/drivers/scsi/BusLogic.h#L956">956</a> <b><i>/*</i></b>
+<a name=L957 href="source/linux/drivers/scsi/BusLogic.h#L957">957</a> <b><i>  Define the FlashPoint Card Handle data type.</i></b>
+<a name=L958 href="source/linux/drivers/scsi/BusLogic.h#L958">958</a> <b><i>*/</i></b>
+<a name=L959 href="source/linux/drivers/scsi/BusLogic.h#L959">959</a> 
+<a name=L960 href="source/linux/drivers/scsi/BusLogic.h#L960">960</a> #define <a href="ident?i=FlashPoint_BadCardHandle">FlashPoint_BadCardHandle</a>                0xFFFFFFFF
+<a name=L961 href="source/linux/drivers/scsi/BusLogic.h#L961">961</a> 
+<a name=L962 href="source/linux/drivers/scsi/BusLogic.h#L962">962</a> typedef unsigned int <a href="ident?i=FlashPoint_CardHandle_T">FlashPoint_CardHandle_T</a>;
+<a name=L963 href="source/linux/drivers/scsi/BusLogic.h#L963">963</a> 
+<a name=L964 href="source/linux/drivers/scsi/BusLogic.h#L964">964</a> 
+<a name=L965 href="source/linux/drivers/scsi/BusLogic.h#L965">965</a> <b><i>/*</i></b>
+<a name=L966 href="source/linux/drivers/scsi/BusLogic.h#L966">966</a> <b><i>  Define the FlashPoint Information structure.  This structure is defined</i></b>
+<a name=L967 href="source/linux/drivers/scsi/BusLogic.h#L967">967</a> <b><i>  by the FlashPoint SCCB Manager.</i></b>
+<a name=L968 href="source/linux/drivers/scsi/BusLogic.h#L968">968</a> <b><i>*/</i></b>
+<a name=L969 href="source/linux/drivers/scsi/BusLogic.h#L969">969</a> 
+<a name=L970 href="source/linux/drivers/scsi/BusLogic.h#L970">970</a> struct <a href="ident?i=FlashPoint_Info">FlashPoint_Info</a> {
+<a name=L971 href="source/linux/drivers/scsi/BusLogic.h#L971">971</a>         <a href="ident?i=u32">u32</a> BaseAddress;        <b><i>/* Bytes 0-3 */</i></b>
+<a name=L972 href="source/linux/drivers/scsi/BusLogic.h#L972">972</a>         <a href="ident?i=bool">bool</a> Present;           <b><i>/* Byte 4 */</i></b>
+<a name=L973 href="source/linux/drivers/scsi/BusLogic.h#L973">973</a>         unsigned char IRQ_Channel;      <b><i>/* Byte 5 */</i></b>
+<a name=L974 href="source/linux/drivers/scsi/BusLogic.h#L974">974</a>         unsigned char SCSI_ID;  <b><i>/* Byte 6 */</i></b>
+<a name=L975 href="source/linux/drivers/scsi/BusLogic.h#L975">975</a>         unsigned char SCSI_LUN; <b><i>/* Byte 7 */</i></b>
+<a name=L976 href="source/linux/drivers/scsi/BusLogic.h#L976">976</a>         unsigned short FirmwareRevision;        <b><i>/* Bytes 8-9 */</i></b>
+<a name=L977 href="source/linux/drivers/scsi/BusLogic.h#L977">977</a>         unsigned short SynchronousPermitted;    <b><i>/* Bytes 10-11 */</i></b>
+<a name=L978 href="source/linux/drivers/scsi/BusLogic.h#L978">978</a>         unsigned short FastPermitted;   <b><i>/* Bytes 12-13 */</i></b>
+<a name=L979 href="source/linux/drivers/scsi/BusLogic.h#L979">979</a>         unsigned short UltraPermitted;  <b><i>/* Bytes 14-15 */</i></b>
+<a name=L980 href="source/linux/drivers/scsi/BusLogic.h#L980">980</a>         unsigned short DisconnectPermitted;     <b><i>/* Bytes 16-17 */</i></b>
+<a name=L981 href="source/linux/drivers/scsi/BusLogic.h#L981">981</a>         unsigned short WidePermitted;   <b><i>/* Bytes 18-19 */</i></b>
+<a name=L982 href="source/linux/drivers/scsi/BusLogic.h#L982">982</a>         <a href="ident?i=bool">bool</a> ParityCheckingEnabled:1;   <b><i>/* Byte 20 Bit 0 */</i></b>
+<a name=L983 href="source/linux/drivers/scsi/BusLogic.h#L983">983</a>         <a href="ident?i=bool">bool</a> HostWideSCSI:1;            <b><i>/* Byte 20 Bit 1 */</i></b>
+<a name=L984 href="source/linux/drivers/scsi/BusLogic.h#L984">984</a>         <a href="ident?i=bool">bool</a> HostSoftReset:1;           <b><i>/* Byte 20 Bit 2 */</i></b>
+<a name=L985 href="source/linux/drivers/scsi/BusLogic.h#L985">985</a>         <a href="ident?i=bool">bool</a> ExtendedTranslationEnabled:1;      <b><i>/* Byte 20 Bit 3 */</i></b>
+<a name=L986 href="source/linux/drivers/scsi/BusLogic.h#L986">986</a>         <a href="ident?i=bool">bool</a> LowByteTerminated:1;       <b><i>/* Byte 20 Bit 4 */</i></b>
+<a name=L987 href="source/linux/drivers/scsi/BusLogic.h#L987">987</a>         <a href="ident?i=bool">bool</a> HighByteTerminated:1;      <b><i>/* Byte 20 Bit 5 */</i></b>
+<a name=L988 href="source/linux/drivers/scsi/BusLogic.h#L988">988</a>         <a href="ident?i=bool">bool</a> ReportDataUnderrun:1;      <b><i>/* Byte 20 Bit 6 */</i></b>
+<a name=L989 href="source/linux/drivers/scsi/BusLogic.h#L989">989</a>         <a href="ident?i=bool">bool</a> SCAM_Enabled:1;    <b><i>/* Byte 20 Bit 7 */</i></b>
+<a name=L990 href="source/linux/drivers/scsi/BusLogic.h#L990">990</a>         <a href="ident?i=bool">bool</a> SCAM_Level2:1;     <b><i>/* Byte 21 Bit 0 */</i></b>
+<a name=L991 href="source/linux/drivers/scsi/BusLogic.h#L991">991</a>         unsigned char:7;        <b><i>/* Byte 21 Bits 1-7 */</i></b>
+<a name=L992 href="source/linux/drivers/scsi/BusLogic.h#L992">992</a>         unsigned char Family;   <b><i>/* Byte 22 */</i></b>
+<a name=L993 href="source/linux/drivers/scsi/BusLogic.h#L993">993</a>         unsigned char BusType;  <b><i>/* Byte 23 */</i></b>
+<a name=L994 href="source/linux/drivers/scsi/BusLogic.h#L994">994</a>         unsigned char ModelNumber[3];   <b><i>/* Bytes 24-26 */</i></b>
+<a name=L995 href="source/linux/drivers/scsi/BusLogic.h#L995">995</a>         unsigned char RelativeCardNumber;       <b><i>/* Byte 27 */</i></b>
+<a name=L996 href="source/linux/drivers/scsi/BusLogic.h#L996">996</a>         unsigned char <a href="ident?i=Reserved">Reserved</a>[4];      <b><i>/* Bytes 28-31 */</i></b>
+<a name=L997 href="source/linux/drivers/scsi/BusLogic.h#L997">997</a>         unsigned int OS_Reserved;       <b><i>/* Bytes 32-35 */</i></b>
+<a name=L998 href="source/linux/drivers/scsi/BusLogic.h#L998">998</a>         unsigned char TranslationInfo[4];       <b><i>/* Bytes 36-39 */</i></b>
+<a name=L999 href="source/linux/drivers/scsi/BusLogic.h#L999">999</a>         unsigned int Reserved2[5];      <b><i>/* Bytes 40-59 */</i></b>
+<a name=L1000 href="source/linux/drivers/scsi/BusLogic.h#L1000">1000</a>         unsigned int SecondaryRange;    <b><i>/* Bytes 60-63 */</i></b>
+<a name=L1001 href="source/linux/drivers/scsi/BusLogic.h#L1001">1001</a> };
+<a name=L1002 href="source/linux/drivers/scsi/BusLogic.h#L1002">1002</a> 
+<a name=L1003 href="source/linux/drivers/scsi/BusLogic.h#L1003">1003</a> <b><i>/*</i></b>
+<a name=L1004 href="source/linux/drivers/scsi/BusLogic.h#L1004">1004</a> <b><i>  Define the BusLogic Driver Host Adapter structure.</i></b>
+<a name=L1005 href="source/linux/drivers/scsi/BusLogic.h#L1005">1005</a> <b><i>*/</i></b>
+<a name=L1006 href="source/linux/drivers/scsi/BusLogic.h#L1006">1006</a> 
+<a name=L1007 href="source/linux/drivers/scsi/BusLogic.h#L1007">1007</a> struct <a href="ident?i=BusLogic_HostAdapter">BusLogic_HostAdapter</a> {
+<a name=L1008 href="source/linux/drivers/scsi/BusLogic.h#L1008">1008</a>         struct <a href="ident?i=Scsi_Host">Scsi_Host</a> *SCSI_Host;
+<a name=L1009 href="source/linux/drivers/scsi/BusLogic.h#L1009">1009</a>         struct <a href="ident?i=pci_dev">pci_dev</a> *PCI_Device;
+<a name=L1010 href="source/linux/drivers/scsi/BusLogic.h#L1010">1010</a>         enum <a href="ident?i=BusLogic_HostAdapterType">BusLogic_HostAdapterType</a> HostAdapterType;
+<a name=L1011 href="source/linux/drivers/scsi/BusLogic.h#L1011">1011</a>         enum <a href="ident?i=BusLogic_HostAdapterBusType">BusLogic_HostAdapterBusType</a> HostAdapterBusType;
+<a name=L1012 href="source/linux/drivers/scsi/BusLogic.h#L1012">1012</a>         unsigned long IO_Address;
+<a name=L1013 href="source/linux/drivers/scsi/BusLogic.h#L1013">1013</a>         unsigned long PCI_Address;
+<a name=L1014 href="source/linux/drivers/scsi/BusLogic.h#L1014">1014</a>         unsigned short AddressCount;
+<a name=L1015 href="source/linux/drivers/scsi/BusLogic.h#L1015">1015</a>         unsigned char HostNumber;
+<a name=L1016 href="source/linux/drivers/scsi/BusLogic.h#L1016">1016</a>         unsigned char ModelName[9];
+<a name=L1017 href="source/linux/drivers/scsi/BusLogic.h#L1017">1017</a>         unsigned char <a href="ident?i=FirmwareVersion">FirmwareVersion</a>[6];
+<a name=L1018 href="source/linux/drivers/scsi/BusLogic.h#L1018">1018</a>         unsigned char FullModelName[18];
+<a name=L1019 href="source/linux/drivers/scsi/BusLogic.h#L1019">1019</a>         unsigned char Bus;
+<a name=L1020 href="source/linux/drivers/scsi/BusLogic.h#L1020">1020</a>         unsigned char Device;
+<a name=L1021 href="source/linux/drivers/scsi/BusLogic.h#L1021">1021</a>         unsigned char IRQ_Channel;
+<a name=L1022 href="source/linux/drivers/scsi/BusLogic.h#L1022">1022</a>         unsigned char DMA_Channel;
+<a name=L1023 href="source/linux/drivers/scsi/BusLogic.h#L1023">1023</a>         unsigned char SCSI_ID;
+<a name=L1024 href="source/linux/drivers/scsi/BusLogic.h#L1024">1024</a>         <a href="ident?i=bool">bool</a> IRQ_ChannelAcquired:1;
+<a name=L1025 href="source/linux/drivers/scsi/BusLogic.h#L1025">1025</a>         <a href="ident?i=bool">bool</a> DMA_ChannelAcquired:1;
+<a name=L1026 href="source/linux/drivers/scsi/BusLogic.h#L1026">1026</a>         <a href="ident?i=bool">bool</a> ExtendedTranslationEnabled:1;
+<a name=L1027 href="source/linux/drivers/scsi/BusLogic.h#L1027">1027</a>         <a href="ident?i=bool">bool</a> ParityCheckingEnabled:1;
+<a name=L1028 href="source/linux/drivers/scsi/BusLogic.h#L1028">1028</a>         <a href="ident?i=bool">bool</a> BusResetEnabled:1;
+<a name=L1029 href="source/linux/drivers/scsi/BusLogic.h#L1029">1029</a>         <a href="ident?i=bool">bool</a> LevelSensitiveInterrupt:1;
+<a name=L1030 href="source/linux/drivers/scsi/BusLogic.h#L1030">1030</a>         <a href="ident?i=bool">bool</a> HostWideSCSI:1;
+<a name=L1031 href="source/linux/drivers/scsi/BusLogic.h#L1031">1031</a>         <a href="ident?i=bool">bool</a> HostDifferentialSCSI:1;
+<a name=L1032 href="source/linux/drivers/scsi/BusLogic.h#L1032">1032</a>         <a href="ident?i=bool">bool</a> HostSupportsSCAM:1;
+<a name=L1033 href="source/linux/drivers/scsi/BusLogic.h#L1033">1033</a>         <a href="ident?i=bool">bool</a> HostUltraSCSI:1;
+<a name=L1034 href="source/linux/drivers/scsi/BusLogic.h#L1034">1034</a>         <a href="ident?i=bool">bool</a> ExtendedLUNSupport:1;
+<a name=L1035 href="source/linux/drivers/scsi/BusLogic.h#L1035">1035</a>         <a href="ident?i=bool">bool</a> TerminationInfoValid:1;
+<a name=L1036 href="source/linux/drivers/scsi/BusLogic.h#L1036">1036</a>         <a href="ident?i=bool">bool</a> LowByteTerminated:1;
+<a name=L1037 href="source/linux/drivers/scsi/BusLogic.h#L1037">1037</a>         <a href="ident?i=bool">bool</a> HighByteTerminated:1;
+<a name=L1038 href="source/linux/drivers/scsi/BusLogic.h#L1038">1038</a>         <a href="ident?i=bool">bool</a> BounceBuffersRequired:1;
+<a name=L1039 href="source/linux/drivers/scsi/BusLogic.h#L1039">1039</a>         <a href="ident?i=bool">bool</a> StrictRoundRobinModeSupport:1;
+<a name=L1040 href="source/linux/drivers/scsi/BusLogic.h#L1040">1040</a>         <a href="ident?i=bool">bool</a> SCAM_Enabled:1;
+<a name=L1041 href="source/linux/drivers/scsi/BusLogic.h#L1041">1041</a>         <a href="ident?i=bool">bool</a> SCAM_Level2:1;
+<a name=L1042 href="source/linux/drivers/scsi/BusLogic.h#L1042">1042</a>         <a href="ident?i=bool">bool</a> HostAdapterInitialized:1;
+<a name=L1043 href="source/linux/drivers/scsi/BusLogic.h#L1043">1043</a>         <a href="ident?i=bool">bool</a> HostAdapterExternalReset:1;
+<a name=L1044 href="source/linux/drivers/scsi/BusLogic.h#L1044">1044</a>         <a href="ident?i=bool">bool</a> HostAdapterInternalError:1;
+<a name=L1045 href="source/linux/drivers/scsi/BusLogic.h#L1045">1045</a>         <a href="ident?i=bool">bool</a> ProcessCompletedCCBsActive;
+<a name=L1046 href="source/linux/drivers/scsi/BusLogic.h#L1046">1046</a>         volatile <a href="ident?i=bool">bool</a> HostAdapterCommandCompleted;
+<a name=L1047 href="source/linux/drivers/scsi/BusLogic.h#L1047">1047</a>         unsigned short HostAdapterScatterGatherLimit;
+<a name=L1048 href="source/linux/drivers/scsi/BusLogic.h#L1048">1048</a>         unsigned short DriverScatterGatherLimit;
+<a name=L1049 href="source/linux/drivers/scsi/BusLogic.h#L1049">1049</a>         unsigned short MaxTargetDevices;
+<a name=L1050 href="source/linux/drivers/scsi/BusLogic.h#L1050">1050</a>         unsigned short MaxLogicalUnits;
+<a name=L1051 href="source/linux/drivers/scsi/BusLogic.h#L1051">1051</a>         unsigned short MailboxCount;
+<a name=L1052 href="source/linux/drivers/scsi/BusLogic.h#L1052">1052</a>         unsigned short InitialCCBs;
+<a name=L1053 href="source/linux/drivers/scsi/BusLogic.h#L1053">1053</a>         unsigned short IncrementalCCBs;
+<a name=L1054 href="source/linux/drivers/scsi/BusLogic.h#L1054">1054</a>         unsigned short AllocatedCCBs;
+<a name=L1055 href="source/linux/drivers/scsi/BusLogic.h#L1055">1055</a>         unsigned short DriverQueueDepth;
+<a name=L1056 href="source/linux/drivers/scsi/BusLogic.h#L1056">1056</a>         unsigned short HostAdapterQueueDepth;
+<a name=L1057 href="source/linux/drivers/scsi/BusLogic.h#L1057">1057</a>         unsigned short UntaggedQueueDepth;
+<a name=L1058 href="source/linux/drivers/scsi/BusLogic.h#L1058">1058</a>         unsigned short CommonQueueDepth;
+<a name=L1059 href="source/linux/drivers/scsi/BusLogic.h#L1059">1059</a>         unsigned short BusSettleTime;
+<a name=L1060 href="source/linux/drivers/scsi/BusLogic.h#L1060">1060</a>         unsigned short SynchronousPermitted;
+<a name=L1061 href="source/linux/drivers/scsi/BusLogic.h#L1061">1061</a>         unsigned short FastPermitted;
+<a name=L1062 href="source/linux/drivers/scsi/BusLogic.h#L1062">1062</a>         unsigned short UltraPermitted;
+<a name=L1063 href="source/linux/drivers/scsi/BusLogic.h#L1063">1063</a>         unsigned short WidePermitted;
+<a name=L1064 href="source/linux/drivers/scsi/BusLogic.h#L1064">1064</a>         unsigned short DisconnectPermitted;
+<a name=L1065 href="source/linux/drivers/scsi/BusLogic.h#L1065">1065</a>         unsigned short TaggedQueuingPermitted;
+<a name=L1066 href="source/linux/drivers/scsi/BusLogic.h#L1066">1066</a>         unsigned short ExternalHostAdapterResets;
+<a name=L1067 href="source/linux/drivers/scsi/BusLogic.h#L1067">1067</a>         unsigned short HostAdapterInternalErrors;
+<a name=L1068 href="source/linux/drivers/scsi/BusLogic.h#L1068">1068</a>         unsigned short TargetDeviceCount;
+<a name=L1069 href="source/linux/drivers/scsi/BusLogic.h#L1069">1069</a>         unsigned short MessageBufferLength;
+<a name=L1070 href="source/linux/drivers/scsi/BusLogic.h#L1070">1070</a>         <a href="ident?i=u32">u32</a> BIOS_Address;
+<a name=L1071 href="source/linux/drivers/scsi/BusLogic.h#L1071">1071</a>         struct <a href="ident?i=BusLogic_DriverOptions">BusLogic_DriverOptions</a> *DriverOptions;
+<a name=L1072 href="source/linux/drivers/scsi/BusLogic.h#L1072">1072</a>         struct <a href="ident?i=FlashPoint_Info">FlashPoint_Info</a> FlashPointInfo;
+<a name=L1073 href="source/linux/drivers/scsi/BusLogic.h#L1073">1073</a>         <a href="ident?i=FlashPoint_CardHandle_T">FlashPoint_CardHandle_T</a> CardHandle;
+<a name=L1074 href="source/linux/drivers/scsi/BusLogic.h#L1074">1074</a>         struct <a href="ident?i=list_head">list_head</a> host_list;
+<a name=L1075 href="source/linux/drivers/scsi/BusLogic.h#L1075">1075</a>         struct <a href="ident?i=BusLogic_CCB">BusLogic_CCB</a> *All_CCBs;
+<a name=L1076 href="source/linux/drivers/scsi/BusLogic.h#L1076">1076</a>         struct <a href="ident?i=BusLogic_CCB">BusLogic_CCB</a> *Free_CCBs;
+<a name=L1077 href="source/linux/drivers/scsi/BusLogic.h#L1077">1077</a>         struct <a href="ident?i=BusLogic_CCB">BusLogic_CCB</a> *FirstCompletedCCB;
+<a name=L1078 href="source/linux/drivers/scsi/BusLogic.h#L1078">1078</a>         struct <a href="ident?i=BusLogic_CCB">BusLogic_CCB</a> *LastCompletedCCB;
+<a name=L1079 href="source/linux/drivers/scsi/BusLogic.h#L1079">1079</a>         struct <a href="ident?i=BusLogic_CCB">BusLogic_CCB</a> *BusDeviceResetPendingCCB[<a href="ident?i=BusLogic_MaxTargetDevices">BusLogic_MaxTargetDevices</a>];
+<a name=L1080 href="source/linux/drivers/scsi/BusLogic.h#L1080">1080</a>         struct <a href="ident?i=BusLogic_TargetFlags">BusLogic_TargetFlags</a> TargetFlags[<a href="ident?i=BusLogic_MaxTargetDevices">BusLogic_MaxTargetDevices</a>];
+<a name=L1081 href="source/linux/drivers/scsi/BusLogic.h#L1081">1081</a>         unsigned char QueueDepth[<a href="ident?i=BusLogic_MaxTargetDevices">BusLogic_MaxTargetDevices</a>];
+<a name=L1082 href="source/linux/drivers/scsi/BusLogic.h#L1082">1082</a>         unsigned char SynchronousPeriod[<a href="ident?i=BusLogic_MaxTargetDevices">BusLogic_MaxTargetDevices</a>];
+<a name=L1083 href="source/linux/drivers/scsi/BusLogic.h#L1083">1083</a>         unsigned char SynchronousOffset[<a href="ident?i=BusLogic_MaxTargetDevices">BusLogic_MaxTargetDevices</a>];
+<a name=L1084 href="source/linux/drivers/scsi/BusLogic.h#L1084">1084</a>         unsigned char ActiveCommands[<a href="ident?i=BusLogic_MaxTargetDevices">BusLogic_MaxTargetDevices</a>];
+<a name=L1085 href="source/linux/drivers/scsi/BusLogic.h#L1085">1085</a>         unsigned int CommandsSinceReset[<a href="ident?i=BusLogic_MaxTargetDevices">BusLogic_MaxTargetDevices</a>];
+<a name=L1086 href="source/linux/drivers/scsi/BusLogic.h#L1086">1086</a>         unsigned long LastSequencePoint[<a href="ident?i=BusLogic_MaxTargetDevices">BusLogic_MaxTargetDevices</a>];
+<a name=L1087 href="source/linux/drivers/scsi/BusLogic.h#L1087">1087</a>         unsigned long LastResetAttempted[<a href="ident?i=BusLogic_MaxTargetDevices">BusLogic_MaxTargetDevices</a>];
+<a name=L1088 href="source/linux/drivers/scsi/BusLogic.h#L1088">1088</a>         unsigned long LastResetCompleted[<a href="ident?i=BusLogic_MaxTargetDevices">BusLogic_MaxTargetDevices</a>];
+<a name=L1089 href="source/linux/drivers/scsi/BusLogic.h#L1089">1089</a>         struct <a href="ident?i=BusLogic_OutgoingMailbox">BusLogic_OutgoingMailbox</a> *FirstOutgoingMailbox;
+<a name=L1090 href="source/linux/drivers/scsi/BusLogic.h#L1090">1090</a>         struct <a href="ident?i=BusLogic_OutgoingMailbox">BusLogic_OutgoingMailbox</a> *LastOutgoingMailbox;
+<a name=L1091 href="source/linux/drivers/scsi/BusLogic.h#L1091">1091</a>         struct <a href="ident?i=BusLogic_OutgoingMailbox">BusLogic_OutgoingMailbox</a> *NextOutgoingMailbox;
+<a name=L1092 href="source/linux/drivers/scsi/BusLogic.h#L1092">1092</a>         struct <a href="ident?i=BusLogic_IncomingMailbox">BusLogic_IncomingMailbox</a> *FirstIncomingMailbox;
+<a name=L1093 href="source/linux/drivers/scsi/BusLogic.h#L1093">1093</a>         struct <a href="ident?i=BusLogic_IncomingMailbox">BusLogic_IncomingMailbox</a> *LastIncomingMailbox;
+<a name=L1094 href="source/linux/drivers/scsi/BusLogic.h#L1094">1094</a>         struct <a href="ident?i=BusLogic_IncomingMailbox">BusLogic_IncomingMailbox</a> *NextIncomingMailbox;
+<a name=L1095 href="source/linux/drivers/scsi/BusLogic.h#L1095">1095</a>         struct <a href="ident?i=BusLogic_TargetStatistics">BusLogic_TargetStatistics</a> TargetStatistics[<a href="ident?i=BusLogic_MaxTargetDevices">BusLogic_MaxTargetDevices</a>];
+<a name=L1096 href="source/linux/drivers/scsi/BusLogic.h#L1096">1096</a>         unsigned char *MailboxSpace;
+<a name=L1097 href="source/linux/drivers/scsi/BusLogic.h#L1097">1097</a>         <a href="ident?i=dma_addr_t">dma_addr_t</a> MailboxSpaceHandle;
+<a name=L1098 href="source/linux/drivers/scsi/BusLogic.h#L1098">1098</a>         unsigned int MailboxSize;
+<a name=L1099 href="source/linux/drivers/scsi/BusLogic.h#L1099">1099</a>         unsigned long CCB_Offset;
+<a name=L1100 href="source/linux/drivers/scsi/BusLogic.h#L1100">1100</a>         char MessageBuffer[<a href="ident?i=BusLogic_MessageBufferSize">BusLogic_MessageBufferSize</a>];
+<a name=L1101 href="source/linux/drivers/scsi/BusLogic.h#L1101">1101</a> };
+<a name=L1102 href="source/linux/drivers/scsi/BusLogic.h#L1102">1102</a> 
+<a name=L1103 href="source/linux/drivers/scsi/BusLogic.h#L1103">1103</a> <b><i>/*</i></b>
+<a name=L1104 href="source/linux/drivers/scsi/BusLogic.h#L1104">1104</a> <b><i>  Define a structure for the BIOS Disk Parameters.</i></b>
+<a name=L1105 href="source/linux/drivers/scsi/BusLogic.h#L1105">1105</a> <b><i>*/</i></b>
+<a name=L1106 href="source/linux/drivers/scsi/BusLogic.h#L1106">1106</a> 
+<a name=L1107 href="source/linux/drivers/scsi/BusLogic.h#L1107">1107</a> struct <a href="ident?i=BIOS_DiskParameters">BIOS_DiskParameters</a> {
+<a name=L1108 href="source/linux/drivers/scsi/BusLogic.h#L1108">1108</a>         int Heads;
+<a name=L1109 href="source/linux/drivers/scsi/BusLogic.h#L1109">1109</a>         int Sectors;
+<a name=L1110 href="source/linux/drivers/scsi/BusLogic.h#L1110">1110</a>         int Cylinders;
+<a name=L1111 href="source/linux/drivers/scsi/BusLogic.h#L1111">1111</a> };
+<a name=L1112 href="source/linux/drivers/scsi/BusLogic.h#L1112">1112</a> 
+<a name=L1113 href="source/linux/drivers/scsi/BusLogic.h#L1113">1113</a> <b><i>/*</i></b>
+<a name=L1114 href="source/linux/drivers/scsi/BusLogic.h#L1114">1114</a> <b><i>  Define a structure for the SCSI Inquiry command results.</i></b>
+<a name=L1115 href="source/linux/drivers/scsi/BusLogic.h#L1115">1115</a> <b><i>*/</i></b>
+<a name=L1116 href="source/linux/drivers/scsi/BusLogic.h#L1116">1116</a> 
+<a name=L1117 href="source/linux/drivers/scsi/BusLogic.h#L1117">1117</a> struct <a href="ident?i=SCSI_Inquiry">SCSI_Inquiry</a> {
+<a name=L1118 href="source/linux/drivers/scsi/BusLogic.h#L1118">1118</a>         unsigned char PeripheralDeviceType:5;   <b><i>/* Byte 0 Bits 0-4 */</i></b>
+<a name=L1119 href="source/linux/drivers/scsi/BusLogic.h#L1119">1119</a>         unsigned char PeripheralQualifier:3;    <b><i>/* Byte 0 Bits 5-7 */</i></b>
+<a name=L1120 href="source/linux/drivers/scsi/BusLogic.h#L1120">1120</a>         unsigned char DeviceTypeModifier:7;     <b><i>/* Byte 1 Bits 0-6 */</i></b>
+<a name=L1121 href="source/linux/drivers/scsi/BusLogic.h#L1121">1121</a>         <a href="ident?i=bool">bool</a> RMB:1;             <b><i>/* Byte 1 Bit 7 */</i></b>
+<a name=L1122 href="source/linux/drivers/scsi/BusLogic.h#L1122">1122</a>         unsigned char ANSI_ApprovedVersion:3;   <b><i>/* Byte 2 Bits 0-2 */</i></b>
+<a name=L1123 href="source/linux/drivers/scsi/BusLogic.h#L1123">1123</a>         unsigned char ECMA_Version:3;   <b><i>/* Byte 2 Bits 3-5 */</i></b>
+<a name=L1124 href="source/linux/drivers/scsi/BusLogic.h#L1124">1124</a>         unsigned char ISO_Version:2;    <b><i>/* Byte 2 Bits 6-7 */</i></b>
+<a name=L1125 href="source/linux/drivers/scsi/BusLogic.h#L1125">1125</a>         unsigned char ResponseDataFormat:4;     <b><i>/* Byte 3 Bits 0-3 */</i></b>
+<a name=L1126 href="source/linux/drivers/scsi/BusLogic.h#L1126">1126</a>         unsigned char:2;        <b><i>/* Byte 3 Bits 4-5 */</i></b>
+<a name=L1127 href="source/linux/drivers/scsi/BusLogic.h#L1127">1127</a>         <a href="ident?i=bool">bool</a> TrmIOP:1;          <b><i>/* Byte 3 Bit 6 */</i></b>
+<a name=L1128 href="source/linux/drivers/scsi/BusLogic.h#L1128">1128</a>         <a href="ident?i=bool">bool</a> AENC:1;            <b><i>/* Byte 3 Bit 7 */</i></b>
+<a name=L1129 href="source/linux/drivers/scsi/BusLogic.h#L1129">1129</a>         unsigned char AdditionalLength; <b><i>/* Byte 4 */</i></b>
+<a name=L1130 href="source/linux/drivers/scsi/BusLogic.h#L1130">1130</a>         unsigned char:8;        <b><i>/* Byte 5 */</i></b>
+<a name=L1131 href="source/linux/drivers/scsi/BusLogic.h#L1131">1131</a>         unsigned char:8;        <b><i>/* Byte 6 */</i></b>
+<a name=L1132 href="source/linux/drivers/scsi/BusLogic.h#L1132">1132</a>         <a href="ident?i=bool">bool</a> SftRe:1;           <b><i>/* Byte 7 Bit 0 */</i></b>
+<a name=L1133 href="source/linux/drivers/scsi/BusLogic.h#L1133">1133</a>         <a href="ident?i=bool">bool</a> CmdQue:1;          <b><i>/* Byte 7 Bit 1 */</i></b>
+<a name=L1134 href="source/linux/drivers/scsi/BusLogic.h#L1134">1134</a>          <a href="ident?i=bool">bool</a>:1;                <b><i>/* Byte 7 Bit 2 */</i></b>
+<a name=L1135 href="source/linux/drivers/scsi/BusLogic.h#L1135">1135</a>         <a href="ident?i=bool">bool</a> Linked:1;          <b><i>/* Byte 7 Bit 3 */</i></b>
+<a name=L1136 href="source/linux/drivers/scsi/BusLogic.h#L1136">1136</a>         <a href="ident?i=bool">bool</a> Sync:1;            <b><i>/* Byte 7 Bit 4 */</i></b>
+<a name=L1137 href="source/linux/drivers/scsi/BusLogic.h#L1137">1137</a>         <a href="ident?i=bool">bool</a> WBus16:1;          <b><i>/* Byte 7 Bit 5 */</i></b>
+<a name=L1138 href="source/linux/drivers/scsi/BusLogic.h#L1138">1138</a>         <a href="ident?i=bool">bool</a> WBus32:1;          <b><i>/* Byte 7 Bit 6 */</i></b>
+<a name=L1139 href="source/linux/drivers/scsi/BusLogic.h#L1139">1139</a>         <a href="ident?i=bool">bool</a> RelAdr:1;          <b><i>/* Byte 7 Bit 7 */</i></b>
+<a name=L1140 href="source/linux/drivers/scsi/BusLogic.h#L1140">1140</a>         unsigned char VendorIdentification[8];  <b><i>/* Bytes 8-15 */</i></b>
+<a name=L1141 href="source/linux/drivers/scsi/BusLogic.h#L1141">1141</a>         unsigned char ProductIdentification[16];        <b><i>/* Bytes 16-31 */</i></b>
+<a name=L1142 href="source/linux/drivers/scsi/BusLogic.h#L1142">1142</a>         unsigned char ProductRevisionLevel[4];  <b><i>/* Bytes 32-35 */</i></b>
+<a name=L1143 href="source/linux/drivers/scsi/BusLogic.h#L1143">1143</a> };
+<a name=L1144 href="source/linux/drivers/scsi/BusLogic.h#L1144">1144</a> 
+<a name=L1145 href="source/linux/drivers/scsi/BusLogic.h#L1145">1145</a> 
+<a name=L1146 href="source/linux/drivers/scsi/BusLogic.h#L1146">1146</a> <b><i>/*</i></b>
+<a name=L1147 href="source/linux/drivers/scsi/BusLogic.h#L1147">1147</a> <b><i>  Define functions to provide an abstraction for reading and writing the</i></b>
+<a name=L1148 href="source/linux/drivers/scsi/BusLogic.h#L1148">1148</a> <b><i>  Host Adapter I/O Registers.</i></b>
+<a name=L1149 href="source/linux/drivers/scsi/BusLogic.h#L1149">1149</a> <b><i>*/</i></b>
+<a name=L1150 href="source/linux/drivers/scsi/BusLogic.h#L1150">1150</a> 
+<a name=L1151 href="source/linux/drivers/scsi/BusLogic.h#L1151">1151</a> static inline void <a href="ident?i=BusLogic_SCSIBusReset">BusLogic_SCSIBusReset</a>(struct <a href="ident?i=BusLogic_HostAdapter">BusLogic_HostAdapter</a> *HostAdapter)
+<a name=L1152 href="source/linux/drivers/scsi/BusLogic.h#L1152">1152</a> {
+<a name=L1153 href="source/linux/drivers/scsi/BusLogic.h#L1153">1153</a>         union <a href="ident?i=BusLogic_ControlRegister">BusLogic_ControlRegister</a> ControlRegister;
+<a name=L1154 href="source/linux/drivers/scsi/BusLogic.h#L1154">1154</a>         ControlRegister.All = 0;
+<a name=L1155 href="source/linux/drivers/scsi/BusLogic.h#L1155">1155</a>         ControlRegister.<a href="ident?i=cr">cr</a>.SCSIBusReset = <a href="ident?i=true">true</a>;
+<a name=L1156 href="source/linux/drivers/scsi/BusLogic.h#L1156">1156</a>         <a href="ident?i=outb">outb</a>(ControlRegister.All, HostAdapter-&gt;IO_Address + <a href="ident?i=BusLogic_ControlRegisterOffset">BusLogic_ControlRegisterOffset</a>);
+<a name=L1157 href="source/linux/drivers/scsi/BusLogic.h#L1157">1157</a> }
+<a name=L1158 href="source/linux/drivers/scsi/BusLogic.h#L1158">1158</a> 
+<a name=L1159 href="source/linux/drivers/scsi/BusLogic.h#L1159">1159</a> static inline void <a href="ident?i=BusLogic_InterruptReset">BusLogic_InterruptReset</a>(struct <a href="ident?i=BusLogic_HostAdapter">BusLogic_HostAdapter</a> *HostAdapter)
+<a name=L1160 href="source/linux/drivers/scsi/BusLogic.h#L1160">1160</a> {
+<a name=L1161 href="source/linux/drivers/scsi/BusLogic.h#L1161">1161</a>         union <a href="ident?i=BusLogic_ControlRegister">BusLogic_ControlRegister</a> ControlRegister;
+<a name=L1162 href="source/linux/drivers/scsi/BusLogic.h#L1162">1162</a>         ControlRegister.All = 0;
+<a name=L1163 href="source/linux/drivers/scsi/BusLogic.h#L1163">1163</a>         ControlRegister.<a href="ident?i=cr">cr</a>.InterruptReset = <a href="ident?i=true">true</a>;
+<a name=L1164 href="source/linux/drivers/scsi/BusLogic.h#L1164">1164</a>         <a href="ident?i=outb">outb</a>(ControlRegister.All, HostAdapter-&gt;IO_Address + <a href="ident?i=BusLogic_ControlRegisterOffset">BusLogic_ControlRegisterOffset</a>);
+<a name=L1165 href="source/linux/drivers/scsi/BusLogic.h#L1165">1165</a> }
+<a name=L1166 href="source/linux/drivers/scsi/BusLogic.h#L1166">1166</a> 
+<a name=L1167 href="source/linux/drivers/scsi/BusLogic.h#L1167">1167</a> static inline void <a href="ident?i=BusLogic_SoftReset">BusLogic_SoftReset</a>(struct <a href="ident?i=BusLogic_HostAdapter">BusLogic_HostAdapter</a> *HostAdapter)
+<a name=L1168 href="source/linux/drivers/scsi/BusLogic.h#L1168">1168</a> {
+<a name=L1169 href="source/linux/drivers/scsi/BusLogic.h#L1169">1169</a>         union <a href="ident?i=BusLogic_ControlRegister">BusLogic_ControlRegister</a> ControlRegister;
+<a name=L1170 href="source/linux/drivers/scsi/BusLogic.h#L1170">1170</a>         ControlRegister.All = 0;
+<a name=L1171 href="source/linux/drivers/scsi/BusLogic.h#L1171">1171</a>         ControlRegister.<a href="ident?i=cr">cr</a>.SoftReset = <a href="ident?i=true">true</a>;
+<a name=L1172 href="source/linux/drivers/scsi/BusLogic.h#L1172">1172</a>         <a href="ident?i=outb">outb</a>(ControlRegister.All, HostAdapter-&gt;IO_Address + <a href="ident?i=BusLogic_ControlRegisterOffset">BusLogic_ControlRegisterOffset</a>);
+<a name=L1173 href="source/linux/drivers/scsi/BusLogic.h#L1173">1173</a> }
+<a name=L1174 href="source/linux/drivers/scsi/BusLogic.h#L1174">1174</a> 
+<a name=L1175 href="source/linux/drivers/scsi/BusLogic.h#L1175">1175</a> static inline void <a href="ident?i=BusLogic_HardReset">BusLogic_HardReset</a>(struct <a href="ident?i=BusLogic_HostAdapter">BusLogic_HostAdapter</a> *HostAdapter)
+<a name=L1176 href="source/linux/drivers/scsi/BusLogic.h#L1176">1176</a> {
+<a name=L1177 href="source/linux/drivers/scsi/BusLogic.h#L1177">1177</a>         union <a href="ident?i=BusLogic_ControlRegister">BusLogic_ControlRegister</a> ControlRegister;
+<a name=L1178 href="source/linux/drivers/scsi/BusLogic.h#L1178">1178</a>         ControlRegister.All = 0;
+<a name=L1179 href="source/linux/drivers/scsi/BusLogic.h#L1179">1179</a>         ControlRegister.<a href="ident?i=cr">cr</a>.HardReset = <a href="ident?i=true">true</a>;
+<a name=L1180 href="source/linux/drivers/scsi/BusLogic.h#L1180">1180</a>         <a href="ident?i=outb">outb</a>(ControlRegister.All, HostAdapter-&gt;IO_Address + <a href="ident?i=BusLogic_ControlRegisterOffset">BusLogic_ControlRegisterOffset</a>);
+<a name=L1181 href="source/linux/drivers/scsi/BusLogic.h#L1181">1181</a> }
+<a name=L1182 href="source/linux/drivers/scsi/BusLogic.h#L1182">1182</a> 
+<a name=L1183 href="source/linux/drivers/scsi/BusLogic.h#L1183">1183</a> static inline unsigned char <a href="ident?i=BusLogic_ReadStatusRegister">BusLogic_ReadStatusRegister</a>(struct <a href="ident?i=BusLogic_HostAdapter">BusLogic_HostAdapter</a> *HostAdapter)
+<a name=L1184 href="source/linux/drivers/scsi/BusLogic.h#L1184">1184</a> {
+<a name=L1185 href="source/linux/drivers/scsi/BusLogic.h#L1185">1185</a>         return <a href="ident?i=inb">inb</a>(HostAdapter-&gt;IO_Address + <a href="ident?i=BusLogic_StatusRegisterOffset">BusLogic_StatusRegisterOffset</a>);
+<a name=L1186 href="source/linux/drivers/scsi/BusLogic.h#L1186">1186</a> }
+<a name=L1187 href="source/linux/drivers/scsi/BusLogic.h#L1187">1187</a> 
+<a name=L1188 href="source/linux/drivers/scsi/BusLogic.h#L1188">1188</a> static inline void <a href="ident?i=BusLogic_WriteCommandParameterRegister">BusLogic_WriteCommandParameterRegister</a>(struct <a href="ident?i=BusLogic_HostAdapter">BusLogic_HostAdapter</a>
+<a name=L1189 href="source/linux/drivers/scsi/BusLogic.h#L1189">1189</a>                                                           *HostAdapter, unsigned char Value)
+<a name=L1190 href="source/linux/drivers/scsi/BusLogic.h#L1190">1190</a> {
+<a name=L1191 href="source/linux/drivers/scsi/BusLogic.h#L1191">1191</a>         <a href="ident?i=outb">outb</a>(Value, HostAdapter-&gt;IO_Address + <a href="ident?i=BusLogic_CommandParameterRegisterOffset">BusLogic_CommandParameterRegisterOffset</a>);
+<a name=L1192 href="source/linux/drivers/scsi/BusLogic.h#L1192">1192</a> }
+<a name=L1193 href="source/linux/drivers/scsi/BusLogic.h#L1193">1193</a> 
+<a name=L1194 href="source/linux/drivers/scsi/BusLogic.h#L1194">1194</a> static inline unsigned char <a href="ident?i=BusLogic_ReadDataInRegister">BusLogic_ReadDataInRegister</a>(struct <a href="ident?i=BusLogic_HostAdapter">BusLogic_HostAdapter</a> *HostAdapter)
+<a name=L1195 href="source/linux/drivers/scsi/BusLogic.h#L1195">1195</a> {
+<a name=L1196 href="source/linux/drivers/scsi/BusLogic.h#L1196">1196</a>         return <a href="ident?i=inb">inb</a>(HostAdapter-&gt;IO_Address + <a href="ident?i=BusLogic_DataInRegisterOffset">BusLogic_DataInRegisterOffset</a>);
+<a name=L1197 href="source/linux/drivers/scsi/BusLogic.h#L1197">1197</a> }
+<a name=L1198 href="source/linux/drivers/scsi/BusLogic.h#L1198">1198</a> 
+<a name=L1199 href="source/linux/drivers/scsi/BusLogic.h#L1199">1199</a> static inline unsigned char <a href="ident?i=BusLogic_ReadInterruptRegister">BusLogic_ReadInterruptRegister</a>(struct <a href="ident?i=BusLogic_HostAdapter">BusLogic_HostAdapter</a> *HostAdapter)
+<a name=L1200 href="source/linux/drivers/scsi/BusLogic.h#L1200">1200</a> {
+<a name=L1201 href="source/linux/drivers/scsi/BusLogic.h#L1201">1201</a>         return <a href="ident?i=inb">inb</a>(HostAdapter-&gt;IO_Address + <a href="ident?i=BusLogic_InterruptRegisterOffset">BusLogic_InterruptRegisterOffset</a>);
+<a name=L1202 href="source/linux/drivers/scsi/BusLogic.h#L1202">1202</a> }
+<a name=L1203 href="source/linux/drivers/scsi/BusLogic.h#L1203">1203</a> 
+<a name=L1204 href="source/linux/drivers/scsi/BusLogic.h#L1204">1204</a> static inline unsigned char <a href="ident?i=BusLogic_ReadGeometryRegister">BusLogic_ReadGeometryRegister</a>(struct <a href="ident?i=BusLogic_HostAdapter">BusLogic_HostAdapter</a> *HostAdapter)
+<a name=L1205 href="source/linux/drivers/scsi/BusLogic.h#L1205">1205</a> {
+<a name=L1206 href="source/linux/drivers/scsi/BusLogic.h#L1206">1206</a>         return <a href="ident?i=inb">inb</a>(HostAdapter-&gt;IO_Address + <a href="ident?i=BusLogic_GeometryRegisterOffset">BusLogic_GeometryRegisterOffset</a>);
+<a name=L1207 href="source/linux/drivers/scsi/BusLogic.h#L1207">1207</a> }
+<a name=L1208 href="source/linux/drivers/scsi/BusLogic.h#L1208">1208</a> 
+<a name=L1209 href="source/linux/drivers/scsi/BusLogic.h#L1209">1209</a> <b><i>/*</i></b>
+<a name=L1210 href="source/linux/drivers/scsi/BusLogic.h#L1210">1210</a> <b><i>  BusLogic_StartMailboxCommand issues an Execute Mailbox Command, which</i></b>
+<a name=L1211 href="source/linux/drivers/scsi/BusLogic.h#L1211">1211</a> <b><i>  notifies the Host Adapter that an entry has been made in an Outgoing</i></b>
+<a name=L1212 href="source/linux/drivers/scsi/BusLogic.h#L1212">1212</a> <b><i>  Mailbox.</i></b>
+<a name=L1213 href="source/linux/drivers/scsi/BusLogic.h#L1213">1213</a> <b><i>*/</i></b>
+<a name=L1214 href="source/linux/drivers/scsi/BusLogic.h#L1214">1214</a> 
+<a name=L1215 href="source/linux/drivers/scsi/BusLogic.h#L1215">1215</a> static inline void <a href="ident?i=BusLogic_StartMailboxCommand">BusLogic_StartMailboxCommand</a>(struct <a href="ident?i=BusLogic_HostAdapter">BusLogic_HostAdapter</a> *HostAdapter)
+<a name=L1216 href="source/linux/drivers/scsi/BusLogic.h#L1216">1216</a> {
+<a name=L1217 href="source/linux/drivers/scsi/BusLogic.h#L1217">1217</a>         <a href="ident?i=BusLogic_WriteCommandParameterRegister">BusLogic_WriteCommandParameterRegister</a>(HostAdapter, BusLogic_ExecuteMailboxCommand);
+<a name=L1218 href="source/linux/drivers/scsi/BusLogic.h#L1218">1218</a> }
+<a name=L1219 href="source/linux/drivers/scsi/BusLogic.h#L1219">1219</a> 
+<a name=L1220 href="source/linux/drivers/scsi/BusLogic.h#L1220">1220</a> <b><i>/*</i></b>
+<a name=L1221 href="source/linux/drivers/scsi/BusLogic.h#L1221">1221</a> <b><i>  BusLogic_Delay waits for Seconds to elapse.</i></b>
+<a name=L1222 href="source/linux/drivers/scsi/BusLogic.h#L1222">1222</a> <b><i>*/</i></b>
+<a name=L1223 href="source/linux/drivers/scsi/BusLogic.h#L1223">1223</a> 
+<a name=L1224 href="source/linux/drivers/scsi/BusLogic.h#L1224">1224</a> static inline void <a href="ident?i=BusLogic_Delay">BusLogic_Delay</a>(int Seconds)
+<a name=L1225 href="source/linux/drivers/scsi/BusLogic.h#L1225">1225</a> {
+<a name=L1226 href="source/linux/drivers/scsi/BusLogic.h#L1226">1226</a>         <a href="ident?i=mdelay">mdelay</a>(1000 * Seconds);
+<a name=L1227 href="source/linux/drivers/scsi/BusLogic.h#L1227">1227</a> }
+<a name=L1228 href="source/linux/drivers/scsi/BusLogic.h#L1228">1228</a> 
+<a name=L1229 href="source/linux/drivers/scsi/BusLogic.h#L1229">1229</a> <b><i>/*</i></b>
+<a name=L1230 href="source/linux/drivers/scsi/BusLogic.h#L1230">1230</a> <b><i>  Virtual_to_Bus and Bus_to_Virtual map between Kernel Virtual Addresses</i></b>
+<a name=L1231 href="source/linux/drivers/scsi/BusLogic.h#L1231">1231</a> <b><i>  and PCI/VLB/EISA/ISA Bus Addresses.</i></b>
+<a name=L1232 href="source/linux/drivers/scsi/BusLogic.h#L1232">1232</a> <b><i>*/</i></b>
+<a name=L1233 href="source/linux/drivers/scsi/BusLogic.h#L1233">1233</a> 
+<a name=L1234 href="source/linux/drivers/scsi/BusLogic.h#L1234">1234</a> static inline <a href="ident?i=u32">u32</a> <a href="ident?i=Virtual_to_Bus">Virtual_to_Bus</a>(void *VirtualAddress)
+<a name=L1235 href="source/linux/drivers/scsi/BusLogic.h#L1235">1235</a> {
+<a name=L1236 href="source/linux/drivers/scsi/BusLogic.h#L1236">1236</a>         return (<a href="ident?i=u32">u32</a>) <a href="ident?i=virt_to_bus">virt_to_bus</a>(VirtualAddress);
+<a name=L1237 href="source/linux/drivers/scsi/BusLogic.h#L1237">1237</a> }
+<a name=L1238 href="source/linux/drivers/scsi/BusLogic.h#L1238">1238</a> 
+<a name=L1239 href="source/linux/drivers/scsi/BusLogic.h#L1239">1239</a> static inline void *<a href="ident?i=Bus_to_Virtual">Bus_to_Virtual</a>(<a href="ident?i=u32">u32</a> BusAddress)
+<a name=L1240 href="source/linux/drivers/scsi/BusLogic.h#L1240">1240</a> {
+<a name=L1241 href="source/linux/drivers/scsi/BusLogic.h#L1241">1241</a>         return (void *) <a href="ident?i=bus_to_virt">bus_to_virt</a>(BusAddress);
+<a name=L1242 href="source/linux/drivers/scsi/BusLogic.h#L1242">1242</a> }
+<a name=L1243 href="source/linux/drivers/scsi/BusLogic.h#L1243">1243</a> 
+<a name=L1244 href="source/linux/drivers/scsi/BusLogic.h#L1244">1244</a> <b><i>/*</i></b>
+<a name=L1245 href="source/linux/drivers/scsi/BusLogic.h#L1245">1245</a> <b><i>  Virtual_to_32Bit_Virtual maps between Kernel Virtual Addresses and</i></b>
+<a name=L1246 href="source/linux/drivers/scsi/BusLogic.h#L1246">1246</a> <b><i>  32 bit Kernel Virtual Addresses.  This avoids compilation warnings</i></b>
+<a name=L1247 href="source/linux/drivers/scsi/BusLogic.h#L1247">1247</a> <b><i>  on 64 bit architectures.</i></b>
+<a name=L1248 href="source/linux/drivers/scsi/BusLogic.h#L1248">1248</a> <b><i>*/</i></b>
+<a name=L1249 href="source/linux/drivers/scsi/BusLogic.h#L1249">1249</a> 
+<a name=L1250 href="source/linux/drivers/scsi/BusLogic.h#L1250">1250</a> static inline <a href="ident?i=u32">u32</a> <a href="ident?i=Virtual_to_32Bit_Virtual">Virtual_to_32Bit_Virtual</a>(void *VirtualAddress)
+<a name=L1251 href="source/linux/drivers/scsi/BusLogic.h#L1251">1251</a> {
+<a name=L1252 href="source/linux/drivers/scsi/BusLogic.h#L1252">1252</a>         return (<a href="ident?i=u32">u32</a>) (unsigned long) VirtualAddress;
+<a name=L1253 href="source/linux/drivers/scsi/BusLogic.h#L1253">1253</a> }
+<a name=L1254 href="source/linux/drivers/scsi/BusLogic.h#L1254">1254</a> 
+<a name=L1255 href="source/linux/drivers/scsi/BusLogic.h#L1255">1255</a> <b><i>/*</i></b>
+<a name=L1256 href="source/linux/drivers/scsi/BusLogic.h#L1256">1256</a> <b><i>  BusLogic_IncrementErrorCounter increments Error Counter by 1, stopping at</i></b>
+<a name=L1257 href="source/linux/drivers/scsi/BusLogic.h#L1257">1257</a> <b><i>  65535 rather than wrapping around to 0.</i></b>
+<a name=L1258 href="source/linux/drivers/scsi/BusLogic.h#L1258">1258</a> <b><i>*/</i></b>
+<a name=L1259 href="source/linux/drivers/scsi/BusLogic.h#L1259">1259</a> 
+<a name=L1260 href="source/linux/drivers/scsi/BusLogic.h#L1260">1260</a> static inline void <a href="ident?i=BusLogic_IncrementErrorCounter">BusLogic_IncrementErrorCounter</a>(unsigned short *ErrorCounter)
+<a name=L1261 href="source/linux/drivers/scsi/BusLogic.h#L1261">1261</a> {
+<a name=L1262 href="source/linux/drivers/scsi/BusLogic.h#L1262">1262</a>         if (*ErrorCounter &lt; 65535)
+<a name=L1263 href="source/linux/drivers/scsi/BusLogic.h#L1263">1263</a>                 (*ErrorCounter)++;
+<a name=L1264 href="source/linux/drivers/scsi/BusLogic.h#L1264">1264</a> }
+<a name=L1265 href="source/linux/drivers/scsi/BusLogic.h#L1265">1265</a> 
+<a name=L1266 href="source/linux/drivers/scsi/BusLogic.h#L1266">1266</a> <b><i>/*</i></b>
+<a name=L1267 href="source/linux/drivers/scsi/BusLogic.h#L1267">1267</a> <b><i>  BusLogic_IncrementByteCounter increments Byte Counter by Amount.</i></b>
+<a name=L1268 href="source/linux/drivers/scsi/BusLogic.h#L1268">1268</a> <b><i>*/</i></b>
+<a name=L1269 href="source/linux/drivers/scsi/BusLogic.h#L1269">1269</a> 
+<a name=L1270 href="source/linux/drivers/scsi/BusLogic.h#L1270">1270</a> static inline void <a href="ident?i=BusLogic_IncrementByteCounter">BusLogic_IncrementByteCounter</a>(struct <a href="ident?i=BusLogic_ByteCounter">BusLogic_ByteCounter</a>
+<a name=L1271 href="source/linux/drivers/scsi/BusLogic.h#L1271">1271</a>                                                  *ByteCounter, unsigned int Amount)
+<a name=L1272 href="source/linux/drivers/scsi/BusLogic.h#L1272">1272</a> {
+<a name=L1273 href="source/linux/drivers/scsi/BusLogic.h#L1273">1273</a>         ByteCounter-&gt;Units += Amount;
+<a name=L1274 href="source/linux/drivers/scsi/BusLogic.h#L1274">1274</a>         if (ByteCounter-&gt;Units &gt; 999999999) {
+<a name=L1275 href="source/linux/drivers/scsi/BusLogic.h#L1275">1275</a>                 ByteCounter-&gt;Units -= 1000000000;
+<a name=L1276 href="source/linux/drivers/scsi/BusLogic.h#L1276">1276</a>                 ByteCounter-&gt;Billions++;
+<a name=L1277 href="source/linux/drivers/scsi/BusLogic.h#L1277">1277</a>         }
+<a name=L1278 href="source/linux/drivers/scsi/BusLogic.h#L1278">1278</a> }
+<a name=L1279 href="source/linux/drivers/scsi/BusLogic.h#L1279">1279</a> 
+<a name=L1280 href="source/linux/drivers/scsi/BusLogic.h#L1280">1280</a> <b><i>/*</i></b>
+<a name=L1281 href="source/linux/drivers/scsi/BusLogic.h#L1281">1281</a> <b><i>  BusLogic_IncrementSizeBucket increments the Bucket for Amount.</i></b>
+<a name=L1282 href="source/linux/drivers/scsi/BusLogic.h#L1282">1282</a> <b><i>*/</i></b>
+<a name=L1283 href="source/linux/drivers/scsi/BusLogic.h#L1283">1283</a> 
+<a name=L1284 href="source/linux/drivers/scsi/BusLogic.h#L1284">1284</a> static inline void <a href="ident?i=BusLogic_IncrementSizeBucket">BusLogic_IncrementSizeBucket</a>(<a href="ident?i=BusLogic_CommandSizeBuckets_T">BusLogic_CommandSizeBuckets_T</a> CommandSizeBuckets, unsigned int Amount)
+<a name=L1285 href="source/linux/drivers/scsi/BusLogic.h#L1285">1285</a> {
+<a name=L1286 href="source/linux/drivers/scsi/BusLogic.h#L1286">1286</a>         int Index = 0;
+<a name=L1287 href="source/linux/drivers/scsi/BusLogic.h#L1287">1287</a>         if (Amount &lt; 8 * 1024) {
+<a name=L1288 href="source/linux/drivers/scsi/BusLogic.h#L1288">1288</a>                 if (Amount &lt; 2 * 1024)
+<a name=L1289 href="source/linux/drivers/scsi/BusLogic.h#L1289">1289</a>                         Index = (Amount &lt; 1 * 1024 ? 0 : 1);
+<a name=L1290 href="source/linux/drivers/scsi/BusLogic.h#L1290">1290</a>                 else
+<a name=L1291 href="source/linux/drivers/scsi/BusLogic.h#L1291">1291</a>                         Index = (Amount &lt; 4 * 1024 ? 2 : 3);
+<a name=L1292 href="source/linux/drivers/scsi/BusLogic.h#L1292">1292</a>         } else if (Amount &lt; 128 * 1024) {
+<a name=L1293 href="source/linux/drivers/scsi/BusLogic.h#L1293">1293</a>                 if (Amount &lt; 32 * 1024)
+<a name=L1294 href="source/linux/drivers/scsi/BusLogic.h#L1294">1294</a>                         Index = (Amount &lt; 16 * 1024 ? 4 : 5);
+<a name=L1295 href="source/linux/drivers/scsi/BusLogic.h#L1295">1295</a>                 else
+<a name=L1296 href="source/linux/drivers/scsi/BusLogic.h#L1296">1296</a>                         Index = (Amount &lt; 64 * 1024 ? 6 : 7);
+<a name=L1297 href="source/linux/drivers/scsi/BusLogic.h#L1297">1297</a>         } else
+<a name=L1298 href="source/linux/drivers/scsi/BusLogic.h#L1298">1298</a>                 Index = (Amount &lt; 256 * 1024 ? 8 : 9);
+<a name=L1299 href="source/linux/drivers/scsi/BusLogic.h#L1299">1299</a>         CommandSizeBuckets[Index]++;
+<a name=L1300 href="source/linux/drivers/scsi/BusLogic.h#L1300">1300</a> }
+<a name=L1301 href="source/linux/drivers/scsi/BusLogic.h#L1301">1301</a> 
+<a name=L1302 href="source/linux/drivers/scsi/BusLogic.h#L1302">1302</a> <b><i>/*</i></b>
+<a name=L1303 href="source/linux/drivers/scsi/BusLogic.h#L1303">1303</a> <b><i>  Define the version number of the FlashPoint Firmware (SCCB Manager).</i></b>
+<a name=L1304 href="source/linux/drivers/scsi/BusLogic.h#L1304">1304</a> <b><i>*/</i></b>
+<a name=L1305 href="source/linux/drivers/scsi/BusLogic.h#L1305">1305</a> 
+<a name=L1306 href="source/linux/drivers/scsi/BusLogic.h#L1306">1306</a> #define <a href="ident?i=FlashPoint_FirmwareVersion">FlashPoint_FirmwareVersion</a>              <i>"5.02"</i>
+<a name=L1307 href="source/linux/drivers/scsi/BusLogic.h#L1307">1307</a> 
+<a name=L1308 href="source/linux/drivers/scsi/BusLogic.h#L1308">1308</a> <b><i>/*</i></b>
+<a name=L1309 href="source/linux/drivers/scsi/BusLogic.h#L1309">1309</a> <b><i>  Define the possible return values from FlashPoint_HandleInterrupt.</i></b>
+<a name=L1310 href="source/linux/drivers/scsi/BusLogic.h#L1310">1310</a> <b><i>*/</i></b>
+<a name=L1311 href="source/linux/drivers/scsi/BusLogic.h#L1311">1311</a> 
+<a name=L1312 href="source/linux/drivers/scsi/BusLogic.h#L1312">1312</a> #define <a href="ident?i=FlashPoint_NormalInterrupt">FlashPoint_NormalInterrupt</a>              0x00
+<a name=L1313 href="source/linux/drivers/scsi/BusLogic.h#L1313">1313</a> #define <a href="ident?i=FlashPoint_InternalError">FlashPoint_InternalError</a>                0xFE
+<a name=L1314 href="source/linux/drivers/scsi/BusLogic.h#L1314">1314</a> #define <a href="ident?i=FlashPoint_ExternalBusReset">FlashPoint_ExternalBusReset</a>             0xFF
+<a name=L1315 href="source/linux/drivers/scsi/BusLogic.h#L1315">1315</a> 
+<a name=L1316 href="source/linux/drivers/scsi/BusLogic.h#L1316">1316</a> <b><i>/*</i></b>
+<a name=L1317 href="source/linux/drivers/scsi/BusLogic.h#L1317">1317</a> <b><i>  Define prototypes for the forward referenced BusLogic Driver</i></b>
+<a name=L1318 href="source/linux/drivers/scsi/BusLogic.h#L1318">1318</a> <b><i>  Internal Functions.</i></b>
+<a name=L1319 href="source/linux/drivers/scsi/BusLogic.h#L1319">1319</a> <b><i>*/</i></b>
+<a name=L1320 href="source/linux/drivers/scsi/BusLogic.h#L1320">1320</a> 
+<a name=L1321 href="source/linux/drivers/scsi/BusLogic.h#L1321">1321</a> static const char *<a href="ident?i=BusLogic_DriverInfo">BusLogic_DriverInfo</a>(struct <a href="ident?i=Scsi_Host">Scsi_Host</a> *);
+<a name=L1322 href="source/linux/drivers/scsi/BusLogic.h#L1322">1322</a> static int <a href="ident?i=BusLogic_QueueCommand">BusLogic_QueueCommand</a>(struct <a href="ident?i=scsi_cmnd">scsi_cmnd</a> *, void (*CompletionRoutine) (struct <a href="ident?i=scsi_cmnd">scsi_cmnd</a> *));
+<a name=L1323 href="source/linux/drivers/scsi/BusLogic.h#L1323">1323</a> static int <a href="ident?i=BusLogic_BIOSDiskParameters">BusLogic_BIOSDiskParameters</a>(struct <a href="ident?i=scsi_device">scsi_device</a> *, struct <a href="ident?i=block_device">block_device</a> *, <a href="ident?i=sector_t">sector_t</a>, int *);
+<a name=L1324 href="source/linux/drivers/scsi/BusLogic.h#L1324">1324</a> static int <a href="ident?i=BusLogic_ProcDirectoryInfo">BusLogic_ProcDirectoryInfo</a>(struct <a href="ident?i=Scsi_Host">Scsi_Host</a> *, char *, char **, <a href="ident?i=off_t">off_t</a>, int, int);
+<a name=L1325 href="source/linux/drivers/scsi/BusLogic.h#L1325">1325</a> static int <a href="ident?i=BusLogic_SlaveConfigure">BusLogic_SlaveConfigure</a>(struct <a href="ident?i=scsi_device">scsi_device</a> *);
+<a name=L1326 href="source/linux/drivers/scsi/BusLogic.h#L1326">1326</a> static void <a href="ident?i=BusLogic_QueueCompletedCCB">BusLogic_QueueCompletedCCB</a>(struct <a href="ident?i=BusLogic_CCB">BusLogic_CCB</a> *);
+<a name=L1327 href="source/linux/drivers/scsi/BusLogic.h#L1327">1327</a> static <a href="ident?i=irqreturn_t">irqreturn_t</a> <a href="ident?i=BusLogic_InterruptHandler">BusLogic_InterruptHandler</a>(int, void *);
+<a name=L1328 href="source/linux/drivers/scsi/BusLogic.h#L1328">1328</a> static int <a href="ident?i=BusLogic_ResetHostAdapter">BusLogic_ResetHostAdapter</a>(struct <a href="ident?i=BusLogic_HostAdapter">BusLogic_HostAdapter</a> *, <a href="ident?i=bool">bool</a> HardReset);
+<a name=L1329 href="source/linux/drivers/scsi/BusLogic.h#L1329">1329</a> static void <a href="ident?i=BusLogic_Message">BusLogic_Message</a>(enum <a href="ident?i=BusLogic_MessageLevel">BusLogic_MessageLevel</a>, char *, struct <a href="ident?i=BusLogic_HostAdapter">BusLogic_HostAdapter</a> *, ...);
+<a name=L1330 href="source/linux/drivers/scsi/BusLogic.h#L1330">1330</a> static int <a href="ident?i=__init">__init</a> <a href="ident?i=BusLogic_Setup">BusLogic_Setup</a>(char *);
+<a name=L1331 href="source/linux/drivers/scsi/BusLogic.h#L1331">1331</a> 
+<a name=L1332 href="source/linux/drivers/scsi/BusLogic.h#L1332">1332</a> #endif                          <b><i>/* _BUSLOGIC_H */</i></b>
+<a name=L1333 href="source/linux/drivers/scsi/BusLogic.h#L1333">1333</a> </pre>
+<table width="100%"><tr><td bgcolor="cccc99">&nbsp;
+<font size=1>
+This page was automatically generated by the 
+<a href="http://lxr.linux.no/">LXR engine</a>.
+</font></td></tr></table>
+</html>

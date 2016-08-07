@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="List"
+	type="http://metalx.org/List"
+	xmlns="http://metalx.org/Program"
+	xmlns:dbg="http://metalx.org/i286/Functions/Debug"
+	xmlns:clsf="http://metalx.org/i286/Functions/Class"
+	xmlns:lst="http://metalx.org/i286/Functions/List"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:str="http://metalx.org/i286/Functions/String"
+	xmlns:sys="http://metalx.org/i286/Functions/System"
+	xmlns:obj="http://metalx.org/i286/Functions/Object"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:logic="http://metalx.org/Intel/80286/Logic"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:cls="http://metalx.org/i286/Structures/Class">
+
+	<cls:field name="Length" offset="0" type="http://metalx.org/Short"/>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:PushDSToStack/>
+		<cpu:PushSIToStack/>
+
+		<sys:GetMemoryManager/>
+
+		<str:Create length="512"/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-BXRegister/>
+
+		<cpu:PullSIFromStack/>
+		<cpu:PullDSFromStack/>
+
+		<obj:GetData/>
+
+		<cpu:PushImmediateToStack16/>
+		<hex>2000</hex>
+
+		<cpu:PullDSFromStack/>
+		
+		<lst:ForEach>
+			<cpu:PushCXToStack/>
+			<cpu:PushDXToStack/>
+			<cpu:PushSIToStack/>
+			<cpu:PushCXToStack/>
+			<cpu:PushDSToStack/>
+			<cpu:PushSIToStack/>
+
+			<obj:GetType/>
+			
+			<cpu:PushImmediateToStack16/>
+			<hex>1000</hex>
+
+			<cpu:PullDSFromStack/>
+
+			<!--<clsf:GetName/>
+
+			<con:WriteString/>
+
+			<cpu:ClearInterruptFlag/>
+			<cpu:HaltProcessing/>-->
+
+			<cpu:CallRelative16/>
+			<addressOf ref="findMethod" type="Relative16"/>
+
+			<clsf:GetMethodEntryPoint/>
+
+			<cpu:PushDSToStack/>
+			<cpu:PullESFromStack/>
+			
+			<cpu:CopyRegisterToOperand16/>
+			<op:SI-DIRegister/>
+
+			<cpu:PullSIFromStack/>
+			<cpu:PullDSFromStack/>
+
+			<cpu:PushBXToStack/>
+			<cpu:LogicFunction/>
+			<logic:CallDIRegister/>
+			<cpu:PullBXFromStack/>
+
+			<obj:GetData/>
+
+			<cpu:CopyRegisterToOperand16/>
+			<op:BX-DIRegister/>
+
+			<str:AppendString/>
+
+			<cpu:PullAXFromStack/>
+
+			<cpu:CompareAXToImmediate/>
+			<short>1</short>
+
+			<cpu:BranchToRelativeIfEqual8/>
+			<addressOf ref="skip" type="Relative8"/>
+
+			<cpu:CopyImmediateToAL/>
+			<asc:CarriageReturn/>
+
+			<cpu:CopyRegisterToOperand16/>
+			<op:BX-SIRegister/>
+
+			<cpu:PushBXToStack/>
+			<str:AppendByte/>
+			<cpu:PullBXFromStack/>
+
+			<cpu:CopyImmediateToAL/>
+			<asc:LineFeed/>
+
+			<cpu:CopyRegisterToOperand16/>
+			<op:BX-SIRegister/>
+
+			<cpu:PushBXToStack/>
+			<str:AppendByte/>
+			<cpu:PullBXFromStack/>
+
+			<label id="skip"/>
+
+			<cpu:PullSIFromStack/>
+			<cpu:PullDXFromStack/>
+			<cpu:PullCXFromStack/>
+		</lst:ForEach>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:BX-DIRegister/>
+
+		<sys:GetMemoryManager/>
+
+		<str:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="findMethod"/>
+
+		<cpu:PushImmediateToStack16/>
+		<addressOf ref="methodName" type="Segment16"/>
+		
+		<cpu:PullESFromStack/>
+		
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="methodName" type="Absolute16"/>
+
+		<clsf:FindInstanceMethod/>
+
+		<cpu:PushImmediateToStack16/>
+		<hex>1000</hex>
+
+		<cpu:PullDSFromStack/>
+
+		<cpu:CopyOperandToRegister16/>
+		<op:SI-SIAddress/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="methodName"/>
+		<short>8</short>
+		<string>ToString</string>
+	</cls:method>
+</cls:class>

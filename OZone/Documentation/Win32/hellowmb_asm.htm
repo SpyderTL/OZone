@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META content="text/html; charset=iso-8859-2" http-equiv=Content-Type></HEAD>
+<BODY><PRE>; *** The shortest HelloWorld! MessageBox ***
+;   by TomCat/Abaddon [tomcat@szif.hu] 1998
+;
+; nasmw hellowmb.asm -o hellowmb.exe
+
+IMAGEBASE EQU 400000H
+
+;for Win95 - 596 bytes
+;SECTIONALIGN EQU 4096
+;FILEALIGN EQU 512
+;ENTRYPOINT EQU SECTIONALIGN
+
+;for WinNT - 436 bytes
+SECTIONALIGN EQU 32
+FILEALIGN EQU 32
+ENTRYPOINT EQU 160H
+
+DOS_HEADER:
+.e_magic        DW 'MZ'
+.e_cblp         DW 0
+.e_cp           DW 2
+.e_crlc         DW 0
+.e_cparhdr      DW 2
+.e_minalloc     DW 30
+.e_maxalloc     DW 30
+.e_ss           DW 0
+.e_sp           DW 200H
+.e_csum         DW 0
+.e_ip           DW 0
+.e_cs           DW 0
+.e_lfarlc       DW 0
+.e_ovno         DW 0
+.e_res          DW 0,0
+
+                PUSH    CS
+                POP     DS
+                MOV     DX,0EH
+                MOV     AH,9
+                INT     21H
+                MOV     AX,4C01H
+                INT     21H
+                DB 'Win32 EXE!',7,13,10,'$'
+
+.e_lfanew       DD 40H
+
+NT_SIGNATURE:
+                DB 'PE',0,0
+
+FILE_HEADER:
+.Machine                DW 14cH                ; i386
+.NumberOfSections       DW 1                   ; only one
+.TimeDateStamp          DD 0                   ; who cares?
+.PointerToSymbolTable   DD 0                   ; unused
+.NumberOfSymbols        DD 0                   ; unused
+.SizeOfOptionalHeader   DW 0e0H                ; constant
+.Characteristics        DW 102H                ; executable on 32-bit-machine
+
+OPTIONAL_HEADER:
+.Magic                  DW 10bH                ; constant
+.MajorLinkerVersion     DB 000H                ; I'm version 0.0 :-)
+.MinorLinkerVersion     DB 000H                ;
+.SizeOfCode             DD 000H                ; unused
+.SizeOfInitializedData  DD 000H                ; we don't have a data section
+.SizeOfUninitializedData DD 0                  ; we don't have a BSS
+.AddressOfEntryPoint    DD ENTRYPOINT          ; beginning of code section
+.BaseOfCode             DD 0                   ; RVA to code section: unused
+.BaseOfData             DD 0                   ; RVA to data section: unused
+.ImageBase              DD IMAGEBASE           ; 4 MB, chosen arbitrarily
+.SectionAlignment       DD SECTIONALIGN        ; 4096-bytes-alignment
+.FileAlignment          DD FILEALIGN           ; 32-bytes-alignment
+.MajorOperatingSystemVersion DW 4              ; NT 4.0
+.MinorOperatingSystemVersion DW 0              ;
+.MajorImageVersion      DW 0                   ; version 0.0
+.MinorImageVersion      DW 0                   ;
+.MajorSubsystemVersion  DW 4                   ; Win32 4.0
+.MinorSubsystemVersion  DW 0                   ;
+.Win32VersionValue      DD 0                   ; unused?
+.SizeOfImage            DD END_SECTION-START_SECTION ; sum of all section sizes
+.SizeOfHeaders          DD START_SECTION       ; offset to 1st section
+.CheckSum               DD 0                   ; not used for non-drivers
+.Subsystem              DW 2                   ; Win32 console (3), gui (2)
+.DllCharacteristics     DW 0                   ; unused (not a DLL)
+.SizeOfStackReserve     DD 100000H             ; 1 MB stack
+.SizeOfStackCommit      DD 1000H               ; 4 KB to start with
+.SizeOfHeapReserve      DD 100000H             ; 1 MB heap
+.SizeOfHeapCommit       DD 1000H               ; 4 KB to start with
+.LoaderFlags            DD 0                   ; unknown
+.NumberOfRvaAndSizes    DD 010H                ; constant
+
+DATA_DIRECTORY:
+DIRECTORY_ENTRY_EXPORT       DD 0,0             ; 0
+DIRECTORY_ENTRY_IMPORT       DD ENTRYPOINT+IMPORT_DESCRIPTOR-START_SECTION
+                             DD END_SECTION-IMPORT_DESCRIPTOR ; 1
+DIRECTORY_ENTRY_RESOURCE     DD 0,0             ; 2
+DIRECTORY_ENTRY_EXCEPTION    DD 0,0             ; 3
+
+DIRECTORY_ENTRY_SECURITY     DD 0,0             ; 4
+DIRECTORY_ENTRY_BASERELOC    DD 0,0             ; 5
+DIRECTORY_ENTRY_DEBUG        DD 0,0             ; 6
+DIRECTORY_ENTRY_COPYRIGHT    DD 0,0             ; 7
+
+DIRECTORY_ENTRY_GLOBALPTR    DD 0,0             ; 8
+DIRECTORY_ENTRY_TLS          DD 0,0             ; 9
+DIRECTORY_ENTRY_LOAD_CONFIG  DD 0,0             ; 10
+DIRECTORY_ENTRY_BOUND_IMPORT DD 0,0             ; 11
+
+DIRECTORY_ENTRY_IAT          DD 0,0             ; 12
+                             DD 0,0             ; 13
+                             DD 0,0             ; 14
+                             DD 0,0             ; 15
+
+SECTION_HEADER:
+.Name                   DB '.text',0,0,0        ; ".text"
+.VirtualSize            DD 0                    ; unused
+.VirtualAddress         DD ENTRYPOINT           ; RVA to code section
+.SizeOfRawData          DD END_SECTION-START_SECTION ; size of code
+.PointerToRawData       DD START_SECTION        ; file offset to code section
+.PointerToRelocations   DD 0                    ; unused
+.PointerToLinenumbers   DD 0                    ; unused
+.NumberOfRelocations    DW 0                    ; unused
+.NumberOfLinenumbers    DW 0                    ; unused
+.Characteristics        DB 060H,000H,000H,0e0H  ; code, executable, readable
+                                                ; initialized data, writeable
+ALIGN FILEALIGN,DB 0
+START_SECTION:
+[BITS 32]
+
+MOV EAX,IMAGEBASE+ENTRYPOINT+string-START_SECTION
+CDQ
+PUSH EDX
+PUSH EAX
+PUSH EAX
+PUSH EDX
+DB 0FFH,015H ; CALL DWORD [__imp__MessageBoxA]
+DD IMAGEBASE+ENTRYPOINT+__imp__MessageBoxA-START_SECTION
+RETN
+
+IMPORT_DESCRIPTOR:
+.OriginalFirstThunk     DD ENTRYPOINT+FIRST_THUNK-START_SECTION ; RVA to orig. 1st thunk
+.TimeDateStamp          DD 0                    ; unbound
+.ForwarderChain         DD 0ffffffffH           ; no forwarders
+.Name                   DD ENTRYPOINT+DLLNAME-START_SECTION ; RVA to DLL name
+.FirstThunk             DD ENTRYPOINT+FIRST_THUNK-START_SECTION ; RVA to 1st thunk
+
+TERMINATOR:
+string: DB 'Hello world!'
+.Name                   DD 0
+
+DLLNAME:
+                DB 'user32.dll',0
+
+FIRST_THUNK:
+__imp__MessageBoxA:
+.AddressOfData  DD ENTRYPOINT+IMPORT_BY_NAME-START_SECTION ; RVA to function name "MessageBoxA"
+                DW 0                    ; terminator
+
+IMPORT_BY_NAME:
+                DW 0                    ; ordinal, need not be correct
+                DB 'MessageBoxA',0      ; (NT:392, 95:386)
+END_SECTION:
+</PRE></BODY></HTML>

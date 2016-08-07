@@ -1,0 +1,282 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope xmlns="http://metalx.org/Program" xmlns:cpu="http://metalx.org/Nintendo/GameBoy/Operators">
+	<cpu:DisableInterrupts/>
+
+	<cpu:CopyImmediateToSP/>
+	<hex>fffe</hex>
+
+	<!--Turn Off LCD-->
+	<label id="waitForVBlank"/>
+
+	<cpu:CopyImmediateAddressToA/>
+	<hex>ff44</hex>
+
+	<cpu:CompareAToImmediate/>
+	<hex>91</hex>
+
+	<cpu:BranchToRelativeAddressIfNotZero/>
+	<addressOf ref="waitForVBlank" type="Relative8"/>
+
+	<cpu:CopyImmediateToA/>
+	<binary>00000000</binary>
+
+	<cpu:CopyAToImmediateAddress/>
+	<hex>ff40</hex>
+	
+	<!--Clear Background Map-->
+	<cpu:CopyImmediateToHL/>
+	<hex>9800</hex>
+
+	<cpu:CopyImmediateToBC/>
+	<short>1024</short>
+
+	<label id="clearMap"/>
+
+	<cpu:CopyImmediateToA/>
+	<byte>0</byte>
+
+	<cpu:CopyAToHLAddressAndIncrementHL/>
+
+	<cpu:DecrementBC/>
+
+	<cpu:CompareAToB/>
+
+	<cpu:BranchToRelativeAddressIfNotZero/>
+	<addressOf ref="clearMap" type="Relative8"/>
+
+	<cpu:CompareAToC/>
+
+	<cpu:BranchToRelativeAddressIfNotZero/>
+	<addressOf ref="clearMap" type="Relative8"/>
+
+	<!--Load Tiles-->
+	<cpu:CopyImmediateToHL/>
+	<addressOf ref="Tiles" type="Absolute16"/>
+
+	<cpu:CopyImmediateToDE/>
+	<hex>8000</hex>
+
+	<cpu:CopyImmediateToBC/>
+	<short>144</short>
+
+	<label id="loadTiles"/>
+
+	<cpu:CopyHLAddressToAAndIncrementHL/>
+
+	<cpu:CopyAToDEAddress/>
+
+	<cpu:IncrementDE/>
+
+	<cpu:DecrementBC/>
+
+	<cpu:CopyBToA/>
+
+	<cpu:OrAWithC/>
+
+	<cpu:BranchToRelativeAddressIfNotZero/>
+	<addressOf ref="loadTiles" type="Relative8"/>
+	
+	<!--Load Map-->
+	<cpu:CopyImmediateToHL/>
+	<addressOf ref="Map" type="Absolute16"/>
+
+	<cpu:CopyImmediateToDE/>
+	<hex>9800</hex>
+
+	<cpu:CopyImmediateToC/>
+	<byte>12</byte>
+
+	<label id="loadMap"/>
+
+	<cpu:CopyHLAddressToAAndIncrementHL/>
+
+	<cpu:CopyAToDEAddress/>
+
+	<cpu:IncrementDE/>
+
+	<cpu:DecrementC/>
+
+	<cpu:BranchToRelativeAddressIfNotZero/>
+	<addressOf ref="loadMap" type="Relative8"/>
+	
+	<!--Load Palette-->
+	<cpu:CopyImmediateToA/>
+	<binary>00011011</binary>
+
+	<cpu:CopyAToImmediateAddress/>
+	<hex>ff47</hex>
+
+	<!--Turn On LCD-->
+	<cpu:CopyImmediateToA/>
+	<binary>10010001</binary>
+
+	<cpu:CopyAToImmediateAddress/>
+	<hex>ff40</hex>
+
+	<cpu:WaitForInterrupt/>
+	<cpu:NoOperation/>
+
+	<!--Tiles-->
+	<label id="Tiles"/>
+	<hex>00</hex>
+	<hex>00</hex>
+	<hex>00</hex>
+	<hex>00</hex>
+	<hex>00</hex>
+	<hex>00</hex>
+	<hex>00</hex>
+	<hex>00</hex>
+	<hex>00</hex>
+	<hex>00</hex>
+	<hex>00</hex>
+	<hex>00</hex>
+	<hex>00</hex>
+	<hex>00</hex>
+	<hex>00</hex>
+	<hex>00</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>FE</hex>
+	<hex>FE</hex>
+	<hex>FE</hex>
+	<hex>FE</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>FE</hex>
+	<hex>FE</hex>
+	<hex>FE</hex>
+	<hex>FE</hex>
+	<hex>80</hex>
+	<hex>80</hex>
+	<hex>F8</hex>
+	<hex>F8</hex>
+	<hex>F8</hex>
+	<hex>F8</hex>
+	<hex>80</hex>
+	<hex>80</hex>
+	<hex>FE</hex>
+	<hex>FE</hex>
+	<hex>FE</hex>
+	<hex>FE</hex>
+	<hex>C0</hex>
+	<hex>C0</hex>
+	<hex>C0</hex>
+	<hex>C0</hex>
+	<hex>C0</hex>
+	<hex>C0</hex>
+	<hex>C0</hex>
+	<hex>C0</hex>
+	<hex>C0</hex>
+	<hex>C0</hex>
+	<hex>C0</hex>
+	<hex>C0</hex>
+	<hex>FE</hex>
+	<hex>FE</hex>
+	<hex>FE</hex>
+	<hex>FE</hex>
+	<hex>7C</hex>
+	<hex>7C</hex>
+	<hex>FE</hex>
+	<hex>FE</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>FE</hex>
+	<hex>FE</hex>
+	<hex>7C</hex>
+	<hex>7C</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>D6</hex>
+	<hex>D6</hex>
+	<hex>D6</hex>
+	<hex>D6</hex>
+	<hex>FE</hex>
+	<hex>FE</hex>
+	<hex>6C</hex>
+	<hex>6C</hex>
+	<hex>FC</hex>
+	<hex>FC</hex>
+	<hex>FE</hex>
+	<hex>FE</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>FC</hex>
+	<hex>FC</hex>
+	<hex>FC</hex>
+	<hex>FC</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>FC</hex>
+	<hex>FC</hex>
+	<hex>FE</hex>
+	<hex>FE</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>C6</hex>
+	<hex>FE</hex>
+	<hex>FE</hex>
+	<hex>FC</hex>
+	<hex>FC</hex>
+	<hex>6C</hex>
+	<hex>6C</hex>
+	<hex>6C</hex>
+	<hex>6C</hex>
+	<hex>6C</hex>
+	<hex>6C</hex>
+	<hex>6C</hex>
+	<hex>6C</hex>
+	<hex>6C</hex>
+	<hex>6C</hex>
+	<hex>6C</hex>
+	<hex>6C</hex>
+	<hex>00</hex>
+	<hex>00</hex>
+	<hex>6C</hex>
+	<hex>6C</hex>
+
+	<!--Map-->
+	<label id="Map"/>
+	<hex>01</hex>
+	<hex>02</hex>
+	<hex>03</hex>
+	<hex>03</hex>
+	<hex>04</hex>
+	<hex>00</hex>
+	<hex>05</hex>
+	<hex>04</hex>
+	<hex>06</hex>
+	<hex>03</hex>
+	<hex>07</hex>
+	<hex>08</hex>
+
+</scope>

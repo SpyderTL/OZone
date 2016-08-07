@@ -1,0 +1,651 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="AhciController"
+	type="http://metalx.org/Storage/Ahci/AhciController"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:ahci="http://metalx.org/Intel/Ahci/Registers"
+	xmlns:ports="http://metalx.org/Intel/Ahci/Ports"
+	xmlns:sig="http://metalx.org/Intel/Ahci/Signatures">
+
+	<cls:field name="Device" type="http://metalx.org/Pci/PciDevice" offset="0"/>
+
+	<cls:method name="GetAddress" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress5/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetCapabilities" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress5/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetPorts" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress5/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<ahci:PortsImplemented/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetHardDrives" type="http://metalx.org/Storage/Ahci/AhciHardDriveList">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:PushAXToStack/>
+
+		<pcif:GetBaseAddress5/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<ahci:PortsImplemented/>
+
+		<!--Find Drives-->
+		<cpu:CopyImmediateToCX/>
+		<int>32</int>
+
+		<cpu:CopyImmediateToBX/>
+		<int>0</int>
+
+		<cpu:CopyImmediateToDX/>
+		<int>0</int>
+
+		<cpu:PullDIFromStack/>
+
+		<label id="forEachPort"/>
+
+		<!--Test Port Enabled Bit-->
+		<cpu:TestALWithImmediate/>
+		<byte>1</byte>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="nextPort" type="Relative8"/>
+
+		<!--Test Port Signature-->
+		<cpu:PushAXToStack/>
+		<cpu:PushDXToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>00000080</hex>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByDXRegister/>
+
+		<cpu:AddRegisterToOperand/>
+		<op:SI-AXRegister/>
+
+		<cpu:AddImmediateToAX/>
+		<ahci:PortControlRegisters/>
+		<hex>0000</hex>
+
+		<cpu:AddImmediateToAX/>
+		<ports:Signature/>
+		<hex>00</hex>
+		<hex>0000</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+
+		<cpu:CompareAXToImmediate/>
+		<sig:Sata/>
+
+		<cpu:PullDXFromStack/>
+		<cpu:PullAXFromStack/>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="nextPort" type="Relative8"/>
+
+		<cpu:PushAXToStack/>
+		<cpu:PushBXToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>7</byte>
+
+		<cpu:AddImmediateToAX/>
+		<hex>00000118</hex>
+
+		<cpu:AddRegisterToOperand/>
+		<op:SI-AXRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+
+		<cpu:TestAXWithImmediate/>
+		<hex>00010000</hex>
+
+		<cpu:PullBXFromStack/>
+		<cpu:PullAXFromStack/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="nextPort" type="Relative8"/>
+
+		<cpu:PushDXToStack/>
+		<cpu:PushDIToStack/>
+		<cpu:IncrementBX/>
+
+		<label id="nextPort"/>
+
+		<cpu:ShiftRegisterByOneFunction/>
+		<shift:ShiftAXRegisterRight/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachPort" type="Relative8"/>
+
+		<!--Create List-->
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<lst:Create/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:CompareWithBXRegister/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="findClass" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="createObject" type="Relative32"/>
+
+		<!--Find AhciHardDrive Class-->
+		<label id="findClass"/>
+
+		<cpu:PushDIToStack/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="ahciHardDrive" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-CXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:PullDIFromStack/>
+
+		<!--Create AhciHardDrive Objects-->
+		<label id="forEachDevice"/>
+
+		<cpu:PushDIToStack/>
+
+		<mm:CheckOut length="5"/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddress/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>5</int>
+
+		<obj:Create/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:DecrementAX/>
+
+		<lst:SetItem/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachDevice" type="Relative8"/>
+
+		<!--Create List Object-->
+		<label id="createObject"/>
+
+		<!--Get Item Count-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-DIAddress/>
+
+		<cpu:IncrementAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:PushAXToStack/>
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="ahciHardDriveList" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+		<cpu:PullAXFromStack/>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="ahciHardDrive">http://metalx.org/Storage/Ahci/AhciHardDrive</var:string>
+		<var:string id="ahciHardDriveList">http://metalx.org/Storage/Ahci/AhciHardDriveList</var:string>
+	</cls:method>
+
+	<cls:method name="GetFloppyDrives" type="http://metalx.org/Storage/FloppyDriveList">
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="className" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<lst:Create/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>4</int>
+
+		<cpu:PullBXFromStack/>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="className">http://metalx.org/Storage/FloppyDriveList</var:string>
+	</cls:method>
+
+	<cls:method name="GetCdDrives" type="http://metalx.org/Storage/Ahci/AhciCdDriveList">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:PushAXToStack/>
+
+		<pcif:GetBaseAddress5/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<ahci:PortsImplemented/>
+
+		<!--Find Drives-->
+		<cpu:CopyImmediateToCX/>
+		<int>32</int>
+
+		<cpu:CopyImmediateToBX/>
+		<int>0</int>
+
+		<cpu:CopyImmediateToDX/>
+		<int>0</int>
+
+		<cpu:PullDIFromStack/>
+
+		<label id="forEachPort"/>
+
+		<!--Test Port Enabled Bit-->
+		<cpu:TestALWithImmediate/>
+		<byte>1</byte>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="nextPort" type="Relative8"/>
+
+		<!--Test Port Signature-->
+		<cpu:PushAXToStack/>
+		<cpu:PushDXToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>00000080</hex>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByDXRegister/>
+
+		<cpu:AddRegisterToOperand/>
+		<op:SI-AXRegister/>
+
+		<cpu:AddImmediateToAX/>
+		<ahci:PortControlRegisters/>
+		<hex>0000</hex>
+
+		<cpu:AddImmediateToAX/>
+		<ports:Signature/>
+		<hex>00</hex>
+		<hex>0000</hex>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+
+		<cpu:CompareAXToImmediate/>
+		<sig:SataPacket/>
+		
+		<cpu:PullDXFromStack/>
+		<cpu:PullAXFromStack/>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="nextPort" type="Relative8"/>
+
+		<cpu:PushAXToStack/>
+		<cpu:PushBXToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>7</byte>
+
+		<cpu:AddImmediateToAX/>
+		<hex>00000118</hex>
+
+		<cpu:AddRegisterToOperand/>
+		<op:SI-AXRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+
+		<cpu:TestAXWithImmediate/>
+		<hex>00010000</hex>
+
+		<cpu:PullBXFromStack/>
+		<cpu:PullAXFromStack/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="nextPort" type="Relative8"/>
+
+		<cpu:PushDXToStack/>
+		<cpu:PushDIToStack/>
+		<cpu:IncrementBX/>
+
+		<label id="nextPort"/>
+
+		<cpu:ShiftRegisterByOneFunction/>
+		<shift:ShiftAXRegisterRight/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachPort" type="Relative8"/>
+
+		<!--Create List-->
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<lst:Create/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:CompareWithBXRegister/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="findClass" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="createObject" type="Relative32"/>
+
+		<!--Find AhciHardDrive Class-->
+		<label id="findClass"/>
+
+		<cpu:PushDIToStack/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="ahciCdDrive" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-CXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:PullDIFromStack/>
+
+		<!--Create AhciHardDrive Objects-->
+		<label id="forEachDevice"/>
+
+		<cpu:PushDIToStack/>
+
+		<mm:CheckOut length="5"/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddress/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>5</int>
+
+		<obj:Create/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:DecrementAX/>
+
+		<lst:SetItem/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachDevice" type="Relative8"/>
+
+		<!--Create List Object-->
+		<label id="createObject"/>
+
+		<!--Get Item Count-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-DIAddress/>
+
+		<cpu:IncrementAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:PushAXToStack/>
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="ahciCdDriveList" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+		<cpu:PullAXFromStack/>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="ahciCdDrive">http://metalx.org/Storage/Ahci/AhciCdDrive</var:string>
+		<var:string id="ahciCdDriveList">http://metalx.org/Storage/Ahci/AhciCdDriveList</var:string>
+	</cls:method>
+
+	<cls:method name="GetVersion" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress5/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<hex>10</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="deviceName" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="deviceName">AHCI Controller</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

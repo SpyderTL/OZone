@@ -1,0 +1,275 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu16="http://metalx.org/Intel/80286/Operators"
+	xmlns:ex16="http://metalx.org/Intel/80286/ExtendedOperators"
+	xmlns:op16="http://metalx.org/Intel/80286/Operands"
+	xmlns:seg16="http://metalx.org/Intel/80286/Segments"
+	xmlns:ctrl16="http://metalx.org/Intel/80286/Control"
+	xmlns:imm16="http://metalx.org/Intel/80286/Immediate"
+	xmlns:gdt16="http://metalx.org/Intel/80286/DescriptorTable"
+	xmlns:logic16="http://metalx.org/Intel/80286/Logic"
+	xmlns:math16="http://metalx.org/Intel/80286/Math"
+	xmlns:inc16="http://metalx.org/Intel/80286/Increment"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:ex="http://metalx.org/Intel/80386/ExtendedOperators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:seg="http://metalx.org/Intel/80386/Segments"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:gdt="http://metalx.org/Intel/80386/DescriptorTable"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:inc="http://metalx.org/Intel/80386/Increment"
+	xmlns:sys="http://metalx.org/Pc/Bios/System"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:pic="http://metalx.org/Pc/Pic/Ports"
+	xmlns:cmd="http://metalx.org/Pc/Pic/Commands"
+	xmlns:sysf="http://metalx.org/i386/Functions/System"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:col="http://metalx.org/i386/Functions/Collection"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager">
+
+	<!--Set CPU To Known State-->
+	<cpu16:ClearInterruptFlag/>
+	
+	<cpu16:ClearDirectionFlag/>
+
+	<cpu16:CopyImmediateToAX/>
+	<hex>0000</hex>
+
+	<cpu16:CopyOperandToSegmentRegister16/>
+	<seg16:SS-AXRegister/>
+
+	<cpu16:CopyOperandToSegmentRegister16/>
+	<seg16:DS-AXRegister/>
+
+	<cpu16:CopyOperandToSegmentRegister16/>
+	<seg16:ES-AXRegister/>
+
+	<cpu16:CopyOperandToSegmentRegister16/>
+	<seg16:FS-AXRegister/>
+
+	<cpu16:CopyOperandToSegmentRegister16/>
+	<seg16:GS-AXRegister/>
+
+	<cpu16:CopyRegisterToOperand16/>
+	<op16:AX-SPRegister/>
+
+	<cpu16:JumpToImmediatePointer16/>
+	<addressOf ref="start" type="Pointer16"/>
+
+	<label id="start"/>
+
+	<!--Load Global Descriptor Table-->
+	<cpu16:ExtendedOperator/>
+	<ex16:DescriptorTableFunction/>
+	<gdt16:CopyImmediate16AddressToGlobalDescriptorTableRegister/>
+	<addressOf ref="globalDescriptorTablePointer" type="Absolute16"/>
+
+	<!--Switch To 32-Bit Protected Mode-->
+	<cpu16:ExtendedOperator/>
+	<ex16:CopyControlRegisterToRegister/>
+	<ctrl16:AX-ControlRegister0/>
+
+	<cpu16:OrALWithImmediate/>
+	<binary>00000001</binary>
+
+	<cpu16:ExtendedOperator/>
+	<ex16:CopyRegisterToControlRegister/>
+	<ctrl16:AX-ControlRegister0/>
+
+	<!--Jump to segment-->
+	<cpu16:JumpToImmediatePointer16/>
+	<addressOf ref="enterProtectedMode" type="Absolute16"/>
+	<hex>0008</hex>
+
+	<!--32-bit Protected Mode-->
+	<label id="enterProtectedMode"/>
+
+	<!--Setup Segment Registers-->
+	<cpu:CopyImmediateToAX/>
+	<hex>00000010</hex>
+
+	<cpu:CopyOperandToSegmentRegister/>
+	<seg:SS-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister/>
+	<seg:DS-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister/>
+	<seg:ES-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister/>
+	<seg:FS-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister/>
+	<seg:GS-AXRegister/>
+
+	<!--Create Stack For Current Thread-->
+	<mm:CheckOut length="128"/>
+
+	<cpu:MathImmediate8ToOperandFunction/>
+	<math:AddToDIRegister/>
+	<byte>128</byte>
+
+	<cpu:MathImmediateToOperandFunction/>
+	<math:AndWithDIRegister/>
+	<hex>fffffff0</hex>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-SPRegister/>
+
+	<!--Create Temporary Stack For Parameters-->
+	<mm:CheckOut length="32"/>
+
+	<cpu:MathImmediate8ToOperandFunction/>
+	<math:AddToDIRegister/>
+	<byte>32</byte>
+
+	<cpu:MathImmediateToOperandFunction/>
+	<math:AndWithDIRegister/>
+	<hex>fffffff0</hex>
+	
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-BPRegister/>
+
+	<!--Load Interrupt Descriptor Table-->
+	<cpu:ExtendedOperator/>
+	<ex:DescriptorTableFunction/>
+	<gdt:CopyImmediateAddressToInterruptDescriptorTableRegister/>
+	<addressOf ref="interruptDescriptorTablePointer" type="Absolute32"/>
+
+	<!--Get Processor ID-->
+	<mm:CheckOut length="32"/>
+
+	<!--<cpuf:GetProcessorID/>-->
+	<cpu:CopyImmediateToCX/>
+	<hex>0000001B</hex>
+
+	<cpu:ExtendedOperator/>
+	<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+	<cpu:AndAXWithImmediate/>
+	<hex>fffff000</hex>
+
+	<cpu:CopyOperandToRegister/>
+	<op:AX-AXAddressPlusImmediate8/>
+	<hex>20</hex>
+
+	<cpu:ShiftRegisterByImmediate8Function/>
+	<shift:ShiftAXRegisterRight/>
+	<byte>24</byte>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:AX-DIAddress/>
+
+	<!--Processor State-->
+
+	<!--Flags-->
+
+	<!--Reserved-->
+
+	<!--Tasks-->
+
+	<!--Create Processor Object-->
+	<obj:Create length="32" type="http://metalx.org/Processor"/>
+	
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-BPAddressPlusImmediate8/>
+	<byte>0</byte>
+	
+	<sysf:GetProcessors/>
+
+	<sysf:Lock/>
+
+	<!--<col:AddItem/>-->
+
+	<cpu:CopyOperandToRegister/>
+	<op:AX-SIAddress/>
+	
+	<cpu:IncrementFunction/>
+	<inc:IncrementSIAddress/>
+
+	<sysf:Unlock/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-SIAddressPlusImmediate8/>
+	<byte>4</byte>
+
+	<obj:GetData/>
+
+	<lst:SetItem/>
+
+	<cpu:SetInterruptFlag/>
+
+	<label id="loop"/>
+
+	<cpu:IncrementFunction8/>
+	<inc:IncrementImmediateAddress/>
+	<hex>000b8000</hex>
+
+	<!--<cpu:WaitForInterrupt/>-->
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="loop" type="Relative8"/>
+
+	<!--Global Descriptor Table Pointer-->
+	<label id="globalDescriptorTablePointer"/>
+	<hex>0017</hex>
+	<addressOf ref="globalDescriptorTable" type="Absolute16"/>
+
+	<!--Global Descriptor Table-->
+	<label id="globalDescriptorTable"/>
+	<!--Null Descriptor (0000)-->
+
+	<!--Size-->
+	<hex>0000</hex>
+	<!--Base (Low)-->
+	<hex>0000</hex>
+	<!--Base (Mid)-->
+	<hex>00</hex>
+	<!--Access-->
+	<binary>00000000</binary>
+	<!--Flags / Size (High)-->
+	<binary>00000000</binary>
+	<!--Base (High)-->
+	<hex>00</hex>
+
+	<!--Code Descriptor (0008)-->
+
+	<!--Size-->
+	<hex>ffff</hex>
+	<!--Base (Low)-->
+	<hex>0000</hex>
+	<!--Base (Mid)-->
+	<hex>00</hex>
+	<!--Access-->
+	<binary>10011010</binary>
+	<!--Flags / Size (High)-->
+	<binary>11001111</binary>
+	<!--Base (High)-->
+	<hex>00</hex>
+
+	<!--Data Descriptor (0010)-->
+
+	<!--Size-->
+	<hex>ffff</hex>
+	<!--Base (Low)-->
+	<hex>0000</hex>
+	<!--Base (Mid)-->
+	<hex>00</hex>
+	<!--Access-->
+	<binary>10010010</binary>
+	<!--Flags / Size (High)-->
+	<binary>11001111</binary>
+	<!--Base (High)-->
+	<hex>00</hex>
+
+	<!--Interrupt Descriptor Table Pointer-->
+	<label id="interruptDescriptorTablePointer"/>
+	<short>2048</short>
+	<hex>00000500</hex>
+</scope>

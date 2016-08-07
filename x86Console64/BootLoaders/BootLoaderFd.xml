@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:ex="http://metalx.org/Intel/80286/ExtendedOperators"
+	xmlns:gdt="http://metalx.org/Intel/80286/DescriptorTable"
+	xmlns:seg="http://metalx.org/Intel/80286/Segments"
+	xmlns:ctrl="http://metalx.org/Intel/80286/Control"
+	xmlns:imm="http://metalx.org/Intel/80286/Immediate"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:dsk="http://metalx.org/i286/Functions/Disk"
+	xmlns:sys="http://metalx.org/Pc/Bios/System"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:pic="http://metalx.org/Pc/Pic/Ports"
+	xmlns:cmd="http://metalx.org/Pc/Pic/Commands"
+	xmlns:con="http://metalx.org/i286/Functions/Console">
+
+	<cpu:JumpToImmediatePointer16/>
+	<addressOf ref="start" type="Pointer16"/>
+
+	<label id="start"/>
+
+	<cpu:CopyImmediateToAX/>
+	<hex>0000</hex>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:SS-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:ES-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:FS-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:GS-AXRegister/>
+
+	<cpu:CopyRegisterToOperand16/>
+	<op:AX-SPRegister/>
+
+	<!--Load Boot Loaders-->
+	<cpu:CopyImmediateToBX/>
+	<hex>8000</hex>
+
+	<dsk:ReadSectors count="2" track="0" head="0" sector="3"/>
+
+	<cpu:BranchToRelativeIfCarry8/>
+	<addressOf ref="error" type="Relative8"/>
+
+	<!--Jump To 16-Bit Boot Loader-->
+	<cpu:JumpToImmediatePointer16/>
+	<hex>8000</hex>
+	<hex>0000</hex>	
+	
+	<label id="error"/>
+	
+	<!--Display Error Number-->
+	<con:WriteShortHex/>
+
+	<cpu:ClearInterruptFlag/>
+	<cpu:HaltProcessing/>
+</scope>

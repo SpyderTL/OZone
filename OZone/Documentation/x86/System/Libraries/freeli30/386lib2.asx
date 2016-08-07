@@ -1,0 +1,3494 @@
+~~~C_STRLEN
+Ideal
+
+Public      strlen
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** strlen() -- Get length of string
+;int strlen(char *strp);
+
+strp        equ bp+4
+
+Proc        strlen
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push si                 ;Save SI
+
+            mov si,[strp]           ;SI = string pointer
+
+p1_loop:    lodsb                   ;Load char
+            test al,al              ;Loop while not zero
+            jnz p1_loop
+
+            sub si,[strp]           ;AX = length
+            dec si
+            xchg ax,si
+
+            pop si                  ;Restore SI
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        strlen
+
+End
+
+~~~C_STRCPY
+Ideal
+
+Public      strcpy
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** strcpy() -- Copy a string
+;void strcpy(char *str1, char *str2);
+
+str1        equ bp+6
+str2        equ bp+4
+
+Proc        strcpy
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov si,[str2]           ;SI = source
+            mov di,[str1]           ;DI = destination
+
+p1_loop:    lodsb                   ;Load char
+            mov [di],al             ;Store char
+            inc di
+            test al,al              ;Loop while not zero
+            jnz p1_loop
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        strcpy
+
+End
+
+~~~C_STRCAT
+Ideal
+
+Public      strcat
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** strcat() -- Concatenate strings
+;void strcat(char *str1, char *str2);
+
+str1        equ bp+6
+str2        equ bp+4
+
+Proc        strcat
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov si,[str1]           ;SI = destination
+
+p1_cloop:   lodsb                   ;Load char
+            test al,al              ;Loop while not zero
+            jnz p1_cloop
+
+            mov di,si               ;DI = destination
+            mov si,[str2]           ;SI = source
+            dec di
+
+p1_loop:    lodsb                   ;Load char
+            mov [di],al             ;Store char
+            inc di
+            test al,al              ;Loop while not zero
+            jnz p1_loop
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        strcat
+
+End
+
+~~~C_STRCMP
+Ideal
+
+Public      strcmp
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** strcmp() -- Compare strings
+;int strcmp(char *str1, char *str2);
+
+str1        equ bp+6
+str2        equ bp+4
+
+Proc        strcmp
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+
+            mov si,[str1]           ;SI = source
+            mov di,[str2]           ;DI = destination
+            cmp si,di               ;Equal?
+            je p1_done
+
+p1_loop:    lodsb                   ;Load char 1
+            mov ah,[di]             ;Load char 2
+            inc di
+            cmp al,ah               ;Not equal?
+            jne p1_done
+            test al,al              ;Loop while not zero
+            jnz p1_loop
+
+p1_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        strcmp
+
+End
+
+~~~C_STRCHR
+Ideal
+
+Public      strchr
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** strchr() -- Search string for char
+;int strchr(char *strp, int chr);
+
+strp        equ bp+6
+chr         equ bp+4
+
+Proc        strchr
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push si                 ;Save SI
+
+            mov si,[strp]           ;SI = string pointer
+            mov ah,[chr]            ;AH = char
+
+p1_loop:    lodsb                   ;Load char
+            test al,al              ;Null, not found
+            jz p1_nope
+            cmp al,ah               ;Loop while not equal
+            jne p1_loop
+
+            sub si,[strp]           ;AX = position of char
+            dec si
+            xchg ax,si
+
+p1_done:    pop si                  ;Restore SI
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+p1_nope:    mov ax,-1               ;Not found, return -1, set carry
+            stc
+            jmp p1_done
+
+EndP        strchr
+
+End
+
+~~~C_STRSTR
+Ideal
+
+Extrn       strlen:near
+Public      strstr
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** strstr() -- Search string for substring
+;int strstr(char *strp, char *subp);
+
+strp        equ bp+6
+subp        equ bp+4
+
+Proc        strstr
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+            push es
+
+            push ds                 ;ES = DS
+            pop es
+
+            mov si,[strp]           ;SI = string pointer
+            mov bx,[subp]           ;BX = substring pointer
+            push bx                 ;Get length of substring
+            call strlen             ;into DX
+            xchg dx,ax
+            mov ah,[bx]             ;AH = first char
+
+p1_loop:    lodsb                   ;Load char
+            test al,al              ;Null, not found
+            jz p1_nope
+            cmp al,ah               ;Loop while not equal
+            jne p1_loop
+
+            mov cx,dx               ;CX = length
+            mov di,bx               ;DI = substring
+            push si                 ;Save SI
+            dec si                  ;Push back char
+            repe cmpsb              ;Compare strings
+            pop si                  ;Restore SI
+            jne p1_loop             ;Loop if not equal
+
+            sub si,[strp]           ;AX = position of char
+            dec si
+            
+p1_done:    mov [bp-2],si           ;Change pushed AX
+            pop es                  ;Restore registers
+            popa
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+p1_nope:    mov si,-1               ;Not found, return -1, set carry
+            stc
+            jmp p1_done
+
+EndP        strstr
+
+End
+
+~~~C_STRRCH
+Ideal
+
+Public      strrchr
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** strrchr() -- Search string for char, in reverse
+;int strrchr(char *strp, int chr);
+
+strp        equ bp+6
+chr         equ bp+4
+
+Proc        strrchr
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push si bx              ;Save registers
+
+            mov si,[strp]           ;SI = string pointer
+            mov bx,-1               ;BX = -1
+
+p1_loop:    lodsb                   ;Load char
+            cmp al,ah               ;Is it the char?
+            jne $+4
+            mov bx,si               ;BX = position
+            test al,al              ;Loop while not zero
+            jnz p1_loop
+
+            cmp bx,-1               ;-1 = not found
+            je p1_nope
+
+            sub bx,[strp]           ;AX = position of char
+            dec bx
+
+p1_done:    xchg ax,bx              ;AX = result
+            pop bx si               ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+p1_nope:    stc                     ;Not found, return -1, set carry
+            jmp p1_done
+
+EndP        strrchr
+
+End
+
+~~~C_STRICM
+Ideal
+
+Public      stricmp
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** stricmp() -- Compare strings, case insensitive
+;void stricmp(char *str1, char *str2);
+
+str1        equ bp+6
+str2        equ bp+4
+
+Proc        stricmp
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+
+            mov si,[str1]           ;SI = source
+            mov di,[str2]           ;DI = destination
+            cmp si,di               ;Equal?
+            je p1_done
+
+p1_loop:    lodsb                   ;Load char 1
+            mov ah,[di]             ;Load char 2
+            inc di
+
+            cmp al,'a'              ;Convert AL to uppercase
+            jb p1_setAH
+            cmp al,'z'
+            ja p1_setAH
+            sub al,20h
+
+p1_setAH:   cmp ah,'a'              ;Convert AH to uppercase
+            jb p1_comp
+            cmp ah,'z'
+            ja p1_comp
+            sub ah,20h
+
+p1_comp:    cmp al,ah               ;Equal?
+            jne p1_done
+            test al,al              ;Loop while not zero
+            jnz p1_loop
+
+p1_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        stricmp
+
+End
+
+~~~C_STRLWR
+Ideal
+
+Public      strlwr
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** strlwr() -- Convert string to lowercase
+;int strlwr(char *strp);
+
+strp        equ bp+4
+
+Proc        strlwr
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+
+            mov si,[strp]           ;SI = string pointer
+
+p1_loop:    lodsb                   ;Load char
+            test al,al              ;Check for null
+            jz p1_done
+            cmp al,'A'              ;Check for uppercase
+            jb p1_loop
+            cmp al,'Z'
+            ja p1_loop
+            add al,20h              ;Convert to lowercase
+            mov [si-1],al           ;Store char
+            jmp p1_loop
+
+p1_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        strlwr
+
+End
+
+~~~C_STRUPR
+Ideal
+
+Public      strupr
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** strupr() -- Convert string to uppercase
+;int strupr(char *strp);
+
+strp        equ bp+4
+
+Proc        strupr
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+
+            mov si,[strp]           ;SI = string pointer
+
+p1_loop:    lodsb                   ;Load char
+            test al,al              ;Check for null
+            jz p1_done
+            cmp al,'a'              ;Check for lowercase
+            jb p1_loop
+            cmp al,'z'
+            ja p1_loop
+            sub al,20h              ;Convert to uppercase
+            mov [si-1],al           ;Store char
+            jmp p1_loop
+
+p1_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        strupr
+
+End
+
+~~~C_SRTRIM
+Ideal
+
+Public      strrtrim
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** strrtrim() -- Trim trailing spaces off a string
+;int strrtrim(char *strp);
+
+strp        equ bp+4
+
+Proc        strrtrim
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+
+            mov si,[strp]           ;SI = string pointer
+            mov di,si               ;DI = SI
+
+p1_loop:    lodsb                   ;Load char
+            test al,al              ;Check for null
+            jz p1_done
+            cmp al,' '              ;Check for space
+            je p1_loop
+            mov di,si               ;Set pointer
+            jmp p1_loop
+
+p1_done:    mov [byte di+1],al      ;Terminate string
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        strrtrim
+
+End
+
+~~~C_SLTRIM
+Ideal
+
+Public      strltrim
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** strltrim() -- Trim leading spaces off a string
+;int strltrim(char *strp);
+
+strp        equ bp+4
+
+Proc        strltrim
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+
+            mov si,[strp]           ;SI, DI = string pointer
+            mov di,si
+
+p1_loop:    lodsb                   ;Load char
+            test al,al              ;Check for null
+            jz p1_cont
+            cmp al,' '              ;Loop while space
+            je p1_loop
+
+p1_cont:    dec si                  ;Move back one char
+            cmp si,di               ;No spaces, quit
+            je p1_done
+
+p1_cloop:   lodsb                   ;Shift the string over
+            mov [di],al
+            inc di
+            test al,al
+            jnz p1_cloop
+
+p1_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        strltrim
+
+End
+
+~~~C_STRNCP
+Ideal
+
+Public      strncpy
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** strncpy() -- Copy a string, limited length
+;void strncpy(char *str1, char *str2, int n);
+
+str1        equ bp+8
+str2        equ bp+6
+n           equ bp+4
+
+Proc        strncpy
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov si,[str2]           ;SI = source
+            mov di,[str1]           ;DI = destination
+            mov cx,[n]              ;CX = max length
+
+p1_loop:    lodsb                   ;Load char
+            mov [di],al             ;Store char
+            inc di
+            test al,al              ;Loop while not zero
+            loopnz p1_loop
+            jz p1_done              ;Jump if zero
+
+            mov [byte di-1],0       ;Add null terminator
+
+p1_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+EndP        strncpy
+
+End
+
+~~~C_STRNCA
+Ideal
+
+Public      strncat
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** strncat() -- Concatenate strings, limited length
+;void strncat(char *str1, char *str2, int n);
+
+str1        equ bp+8
+str2        equ bp+6
+n           equ bp+4
+
+Proc        strncat
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov si,[str1]           ;SI = destination
+            mov cx,[n]              ;CX = max length
+
+p1_cloop:   lodsb                   ;Load char
+            test al,al              ;Loop while not zero
+            loopnz p1_cloop
+            jcxz p1_done            ;Out of space?
+
+            mov di,si               ;DI = destination
+            mov si,[str2]           ;SI = source
+            dec di
+            inc cx
+
+p1_loop:    lodsb                   ;Load char
+            mov [di],al             ;Store char
+            inc di
+            test al,al              ;Loop while not zero
+            loopnz p1_loop
+            jz p1_done              ;Jump if zero
+
+            mov [byte di-1],0       ;Add null terminator
+
+p1_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+EndP        strncat
+
+End
+
+~~~C_REPLAC
+Ideal
+
+Extrn       strstr:near,strlen:near,memcpy:near
+Public      replace
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** replace() -- Replace all instances of a substring
+;                                by another substring
+;int replace(char *strp, char *sub1, char *sub2);
+
+strp        equ bp+8
+sub1        equ bp+6
+sub2        equ bp+4
+
+Proc        replace
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+
+            mov si,[strp]           ;SI = main string
+
+            push si                 ;CX = length of main string
+            call strlen             ;including the null terminator
+            xchg cx,ax
+            inc cx
+
+            push [word sub1]        ;BX = length of string 1
+            call strlen
+            xchg bx,ax
+
+            push [word sub2]        ;DX = length of string 2
+            call strlen
+            xchg dx,ax
+
+p1_loop:    push si [word sub1]     ;Find string 1
+            call strstr
+            jc p1_done              ;Jump if not found
+
+            add si,ax               ;Advance pointers
+            sub cx,ax
+
+            push si                 ;Save SI
+
+            lea ax,[si+bx]          ;AX = current tail pos
+            add si,dx               ;SI = new tail pos
+            sub cx,bx               ;CX = length of tail
+            push si ax cx           ;Shift string over
+            call memcpy
+
+            push [word sub2] dx     ;Splice in new string
+            call memcpy             ; (SI is already pushed)
+            jmp p1_loop             ;Loop back
+            
+p1_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+EndP        replace
+
+End
+
+~~~C_MEMCPY
+Ideal
+
+Public      memcpy,memmove
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** memcpy() -- Copy memory block
+;                   memmove()
+;void memcpy(void *p1, void *p2, int nbytes);
+
+p1          equ bp+8
+p2          equ bp+6
+nbytes      equ bp+4
+
+Proc        memcpy
+
+memmove:    push bp                 ;Set up stack frame
+            mov bp,sp
+            push es                 ;Save registers
+            pusha
+
+            push ds                 ;ES = DS
+            pop es
+
+            mov si,[p2]             ;SI = source
+            mov di,[p1]             ;DI = destination
+            mov cx,[nbytes]         ;CX = count
+
+            cmp di,si               ;Make forward moves
+            jb p1_go                ;in reverse
+            je p1_done
+
+            std                     ;Set direction flag
+            add si,cx               ;Move offsets to end
+            add di,cx
+            dec si
+            dec di
+
+p1_go:      rep movsb               ;Copy memory
+
+p1_done:    cld                     ;Clear direction flag
+            popa                    ;Restore registers
+            pop es
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+EndP        memcpy
+
+End
+
+~~~C_MEMSET
+Ideal
+
+Public      memset
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** memset() -- Set memory block
+;void memset(void *ptr, int nbytes, int chr);
+
+ptr         equ bp+8
+nbytes      equ bp+6
+chr         equ bp+4
+
+Proc        memset
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push es                 ;Save registers
+            pusha
+
+            push ds                 ;ES = DS
+            pop es
+
+            mov di,[ptr]            ;DI = block
+            mov cx,[nbytes]         ;CX = count
+            mov al,[chr]            ;AL = char
+            rep stosb               ;Set memory
+
+            popa                    ;Restore registers
+            pop es
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+EndP        memset
+
+End
+
+~~~C_MEMCMP
+Ideal
+
+Public      memcmp
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** memcmp() -- Compare memory blocks
+;void memcmp(void *p1, void *p2, int nbytes);
+
+p1          equ bp+8
+p2          equ bp+6
+nbytes      equ bp+4
+
+Proc        memcmp
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push es                 ;Save all registers
+            pusha
+
+            push ds                 ;ES = DS
+            pop es
+
+            mov si,[p2]             ;SI = source
+            mov di,[p1]             ;DI = destination
+            cmp si,di               ;Equal?
+            je p1_done
+            mov cx,[nbytes]         ;CX = count
+            repe cmpsb              ;Compare memory
+
+p1_done:    popa                    ;Restore registers
+            pop es
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+EndP        memcmp
+
+End
+
+~~~C_MEMCHR
+Ideal
+
+Public      memchr
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** memchr() -- Scan memory for char
+;void memchr(void *ptr, int nbytes, int chr);
+
+ptr         equ bp+8
+nbytes      equ bp+6
+chr         equ bp+4
+
+Proc        memchr
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push es                 ;Save registers
+            push cx si di
+
+            push ds                 ;ES = DS
+            pop es
+
+            mov di,[ptr]            ;DI = block
+            mov cx,[nbytes]         ;CX = count
+            mov al,[chr]            ;AL = char
+            repne scasb             ;Scan memory
+            jne p1_nope             ;Jump if not found
+
+            sub di,[ptr]            ;AX = position of char
+            dec di
+            xchg ax,di
+
+p1_done:    pop di si cx            ;Restore registers
+            pop es
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+p1_nope:    mov ax,-1               ;Not found, return -1, set carry
+            stc
+            jmp p1_done
+
+EndP        memchr
+
+End
+
+~~~C_ISRCH
+Ideal
+
+Public      isearch
+
+Model Tiny
+P386
+CodeSeg
+
+;****************** isearch() -- Search a sorted array of integers
+;int isearch(int *ary, int size, int elem);
+
+ary         equ bp+8
+size        equ bp+6
+elem        equ bp+4
+
+Proc        isearch
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+
+            mov bx,[ary]            ;BX = array
+            xor cx,cx               ;CX = lower limit
+            mov dx,[size]           ;DX = upper limit
+            dec dx
+
+p1_loop:    mov si,cx               ;SI = middle element
+            add si,dx
+            shr si,1
+            add si,si
+            mov ax,[bx+si]          ;Get element
+            shr si,1                ;Fix SI
+            cmp ax,[elem]           ;Check element
+            je p1_done              ;Equal?
+            jl p1_less              ;Too low?
+
+p1_greater: mov di,si               ;Set first half
+            mov si,cx
+            jmp p1_cont
+
+p1_less:    mov di,dx               ;Set second half
+            inc si
+
+p1_cont:    cmp cx,dx               ;Min = Max, done
+            je p1_nope
+            mov cx,si               ;Set limits
+            mov dx,di
+            jmp p1_loop             ;Loop back
+
+p1_done:    mov [bp-2],si           ;Change pushed AX
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+p1_nope:    mov si,-1               ;Not found, return -1, set carry
+            stc
+            jmp p1_done
+
+EndP        isearch
+
+End
+
+~~~C_LSRCH
+Ideal
+
+Public      lsearch
+
+Model Tiny
+P386
+CodeSeg
+
+;****************** lsearch() -- Search a sorted array of longs
+;int lsearch(long *ary, int size, long elem);
+
+ary         equ bp+10
+size        equ bp+8
+elem        equ bp+4
+
+Proc        lsearch
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pushad                  ;Save all registers
+
+            mov bx,[ary]            ;BX = array
+            xor cx,cx               ;CX = lower limit
+            mov dx,[size]           ;DX = upper limit
+            dec dx
+
+p1_loop:    mov si,cx               ;SI = middle element
+            add si,dx
+            shr si,1
+            shl si,2
+            mov eax,[bx+si]         ;Get element
+            shr si,2                ;Fix SI
+            cmp eax,[elem]          ;Check element
+            je p1_done              ;Equal?
+            jl p1_less              ;Too low?
+
+p1_greater: mov di,si               ;Set first half
+            mov si,cx
+            jmp p1_cont
+
+p1_less:    mov di,dx               ;Set second half
+            inc si
+
+p1_cont:    cmp cx,dx               ;Min = Max, done
+            je p1_nope
+            mov cx,si               ;Set limits
+            mov dx,di
+            jmp p1_loop             ;Loop back
+
+p1_done:    mov [bp-2],si           ;Change pushed AX
+            popad                   ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 8                   ;Return
+
+p1_nope:    mov si,-1               ;Not found, return -1, set carry
+            stc
+            jmp p1_done
+
+EndP        lsearch
+
+End
+
+~~~C_XSRCH
+Ideal
+
+Public      xsearch
+
+Model Tiny
+P386
+CodeSeg
+
+;****************** xsearch() -- Search sorted array, generalized
+;int xsearch(void **ary, int size, void *elem, void *func);
+
+ary         equ bp+10
+size        equ bp+8
+elem        equ bp+6
+func        equ bp+4
+
+Proc        xsearch
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov bx,[ary]            ;BX = array
+            xor cx,cx               ;CX = lower limit
+            mov dx,[size]           ;DX = upper limit
+            dec dx
+
+p1_loop:    mov si,cx               ;SI = middle element
+            add si,dx
+            shr si,1
+            add si,si
+            mov ax,[bx+si]          ;Get element
+            shr si,1                ;Fix SI
+            push ax [word elem]     ;Check element
+            call [word func]
+            je p1_done              ;Equal?
+            jl p1_less              ;Too low?
+
+p1_greater: mov di,si               ;Set first half
+            mov si,cx
+            jmp p1_cont
+
+p1_less:    mov di,dx               ;Set second half
+            inc si
+
+p1_cont:    cmp cx,dx               ;Min = Max, done
+            je p1_nope
+            mov cx,si               ;Set limits
+            mov dx,di
+            jmp p1_loop             ;Loop back
+
+p1_done:    mov [bp-2],si           ;Change pushed AX
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 8                   ;Return
+
+p1_nope:    mov si,-1               ;Not found, return -1, set carry
+            stc
+            jmp p1_done
+
+EndP        xsearch
+
+End
+
+~~~C_SSRCH
+Ideal
+
+Extrn       strcmp:near
+Public      ssearch
+
+Model Tiny
+P386
+CodeSeg
+
+;****************** ssearch() -- Search a sorted array of strings
+;int ssearch(char **ary, int size, char *elem);
+
+ary         equ bp+8
+size        equ bp+6
+elem        equ bp+4
+
+Proc        ssearch
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov bx,[ary]            ;BX = array
+            xor cx,cx               ;CX = lower limit
+            mov dx,[size]           ;DX = upper limit
+            dec dx
+
+p1_loop:    mov si,cx               ;SI = middle element
+            add si,dx
+            shr si,1
+            add si,si
+            mov ax,[bx+si]          ;Get element
+            shr si,1                ;Fix SI
+            push ax [word elem]     ;Check element
+            call strcmp
+            je p1_done              ;Equal?
+            jl p1_less              ;Too low?
+
+p1_greater: mov di,si               ;Set first half
+            mov si,cx
+            jmp p1_cont
+
+p1_less:    mov di,dx               ;Set second half
+            inc si
+
+p1_cont:    cmp cx,dx               ;Min = Max, done
+            je p1_nope
+            mov cx,si               ;Set limits
+            mov dx,di
+            dec di
+            jmp p1_loop             ;Loop back
+
+p1_done:    mov [bp-2],si           ;Change pushed AX
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+p1_nope:    mov si,-1               ;Not found, return -1, set carry
+            stc
+            jmp p1_done
+
+EndP        ssearch
+
+End
+
+~~~C_ISORT
+Ideal
+
+Public      isort
+
+Model Tiny
+P386
+CodeSeg
+
+;****************** isort() -- Sort an array of integers
+;void isort(int *ary, int size);
+
+ary         equ bp+6
+max         equ bp+4
+
+Proc        isort
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov bx,[ary]            ;Call recursive routine
+            xor cx,cx
+            mov dx,[max]
+            dec dx
+            add dx,dx
+            call p1_qsort
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+p1_qsort:   cmp cx,dx               ;One element, return
+            je p1_ret
+            pusha
+
+            mov ax,dx               ;Two elements, sort them
+            sub ax,cx
+            cmp ax,2
+            jne p1_cont
+
+            mov si,cx               ;SI, DI = low, high
+            mov di,dx
+
+            mov ax,[bx+si]          ;Check them
+            cmp ax,[bx+di]
+            jle p1_done
+
+            xchg ax,[bx+di]         ;Switch them
+            mov [bx+si],ax
+            jmp p1_done
+
+p1_cont:    mov si,cx               ;AX = middle element
+            add si,dx
+            shr si,2
+            add si,si
+            mov ax,[bx+si]
+
+            mov si,cx               ;SI = low, DI = high
+            mov di,dx
+
+p1_loop:    cmp si,dx               ;While [BX+SI] < AX and
+            jge p1_loop2            ; SI < DX, advance SI
+            cmp ax,[bx+si]
+            jle p1_loop2
+            add si,2
+            jmp p1_loop
+
+p1_loop2:   cmp di,cx               ;While [BX+DI] > AX and
+            jle p1_cont2            ; DI > CX, advance DI
+            cmp ax,[bx+di]
+            jge p1_cont2
+            sub di,2
+            jmp p1_loop2
+
+p1_cont2:   cmp si,di               ;Hit in middle, recurse
+            jge p1_rec
+
+            push [word bx+si]       ;Swap elements
+            push [word bx+di]
+            pop [word bx+si]
+            pop [word bx+di]
+            add si,2                ;Advance SI, DI
+            sub di,2
+
+            jmp p1_loop             ;Loop back
+
+p1_rec:     cmp cx,si               ;If first half isn't empty,
+            je p1_skip1             ;recurse to sort it
+            xchg dx,di
+            call p1_qsort
+            xchg dx,di
+
+p1_skip1:   cmp dx,di               ;If second half isn't empty,
+            je p1_done              ;recurse to sort it
+            xchg cx,si
+            call p1_qsort
+            xchg cx,si
+
+p1_done:    popa                    ;Restore registers
+p1_ret:     ret                     ;Return
+
+EndP        isort
+
+End
+
+~~~C_LSORT
+Ideal
+
+Public      lsort
+
+Model Tiny
+P386
+CodeSeg
+
+;****************** lsort() -- Sort an array of longs
+;void lsort(long *ary, int size);
+
+ary         equ bp+6
+max         equ bp+4
+num         equ bp-4
+
+Proc        lsort
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pushad                  ;Save all registers
+
+            mov bx,[ary]            ;Call recursive routine
+            xor cx,cx
+            mov dx,[max]
+            dec dx
+            shl dx,2
+            call p1_qsort
+
+            popad                   ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+p1_qsort:   cmp cx,dx               ;One element, return
+            je p1_ret
+            pusha
+
+            mov ax,dx               ;Two elements, sort them
+            sub ax,cx
+            cmp ax,4
+            jne p1_cont
+
+            mov si,cx               ;SI, DI = low, high
+            mov di,dx
+
+            mov eax,[bx+si]         ;Check them
+            cmp eax,[bx+di]
+            jle p1_done
+
+            xchg eax,[bx+di]        ;Switch them
+            mov [bx+si],eax
+            jmp p1_done
+
+p1_cont:    mov si,cx               ;AX = middle element
+            add si,dx
+            shr si,3
+            shl si,2
+            mov eax,[bx+si]
+
+            mov si,cx               ;SI = low, DI = high
+            mov di,dx
+
+p1_loop:    cmp si,dx               ;While [BX+SI] < EAX and
+            jge p1_loop2            ; SI < DX, advance SI
+            cmp eax,[bx+si]
+            jle p1_loop2
+            add si,4
+            jmp p1_loop
+
+p1_loop2:   cmp di,cx               ;While [BX+DI] > EAX and
+            jle p1_cont2            ; DI > CX, advance DI
+            cmp eax,[bx+di]
+            jge p1_cont2
+            sub di,4
+            jmp p1_loop2
+
+p1_cont2:   cmp si,di               ;Hit in middle, recurse
+            jge p1_rec
+
+            push [dword bx+si]      ;Swap elements
+            push [dword bx+di]
+            pop [dword bx+si]
+            pop [dword bx+di]
+            add si,4                ;Advance SI, DI
+            sub di,4
+
+            jmp p1_loop             ;Loop back
+
+p1_rec:     cmp cx,si               ;If first half isn't empty,
+            je p1_skip1             ;recurse to sort it
+            xchg dx,di
+            call p1_qsort
+            xchg dx,di
+
+p1_skip1:   cmp dx,di               ;If second half isn't empty,
+            je p1_done              ;recurse to sort it
+            xchg cx,si
+            call p1_qsort
+            xchg cx,si
+
+p1_done:    popa                    ;Restore registers
+p1_ret:     ret                     ;Return
+
+EndP        lsort
+
+End
+
+~~~C_SSORT
+Ideal
+
+Extrn       strcmp:near
+Public      ssort
+
+Model Tiny
+P386
+CodeSeg
+
+;****************** ssort() -- Sort an array of strings
+;void ssort(char **ary, int size);
+
+ary         equ bp+6
+max         equ bp+4
+
+Proc        ssort
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov bx,[ary]            ;Call recursive routine
+            xor cx,cx
+            mov dx,[max]
+            dec dx
+            add dx,dx
+            call p1_qsort
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+p1_qsort:   cmp cx,dx               ;One element, return
+            jne $+3
+            ret
+            pusha
+
+            mov ax,dx               ;Two elements, sort them
+            sub ax,cx
+            cmp ax,2
+            jne p1_cont
+
+            mov si,cx               ;SI, DI = low, high
+            mov di,dx
+
+            mov ax,[bx+si]          ;Check them
+            push ax [word bx+di]
+            call strcmp
+            jle p1_done
+
+            push [word bx+si]       ;Switch them
+            push [word bx+di]
+            pop [word bx+si]
+            pop [word bx+di]
+            jmp p1_done
+
+p1_cont:    mov si,cx               ;AX = middle element
+            add si,dx
+            shr si,2
+            add si,si
+            mov ax,[bx+si]
+
+            mov si,cx               ;SI = low, DI = high
+            mov di,dx
+
+p1_loop:    cmp si,dx               ;While [BX+SI] < AX and
+            jge p1_loop2            ; SI < DX, advance SI
+            push ax ax [word bx+si]
+            call strcmp
+            pop ax
+            jle p1_loop2
+            add si,2
+            jmp p1_loop
+
+p1_loop2:   cmp di,cx               ;While [BX+DI] > AX and
+            jle p1_cont2            ; DI > CX, advance DI
+            push ax ax [word bx+di]
+            call strcmp
+            pop ax
+            jge p1_cont2
+            sub di,2
+            jmp p1_loop2
+
+p1_cont2:   cmp si,di               ;Hit in middle, recurse
+            jge p1_rec
+
+            push [word bx+si]       ;Swap elements
+            push [word bx+di]
+            pop [word bx+si]
+            pop [word bx+di]
+            add si,2                ;Advance SI, DI
+            sub di,2
+
+            jmp p1_loop             ;Loop back
+
+p1_rec:     cmp cx,si               ;If first half isn't empty,
+            je p1_skip1             ;recurse to sort it
+            xchg dx,di
+            call p1_qsort
+            xchg dx,di
+
+p1_skip1:   cmp dx,di               ;If second half isn't empty,
+            je p1_done              ;recurse to sort it
+            xchg cx,si
+            call p1_qsort
+            xchg cx,si
+
+p1_done:    popa                    ;Restore registers
+p1_ret:     ret                     ;Return
+
+EndP        ssort
+
+End
+
+~~~C_XSORT
+Ideal
+
+Public      xsort
+
+Model Tiny
+P386
+CodeSeg
+
+;****************** xsort() -- Sort array, generalized
+;void xsort(void **ary, int size, void *func);
+
+ary         equ bp+8
+max         equ bp+6
+func        equ bp+4
+
+Proc        xsort
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov bx,[ary]            ;Call recursive routine
+            xor cx,cx
+            mov dx,[max]
+            dec dx
+            add dx,dx
+            call p1_qsort
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+p1_qsort:   cmp cx,dx               ;One element, return
+            jne $+3
+            ret
+            pusha
+
+            mov ax,dx               ;Two elements, sort them
+            sub ax,cx
+            cmp ax,2
+            jne p1_cont
+
+            mov si,cx               ;SI, DI = low, high
+            mov di,dx
+
+            mov ax,[bx+si]          ;Check them
+            push ax [word bx+di]
+            call [word func]
+            test ax,ax
+            jle p1_done
+
+            push [word bx+si]       ;Switch them
+            push [word bx+di]
+            pop [word bx+si]
+            pop [word bx+di]
+            jmp p1_done
+
+p1_cont:    mov si,cx               ;AX = middle element
+            add si,dx
+            shr si,2
+            add si,si
+            mov ax,[bx+si]
+
+            mov si,cx               ;SI = low, DI = high
+            mov di,dx
+
+p1_loop:    cmp si,dx               ;While [BX+SI] < AX and
+            jge p1_loop2            ; SI < DX, advance SI
+            push ax ax [word bx+si]
+            call [word func]
+            pop ax
+            jle p1_loop2
+            add si,2
+            jmp p1_loop
+
+p1_loop2:   cmp di,cx               ;While [BX+DI] > AX and
+            jle p1_cont2            ; DI > CX, advance DI
+            push ax ax [word bx+di]
+            call [word func]
+            pop ax
+            jge p1_cont2
+            sub di,2
+            jmp p1_loop2
+
+p1_cont2:   cmp si,di               ;Hit in middle, recurse
+            jge p1_rec
+
+            push [word bx+si]       ;Swap elements
+            push [word bx+di]
+            pop [word bx+si]
+            pop [word bx+di]
+            add si,2                ;Advance SI, DI
+            sub di,2
+
+            jmp p1_loop             ;Loop back
+
+p1_rec:     cmp cx,si               ;If first half isn't empty,
+            je p1_skip1             ;recurse to sort it
+            xchg dx,di
+            call p1_qsort
+            xchg dx,di
+
+p1_skip1:   cmp dx,di               ;If second half isn't empty,
+            je p1_done              ;recurse to sort it
+            xchg cx,si
+            call p1_qsort
+            xchg cx,si
+
+p1_done:    popa                    ;Restore registers
+p1_ret:     ret                     ;Return
+
+EndP        xsort
+
+End
+
+~~~C_LSHL
+Ideal
+
+Public      lshl
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** lshl() -- Shift long integer to the left
+;long lshl(long x, int d);    Included for compatibility.
+
+x           equ bp+6
+d           equ bp+4
+
+Proc        lshl
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ebx cx             ;Save registers
+
+            mov ebx,[x]             ;EBX = x
+            mov cl,[d]              ;CL = distance
+            shl ebx,cl              ;Shift left
+            xchg ax,bx              ;DX:AX = result
+            shr ebx,16
+            mov dx,bx
+
+            pop cx ebx              ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+EndP        lshl
+
+End
+
+~~~C_LSHR
+Ideal
+
+Public      lshr
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** lshr() -- Shift long integer to the right
+;long lshr(long x, int d);    Included for compatibility.
+
+x           equ bp+6
+d           equ bp+4
+
+Proc        lshr
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ebx cx             ;Save registers
+
+            mov ebx,[x]             ;EBX = x
+            mov cl,[d]              ;CL = distance
+            shr ebx,cl              ;Shift right
+            xchg ax,bx              ;DX:AX = result
+            shr ebx,16
+            mov dx,bx
+
+            pop cx ebx              ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+EndP        lshr
+
+End
+
+~~~C_LSAR
+Ideal
+
+Public      lsar
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** lsar() -- Shift long integer to the right, signed
+;long lsar(long x, int d);    Included for compatibility.
+
+x           equ bp+6
+d           equ bp+4
+
+Proc        lsar
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ebx cx             ;Save registers
+
+            mov ebx,[x]             ;EBX = x
+            mov cl,[d]              ;CL = distance
+            sar ebx,cl              ;Shift right, signed
+            xchg ax,bx              ;DX:AX = result
+            shr ebx,16
+            mov dx,bx
+
+            pop cx ebx              ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+EndP        lsar
+
+End
+
+~~~C_LMUL
+Ideal
+
+Public      lmul
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** lmul() -- Multiply long integers
+;long lmul(long x, long y);   Included for compatibility.
+
+x           equ bp+8
+y           equ bp+4
+
+Proc        lmul
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ebx                ;Save registers
+
+            mov ebx,[x]             ;EBX = x * y
+            imul ebx,[y]
+            xchg ax,bx              ;DX:AX = result
+            shr ebx,16
+            mov dx,bx
+
+            pop ebx                 ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 8                   ;Return
+
+EndP        lmul
+
+End
+
+~~~C_LIMUL
+Ideal
+
+Public      limul
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** limul() -- Multiply long integers, signed
+;long limul(long x, long y);   Included for compatibility
+
+x           equ bp+8
+y           equ bp+4
+
+Proc        limul
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ebx                ;Save registers
+
+            mov ebx,[x]             ;EBX = x * y
+            imul ebx,[y]
+            xchg ax,bx              ;DX:AX = result
+            shr ebx,16
+            mov dx,bx
+
+            pop ebx                 ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 8                   ;Return
+
+EndP        limul
+
+End
+
+~~~C_LDIV
+Ideal
+
+Public      ldiv
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** ldiv() -- Divide long integers
+;long ldiv(long x, long y);   Included for compatibility.
+
+x           equ bp+8
+y           equ bp+4
+
+Proc        ldiv
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ebx ecx esi        ;Save registers
+
+            mov ecx,edx             ;Save EDX:EAX
+            xchg ebx,eax
+            mov eax,[x]             ;EAX = x / y
+            mov esi,[y]
+            xor edx,edx
+            div esi
+            mov edx,ecx             ;Restore EDX:EAX
+            xchg ebx,eax
+            xchg ax,bx              ;DX:AX = result
+            shr ebx,16
+            mov dx,bx
+
+            pop esi ecx ebx         ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 8                   ;Return
+
+EndP        ldiv
+
+End
+
+~~~C_LIDIV
+Ideal
+
+Public      lidiv
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** lidiv() -- Divide long integers, signed
+;long lidiv(long x, long y);   Included for compatibility.
+
+x           equ bp+8
+y           equ bp+4
+
+Proc        lidiv
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ebx ecx esi        ;Save registers
+
+            mov ecx,edx             ;Save EDX:EAX
+            xchg ebx,eax
+            mov eax,[x]             ;EAX = x / y
+            mov esi,[y]
+            cdq
+            idiv esi
+            mov edx,ecx             ;Restore EDX:EAX
+            xchg ebx,eax
+            xchg ax,bx              ;DX:AX = result
+            shr ebx,16
+            mov dx,bx
+
+            pop esi ecx ebx         ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 8                   ;Return
+
+EndP        lidiv
+
+End
+
+~~~C_LMOD
+Ideal
+
+Public      lmod
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** lmod() -- Modulo on long integers
+;long lmod(long x, long y);   Included for compatibility.
+
+x           equ bp+8
+y           equ bp+4
+
+Proc        lmod
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ebx ecx esi        ;Save registers
+
+            mov ecx,edx             ;Save EDX:EAX
+            xchg ebx,eax
+            mov eax,[x]             ;EAX = x / y
+            mov esi,[y]
+            xor edx,edx
+            div esi
+            xchg edx,ecx            ;Restore EDX:EAX
+            xchg ebx,eax
+            xchg ax,cx              ;DX:AX = result
+            shr ecx,16
+            mov dx,cx
+
+            pop esi ecx ebx         ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 8                   ;Return
+
+EndP        lmod
+
+End
+
+~~~C_LIMOD
+Ideal
+
+Public      limod
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** limod() -- Modulo on long integers, signed
+;long limod(long x, long y);   Included for compatibility.
+
+x           equ bp+8
+y           equ bp+4
+
+Proc        limod
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ebx ecx esi        ;Save registers
+
+            mov ecx,edx             ;Save EDX:EAX
+            xchg ebx,eax
+            mov eax,[x]             ;EAX = x / y
+            mov esi,[y]
+            cdq
+            idiv esi
+            xchg edx,ecx            ;Restore EDX:EAX
+            xchg ebx,eax
+            xchg ax,cx              ;DX:AX = result
+            shr ecx,16
+            mov dx,cx
+
+            pop esi ecx ebx         ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 8                   ;Return
+
+EndP        limod
+
+End
+
+~~~C_FIXMUL
+Ideal
+
+Public      fixmul
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** fixmul() -- Multiply fixed point numbers
+;long fixmul(long x, long y);   48 clocks (486)
+
+x           equ bp+8
+y           equ bp+4
+
+Proc        fixmul
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ebx ecx            ;Save registers
+
+            mov ecx,edx             ;Save EDX:EAX
+            xchg ebx,eax
+            mov eax,[x]             ;EAX = x / y (fixed point)
+            mov edx,[y]
+            imul edx
+            shrd eax,edx,16
+            mov edx,ecx             ;Restore EDX:EAX
+            xchg ebx,eax
+            xchg ax,bx              ;DX:AX = result
+            shr ebx,16
+            mov dx,bx
+
+            pop ecx ebx             ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 8                   ;Return
+
+EndP        fixmul
+
+End
+
+~~~C_FIXDIV
+Ideal
+
+Public      fixdiv
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** fixdiv() -- Divide fixed point numbers
+;long fixdiv(long x, long y);   57-86 clocks (486)
+
+x           equ bp+8
+y           equ bp+4
+
+Proc        fixdiv
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ebx ecx esi        ;Save registers
+
+            mov ecx,edx             ;Save EDX:EAX
+            xchg ebx,eax
+            mov eax,[x]             ;EAX = x / y (fixed point)
+            mov esi,[y]
+            cdq
+            shld edx,eax,16
+            shl eax,16
+            idiv esi
+            mov edx,ecx             ;Restore EDX:EAX
+            xchg ebx,eax
+            xchg ax,bx              ;DX:AX = result
+            shr ebx,16
+            mov dx,bx
+
+            pop esi ecx ebx         ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 8                   ;Return
+
+EndP        fixdiv
+
+End
+
+~~~C_TRIG
+Ideal
+
+Extrn       fixdiv:near
+Public      sine, cosine, tangent, cotangent
+Public      secant, cosecant
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** TaylorSine() -- Calculate sine by Taylor series
+;long TaylorSine(long x);           Returns value in EBX
+
+; *컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴*
+; �               x^3     x^5     x^7     x^9        �
+; � sin(x) = x - 컴컴� + 컴컴� - 컴컴� + 컴컴� - ... �
+; �               3 !     5 !     7 !     9 !        �
+; *컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴*
+
+x           equ bp+4
+
+Proc        TaylorSine
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push eax ecx edx esi    ;Save registers
+
+            mov eax,[x]             ;First term = x
+            xor ebx,ebx             ;Result = 0
+            mov esi,1               ;Count = 1
+
+TS_loop:    add ebx,eax             ;Add in term
+
+            imul [dword x]          ;term = last-term * x^2
+            shrd eax,edx,16
+            imul [dword x]
+            shrd eax,edx,16
+            add esi,2               ;n = n + 2
+            mov ecx,esi             ;ECX = n * (n - 1)
+            dec ecx
+            imul ecx,esi
+            cdq                     ;term = last-term * x^2 / n(n-1)
+            idiv ecx
+            neg eax                 ;Invert sign
+
+            test eax,eax            ;Loop while not zero
+            jnz TS_loop
+
+            pop esi edx ecx eax     ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        TaylorSine
+
+Pi          dd 0003243Fh            ;Pi   (3.243F6A88... hex)
+TwoPi       dd 0006487Fh            ;Pi*2 (6.487ED511... hex)
+HalfPi      dd 00019220h            ;Pi/2 (1.921FB544... hex)
+
+;****************** sine() -- Trigonometric sine function
+;long sine(long x);
+
+x           equ bp+4
+
+Proc        sine
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ebx                ;Save EBX
+
+            mov ebx,[x]             ;EBX = x + Pi
+            add ebx,[Pi]
+            push ebx [TwoPi]        ;Divide by 2*Pi
+            call fixdiv
+            movsx ebx,dx            ;EBX = integer part
+            imul ebx,[TwoPi]        ;Multiply by 2*Pi
+
+            neg ebx                 ;EBX = x - EBX
+            add ebx,[x]
+
+            push ebx                ;Calculate sine
+            call TaylorSine
+            xchg ax,bx              ;Result in DX:AX
+            shr ebx,16
+            mov dx,bx
+
+            pop ebx                 ;Restore EBX
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        sine
+
+;****************** cosine() -- Trigonometric cosine function
+;long cosine(long x);
+
+x           equ bp+4
+
+Proc        cosine
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+
+            mov dx,[x+2]            ;DX:AX = x
+            mov ax,[x]
+            add ax,[word HalfPi]    ; x + Pi+2
+            adc dx,[word HalfPi+2]
+            push dx ax              ;cos(x) = sin(x + Pi/4)
+            call sine
+
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        cosine
+
+;****************** tangent() -- Trigonometric tangent function
+;long tangent(long x);
+
+x           equ bp+4
+
+Proc        tangent
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push bx cx              ;Save registers
+
+            push [dword x]          ;CX:BX = sin(x)
+            call sine
+            mov cx,dx
+            xchg bx,ax
+            push [dword x]          ;DX:AX = cos(x)
+            call cosine
+            push cx bx dx ax        ;tan(x) = sin(x) / cos(x)
+            call fixdiv
+
+            pop cx bx               ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        tangent
+
+;****************** cotangent() -- Trigonometric cotangent function
+;long cotangent(long x);
+
+x           equ bp+4
+
+Proc        cotangent
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push bx cx              ;Save registers
+
+            push [dword x]          ;CX:BX = sin(x)
+            call sine
+            mov cx,dx
+            xchg bx,ax
+            push [dword x]          ;DX:AX = cos(x)
+            call cosine
+            push dx ax cx bx        ;cot(x) = cos(x) / sin(x)
+            call fixdiv
+
+            pop cx bx               ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        cotangent
+
+;****************** secant() -- Trigonometric secant function
+;long secant(long x);
+
+x           equ bp+4
+
+Proc        secant
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+
+            push [dword x]          ;DX:AX = cos(x)
+            call cosine
+            push 1 0 dx ax          ;sec(x) = 1 / cos(x)
+            call fixdiv
+
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        secant
+
+;****************** cosecant() -- Trigonometric cosecant function
+;long cosecant(long x);
+
+x           equ bp+4
+
+Proc        cosecant
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+
+            push [dword x]          ;DX:AX = cos(x)
+            call sine
+            push 1 0 dx ax          ;csc(x) = 1 / sin(x)
+            call fixdiv
+
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        cosecant
+
+End
+
+~~~C_FIXTOA
+Ideal
+
+Public      fixtoa
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** fixtoa() -- Convert fixed point number to string
+;void fixtoa(int n, char *strp);
+
+n           equ bp+6
+strp        equ bp+4
+
+Proc        fixtoa
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov di,[strp]           ;DI = string pointer
+            mov dx,[n+2]            ;DX:AX = n
+            mov ax,[n]
+
+            test dx,dx              ;Negative?
+            jge p1_noneg
+            mov [byte di],'-'       ;Store minus sign
+            inc di
+            neg dx                  ;Make it positive
+            neg ax
+            sbb dx,0
+
+p1_noneg:   push dx                 ;Save DX
+            xor bx,bx               ;Zero rem flag
+            add ax,ax               ;Shift out high bit
+            adc bx,0                ;BX = rem flag
+            shr ax,1                ;Restore AX
+
+            mov cx,50000            ;AX = AX * 50000
+            mul cx
+            shr ax,15               ;AX = AX / 32768
+            shl dx,1
+            or ax,dx
+            pop dx                  ;Restore DX
+            push bx ax              ;Save BX, AX
+
+            xchg dx,ax              ;Integer part in AX
+
+            xor cx,cx               ;Zero CX
+            mov si,10               ;SI = 10
+
+p1_dloop:   xor dx,dx               ;Divide by 10
+            div si
+            mov bl,dl               ;Remainder in BL
+            add bl,30h              ;Convert to digit
+            push bx                 ;Push digit
+            inc cx
+            test ax,ax              ;Loop back
+            jnz p1_dloop
+
+p1_ploop:   pop ax                  ;Pop digit
+            mov [di],al             ;Store digit
+            inc di
+            loop p1_ploop           ;Loop back
+
+            mov [byte di],'.'       ;Store decimal point
+            inc di
+            pop ax bx               ;Restore low data
+            xor dx,dx               ;Zero DX
+            test bx,bx              ;Check for high part
+            jz p1_nohigh
+
+            add ax,50000            ;Add in 50000
+            adc dx,0
+
+p1_nohigh:  mov si,10               ;SI = 10
+            mov cx,5                ;5 digits
+            jmp p1_skip1
+
+p1_dloopb:  xor dx,dx               ;Zero DX
+p1_skip1:   div si                  ;Divide by 10
+            mov bl,dl               ;Remainder in BL
+            add bl,30h              ;Convert to digit
+            push bx                 ;Push digit
+            loop p1_dloopb          ;Loop back
+
+            mov cx,5                ;5 digits
+
+p1_ploopb:  pop ax                  ;Pop digit
+            mov [di],al             ;Store digit
+            inc di
+            loop p1_ploopb          ;Loop back
+
+            mov [byte di],0         ;Add the null byte
+
+p1_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+EndP        fixtoa
+
+End
+
+~~~C_ATOFIX
+Ideal
+
+Public      atofix
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** atofix() -- Convert string to fixed point number
+;long atofix(char *strp);
+
+strp        equ bp+4
+
+Proc        atofix
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push bx cx si di bp     ;Save registers
+
+            mov si,[strp]           ;SI = string
+
+            xor ax,ax               ;AX = 0
+            xor bh,bh               ;BH = 0
+            mov cx,10               ;CX = 10
+
+p1_ploop:   mov bl,[si]             ;Load char
+            inc si
+            cmp bl,' '              ;Loop while char is space
+            je p1_ploop             ;(20h, or 09h thru 0Dh)
+            cmp bl,9
+            jna p1_go
+            cmp bl,13
+            jbe p1_ploop
+
+p1_go:      xor bp,bp               ;BP = 0
+            cmp bl,'+'              ;If char = '+', ignore
+            je p1_loop
+            cmp bl,'-'              ;If char <> '-', keep it
+            jne p1_skip
+            inc bp                  ;Set negative flag
+
+p1_loop:    mov bl,[si]             ;Load char
+            inc si
+
+p1_skip:    xor dx,dx               ;Clear DX
+            cmp bl,'.'              ;Decimal point, continue
+            je p1_cont
+            cmp bl,'9'              ;Not a digit, finish
+            ja p1_finish
+            sub bl,'0'
+            jc p1_finish
+
+            mul cx                  ;Multiply by 10
+            add ax,bx               ;Add in digit...
+            jmp p1_loop             ;Loop back
+
+p1_cont:    push ax                 ;Save integer part
+            xor ax,ax               ;Zero AX
+            mov di,1                ;DI = 1
+
+p1_floop:   mov bl,[si]             ;Load char
+            inc si
+
+            cmp bl,'9'              ;Not a digit, finish
+            ja p1_ffinish
+            sub bl,'0'
+            jc p1_ffinish
+
+            mul cx                  ;Multiply by 10
+            add ax,bx               ;Add in digit...
+            adc dx,0
+            imul di,10              ;Multiply divisor by 10
+            jnc p1_floop            ;Loop while < 5 digits
+
+            shr dx,1                ;5 digits, divide by 2
+            rcr ax,1                ;and set DI to 50000
+            mov di,50000            ;instead of 100000
+
+p1_ffinish: xchg dx,ax              ;Multiply by 65536
+            xor ax,ax
+            div di                  ;Divide by 10^digits
+            xchg dx,ax              ;Fractional part in DX
+            pop ax                  ;Restore integer part
+
+p1_finish:  xchg dx,ax              ;DX:AX = number
+
+            dec bp                  ;Positive, don't negate
+            jl p1_done
+
+            neg dx                  ;Negate the result
+            neg ax
+            sbb dx,0
+
+p1_done:    pop bp di si cx bx      ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        atofix
+
+End
+
+~~~C_BITS
+Ideal
+
+Public      bitcnt,highbit
+
+Model Tiny
+P386
+CodeSeg
+
+;****************** bitcnt() -- Count set bits in integer
+;int bitcnt(int x);
+
+x           equ bp+4
+
+Proc        bitcnt
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push bx cx              ;Save registers
+
+            xor cx,cx               ;CX = 0
+            mov ax,[x]              ;AX = number
+            test ax,ax              ;Zero?
+            jz p1_done
+
+p1_loop:    mov bx,ax               ;Kill last bit
+            dec bx
+            and ax,bx
+            loopnz p1_loop          ;Loop while not zero
+
+p1_done:    sub ax,cx               ;Negative of CX
+
+            pop cx bx               ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        bitcnt
+
+;****************** highbit() -- Find high bit in integer
+;int highbit(int x);             returns -1 if it was zero
+
+x           equ bp+4
+
+Proc        highbit
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+
+            bsr ax,[x]              ;Scan for bit
+            jnz $+5                 ;No bit set?
+            mov ax,-1               ;Return -1
+
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        highbit
+
+End
+
+~~~C_SQRT
+Ideal
+
+Public      sqrt
+
+Model Tiny
+P386
+CodeSeg
+
+;****************** sqrt() -- Returns the square root of a
+;                             long.  Result is an integer.
+;int sqrt(long num);          60-350 clocks (486)
+
+
+num         equ bp+4
+
+Proc        sqrt
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push cx dx              ;Save registers
+
+            mov ax,[num]            ;DX:AX = num
+            mov dx,[num+2]
+
+            mov cx,32               ;32 bits
+
+p1_bloop:   add ax,ax               ;Find the highest set bit
+            adc dx,dx
+            jc p1_gotbit
+            loop p1_bloop
+
+p1_gotbit:  mov ax,1                ;CX = first guess 2^(log2(n)/2)
+            shr cx,1
+            shl ax,cl
+            xchg cx,ax
+
+p1_loop:    mov ax,[num]            ;DX:AX = num
+            mov dx,[num+2]
+            div cx                  ;AX = num/guess
+            add cx,ax               ;CX = (guess+(num/guess))/2
+            shr cx,1
+            sub ax,cx               ;If the difference is 1
+            cmp ax,1                ;or less, then done
+            ja p1_loop              ;Loop back
+
+            xchg ax,cx              ;AX = result
+            pop dx cx               ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        sqrt
+
+End
+
+~~~C_ROMAN
+Ideal
+
+Public      roman
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** roman() -- Convert integer to Roman Numerals
+
+num         equ bp+6
+buf         equ bp+4
+
+Proc        roman
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov di,[buf]            ;DI = buffer
+            mov dx,[num]            ;DX = number
+            mov si,offset RNTbl_1   ;SI, BX = tables
+            mov bx,offset RNTbl_2
+
+p1_loop:    lodsw                   ;Load size
+            test ax,ax              ;Done?
+            jz p1_done
+
+p1_iloop:   cmp dx,ax
+            jl p1_lb
+            mov cx,[bx]             ;AX = code
+            mov [di],cl             ;Store first char
+            inc di
+
+            cmp ch,'.'              ;If second char, then
+            je p1_ilb               ; store second char
+            mov [di],ch
+            inc di
+
+p1_ilb:     sub dx,ax               ;Reduce number
+            jmp p1_iloop            ;Loop back
+
+p1_lb:      add bx,2                ;Advance pointer
+            jmp p1_loop             ;Loop back
+
+p1_done:    mov [di],al             ;Terminate string
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        roman
+
+RNTbl_1     dw 1000,900,500,400,100
+            dw 90,50,40,10,9,5,4,1,0
+
+RNTbl_2     db 'M.CMD.CDC.XCL.XLX.IXV.IVI.'
+
+End
+
+~~~C_CRC16
+Ideal
+
+Public      crc16
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** crc16() -- Calculate 16-bit CRC
+;int crc16(void *ptr, int cnt)
+
+ptr         equ bp+6
+cnt         equ bp+4
+
+Proc        crc16
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push bx cx dx si        ;Save registers
+
+            mov si,[ptr]            ;SI = pointer
+            mov bx,[cnt]            ;BX = count
+
+            xor dx,dx               ;Start with 0
+
+p1_loop:    lodsb                   ;Load byte
+            xor dh,al               ;XOR into result
+            mov cx,8                ;8 bits
+
+p1_iloop:   add dx,dx               ;Shift left
+            jnc $+5                 ;If bit = 1, then
+            xor dx,1021h            ;XOR in CRC value
+            loop p1_iloop           ;Loop back
+
+            dec bx                  ;Byte loop
+            jnz p1_loop
+
+            xchg dx,ax              ;Result in AX
+
+p1_done:    pop si dx cx bx         ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        crc16
+
+End
+
+~~~C_CRC32
+Ideal
+
+Public      crc32
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** crc32() -- Calculate 32-bit CRC
+;long crc32(void *ptr, int cnt)
+
+ptr         equ bp+6
+cnt         equ bp+4
+
+Proc        crc32
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push bx cx si di        ;Save registers
+
+            mov si,[ptr]            ;SI = pointer
+            mov bx,[cnt]            ;BX = count
+
+            xor dx,dx               ;Start with 0
+            xor di,di
+
+p1_loop:    lodsb                   ;Load byte
+            xor dh,al               ;XOR into result
+            mov cx,8                ;8 bits
+
+p1_iloop:   add di,di               ;Shift left
+            adc dx,dx
+            jnc $+8                 ;If bit = 1, then
+            xor dx,04C1h            ;XOR in CRC value
+            xor di,1DB7h
+            loop p1_iloop           ;Loop back
+
+            dec bx                  ;Byte loop
+            jnz p1_loop
+
+            xchg di,ax              ;Result in DX:AX
+
+p1_done:    pop di si cx bx         ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        crc32
+
+End
+
+~~~C_KEYS
+Ideal
+
+Public      getkey, kbhit, kflush
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** getkey() -- Read one key from the keyboard
+;int getkey(void)
+
+Proc        getkey
+
+            xor ah,ah               ;Read a key
+            int 16h
+            ret                     ;Return
+
+EndP        getkey
+
+;****************** kbhit() -- Check whether a key was pressed
+;int kbhit(void)
+
+Proc        kbhit
+
+            push ax                 ;Save AX
+            mov ah,1                ;Check for a key
+            int 16h
+            clc                     ;Carry = key flag
+            jnz $+3
+            stc
+            pop ax                  ;Restore AX
+            ret                     ;Return
+
+EndP        kbhit
+
+;****************** kflush() -- Flush the key buffer
+;int kflush(void)
+
+Proc        kflush
+
+            push ax                 ;Save AX
+
+kf_loop:    mov ah,1                ;Check for a key
+            int 16h
+            jz kf_done
+            xor ah,ah               ;Clear the key
+            int 16h
+            jmp kf_loop             ;Loop back
+
+kf_done:    pop ax                  ;Restore AX
+            ret                     ;Return
+
+EndP        kflush
+
+End
+
+~~~C_ISALPH
+Ideal
+
+Public      isalnum,isalpha,isupper,islower
+
+Model Tiny
+CodeSeg
+P386
+
+isalpha:    pusha                   ;Set up stack frame
+            call is_get             ;Get char
+            sub al,'a'              ;Adjust to 'a'
+            jmp isalpha0            ;Do isalpha set
+
+isupper:    pusha                   ;Set up stack frame
+            call is_get             ;Get char
+            sub al,'A'              ;Adjust to 'A'
+            jmp isupper0            ;Do islower set
+
+
+isalnum:    pusha                   ;Set up stack frame
+            call is_get             ;Get char
+
+            sub al,'0'              ;Digits
+            cmp al,'9'-'0'
+            jbe is_yes
+
+            sub al,'a'-'0'          ;Lowercase
+isalpha0:   cmp al,'z'-'a'
+            jbe is_yes
+
+            sub al,'A'-'a'          ;Uppercase
+isupper0:   cmp al,'Z'-'A'
+            jbe is_yes
+
+is_no:      clc                     ;Clear carry flag
+            jmp is_done
+
+islower:    pusha                   ;Set up stack frame
+            call is_get             ;Get char
+
+            sub al,'a'              ;Lowercase
+            cmp al,'z'-'a'
+            ja is_no
+
+is_yes:     stc                     ;Set carry flag
+is_done:    popa                    ;Restore regs/delete frame
+            ret 2                   ;Return
+
+is_get:     mov bp,sp               ;Get the char
+            mov al,[bp+20]
+            ret
+
+End
+
+~~~C_ISDIGI
+Ideal
+
+Public      isdigit,isxdigit
+
+Model Tiny
+CodeSeg
+P386
+
+isdigit:    pusha                   ;Set up stack frame
+            mov bp,sp               ;Get the char
+            mov al,[bp+18]
+
+            sub al,'0'              ;Adjust to '0'
+            jmp isdigit0            ;Do isdigit set
+
+isxdigit:   pusha                   ;Set up stack frame
+            mov bp,sp               ;Get the char
+            mov al,[bp+18]
+            
+            sub al,'a'              ;Lowercase hex
+            cmp al,'f'-'a'
+            jbe is_yes
+            sub al,'A'-'a'          ;Uppercase hex
+            cmp al,'F'-'A'
+            jbe is_yes
+
+            sub al,'0'-'A'          ;Digits
+isdigit0:   cmp al,'9'-'0'
+            jbe is_yes
+
+is_no:      clc                     ;Clear carry flag
+            jmp is_done
+
+is_yes:     stc                     ;Set carry flag
+is_done:    popa                    ;Restore regs/delete frame
+            ret 2                   ;Return
+
+End
+
+~~~C_ISASCI
+Ideal
+
+Public      isascii,isxascii
+
+Model Tiny
+CodeSeg
+P386
+
+isascii:    pusha                   ;Set up stack frame
+            mov bp,sp               ;Get the char
+            mov al,[bp+18]
+
+            cmp al,'~'              ;Standard ASCII
+            jbe isascii0
+            
+is_no:      clc                     ;Clear carry flag
+            jmp is_done
+
+isxascii:   pusha                   ;Set up stack frame
+            mov bp,sp               ;Get the char
+            mov al,[bp+18]
+
+isascii0:   cmp al,' '              ;Not control char
+            jb is_no
+
+is_yes:     stc                     ;Set carry flag
+is_done:    popa                    ;Restore regs/delete frame
+            ret 2                   ;Return
+
+End
+
+~~~C_TOLOWR
+Ideal
+
+Public      tolower
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** tolower -- Convert a character to lowercase
+; int tolower(int c);
+
+c           equ bp+4
+
+Proc        tolower
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            mov al,[c]              ;AL = char
+
+            cmp al,'A'              ;Is it uppercase?
+            jb p1_done
+            cmp al,'Z'
+            ja p1_done
+
+            add al,'a'-'A'          ;Convert to lowercase
+
+p1_done:    pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        tolower
+
+End
+
+~~~C_TOUPPR
+Ideal
+
+Public      toupper
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** toupper -- Convert a character to uppercase
+; int toupper(int c);
+
+c           equ bp+4
+
+Proc        toupper
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            mov al,[c]              ;AL = char
+
+            cmp al,'a'              ;Is it lowercase?
+            jb p1_done
+            cmp al,'z'
+            ja p1_done
+
+            add al,'A'-'a'          ;Convert to uppercase
+
+p1_done:    pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        toupper
+
+End
+
+~~~C_PDIR
+Ideal
+
+Public      getpdir
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** getpdir() -- Get program directory
+;void getpdir(char *buf);
+
+buf         equ bp+4
+
+Proc        getpdir
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+            push ds es
+
+            mov es,[2Ch]            ;ES:DI = environment
+            xor di,di
+            xor al,al               ;Zero AL
+            mov cx,-1               ;CX = -1
+
+p1_loop1:   repne scasb             ;Find double zero
+            scasb
+            jne p1_loop1
+
+            scasw                   ;SI, DI = string
+            mov si,di
+            repne scasb             ;Find another zero
+
+            std                     ;Direction is -
+            mov al,'\'              ;Find a backslash
+            dec di
+            repne scasb
+
+            cld                     ;Direction is +
+            sub di,si               ;CX = length
+            lea cx,[di+2]
+
+            push ds es              ;Switch DS, ES
+            pop ds es
+            mov di,[buf]            ;ES:DI = buffer
+
+            rep movsb               ;Copy the string
+            xor al,al               ;Add ending null
+            stosb
+
+            pop es ds               ;Restore registers
+            popa
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        getpdir
+
+End
+
+~~~C_PNAME
+Ideal
+
+Public      getpname
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** getpname() -- Get program name
+;void getpname(char *buf);
+
+buf         equ bp+4
+
+Proc        getpname
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+            push ds es
+
+            mov es,[2Ch]            ;ES:DI = environment
+            xor di,di
+            xor al,al               ;Zero AL
+            mov cx,-1               ;CX = -1
+
+p1_loop1:   repne scasb             ;Find double zero
+            scasb
+            jne p1_loop1
+
+            push ds es              ;Switch DS, ES
+            pop ds es
+            lea si,[di+2]           ;DS:SI = string
+            mov di,[buf]            ;ES:DI = buffer
+
+p1_loop2:   lodsb                   ;Copy the string
+            stosb
+            test al,al
+            jnz p1_loop2
+
+            pop es ds               ;Restore registers
+            popa
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        getpname
+
+End
+
+~~~C_GETENV
+Ideal
+
+Public      getenv
+
+Model Tiny
+CodeSeg
+P386
+
+;****************** getenv() -- Get environment string
+;void getenv(char *buf, char *key);
+
+buf         equ bp+6
+key         equ bp+4
+
+Proc        getenv
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+            push ds es
+
+            mov dx,[key]            ;DX = key
+            mov es,[2Ch]            ;ES:DI = environment
+            xor di,di
+
+p1_loop1:   mov si,dx               ;SI = key
+            mov cx,-1               ;Compare strings
+            repe cmpsb
+
+            cmp [byte si-1],0       ;Found it?
+            jne p1_lb
+            cmp [byte es:di-1],'='
+            je p1_cont
+
+p1_lb:      xor al,al               ;Skip this value
+            repne scasb
+            cmp [byte es:di],1      ;Out of strings?
+            jnb p1_loop1            ; [sets carry if zero]
+            jmp p1_done
+
+p1_cont:    push ds es              ;Switch DS, ES
+            pop ds es
+            mov si,di               ;DS:SI = string
+            mov di,[buf]            ;ES:DI = buffer
+
+p1_loop2:   lodsb                   ;Copy the string
+            stosb
+            test al,al
+            jnz p1_loop2
+
+p1_done:    pop es ds               ;Restore registers
+            popa
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        getenv
+
+End
+
+~~~C_REBOOT
+Ideal
+
+Public      reboot
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** reboot() -- Reboot the computer
+;void reboot(void);
+
+Proc        reboot
+
+            mov ah,0Dh              ;Flush disk buffers
+            int 21h
+            sti                     ;Interrupts on
+            hlt                     ;Wait for interrupt
+            mov al,0FEh             ;Reboot system
+            out 64h,al
+
+EndP        reboot
+
+End
+
+~~~C_FIXTOI
+Ideal
+
+Public      fixtoi
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** fixtoi() -- Convert fix-point to integer
+;int fixtoi(long fn);
+
+fn          equ bp+4
+
+Proc        fixtoi
+
+            mov ax,[fn+2]           ;AX = integer part
+            cmp [word fn],8000h     ;Fractional part > 1/2?
+            jb $+3                  ;Jump if not
+            inc ax                  ;Round it up
+            ret 4                   ;Return
+
+EndP        fixtoi
+
+End
+
+; Virtual memory system by Tylisha C. Andersen.
+; Support routines added by Tenie Remmel.
+
+~~~C_VMEM
+Ideal
+
+Public      vminit,vmclose,vmread,vmwrite
+
+Model Tiny
+P386
+CodeSeg
+
+;****************** vminit() -- Init virtual memory system
+;int vminit(void);
+
+Proc        vminit
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+
+            mov ah,0                ;Init VM system
+            call VMproc
+
+            sbb ax,ax               ;AX = 1 if ok, 0 if not
+            inc ax
+
+            pop bp                  ;Delete stack frame
+            ret                     ;Return
+
+EndP        vminit
+
+;****************** vmclose() -- Close virtual memory system
+;int vmclose(void);
+
+Proc        vmclose
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ax                 ;Save AX
+
+            mov ah,1                ;Close VM system
+            call VMproc
+
+            pop ax                  ;Restore AX
+            pop bp                  ;Delete stack frame
+            ret                     ;Return
+
+EndP        vmclose
+
+;****************** vmread() -- Read block of virtual memory
+;int vmread(void *buf, long offs, int len);
+
+buf         equ bp+10
+offs        equ bp+6
+len         equ bp+4
+
+Proc        vmread
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ebx cx dx          ;Save registers
+
+            mov ah,2                ;Read VM memory
+            mov dx,[buf]
+            mov ebx,[offs]
+            mov cx,[len]
+            call VMproc
+
+            sbb ax,ax               ;AX = 1 if ok, 0 if not
+            inc ax
+
+            pop dx cx ebx           ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret                     ;Return
+
+EndP        vmread
+
+;****************** vmwrite() -- Write block of virtual memory
+;int vmwrite(void *buf, long offs, int len);
+
+buf         equ bp+10
+offs        equ bp+6
+len         equ bp+4
+
+Proc        vmwrite
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ebx cx dx          ;Save registers
+
+            mov ah,3                ;Write VM memory
+            mov dx,[buf]
+            mov ebx,[offs]
+            mov cx,[len]
+            call VMproc
+
+            sbb ax,ax               ;AX = 1 if ok, 0 if not
+            inc ax
+
+            pop dx cx ebx           ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret                     ;Return
+
+EndP        vmwrite
+
+;---------------------------- Internal data section
+                              
+xmshandle   dw    0                 ; xms handle        -6
+xmssize     dd    0                 ; xms length        -4
+xmscall     dd    0                 ; xms call point    +0
+
+fhandle     dw    0                 ; file handle       +4
+fname       db    'C:\$VM$.TMP',0   ; file name         +6
+
+;---------------------------- VMproc:  VM call point
+;                             ------------------------
+;                             -- ah = 0:  init
+;                             -- ah = 1:  close
+;                             -- ah = 2:  read
+;                                   ds:dx = buffer
+;                                   ebx = offset in VM
+;                                   cx = length
+;                             -- ah = 3:  write
+;                                   ds:dx = buffer
+;                                   ebx = offset in VM
+;                                   cx = length
+;                             ------------------------
+;                             Returns cf = error flag
+;                             ------------------------
+;                             Offsets and lengths for
+;                             read/write must be even.
+
+Proc        VMproc
+
+            pushad                  ; save all registers
+            push  ds es             ; load frame pointer
+            mov   di, offset xmscall
+
+            test  ah, ah            ; service 0, init?
+            jne   vmm_cont
+
+            cmp   [word cs:di+4], 0 ; already initialized?
+            jne   vmm_bad
+
+            push  cs                ; ds = cs
+            pop   ds
+
+            mov   ah, 3Ch           ; create the temp file
+            xor   cx, cx
+            lea   dx, [di+6]
+            int   21h
+            jc    vmm_done
+
+            mov   [di+4], ax        ; save file handle
+
+            mov   ax, 4300h         ; check for xms
+            int   2Fh
+            test  al, al
+            jz    vmm_noxms
+
+            mov   al, 10h           ; get xms call point
+            int   2Fh
+            mov   [di], bx
+            mov   [di+2], es
+
+            mov   ah, 8             ; get free xms size
+            call  [dword di]
+            test  ax, ax            ; no xms memory free?
+            jz    vmm_noxms
+
+            push  ax
+            xchg  dx, ax            ; allocate all xms
+            mov   ah, 9
+            call  [dword di]
+            test  ax, ax            ; didn't work?
+            jz    vmm_noxms
+
+            xor   ebx,ebx           ; ebx = xms size
+            pop   bx
+            shl   ebx, 10
+            mov   [di-4], ebx       ; save xms size
+            mov   [di-6], dx        ; save xms handle
+            jmp   vmm_done          ; return
+
+vmm_noxms:  xor   eax, eax          ; set xms size 0
+            mov   [di-4], eax
+            jmp   vmm_done
+
+vmm_bad:    stc                     ; invalid request
+            jmp   vmm_done
+
+vmm_cont:   cmp   ah, 4             ; service out of range?
+            jae   vmm_bad
+
+            cmp   [word cs:di+4], 0 ; not initialized yet?
+            je    vmm_bad
+
+            cmp   ah, 1             ; check service number
+            jne   vmm_rw  
+
+            push  cs                ; ds = cs
+            pop   ds
+
+            xor   eax, eax          ; clear the handle
+            mov   [di+4], ax
+            cmp   [di-4], eax       ; check for xms
+            je    vmm_skip
+
+            mov   ah, 10            ; free xms block
+            mov   dx, [di-6]
+            call  [dword di]
+
+vmm_skip:   mov   ah, 3Eh           ; close temp file
+            mov   bx, [di+4]
+            int   21h
+
+            mov   ah, 41h           ; delete temp file
+            lea   dx, [di+6]
+            int   21h
+
+vmm_done:   pop   es ds             ; restore registers
+            popad
+            ret                     ; return
+
+vmm_rw:     test  ebx, 0F0000001h   ; offset and length must be
+            jnz   vmm_bad           ; even for read/write, also
+            test  cl, 1             ; the length can't be zero.
+            jnz   vmm_bad
+            test  cx, cx
+            jz    vmm_bad
+
+            mov   ebp, [cs:di-4]    ; ebp = xms length
+            movzx ecx, cx           ; ecx = end offset
+            add   ecx, ebx
+
+            cmp   ebx, ebp          ; check for xms part
+            jae   vmm_file
+
+            pushad                  ; save all registers
+            push  ds
+
+            cmp   ecx, ebp          ; partly in file?
+            jb    $+5
+            mov   ecx, ebp
+
+            sub   ecx, ebx          ; ecx = length, si = block
+            pusha                   ; get 16 bytes space
+            mov   si, sp
+            push  ss
+
+            cmp   ah, 2             ; check service number
+            jne   vmm_write
+
+            mov   [ss:si+14], ds    ; set segment, ds = ss
+            pop   ds
+
+            mov   ax, [di-6]        ; set xms handle
+            mov   [si+4], ax
+            mov   [si+6], ebx       ; set xms offset
+            mov   [word si+10], 0
+            mov   [si+12], dx       ; set buffer offset
+                  
+            jmp   vmm_xcont         ; jump to continue
+
+vmm_write:  mov   [ss:si+8], ds     ; set segment, ds = cs
+            pop   ds
+
+            mov   ax, [di-6]        ; set xms handle
+            mov   [si+10], ax
+            mov   [si+12], ebx      ; set xms offset
+            mov   [word si+4], 0
+            mov   [si+6], dx        ; set buffer offset
+
+vmm_xcont:  mov   [si], ecx         ; set length
+            mov   ah, 11            ; do it
+            call  [dword cs:di]
+            add   sp, 16            ; release the block
+            cmp   al, 1             ; check return value
+
+            pop   ds                ; restore registers
+            popad
+
+            jc    vmm_jdone         ; jump if error
+
+vmm_file:   sub   ecx, ebp          ; no file part?
+            cmc
+            jnc   vmm_jdone
+
+            sub   ebx, ebp          ; ebx = start in file
+            jge   $+5
+            xor   ebx, ebx
+
+            xchg  bp, ax            ; save service number
+
+            sub   ecx, ebx          ; ecx = length
+            push  cx dx
+
+            mov   dx, bx            ; cx:dx = offset
+            shr   ebx, 16
+            mov   cx, bx
+
+            mov   ax, 4200h         ; seek to position
+            mov   bx, [cs:di+4]
+            int   21h
+            pop   dx cx
+
+            jc    vmm_jdone         ; jump if error
+
+            xchg  bp, ax            ; ah = service
+            add   ah, 3Dh
+            int   21h               ; read/write file data
+vmm_jdone:  jmp   vmm_done          ; return
+
+EndP        VMproc
+
+End

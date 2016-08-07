@@ -1,0 +1,352 @@
+		include	stdout.a
+		include macros.a
+
+		ifndef	$IOStream_a
+$IOStream_a	=	0
+		echo	IOStream.a
+
+dp		textequ	<dword ptr>
+wp		textequ	<word ptr>
+byp		textequ	<byte ptr>
+
+
+
+ucrlib		segment	para public 'ucrlib'
+
+externdef	$cout:far
+
+
+
+
+; COUT parameters fall into four categories:
+;
+; Variables declared in a VAR..ENDVAR section,
+; registers,
+; Constants & Literals, and
+; other objects.
+;
+; A variable in the VAR..ENDVAR section takes the following form:
+;
+;	TTTT AAAA
+;
+; Where TTTT is the type name and AAAA is the variable name.
+;
+; When you declare such a variable in the VAR..ENDVAR section, the
+; DCL macros also create the symbol: "$?AAAA textequ <TTTT>".
+;
+; The COUT macro determines that a variable was declared in the VAR..ENDVAR
+; section by looking for a symbol named $?AAAA.  If this symbol exists, the
+; COUT macro can figure out the type of the symbol.  COUT assumes that there
+; are two macros associated with a given type: $PV_TTTT and $PP_TTTT.  COUT
+; invokes the $PV_TTTT macro to print standard variables of type TTTT, it
+; invokes the $PP_TTTT macro to print pointer variables of type TTTT.
+
+cout		macro	args:vararg
+		push	es
+		push	di
+		push	eax
+
+;; For each item in the COUT parameter list
+
+		for	CoutVar, <args>
+		local	CoutVar, prefix, method
+
+
+;; Since strings can mess things up, check right away to see if
+;; we have a string.
+
+		ifidn	@substr(CoutVar,1,1), <">
+		print	CoutVar
+		else
+		ifidn	@substr(CoutVar,1,1),<'>
+		print	CoutVar
+		else
+
+;; See if the "$?AAAA" variable exists.  If it does, we have
+;; a DCL declared type.
+
+		ifdef	$?&CoutVar&
+
+;; Create the string "$?AAAA" and turn it into a variable name
+;; so we can figure out AAAA's type.
+
+Prefix		textequ	@catstr(<$?>, <CoutVar>)
+
+;; If this is a pointer type, then "$?AAAA textequ <*TTTT>" was created
+;; by the DCL macros.  Look for that leading asterisk to determine
+;; whether we have a pointer variable.
+
+		ifidn	@Substr(<%Prefix>,1,1), <*>
+
+;; Okay, we've got a pointer variable.  Build the name of the macro to
+;; invoke to print an object via a pointer. (Name = $$PP_TTTT).
+
+Method		textequ	@catstr(<$$PP_>,@substr(<%Prefix>,2))
+%		ifdef	Method
+%		Method	<CoutVar>
+%		else
+%		echo	Error: no COUT &Method& function exists.
+		err
+		endif
+
+
+
+
+
+;; Okay, we've got a standard (non-pointer) variable.  Build the corresponding
+;; macro name for its print routine down here (Name = $$PV_TTTT).
+ 
+		else	;IFIDN <*>
+
+
+Method		textequ	@catstr(<$$PV_>,<%Prefix>)
+%		ifdef	Method
+%		Method	<CoutVar>
+		else
+%		echo	Error: no COUT &Method& function exists.
+		err
+		endif
+
+
+		endif
+
+
+;; If the symbol $?AAAA does not exist, then this probably isn't a symbol
+;; created in the VAR..ENDVAR section.  Try to decide what to do with this
+;; item down here.
+
+		else	;IFDEF $?CoutVar
+
+
+;; Check the current item.  If it contains commas, assume it's a string
+;; of bytes to print.
+
+%Prefix		instr	<CoutVar>, <,>
+		if	Prefix
+		print	CoutVar
+
+
+		else
+
+		if	(opattr CoutVar) and 100b
+		print	CoutVar
+		
+
+		else
+
+		ifnb	IsReg32(<&CoutVar&>)
+
+		ifidn	<&CoutVar&>, <eax>
+		pop	eax
+		push	eax
+		else
+		mov	eax, CoutVar
+		endif
+
+		rol	eax, 16
+		putw
+		rol	eax, 16
+		putw
+
+		else
+
+		ifnb	IsReg16(<&CoutVar&>)
+
+		ifidn	<&CoutVar&>, <eax>
+		pop	ax
+		push	ax
+		else
+		mov	ax, CoutVar
+		endif
+
+		putw
+
+		else
+		ifnb	IsReg8(<&CoutVar&>)
+		ifidn	<&CoutVar&>, <al>
+		pop	ax
+		push	ax
+		else
+		mov	al, CoutVar
+		endif
+		puth
+
+		else
+
+;; Check for simple variable declarations:
+
+		if	(type CoutVar) eq BYTE
+		print	" BYTE("
+		mov	al, CoutVar
+		mov	ah,0
+		putu
+		print	") "
+		
+		else
+
+		if	(type CoutVar) eq SBYTE
+		print	" SBYTE("
+		mov	al, CoutVar
+		cbw
+		puti
+		print	") "
+		
+		else
+
+		if	(type CoutVar) eq WORD
+		print	" WORD("
+		mov	ax, CoutVar
+		putu
+		print	") "
+		
+		else
+
+		if	(type CoutVar) eq SWORD
+		print	" SWORD("
+		mov	ax, CoutVar
+		puti
+		print	") "
+		
+		else
+
+		if	(type CoutVar) eq DWORD
+		print	" DWORD("
+		mov	eax, CoutVar
+		putul
+		print	") "
+		
+		else
+
+		if	(type CoutVar) eq SDWORD
+		print	" SDWORD("
+		mov	eax, CoutVar
+		putl
+		print	") "
+
+		else
+%		echo	COUT:unknown type (&CoutVar&)
+		err
+		endif	;; If SDWord
+		endif	;; If DWord
+		endif	;; If SWord
+		endif	;; If Word
+		endif	;; If SByte
+		endif	;; If Byte
+
+		endif	;; If Reg8
+		endif	;; If Reg16
+		endif	;; If Reg32
+
+		endif	;; If a constant (Opattr)
+		endif	;; If CoutVar contains a comma.
+		endif	;; IFDEF $?CoutVar
+
+		endif	;; If <'> string
+		endif	;; if <"> string
+		endm
+
+		pop	eax
+		pop	di
+		pop	es
+		endm
+
+
+
+
+
+
+
+; CIN parameters fall into two categories:
+;
+; Variables declared in a VAR..ENDVAR section, and other objects.
+;
+; See "COUT" for a description of variables declared in VAR..ENDVAR sections.
+;
+; The CIN macro determines that a variable was declared in the VAR..ENDVAR
+; section by looking for a symbol named $?AAAA.  If this symbol exists, the
+; CIN macro can figure out the type of the symbol.  CIN assumes that there
+; are two macros associated with a given type: $GV_TTTT and $GP_TTTT.  CIN
+; invokes the $GV_TTTT macro to read standard variables of type TTTT, it
+; invokes the $GP_TTTT macro to read pointer variables of type *TTTT.
+
+cin		macro	args:vararg
+		push	es
+		push	di
+		push	eax
+
+;; For each item in the CIN parameter list
+
+		for	CinVar, <args>
+		local	CinVar, prefix, method
+
+
+;; See if the "$?AAAA" variable exists.  If it does, we have
+;; a DCL declared type.
+
+		ifdef	$?&CinVar&
+
+;; Create the string "$?AAAA" and turn it into a variable name
+;; so we can figure out AAAA's type.
+
+Prefix		textequ	@catstr(<$?>, <CinVar>)
+
+;; If this is a pointer type, then "$?AAAA textequ <*TTTT>" was created
+;; by the DCL macros.  Look for that leading asterisk to determine
+;; whether we have a pointer variable.
+
+		ifidn	@Substr(<%Prefix>,1,1), <*>
+
+;; Okay, we've got a pointer variable.  Build the name of the macro to
+;; invoke to print an object via a pointer. (Name = $$GP_TTTT).
+
+Method		textequ	@catstr(<$$GP_>,@substr(<%Prefix>,2))
+%		ifdef	Method
+%		Method	<CinVar>
+%		else
+%		echo	Error: no CIN &Method& function exists.
+		err
+		endif
+
+
+
+
+
+;; Okay, we've got a standard (non-pointer) variable.  Build the corresponding
+;; macro name for its print routine down here (Name = $$GV_TTTT).
+ 
+		else	;IFIDN <*>
+
+
+Method		textequ	@catstr(<$$GV_>,<%Prefix>)
+%		ifdef	Method
+%		Method	<CinVar>
+		else
+%		echo	Error: no CIN &Method& function exists.
+		err
+		endif
+
+
+		endif
+
+
+;; If the symbol $?AAAA does not exist, then this probably isn't a symbol
+;; created in the VAR..ENDVAR section.  Try to decide what to do with this
+;; item down here.
+
+		else	;IFDEF $?CinVar
+
+%		echo	COUT:unknown type (&CoutVar&)
+		err
+		endif	;; IFDEF $?CinVar
+
+		endm	;;FOR loop.
+
+		pop	eax
+		pop	di
+		pop	es
+		endm		;; CIN
+
+ucrlib		ends
+
+
+		endif	;ifndef $OStream_a

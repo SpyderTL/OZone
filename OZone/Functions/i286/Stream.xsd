@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema
+    targetNamespace="http://metalx.org/i286/Functions/Stream"
+    elementFormDefault="qualified"
+    xmlns="http://metalx.org/i286/Functions/Stream"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:element name="Create">
+		<xsd:annotation>
+			<xsd:documentation>
+				Creates a new stream.
+
+				Input:
+				SI=MemoryManager
+				AX=Length
+
+				Output:
+				DI=Stream
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="length" type="xsd:byte"/>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="CreateObject">
+		<xsd:annotation>
+			<xsd:documentation>
+				Creates a new Stream object from a null terminated stream of bytes.
+
+				Input:
+				SI=MemoryManager
+				DI=Stream
+
+				Output:
+				DI=Object
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="Clear">
+		<xsd:annotation>
+			<xsd:documentation>
+				Removes all bytes from a stream.
+				
+				Input:
+				SI=Stream
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="AppendByte">
+		<xsd:annotation>
+			<xsd:documentation>
+				Appends a byte to the end of a stream.
+
+				Input:
+				AL=Value
+				SI=Stream
+
+				Modifies: BX SI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="value">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:length value="1" fixed="true"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="GetLength">
+		<xsd:annotation>
+			<xsd:documentation>
+				Gets the length of the stream.
+				
+				Input:
+				SI=Stream
+				
+				Output:
+				AX=Length
+				
+				Modifies: SI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="TrimLastCharacter">
+		<xsd:annotation>
+			<xsd:documentation>
+				Removes the last byte from a stream.
+				
+				Input:
+				SI=Stream
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="Compare">
+		<xsd:annotation>
+			<xsd:documentation>
+				Compares two streams.
+				
+				Input:
+				SI=Source
+				DI=Destination
+				
+				Output:
+				ZF=Equal
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="BeginsWith">
+		<xsd:annotation>
+			<xsd:documentation>
+				Compares the initial characters of a stream.
+
+				Input:
+				SI=Stream
+				DI=BeginsWith
+
+				Output:
+				ZF=BeginsWith
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="ForEach">
+		<xsd:annotation>
+			<xsd:documentation>
+				Executes code for each byte in the stream.
+
+				Input:
+				SI=Stream
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:any/>
+			</xsd:choice>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="ToString">
+		<xsd:annotation>
+			<xsd:documentation>
+				Creates a string from a null terminated stream of bytes.
+
+				Input:
+				SI=MemoryManager
+				DI=Stream
+				
+				Output:
+				DI=String
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+	
+</xsd:schema>

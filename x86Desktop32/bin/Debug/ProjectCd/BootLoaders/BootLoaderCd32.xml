@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<scope xmlns="http://metalx.org/Program" xmlns:cpu="http://metalx.org/Intel/80386/Operators" xmlns:op="http://metalx.org/Intel/80386/Operands" xmlns:ex="http://metalx.org/Intel/80386/ExtendedOperators" xmlns:seg="http://metalx.org/Intel/80386/Segments" xmlns:desc="http://metalx.org/Intel/80386/DescriptorTable" xmlns:logic="http://metalx.org/Intel/80386/Logic" xmlns:flp="http://metalx.org/i386/Functions/FloppyDrive" xmlns:pic="http://metalx.org/Pc/Pic/Ports" xmlns:cmd="http://metalx.org/Pc/Pic/Commands" xmlns:debug="http://metalx.org/x86/Debug/Functions">
+	<!--Store Linear Frame Buffer Address-->
+	<hex>57</hex>
+	<!--Store Startup Address-->
+	<hex>56</hex>
+	<!--Setup Segment Registers-->
+	<hex>B8</hex>
+	<hex>00000010</hex>
+	<hex>8E</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">D0</prg:hex>
+	<hex>8E</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">D8</prg:hex>
+	<hex>8E</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">C0</prg:hex>
+	<hex>8E</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">E0</prg:hex>
+	<hex>8E</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">E8</prg:hex>
+	<!--Setup Interrupt Descriptor Table-->
+	<hex>BF</hex>
+	<hex>00000500</hex>
+	<hex>B9</hex>
+	<int>32</int>
+	<label id="writeDefaultInterruptDescriptor" />
+	<hex>BE</hex>
+	<addressOf ref="defaultInterruptDescriptor" type="Absolute32" />
+	<hex>A5</hex>
+	<hex>A5</hex>
+	<hex>E2</hex>
+	<addressOf ref="writeDefaultInterruptDescriptor" type="Relative8" />
+	<hex>B9</hex>
+	<int>8</int>
+	<label id="writeMasterInterruptDescriptor" />
+	<hex>BE</hex>
+	<addressOf ref="masterInterruptDescriptor" type="Absolute32" />
+	<hex>A5</hex>
+	<hex>A5</hex>
+	<hex>E2</hex>
+	<addressOf ref="writeMasterInterruptDescriptor" type="Relative8" />
+	<hex>B9</hex>
+	<int>8</int>
+	<label id="writeSlaveInterruptDescriptor" />
+	<hex>BE</hex>
+	<addressOf ref="slaveInterruptDescriptor" type="Absolute32" />
+	<hex>A5</hex>
+	<hex>A5</hex>
+	<hex>E2</hex>
+	<addressOf ref="writeSlaveInterruptDescriptor" type="Relative8" />
+	<hex>B9</hex>
+	<int>208</int>
+	<label id="writeDefaultInterruptDescriptor2" />
+	<hex>BE</hex>
+	<addressOf ref="defaultInterruptDescriptor" type="Absolute32" />
+	<hex>A5</hex>
+	<hex>A5</hex>
+	<hex>E2</hex>
+	<addressOf ref="writeDefaultInterruptDescriptor2" type="Relative8" />
+	<!--Load Interrupt Descriptor Table-->
+	<hex>0F</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">01</prg:hex>
+	<hex>1d</hex>
+	<addressOf ref="interruptDescriptorTablePointer" type="Absolute32" />
+	<!--Reprogram Master Interrupt Controller-->
+	<hex>B0</hex>
+	<hex>11</hex>
+	<hex>E6</hex>
+	<hex>20</hex>
+	<hex>B0</hex>
+	<byte>32</byte>
+	<hex>E6</hex>
+	<hex>21</hex>
+	<hex>B0</hex>
+	<binary>00000100</binary>
+	<hex>E6</hex>
+	<hex>21</hex>
+	<hex>B0</hex>
+	<hex>01</hex>
+	<hex>E6</hex>
+	<hex>21</hex>
+	<!--Enable All Master Interrupts-->
+	<hex>B0</hex>
+	<binary>00000000</binary>
+	<hex>E6</hex>
+	<hex>21</hex>
+	<!--Reprogram Slave Interrupt Controller-->
+	<hex>B0</hex>
+	<hex>11</hex>
+	<hex>E6</hex>
+	<hex>a0</hex>
+	<hex>B0</hex>
+	<byte>40</byte>
+	<hex>E6</hex>
+	<hex>a1</hex>
+	<hex>B0</hex>
+	<binary>00000010</binary>
+	<hex>E6</hex>
+	<hex>a1</hex>
+	<hex>B0</hex>
+	<hex>01</hex>
+	<hex>E6</hex>
+	<hex>a1</hex>
+	<!--Enable All Slave Interrupts-->
+	<hex>B0</hex>
+	<binary>00000000</binary>
+	<hex>E6</hex>
+	<hex>a1</hex>
+	<!--Restore Starup Address-->
+	<hex>5E</hex>
+	<!--Restore Linear Frame Buffer Address-->
+	<hex>5F</hex>
+	<!--Enable Interrupts-->
+	<hex>FB</hex>
+	<hex>FF</hex>
+	<hex>E6</hex>
+	<!--Interrupt Descriptor Table Pointer-->
+	<label id="interruptDescriptorTablePointer" />
+	<short>2048</short>
+	<hex>00000500</hex>
+	<!--Default Interrupt Descriptor-->
+	<label id="defaultInterruptDescriptor" />
+	<!--Base (Low)-->
+	<hex>0d00</hex>
+	<!--Segment-->
+	<hex>0008</hex>
+	<!--Reserved-->
+	<hex>00</hex>
+	<!--Attributes-->
+	<binary>10001110</binary>
+	<!--Base (High)-->
+	<hex>0000</hex>
+	<!--Master Interrupt Descriptor-->
+	<label id="masterInterruptDescriptor" />
+	<!--Base (Low)-->
+	<hex>0e00</hex>
+	<!--Segment-->
+	<hex>0008</hex>
+	<!--Reserved-->
+	<hex>00</hex>
+	<!--Attributes-->
+	<binary>10001110</binary>
+	<!--Base (High)-->
+	<hex>0000</hex>
+	<!--Slave Interrupt Descriptor-->
+	<label id="slaveInterruptDescriptor" />
+	<!--Base (Low)-->
+	<hex>0f00</hex>
+	<!--Segment-->
+	<hex>0008</hex>
+	<!--Reserved-->
+	<hex>00</hex>
+	<!--Attributes-->
+	<binary>10001110</binary>
+	<!--Base (High)-->
+	<hex>0000</hex>
+</scope>

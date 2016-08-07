@@ -1,0 +1,488 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="PciDevice"
+	type="http://metalx.org/Pci/PciDevice"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/i286/Structures/Class"
+	xmlns:dbg="http://metalx.org/i286/Functions/Debug"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:hex="http://metalx.org/i286/Functions/Hexadecimal"
+	xmlns:int="http://metalx.org/i286/Functions/Short"
+	xmlns:obj="http://metalx.org/i286/Functions/Object"
+	xmlns:lst="http://metalx.org/i286/Functions/List"
+	xmlns:str="http://metalx.org/i286/Functions/String"
+	xmlns:string="http://metalx.org/i286/Structures/String"
+	xmlns:mm="http://metalx.org/i286/Functions/MemoryManager"
+	xmlns:sys="http://metalx.org/i286/Functions/System"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:ari="http://metalx.org/Intel/80286/Arithmetic"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:shift="http://metalx.org/Intel/80286/Shift"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands">
+
+	<cls:field name="Slot" type="http://metalx.org/Short" offset="0"/>
+	<cls:field name="Class" type="http://metalx.org/Integer" offset="2"/>
+	<cls:field name="VendorID" type="http://metalx.org/Short" offset="6"/>
+	<cls:field name="DeviceID" type="http://metalx.org/Short" offset="8"/>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:PushDSToStack/>
+		<cpu:PushSIToStack/>
+
+		<sys:GetMemoryManager/>
+
+		<str:Create length="80"/>
+
+		<cpu:PullSIFromStack/>
+		<cpu:PullDSFromStack/>
+
+		<obj:GetData/>
+
+		<!--Store device id-->
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:AddToSIRegister/>
+		<byte>8</byte>
+
+		<cpu:CopyOperandToRegister16/>
+		<op:AX-SIAddress/>
+
+		<cpu:PushAXToStack/>
+
+		<!--Store vendor id-->
+		<cpu:DecrementSI/>
+		<cpu:DecrementSI/>
+
+		<cpu:CopyOperandToRegister16/>
+		<op:AX-SIAddress/>
+
+		<cpu:PushAXToStack/>
+
+		<!--Get class-->
+		<cpu:DecrementSI/>
+		<cpu:DecrementSI/>
+		<cpu:DecrementSI/>
+		<cpu:DecrementSI/>
+
+		<cpu:Operand32/>
+		<cpu:CopyOperandToRegister16/>
+		<op:AX-SIAddress/>
+
+		<!--Write class-->
+		<cpu:Operand32/>
+		<cpu:PushAXToStack/>
+
+		<cpu:Operand32/>
+		<cpu:ShiftRegister16ByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>24</byte>
+
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:PushImmediateToStack16/>
+		<addressOf ref="classLabel" type="Segment16"/>
+
+		<cpu:PullDSFromStack/>
+
+		<cpu:CopyImmediateToSI/>
+		<addressOf ref="classLabel" type="Absolute16"/>
+
+		<cpu:PushESToStack/>
+		<cpu:PushDIToStack/>
+		<str:AppendString/>
+
+		<sys:GetMemoryManager/>
+
+		<hex:ToString/>
+
+		<cpu:PushESToStack/>
+		<cpu:PullDSFromStack/>
+		
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullESFromStack/>
+		<cpu:PushESToStack/>
+		<cpu:PushDIToStack/>
+
+		<str:AppendString/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullESFromStack/>
+
+		<!--Write subclass-->
+		<cpu:Operand32/>
+		<cpu:PullAXFromStack/>
+		<cpu:Operand32/>
+		<cpu:PushAXToStack/>
+
+		<cpu:Operand32/>
+		<cpu:ShiftRegister16ByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>16</byte>
+
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:PushESToStack/>
+		<cpu:PushDIToStack/>
+
+		<cpu:PushESToStack/>
+		<cpu:PullDSFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<str:AppendByte value="."/>
+
+		<sys:GetMemoryManager/>
+
+		<hex:ToString digits="2"/>
+
+		<cpu:PushESToStack/>
+		<cpu:PullDSFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullESFromStack/>
+		<cpu:PushESToStack/>
+		<cpu:PushDIToStack/>
+
+		<str:AppendString/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullESFromStack/>
+		
+		<!--Write interface-->
+		<cpu:Operand32/>
+		<cpu:PullAXFromStack/>
+
+		<cpu:Operand32/>
+		<cpu:ShiftRegister16ByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>8</byte>
+
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:PushESToStack/>
+		<cpu:PushDIToStack/>
+
+		<cpu:PushESToStack/>
+		<cpu:PullDSFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<str:AppendByte value="."/>
+
+		<sys:GetMemoryManager/>
+
+		<hex:ToString digits="2"/>
+
+		<cpu:PushESToStack/>
+		<cpu:PullDSFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullESFromStack/>
+		<cpu:PushESToStack/>
+		<cpu:PushDIToStack/>
+
+		<str:AppendString/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullESFromStack/>
+
+		<!--Write vendor id-->
+		<cpu:PullAXFromStack/>
+
+		<cpu:PushImmediateToStack16/>
+		<addressOf ref="vendorLabel" type="Segment16"/>
+
+		<cpu:PullDSFromStack/>
+
+		<cpu:CopyImmediateToSI/>
+		<addressOf ref="vendorLabel" type="Absolute16"/>
+
+		<cpu:PushESToStack/>
+		<cpu:PushDIToStack/>
+		
+		<str:AppendString/>
+
+		<sys:GetMemoryManager/>
+
+		<hex:ToString digits="4"/>
+
+		<cpu:PushESToStack/>
+		<cpu:PullDSFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullESFromStack/>
+		<cpu:PushESToStack/>
+		<cpu:PushDIToStack/>
+
+		<str:AppendString/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullESFromStack/>
+
+		<!--Write device id-->
+		<cpu:PullAXFromStack/>
+
+		<cpu:PushImmediateToStack16/>
+		<addressOf ref="deviceLabel" type="Segment16"/>
+
+		<cpu:PullDSFromStack/>
+		
+		<cpu:CopyImmediateToSI/>
+		<addressOf ref="deviceLabel" type="Absolute16"/>
+
+		<cpu:PushESToStack/>
+		<cpu:PushDIToStack/>
+		
+		<str:AppendString/>
+
+		<sys:GetMemoryManager/>
+
+		<hex:ToString digits="4"/>
+
+		<cpu:PushESToStack/>
+		<cpu:PullDSFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullESFromStack/>
+		<cpu:PushESToStack/>
+		<cpu:PushDIToStack/>
+
+		<str:AppendString/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullESFromStack/>
+
+		<!--Create String object-->
+		<sys:GetMemoryManager/>
+
+		<str:CreateObject/>
+
+		<cpu:PushESToStack/>
+		<cpu:PullDSFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="classLabel"/>
+		<string:string>Class: </string:string>
+
+		<label id="vendorLabel"/>
+		<string:string> Vendor: </string:string>
+
+		<label id="deviceLabel"/>
+		<string:string> Device: </string:string>
+
+		<label id="legacyDeviceLabel"/>
+		<string:string>Legacy Device</string:string>
+
+		<label id="massStorageControllerLabel"/>
+		<string:string>Mass Storage Controller</string:string>
+
+		<label id="networkControllerLabel"/>
+		<string:string>Network Controller</string:string>
+
+		<label id="displayControllerLabel"/>
+		<string:string>Display Controller</string:string>
+
+		<label id="multimediaDeviceLabel"/>
+		<string:string>Multimedia Device</string:string>
+
+		<label id="memoryControllerLabel"/>
+		<string:string>Memory Controller</string:string>
+
+		<label id="bridgeDeviceLabel"/>
+		<string:string>Bridge Device</string:string>
+
+		<label id="communicationControllerLabel"/>
+		<string:string>Communication Controller</string:string>
+
+		<label id="systemPeripheralLabel"/>
+		<string:string>System Peripheral</string:string>
+
+		<label id="inputDeviceLabel"/>
+		<string:string>Input Device</string:string>
+
+		<label id="dockingStationLabel"/>
+		<string:string>Docking Station</string:string>
+
+		<label id="processorLabel"/>
+		<string:string>Processor</string:string>
+
+		<label id="serialBusDeviceLabel"/>
+		<string:string>Serial Bus Controller</string:string>
+
+		<label id="unknownDeviceLabel"/>
+		<string:string>Unknown Device</string:string>
+
+		<label id="legacyVgaDeviceLabel"/>
+		<string:string>Legacy VGA Device</string:string>
+
+		<label id="scsiControllerLabel"/>
+		<string:string>SCSI Controller</string:string>
+
+		<label id="ideControllerLabel"/>
+		<string:string>IDE Controller</string:string>
+
+		<label id="floppyDiskControllerLabel"/>
+		<string:string>Floppy Disk Controller</string:string>
+
+		<label id="raidControllerLabel"/>
+		<string:string>RAID Controller</string:string>
+
+		<label id="ethernetController"/>
+		<string:string>Ethernet Controller</string:string>
+
+		<label id="vgaControllerLabel"/>
+		<string:string>VGA Controller</string:string>
+
+		<label id="xgaControllerLabel"/>
+		<string:string>XGA Controller</string:string>
+
+		<label id="videoDeviceLabel"/>
+		<string:string>Video Device</string:string>
+
+		<label id="audioDeviceLabel"/>
+		<string:string>Audio Device</string:string>
+
+		<label id="ramControllerLabel"/>
+		<string:string>RAM Controller</string:string>
+
+		<label id="flashMemoryControllerLabel"/>
+		<string:string>Flash Memory Controller</string:string>
+
+		<label id="HostPciBridgeLabel"/>
+		<string:string>Host/PCI Bridge</string:string>
+
+		<label id="pciIsaBridgeLabel"/>
+		<string:string>PCI/ISA Bridge</string:string>
+
+		<label id="pciEisaBridgeLabel"/>
+		<string:string>PCI/EISA Bridge</string:string>
+
+		<label id="pciMicroChannelBridgeLabel"/>
+		<string:string>PCI/Micro Channel Bridge</string:string>
+
+		<label id="pciPciBridgeLabel"/>
+		<string:string>PCI/PCI Bridge</string:string>
+
+		<label id="pciPcmciaBridgeLabel"/>
+		<string:string>PCI/PCMCIA Bridge</string:string>
+
+		<label id="pciNubusBridgeLabel"/>
+		<string:string>PCI/NuBus Bridge</string:string>
+
+		<label id="pciCardbusBridgeLabel"/>
+		<string:string>PCI/CardBus Bridge</string:string>
+
+		<label id="xtCompatibleSerialControllerLabel"/>
+		<string:string>XT Compatible Serial Controller</string:string>
+
+		<label id="_16450CompatibleSerialControllerLabel"/>
+		<string:string>16450 Compatible Serial Controller</string:string>
+
+		<label id="_16550CompatibleSerialControllerLabel"/>
+		<string:string>16550 Compatible Serial Controller</string:string>
+
+		<label id="parallelPortLabel"/>
+		<string:string>Parallel Port</string:string>
+
+		<label id="bidirectionalParallelPortLabel"/>
+		<string:string>Bi-directional Parallel Port</string:string>
+
+		<label id="ecpParallelPortLabel"/>
+		<string:string>ECP Parallel Port</string:string>
+
+		<label id="_8259ProgrammableInterruptControllerLabel"/>
+		<string:string>8259 Programmable Interrupt Controller</string:string>
+
+		<label id="isaProgrammableInterruptControllerLabel"/>
+		<string:string>ISA Programmable Interrupt Controller</string:string>
+
+		<label id="eisaProgrammableInterruptControllerLabel"/>
+		<string:string>EISA Programmable Interrupt Controller</string:string>
+
+		<label id="_8237DmaControllerLabel"/>
+		<string:string>8259 Direct Memory Access Controller</string:string>
+
+		<label id="isaDmaControllerLabel"/>
+		<string:string>ISA Direct Memory Access Controller</string:string>
+
+		<label id="eisaDmaControllerLabel"/>
+		<string:string>EISA Direct Memory Access Controller</string:string>
+
+		<label id="_8254SystemTimerLabel"/>
+		<string:string>8254 System Timer</string:string>
+
+		<label id="isaSystemTimerLabel"/>
+		<string:string>ISA System Timer</string:string>
+
+		<label id="eisaSystemTimerLabel"/>
+		<string:string>EISA System Timer</string:string>
+
+		<label id="realTimeClockControllerLabel"/>
+		<string:string>Real-Time Clock Controller</string:string>
+
+		<label id="isaRealTimeClockControllerLabel"/>
+		<string:string>ISA Real-Time Clock Controller</string:string>
+
+		<label id="eisaRealTimeClockControllerLabel"/>
+		<string:string>EISA Real-Time Clock Controller</string:string>
+
+		<label id="keyboardControllerLabel"/>
+		<string:string>Keyboard Controller</string:string>
+
+		<label id="digitizerControllerLabel"/>
+		<string:string>Digitizer Controller</string:string>
+
+		<label id="mouseControllerLabel"/>
+		<string:string>Mouse Controller</string:string>
+
+		<label id="_80386ProcessorLabel"/>
+		<string:string>80386 Processor</string:string>
+
+		<label id="_80486ProcessorLabel"/>
+		<string:string>80486 Processor</string:string>
+
+		<label id="pentiumProcessorLabel"/>
+		<string:string>Pentium Processor</string:string>
+
+		<label id="alphaProcessorLabel"/>
+		<string:string>Alpha Processor</string:string>
+
+		<label id="powerPcProcessorLabel"/>
+		<string:string>PowerPC Processor</string:string>
+
+		<label id="coprocessorProcessorLabel"/>
+		<string:string>Co-Processor</string:string>
+
+		<label id="firewireBusControllerLabel"/>
+		<string:string>Firewire Bus Controller</string:string>
+
+		<label id="universalSerialBusControllerLabel"/>
+		<string:string>Universal Serial Bus Controller</string:string>
+
+	</cls:method>
+</cls:class>

@@ -1,0 +1,72 @@
+		.386
+		option	segment:use16, proc:private
+
+		ifndef	$file_a
+$file_a		=	0
+		echo	file.a
+
+		include	consts.a
+
+$SegFile	segment	para public 'Files'
+
+
+
+wp		textequ	<word ptr>
+dp		textequ	<dword ptr>
+byp		textequ	<byte ptr>
+
+FileVar		struc
+fvHandle	word	?		;DOS file handle.
+fvMode		word	0		;0=read, 1=write.
+fvIndex		word	0		;Index into fvBuffer.
+fvByteCount	word	0		;Bytes avail in fvBuffer.
+fvBytesRead	dword	0		;Bytes read from file.
+fvFileSize	dword	0		;Total bytes in file.
+fvBuffer	byte	512 dup (?)	;Buffer of data read/written.
+FileVar		ends
+
+
+
+
+
+		xtrn	fopen
+		xtrn	fcreate
+		xtrn	fcreateNew
+		xtrn	fcreateTmp
+		xtrn	fread
+		xtrn	fwrite
+		xtrn	fputs
+		xtrn	fgetf
+		xtrn	fpeekc
+		xtrn	fgetc
+		xtrn	fputc,CS,Stk,TOS
+		xtrn	fputc
+		xtrn	feof
+		xtrn	fgets
+		xtrn	fgetsm
+		xtrn	fgeti
+		xtrn	fgetu
+		xtrn	fgetul
+		xtrn	fgeth
+		xtrn	fgetw
+		xtrn	fgethl
+		xtrn	fclose
+		xtrn	fflush
+		xtrn	fputh
+		xtrn	fputw
+		xtrn	fputhl
+		xtrn	fputs
+		xtrn	fputl
+		xtrn	fputlSize
+		xtrn	fputul
+		xtrn	fputulSize
+		xtrn	fputf
+		xtrn	fpute
+
+
+externdef	$fprint:far
+fprintf		textequ	<call $fprintf>
+
+$SegFile	ends
+
+		endif	;ifndef file_a

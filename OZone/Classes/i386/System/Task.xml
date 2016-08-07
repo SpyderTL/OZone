@@ -1,0 +1,232 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Task"
+	type="http://metalx.org/System/Task"
+	static="true"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:tm="http://metalx.org/i386/Functions/TaskManager"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:inc="http://metalx.org/Intel/80386/Increment"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:cmos="http://metalx.org/Pc/Cmos/Ports"
+	xmlns:cmr="http://metalx.org/Pc/Cmos/Registers">
+
+	<cls:field name="Stack" type="http://metalx.org/Hexadecimal" offset="0"/>
+
+	<cls:method name="Test" type="http://metalx.org/System/Task" static="true">
+		<mm:CheckOut length="256"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDIRegister/>
+		<int>256</int>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AndWithDIRegister/>
+		<hex>fffffff0</hex>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:DI-SPRegister/>
+
+		<cpu:PushImmediateToStack/>
+		<hex>00000202</hex>
+
+		<cpu:PushImmediateToStack/>
+		<hex>00000008</hex>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="doStuff" type="Absolute32"/>
+
+		<cpu:PushAllRegistersToStack/>
+		<cpu:PushDSToStack/>
+		<cpu:PushESToStack/>
+
+		<cpu:PushImmediateToStack/>
+		<hex>00000002</hex>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:DI-SPRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<mm:CheckOut length="4"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIAddress/>
+
+		<obj:Create length="4" type="http://metalx.org/System/Task"/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="doStuff"/>
+
+		<cpu:IncrementFunction8/>
+		<inc:IncrementImmediateAddress/>
+		<hex>000b8000</hex>
+
+		<tm:Yield/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="doStuff" type="Relative8"/>
+	</cls:method>
+
+	<cls:method name="ExecuteMethod" type="http://metalx.org/System/Task" static="true">
+		<cls:parameter name="Method" type="http://metalx.org/Class/Method"/>
+		<cls:parameter name="Object" type="http://metalx.org/Class/Object"/>
+		<cls:parameter name="Parameter" type="http://metalx.org/Object"/>
+		
+		<mm:CheckOut length="256"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDIRegister/>
+		<int>256</int>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AndWithDIRegister/>
+		<hex>fffffff0</hex>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:DI-SPRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SP-AXRegister/>
+
+		<cpu:PushImmediateToStack/>
+		<hex>00000202</hex>
+
+		<cpu:PushImmediateToStack/>
+		<hex>00000008</hex>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="start" type="Absolute32"/>
+
+		<!--AX-->
+		<cpu:PushImmediateToStack/>
+		<int>0</int>
+
+		<!--CX-->
+		<cpu:PushImmediateToStack/>
+		<int>0</int>
+
+		<!--DX-->
+		<cpu:PushImmediateToStack/>
+		<int>0</int>
+		
+		<!--BX-->
+		<cpu:PushImmediateToStack/>
+		<int>0</int>
+		
+		<!--SP-->
+		<cpu:PushImmediateToStack/>
+		<int>0</int>
+		
+		<!--BP-->
+		<cpu:PushAXToStack/>
+		
+		<!--SI-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:PushAXToStack/>
+
+		<!--DI-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:PushDSToStack/>
+		<cpu:PushESToStack/>
+
+		<cpu:PushImmediateToStack/>
+		<hex>00000002</hex>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:DI-SPRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<mm:CheckOut length="4"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIAddress/>
+
+		<obj:Create length="4" type="http://metalx.org/System/Task"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>12</byte>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="start"/>
+
+		<obj:GetData/>
+		
+		<clsf:ExecuteMethod/>
+
+		<label id="wait"/>
+
+		<tm:Yield/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="wait" type="Relative8"/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="type" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="type">Task</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+		
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

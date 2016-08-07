@@ -1,0 +1,4002 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:inc="http://metalx.org/Intel/80386/Increment"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:kbc="http://metalx.org/Pc/Keyboard"
+	xmlns:ksc="http://metalx.org/Pc/Keyboard/ScanCodes"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:cls="http://metalx.org/i386/Functions/Class"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:col="http://metalx.org/i386/Functions/Collection"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:tm="http://metalx.org/i386/Functions/TaskManager"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:float="http://metalx.org/i386/Functions/Float"
+	xmlns:kbd="http://metalx.org/i386/Functions/Keyboard"
+	xmlns:vid="http://metalx.org/i386/Functions/Video"
+	xmlns:ex="http://metalx.org/i386/Functions/Exception">
+
+	<!--Setup Keyboard Array-->
+	<cpu:CopyImmediateToDI/>
+	<hex>00070000</hex>
+	
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="keyboard" type="Absolute32"/>
+
+	<cpu:CopyImmediateToCX/>
+	<int>32</int>
+
+	<cpu:CopyImmediateToAX/>
+	<int>0</int>
+
+	<cpu:Repeat/>
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<!--Setup Command Stack-->
+	<mm:CheckOut length="1024"/>
+
+	<cpu:MathImmediateToOperandFunction/>
+	<math:AddToDIRegister/>
+	<int>1024</int>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="commandsPointer" type="Absolute32"/>
+
+	<!--Setup Argument Stack-->
+	<mm:CheckOut length="1024"/>
+
+	<cpu:MathImmediateToOperandFunction/>
+	<math:AddToDIRegister/>
+	<int>1024</int>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="argumentsPointer" type="Absolute32"/>
+
+	<!--Setup String Buffers-->
+	<str:Create length="250"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="commandBuffer" type="Absolute32"/>
+
+	<!--<str:Create length="250"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="lastCommand" type="Absolute32"/>-->
+
+	<str:Create length="250"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="className" type="Absolute32"/>
+
+	<str:Create length="250"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="memberName" type="Absolute32"/>
+	
+	<!--Setup Command History-->
+	<lst:Create length="255"/>
+
+	<lst:CreateObject/>
+	
+	<col:Create/>
+
+	<col:CreateObject/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="commandHistory" type="Absolute32"/>
+
+	<!--Clear Screen-->
+	<label id="clearScreen"/>
+
+	<cpu:CopyImmediateToDI/>
+	<hex>000b8000</hex>
+
+	<cpu:CopyImmediateToCX/>
+	<int>1000</int>
+
+	<cpu:CopyImmediateToAX/>
+	<hex>07200720</hex>
+
+	<cpu:Repeat/>
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToOperandFunction/>
+	<imm:CopyImmediateToImmediateAddress/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+	<hex>000b8000</hex>
+
+	<!--Show Command Prompt-->
+	<label id="showPrompt"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+
+	<cpu:Operand16/>
+	<cpu:CopyImmediateToOperandFunction/>
+	<imm:CopyImmediateToDIAddress/>
+	<string>&gt;</string>
+	<hex>07</hex>
+
+	<cpu:MathImmediate8ToOperandFunction/>
+	<math:AddToImmediateAddress/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+	<byte>2</byte>
+
+	<!--Update Cursor Position-->
+	<label id="updateCursorPosition"/>
+
+	<cpu:CopyAbsoluteMemoryToAX/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+
+	<cpu:SubtractImmediateFromAX/>
+	<hex>000b8000</hex>
+
+	<cpu:ShiftRegisterByOneFunction/>
+	<shift:ShiftAXRegisterRight/>
+
+	<vid:SetCursorPosition/>
+
+	<!--Wait For Keystroke-->
+	<label id="waitForKeystroke"/>
+
+	<cpu:ReadFromImmediate8PortToAL/>
+	<kbc:StatusPort/>
+
+	<cpu:AndALWithImmediate/>
+	<binary>00000001</binary>
+
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="handleKeystroke" type="Relative8"/>
+
+  <!--<cpu:CallImmediate8Interrupt/>
+  <byte>32</byte>-->
+
+  <cpu:WaitForInterrupt/>
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="waitForKeystroke" type="Relative8"/>
+
+	<label id="handleKeystroke"/>
+
+	<cpu:CopyImmediateToAX/>
+	<int>0</int>
+
+	<cpu:ReadFromImmediate8PortToAL/>
+	<kbc:DataPort/>
+
+	<cpu:CompareALToImmediate/>
+	<ksc:Backspace/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notBackspace" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="handleBackspace" type="Relative32"/>
+
+	<label id="notBackspace"/>
+
+	<cpu:CompareALToImmediate/>
+	<ksc:Enter/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notEnter" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="handleEnter" type="Relative32"/>
+
+	<label id="notEnter"/>
+
+	<cpu:CompareALToImmediate/>
+	<ksc:Escape/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notEscape" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="handleEscape" type="Relative32"/>
+
+	<label id="notEscape"/>
+
+	<cpu:CompareALToImmediate/>
+	<ksc:Tab/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notTab" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="handleTab" type="Relative32"/>
+
+	<label id="notTab"/>
+
+	<cpu:CompareALToImmediate/>
+	<ksc:KeypadEight/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notUpArrow" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="handleUpArrow" type="Relative32"/>
+
+	<label id="notUpArrow"/>
+
+	<cpu:CompareALToImmediate/>
+	<ksc:KeypadTwo/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notDownArrow" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="handleDownArrow" type="Relative32"/>
+
+	<label id="notDownArrow"/>
+
+	<cpu:TestALWithImmediate/>
+	<binary>10000000</binary>
+
+	<cpu:BranchToRelative8IfZero/>
+	<addressOf ref="handleKeyDown" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="handleKeyUp" type="Relative32"/>
+
+	<!--Handle Key Down Event-->
+	<label id="handleKeyDown"/>
+
+	<cpu:PushAXToStack/>
+	
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="commandBuffer" type="Absolute32"/>
+
+	<str:GetLength/>
+
+	<cpu:CompareAXToImmediate/>
+	<int>250</int>
+
+	<cpu:PullAXFromStack/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="updateKeyboard" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="waitForKeystroke" type="Relative32"/>
+
+	<label id="updateKeyboard"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="keyboard" type="Absolute32"/>
+
+	<cpu:AddOperandToRegister/>
+	<op:SI-AXRegister/>
+
+	<cpu:CopyImmediateToOperandFunction8/>
+	<imm:CopyImmediateToSIAddress/>
+	<sbyte>-1</sbyte>
+
+	<!--Check Shift Key Status-->
+	<cpu:PushAXToStack/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="keyboard" type="Absolute32"/>
+
+	<cpu:MathImmediate8ToOperandFunction/>
+	<math:AddToSIRegister/>
+	<ksc:LeftShift/>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+
+	<cpu:CompareALToImmediate/>
+	<byte>0</byte>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="shiftPressed" type="Relative8"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="keyboard" type="Absolute32"/>
+
+	<cpu:MathImmediate8ToOperandFunction/>
+	<math:AddToSIRegister/>
+	<ksc:RightShift/>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+
+	<cpu:CompareALToImmediate/>
+	<byte>0</byte>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="shiftPressed" type="Relative8"/>
+
+	<cpu:PullAXFromStack/>
+
+	<kbd:GetAsciiCharacter/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="testAscii" type="Relative32"/>
+
+	<label id="shiftPressed"/>
+
+	<cpu:PullAXFromStack/>
+
+	<kbd:GetAsciiCharacterShift/>
+
+	<label id="testAscii"/>
+
+	<cpu:CompareALToImmediate/>
+	<byte>0</byte>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="handleAsciiKey" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="waitForKeystroke" type="Relative32"/>
+
+	<label id="handleAsciiKey"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="writeCharacter" type="Relative32"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="scrollScreen" type="Relative32"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="updateCursorPosition" type="Relative32"/>
+
+	<!--Handle Key Up Event-->
+	<label id="handleKeyUp"/>
+
+	<cpu:AndALWithImmediate/>
+	<binary>01111111</binary>
+
+	<cpu:AddOperandToRegister/>
+	<op:AX-ImmediateAddress/>
+	<addressOf ref="keyboard" type="Absolute32"/>
+
+	<cpu:CopyImmediateToOperandFunction8/>
+	<imm:CopyImmediateToAXAddress/>
+	<sbyte>0</sbyte>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="waitForKeystroke" type="Relative32"/>
+
+	<!--Handle Backspace-->
+	<label id="handleBackspace"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="commandBuffer" type="Absolute32"/>
+
+	<str:GetLength/>
+
+	<cpu:CompareAXToImmediate/>
+	<int>0</int>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="trimLastCharacter" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="waitForKeystroke" type="Relative32"/>
+
+	<label id="trimLastCharacter"/>
+	<str:TrimCharacter/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+
+	<cpu:MathImmediate8ToOperandFunction/>
+	<math:SubtractFromDIRegister/>
+	<byte>2</byte>
+
+	<cpu:Operand16/>
+	<cpu:CopyImmediateToOperandFunction/>
+	<imm:CopyImmediateToDIAddress/>
+	<hex>0720</hex>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="updateCursorPosition" type="Relative32"/>
+
+	<!--Handle Enter Key-->
+	<label id="handleEnter"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="moveCursorToNextLine" type="Relative32"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="commandBuffer" type="Absolute32"/>
+
+	<cpu:MathImmediateToOperandFunction/>
+	<math:CompareWithSIAddress/>
+	<int>0</int>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="resetCommandStack" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="clearBuffer" type="Relative32"/>
+	
+	<!--Reset Command Stack-->
+	<label id="resetCommandStack"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:AX-ImmediateAddress/>
+	<addressOf ref="commandsPointer" type="Absolute32"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:AX-ImmediateAddress/>
+	<addressOf ref="commands" type="Absolute32"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:AX-ImmediateAddress/>
+	<addressOf ref="argumentsPointer" type="Absolute32"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:AX-ImmediateAddress/>
+	<addressOf ref="arguments" type="Absolute32"/>
+
+	<!--Save Command In History-->
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="commandBuffer" type="Absolute32"/>
+
+	<str:Clone/>
+
+	<str:CreateObject/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:BP-ImmediateAddress/>
+	<addressOf ref="arguments" type="Absolute32"/>
+
+	<cpu:MathImmediate8ToOperandFunction/>
+	<math:SubtractFromBPRegister/>
+	<byte>4</byte>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-BPAddressPlusImmediate8/>
+	<byte>0</byte>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="commandHistory" type="Absolute32"/>
+
+	<obj:ExecuteMethod name="Add"/>
+
+	<cpu:CopyImmediateToOperandFunction/>
+	<imm:CopyImmediateToImmediateAddress/>
+	<addressOf ref="commandHistoryIndex" type="Absolute32"/>
+	<int>-1</int>
+
+	<!--Prepare To Evaluate Command-->
+	<label id="evaluateCommand"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="commandBuffer" type="Absolute32"/>
+
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:AX-CXRegister/>
+
+	<!--Evaluate First Command-->
+	<label id="evaluateFirstCommand"/>
+	
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="memberName" type="Absolute32"/>
+
+	<str:Clear/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="className" type="Absolute32"/>
+
+	<str:Clear/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+	
+	<!--Detect Type-->
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+
+	<cpu:CompareALToImmediate/>
+	<string>,</string>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="nextArgument" type="Relative8"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>"</string>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="getString" type="Relative8"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>-</string>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="number" type="Relative8"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>0</string>
+
+	<cpu:BranchToRelative8IfLess/>
+	<addressOf ref="notNumber" type="Relative8"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>9</string>
+
+	<cpu:BranchToRelative8IfGreater/>
+	<addressOf ref="notNumber" type="Relative8"/>
+
+	<label id="number"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="getNumber" type="Relative32"/>
+
+	<label id="notNumber"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="getClassName" type="Relative32"/>
+	
+	<!--Next Argument-->
+	<label id="nextArgument"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="arguments" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="arguments" type="Absolute32"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+
+	<cpu:CompareALToImmediate/>
+	<string xml:space="preserve"> </string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="evaluateFirstCommand" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="evaluateFirstCommand" type="Relative8"/>
+
+	<!--Get String-->
+	<label id="getString"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<label id="getNextStringCharacter"/>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+	
+	<cpu:CompareALToImmediate/>
+	<string>"</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="appendStringCharacter" type="Relative8"/>
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="createString" type="Relative8"/>
+
+	<label id="appendStringCharacter"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:PushSIToStack/>
+	<str:AppendCharacter/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="getNextStringCharacter" type="Relative8"/>
+	
+	<!--Create String-->
+	<label id="createString"/>
+
+	<cpu:DecrementCX/>
+
+	<cpu:PushCXToStack/>
+	<cpu:PushSIToStack/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-SIRegister/>
+	
+	<str:GetLength/>
+
+	<cpu:AddImmediateToAX/>
+	<int>4</int>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:AX-CXRegister/>
+
+	<mm:CheckOut/>
+
+	<cpu:PushDIToStack/>
+
+	<cpu:Repeat/>
+	<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+	<cpu:PullDIFromStack/>
+	
+	<str:CreateObject/>
+
+	<cpu:PullSIFromStack/>
+	<cpu:PullCXFromStack/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:BranchToRelative8IfCXIsZero/>
+	<addressOf ref="showString" type="Relative8"/>
+
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+
+	<cpu:CompareALToImmediate/>
+	<string>)</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notStringMethodEnd" type="Relative8"/>
+	
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="arguments" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="arguments" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="commands" type="Absolute32"/>
+
+	<cpu:PullOperandFromStackFunction/>
+	<stack:PullImmediateAddressFromStack xmlns:stack="http://metalx.org/Intel/80386/Stack"/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:PullOperandFromStackFunction/>
+	<stack:PullImmediateAddressFromStack xmlns:stack="http://metalx.org/Intel/80386/Stack"/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cpu:PullOperandFromStackFunction/>
+	<stack:PullImmediateAddressFromStack xmlns:stack="http://metalx.org/Intel/80386/Stack"/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="commands" type="Absolute32"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+	
+	<cpu:JumpToRelative/>
+	<addressOf ref="callMethod" type="Relative32"/>
+
+	<label id="notStringMethodEnd"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>,</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notStringNextArgument" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="nextArgument" type="Relative32"/>
+
+	<label id="notStringNextArgument"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="showString" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="getNextMember" type="Relative32"/>
+
+	<label id="showString"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="lastMember" type="Relative32"/>
+
+	<!--Get Number-->
+	<label id="getNumber"/>
+
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notNumberPeriod" type="Relative8"/>
+
+	<cpu:BranchToRelative8IfCXIsZero/>
+	<addressOf ref="createInteger" type="Relative8"/>
+
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddressPlusImmediate8/>
+	<byte>1</byte>
+
+	<cpu:CompareALToImmediate/>
+	<string>0</string>
+
+	<cpu:BranchToRelative8IfLess/>
+	<addressOf ref="createInteger" type="Relative8"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>9</string>
+
+	<cpu:BranchToRelative8IfGreater/>
+	<addressOf ref="createInteger" type="Relative8"/>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+	<cpu:DecrementCX/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:PushSIToStack/>
+	<str:AppendCharacter/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="getFloat" type="Relative32"/>
+
+	<label id="notNumberPeriod"/>
+	
+	<cpu:CompareALToImmediate/>
+	<string>,</string>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="createInteger" type="Relative8"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>)</string>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="createInteger" type="Relative8"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:PushSIToStack/>
+	<str:AppendCharacter/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+	
+	<cpu:IncrementSI/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="getNumber" type="Relative8"/>
+
+	<!--Create Integer-->
+	<label id="createInteger"/>
+
+	<cpu:PushAllRegistersToStack/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<int:Parse/>
+
+	<int:CreateObject/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:PullAllRegistersFromStack/>
+
+	<cpu:BranchToRelative8IfCXIsZero/>
+	<addressOf ref="showInteger" type="Relative8"/>
+
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+
+	<cpu:CompareALToImmediate/>
+	<string>)</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notIntegerMethodEnd" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="skipSkipIntegerPeriod" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<label id="skipSkipIntegerPeriod"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="arguments" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="arguments" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="commands" type="Absolute32"/>
+
+	<cpu:PullOperandFromStackFunction/>
+	<stack:PullImmediateAddressFromStack xmlns:stack="http://metalx.org/Intel/80386/Stack"/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:PullOperandFromStackFunction/>
+	<stack:PullImmediateAddressFromStack xmlns:stack="http://metalx.org/Intel/80386/Stack"/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cpu:PullOperandFromStackFunction/>
+	<stack:PullImmediateAddressFromStack xmlns:stack="http://metalx.org/Intel/80386/Stack"/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="commands" type="Absolute32"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="callMethod" type="Relative32"/>
+
+	<label id="notIntegerMethodEnd"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>,</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notIntegerNextArgument" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="nextArgument" type="Relative32"/>
+
+	<label id="notIntegerNextArgument"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="showInteger" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="getNextMember" type="Relative32"/>
+
+	<label id="showInteger"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="lastMember" type="Relative32"/>
+
+	<!--Get Float-->
+	<label id="getFloat"/>
+
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="createFloat" type="Relative8"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>,</string>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="createFloat" type="Relative8"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>)</string>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="createFloat" type="Relative8"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:PushSIToStack/>
+	<str:AppendCharacter/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:IncrementSI/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="getFloat" type="Relative8"/>
+
+	<!--Create Float-->
+	<label id="createFloat"/>
+
+	<cpu:PushAllRegistersToStack/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<float:Parse/>
+
+	<float:CreateObject/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:PullAllRegistersFromStack/>
+
+	<cpu:BranchToRelative8IfCXIsZero/>
+	<addressOf ref="showFloat" type="Relative8"/>
+
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+
+	<cpu:CompareALToImmediate/>
+	<string>)</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notFloatMethodEnd" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="skipSkipFloatPeriod" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<label id="skipSkipFloatPeriod"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="arguments" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="arguments" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="commands" type="Absolute32"/>
+
+	<cpu:PullOperandFromStackFunction/>
+	<stack:PullImmediateAddressFromStack xmlns:stack="http://metalx.org/Intel/80386/Stack"/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:PullOperandFromStackFunction/>
+	<stack:PullImmediateAddressFromStack xmlns:stack="http://metalx.org/Intel/80386/Stack"/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cpu:PullOperandFromStackFunction/>
+	<stack:PullImmediateAddressFromStack xmlns:stack="http://metalx.org/Intel/80386/Stack"/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="commands" type="Absolute32"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="callMethod" type="Relative32"/>
+
+	<label id="notFloatMethodEnd"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>,</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notFloatNextArgument" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="nextArgument" type="Relative32"/>
+
+	<label id="notFloatNextArgument"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="showFloat" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="getNextMember" type="Relative32"/>
+
+	<label id="showFloat"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="lastMember" type="Relative32"/>
+
+	<!--Get Class Name-->
+	<label id="getClassName"/>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="appendClassCharacter" type="Relative8"/>
+
+	<cpu:DecrementCX/>
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="findClass" type="Relative8"/>
+
+	<label id="appendClassCharacter"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:PushSIToStack/>
+	<str:AppendCharacter/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="getClassName" type="Relative8"/>
+
+	<!--Find Class-->
+	<label id="findClass"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushCXToStack/>
+
+	<sys:GetCatalog/>
+
+	<cat:FindClass/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-DIRegister/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="storeClassObject" type="Relative8"/>
+
+	<cpu:CopyImmediateToDI/>
+	<addressOf ref="staticClassNotFound" type="Absolute32"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="throwException" type="Relative32"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="lastMember" type="Relative32"/>
+
+	<label id="storeClassObject"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cpu:MathImmediate8ToOperandFunction/>
+	<math:CompareWithCXRegister/>
+	<byte>0</byte>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="getStaticMethod" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="showStaticMethodList" type="Relative32"/>
+
+	<!--Get Static Method-->
+	<label id="getStaticMethod"/>
+	
+	<cpu:CopyOperandToRegister/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="memberName" type="Absolute32"/>
+
+	<label id="getStaticMethodName"/>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+
+	<cpu:CompareALToImmediate/>
+	<string>(</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notStaticMethodStart" type="Relative8"/>
+
+	<cpu:DecrementCX/>
+	
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+	
+	<cpu:CompareALToImmediate/>
+	<string>)</string>
+	
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notStaticEmptyArguments" type="Relative8"/>
+	
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+	
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+	
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+	
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="skipSkipStaticPeriod" type="Relative8"/>
+	
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+	
+	<label id="skipSkipStaticPeriod"/>
+	
+	<cpu:JumpToRelative/>
+	<addressOf ref="findStaticMethod" type="Relative32"/>
+	
+	<label id="notStaticEmptyArguments"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="findStaticMethodWithArguments" type="Relative32"/>
+
+	<label id="notStaticMethodStart"/>
+	
+	<cpu:CompareALToImmediate/>
+	<string>)</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notStaticMethodEnd" type="Relative8"/>
+
+	<cpu:DecrementSI/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="findStaticMethod" type="Relative32"/>
+
+	<label id="notStaticMethodEnd"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>,</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notStaticNextArgument" type="Relative8"/>
+
+	<cpu:DecrementSI/>
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="findStaticMethod" type="Relative8"/>
+
+	<label id="notStaticNextArgument"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="appendStaticMethodCharacter" type="Relative8"/>
+
+	<cpu:DecrementCX/>
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="findStaticMethod" type="Relative8"/>
+
+	<label id="appendStaticMethodCharacter"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:PushSIToStack/>
+	<str:AppendCharacter/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="getStaticMethodName" type="Relative8"/>
+
+	<!--Find Static Method-->
+	<label id="findStaticMethod"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushDIToStack/>
+	<cpu:PushCXToStack/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cls:FindStaticMethod/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullDIFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="callMethod" type="Relative8"/>
+
+	<cpu:CopyImmediateToDI/>
+	<addressOf ref="staticMemberNotFound" type="Absolute32"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="throwException" type="Relative32"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="lastMember" type="Relative32"/>
+
+	<!--Call Method-->
+	<label id="callMethod"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushDIToStack/>
+	<cpu:PushCXToStack/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:BX-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:BP-ImmediateAddress/>
+	<addressOf ref="arguments" type="Absolute32"/>
+
+	<cls:ExecuteMethod/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:BP-ImmediateAddress/>
+	<addressOf ref="arguments" type="Absolute32"/>
+
+	<!--Check Return Value-->
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:CopyImmediateToAX/>
+	<int>0</int>
+
+	<cpu:CompareRegisterToOperand/>
+	<op:AX-DIRegister/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullDIFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="methodReturnValueNotNull" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="handleEscape" type="Relative32"/>
+
+	<label id="methodReturnValueNotNull"/>
+
+	<cpu:PushSIToStack/>
+	
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<obj:GetType/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cpu:PullSIFromStack/>
+
+	<cpu:MathImmediate8ToOperandFunction/>
+	<math:CompareWithCXRegister/>
+	<byte>0</byte>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="skipLastMember" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="lastMember" type="Relative32"/>
+
+	<label id="skipLastMember"/>
+
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+
+	<cpu:CompareALToImmediate/>
+	<string>)</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notMethodEndMethod" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="arguments" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="arguments" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="commands" type="Absolute32"/>
+
+	<cpu:PullOperandFromStackFunction/>
+	<stack:PullImmediateAddressFromStack xmlns:stack="http://metalx.org/Intel/80386/Stack"/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:PullOperandFromStackFunction/>
+	<stack:PullImmediateAddressFromStack xmlns:stack="http://metalx.org/Intel/80386/Stack"/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cpu:PullOperandFromStackFunction/>
+	<stack:PullImmediateAddressFromStack xmlns:stack="http://metalx.org/Intel/80386/Stack"/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="commands" type="Absolute32"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="callMethod" type="Relative32"/>
+
+	<label id="notMethodEndMethod"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notMethodPeriod" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="getNextMember" type="Relative32"/>
+
+	<label id="notMethodPeriod"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>,</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notMethodNextArgument" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="nextArgument" type="Relative32"/>
+
+	<label id="notMethodNextArgument"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="getNextMember" type="Relative32"/>
+
+	<!--Find Static Method With Arguments-->
+	<label id="findStaticMethodWithArguments"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushDIToStack/>
+	<cpu:PushCXToStack/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cls:FindStaticMethod/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullDIFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="staticMethodWithArgumentsFound" type="Relative8"/>
+
+	<cpu:CopyImmediateToDI/>
+	<addressOf ref="staticMemberNotFound" type="Absolute32"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="throwException" type="Relative32"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="lastMember" type="Relative32"/>
+
+	<label id="staticMethodWithArgumentsFound"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="commands" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="commands" type="Absolute32"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="evaluateFirstCommand" type="Relative32"/>
+
+	<!--Get Static Method Arguments-->
+	<label id="getStaticMethodArguments"/>
+	
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+
+	<cpu:CompareALToImmediate/>
+	<string>)</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notEmptyStaticMethodArguments" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<cpu:BranchToRelative8IfCXIsZero/>
+	<addressOf ref="skipSkipStaticMethodPeriod" type="Relative8"/>
+
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="skipSkipStaticMethodPeriod" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<label id="skipSkipStaticMethodPeriod"/>
+	
+	<cpu:JumpToRelative/>
+	<addressOf ref="findStaticMethod" type="Relative32"/>
+
+	<label id="notEmptyStaticMethodArguments"/>
+	
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+	
+	<cpu:JumpToRelative/>
+	<addressOf ref="evaluateFirstCommand" type="Relative32"/>
+	
+	<!--Get Field Value-->
+	<label id="getFieldValue"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushDIToStack/>
+	<cpu:PushCXToStack/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cls:GetFieldValue/>
+
+	<!--Check Return Value-->
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:CopyImmediateToAX/>
+	<int>0</int>
+
+	<cpu:CompareRegisterToOperand/>
+	<op:AX-DIRegister/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullDIFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="fieldReturnValueNotNull" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="handleEscape" type="Relative32"/>
+
+	<label id="fieldReturnValueNotNull"/>
+
+	<cpu:PushSIToStack/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<obj:GetType/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cpu:PullSIFromStack/>
+
+	<cpu:MathImmediate8ToOperandFunction/>
+	<math:CompareWithCXRegister/>
+	<byte>0</byte>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="skipFieldLastMember" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="lastMember" type="Relative32"/>
+
+	<label id="skipFieldLastMember"/>
+
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+
+	<cpu:CompareALToImmediate/>
+	<string>)</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notFieldEndMethod" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="arguments" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="arguments" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="commands" type="Absolute32"/>
+
+	<cpu:PullOperandFromStackFunction/>
+	<stack:PullImmediateAddressFromStack xmlns:stack="http://metalx.org/Intel/80386/Stack"/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:PullOperandFromStackFunction/>
+	<stack:PullImmediateAddressFromStack xmlns:stack="http://metalx.org/Intel/80386/Stack"/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cpu:PullOperandFromStackFunction/>
+	<stack:PullImmediateAddressFromStack xmlns:stack="http://metalx.org/Intel/80386/Stack"/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="commands" type="Absolute32"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="callMethod" type="Relative32"/>
+
+	<label id="notFieldEndMethod"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notFieldPeriod" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="getNextMember" type="Relative32"/>
+
+	<label id="notFieldPeriod"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>,</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notFieldNextArgument" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="nextArgument" type="Relative32"/>
+
+	<label id="notFieldNextArgument"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="getNextMember" type="Relative32"/>
+
+	<!--Get Next Member-->
+	<label id="getNextMember"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="memberName" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<str:Clear/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<label id="getNextMemberName"/>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+
+	<cpu:CompareALToImmediate/>
+	<string>(</string>
+	
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notMethodStart" type="Relative8"/>
+
+	<cpu:DecrementCX/>
+	
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+	
+	<cpu:CompareALToImmediate/>
+	<string>)</string>
+	
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notEmptyArguments" type="Relative8"/>
+	
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+	
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+	
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+	
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="skipSkipPeriod" type="Relative8"/>
+	
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+	
+	<label id="skipSkipPeriod"/>
+	
+	<cpu:JumpToRelative/>
+	<addressOf ref="findMethod" type="Relative32"/>
+	
+	<label id="notEmptyArguments"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="findMethodWithArguments" type="Relative32"/>
+
+	<label id="notMethodStart"/>
+	
+	<cpu:CompareALToImmediate/>
+	<string>)</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notMethodEnd" type="Relative8"/>
+
+	<cpu:DecrementSI/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="findMethod" type="Relative32"/>
+
+	<label id="notMethodEnd"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>,</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notNextArgument" type="Relative8"/>
+
+	<cpu:DecrementSI/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="findMethod" type="Relative32"/>
+
+	<label id="notNextArgument"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="appendNextMemberCharacter" type="Relative8"/>
+
+	<cpu:DecrementCX/>
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="findMethod" type="Relative8"/>
+
+	<label id="appendNextMemberCharacter"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:PushSIToStack/>
+	<str:AppendCharacter/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="getNextMemberName" type="Relative8"/>
+
+	<!--Find Method-->
+	<label id="findMethod"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushDIToStack/>
+	<cpu:PushCXToStack/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<obj:GetType/>
+
+	<cls:FindMethod/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullDIFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="findField" type="Relative8"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="callMethod" type="Relative32"/>
+
+	<!--Find Next Field-->
+	<label id="findField"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushDIToStack/>
+	<cpu:PushCXToStack/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<obj:GetType/>
+
+	<cls:FindField/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullDIFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="skipGetField" type="Relative8"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="getFieldValue" type="Relative32"/>
+
+	<label id="skipGetField"/>
+
+	<cpu:CopyImmediateToDI/>
+	<addressOf ref="memberNotFound" type="Absolute32"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="throwException" type="Relative32"/>
+	
+	<!--Find Method-->
+	<label id="findMethodWithArguments"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushDIToStack/>
+	<cpu:PushCXToStack/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<obj:GetType/>
+
+	<cls:FindMethod/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullDIFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="methodWithArgumentsFound" type="Relative8"/>
+
+	<cpu:CopyImmediateToDI/>
+	<addressOf ref="memberNotFound" type="Absolute32"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="throwException" type="Relative32"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="lastMember" type="Relative32"/>
+	
+	<label id="methodWithArgumentsFound"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="commands" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="commands" type="Absolute32"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="evaluateFirstCommand" type="Relative32"/>
+	
+	<!--Get Method Arguments-->
+	<label id="getMethodArguments"/>
+	
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+
+	<cpu:CompareALToImmediate/>
+	<string>)</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notEmptyMethodArguments" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<cpu:BranchToRelative8IfCXIsZero/>
+	<addressOf ref="skipSkipMethodPeriod" type="Relative8"/>
+
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="skipSkipMethodPeriod" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<label id="skipSkipMethodPeriod"/>
+	
+	<cpu:JumpToRelative/>
+	<addressOf ref="findMethod" type="Relative32"/>
+
+	<label id="notEmptyMethodArguments"/>
+	
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+	
+	<cpu:JumpToRelative/>
+	<addressOf ref="evaluateFirstCommand" type="Relative32"/>
+	
+	<!--Get Return Value String-->
+	<label id="lastMember"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<obj:GetType/>
+
+	<cpu:CopyImmediateToDI/>
+	<addressOf ref="toStringMemberName" type="Absolute32"/>
+
+	<cls:FindMethod/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="handleEscape" type="Relative8"/>
+
+	<cls:GetMethodEntryPoint/>
+
+	<cpu:LogicFunction/>
+	<logic:CallSIRegister/>
+
+	<!--Write String To Console-->
+	<cpu:CopyImmediateToAX/>
+	<int>0</int>
+
+	<cpu:CompareRegisterToOperand/>
+	<op:AX-DIRegister/>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="handleEscape" type="Relative8"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-SIRegister/>
+
+	<obj:GetData/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="writeAsciiString" type="Relative32"/>
+
+	<!--Move Cursor To Next Line-->
+	<label id="handleEscape"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="moveCursorToNextLine" type="Relative32"/>
+
+	<!--Clear Command Buffer-->
+	<label id="clearBuffer"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="commandBuffer" type="Absolute32"/>
+
+	<str:Clear/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="showPrompt" type="Relative32"/>
+
+	<!--Handle Tab Key-->
+	<label id="handleTab"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="commandBuffer" type="Absolute32"/>
+
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu:CompareAXToImmediate/>
+	<int>0</int>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notEmptyAutocomplete" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="showClassList" type="Relative32"/>
+
+	<label id="notEmptyAutocomplete"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:AX-CXRegister/>
+
+	<!--Prepare To Autocomplete Command-->
+	<label id="autocompleteCommand"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="className" type="Absolute32"/>
+
+	<str:Clear/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<!--Detect Type-->
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+
+	<cpu:CompareALToImmediate/>
+	<string>,</string>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="autocompleteNextArgument" type="Relative8"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>"</string>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="autocompleteGetString" type="Relative8"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>-</string>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="autocompleteNumber" type="Relative8"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>0</string>
+
+	<cpu:BranchToRelative8IfLess/>
+	<addressOf ref="autocompleteNotNumber" type="Relative8"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>9</string>
+
+	<cpu:BranchToRelative8IfGreater/>
+	<addressOf ref="autocompleteNotNumber" type="Relative8"/>
+
+	<label id="autocompleteNumber"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="autocompleteGetNumber" type="Relative32"/>
+
+	<label id="autocompleteNotNumber"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="getAutocompleteClassName" type="Relative32"/>
+
+	<label id="autocompleteNextArgument"/>
+	
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+
+	<cpu:CompareALToImmediate/>
+	<string xml:space="preserve"> </string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notAutocompleteNextArgumentSpace" type="Relative8"/>
+	
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+	
+	<label id="notAutocompleteNextArgumentSpace"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="autocompleteCommand" type="Relative32"/>
+
+	<label id="autocompleteGetString"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<label id="autocompleteGetNextStringCharacter"/>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+
+	<cpu:CompareALToImmediate/>
+	<string>"</string>
+	
+	<cpu:LoopToRelative8WhileNotEqual/>
+	<addressOf ref="autocompleteGetNextStringCharacter" type="Relative8"/>
+
+	<cpu:BranchToRelative8IfCXIsZero/>
+	<addressOf ref="autocompleteNotStringMember" type="Relative8"/>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="autocompleteNotStringMember" type="Relative8"/>
+
+	<cpu:DecrementCX/>
+	
+	<!--Set classObject to string class name-->
+	<cpu:PushSIToStack/>
+	<cpu:PushDIToStack/>
+	<cpu:PushCXToStack/>
+
+	<cpu:CopyImmediateToDI/>
+	<addressOf ref="stringClassName" type="Absolute32"/>
+
+	<sys:GetCatalog/>
+
+	<cat:FindType/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullDIFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:BranchToRelative8IfCXIsZero/>
+	<addressOf ref="autocompleteStringEnd" type="Relative8"/>
+	
+	<cpu:JumpToRelative/>
+	<addressOf ref="getAutocompleteMemberName" type="Relative32"/>
+
+	<label id="autocompleteStringEnd"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="showInstanceMethodList" type="Relative32"/>
+
+	<label id="autocompleteNotStringMember"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>,</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="autocompleteNotStringNextArgument" type="Relative8"/>
+
+	<cpu:DecrementCX/>
+	
+	<cpu:BranchToRelative8IfZero/>
+	<addressOf ref="autocompleteNotStringNextArgumentSpace" type="Relative8"/>
+
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+
+	<cpu:CompareALToImmediate/>
+	<string xml:space="preserve"> </string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="autocompleteNotStringNextArgumentSpace" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+	
+	<label id="autocompleteNotStringNextArgumentSpace"/>
+
+	<cpu:BranchToRelative8IfCXIsZero/>
+	<addressOf ref="autocompleteStringNextArgumentEnd" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="autocompleteCommand" type="Relative32"/>
+
+	<label id="autocompleteStringNextArgumentEnd"/>
+	
+	<cpu:JumpToRelative/>
+	<addressOf ref="showClassList" type="Relative32"/>
+
+	<label id="autocompleteNotStringNextArgument"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="waitForKeystroke" type="Relative32"/>
+
+	<label id="autocompleteGetNumber"/>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+
+	<cpu:CompareALToImmediate/>
+	<string>0</string>
+
+	<cpu:BranchToRelative8IfLess/>
+	<addressOf ref="autocompleteNotDigit" type="Relative8"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>9</string>
+
+	<cpu:BranchToRelative8IfGreater/>
+	<addressOf ref="autocompleteNotDigit" type="Relative8"/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="autocompleteGetNumber" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="waitForKeystroke" type="Relative32"/>
+
+	<label id="autocompleteNotDigit"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="autocompleteNotPeriod" type="Relative8"/>
+
+	<!--Set classObject to integer class-->
+	<cpu:PushSIToStack/>
+	<cpu:PushDIToStack/>
+	<cpu:PushCXToStack/>
+
+	<cpu:CopyImmediateToDI/>
+	<addressOf ref="integerClassName" type="Absolute32"/>
+
+	<sys:GetCatalog/>
+
+	<cat:FindType/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullDIFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:DecrementCX/>
+
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="notAutocompleteNumberMemberEnd" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="showInstanceMethodList" type="Relative32"/>
+
+	<label id="notAutocompleteNumberMemberEnd"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="getAutocompleteMemberName" type="Relative32"/>
+
+	<label id="autocompleteNotPeriod"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="waitForKeystroke" type="Relative32"/>
+
+	<!--Get Class Name-->
+	<label id="getAutocompleteClassName"/>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="appendAutocompleteClassCharacter" type="Relative8"/>
+
+	<cpu:DecrementCX/>
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="findAutocompleteClass" type="Relative8"/>
+
+	<label id="appendAutocompleteClassCharacter"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:PushSIToStack/>
+	<str:AppendCharacter/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="getAutocompleteClassName" type="Relative8"/>
+
+	<!--Autocomplete Class Name-->
+	<sys:GetCatalog/>
+
+	<cat:GetObjects/>
+
+	<lst:ForEach>
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cls:IsStatic/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="skipClass" type="Relative8"/>
+
+		<cls:GetName/>
+
+		<!--Compare String Length-->
+		<cpu:CopyOperandToRegister/>
+		<op:CX-DIAddress/>
+
+		<cpu:CompareSIAddressToDIAddressAndIncrementSIAndDI/>
+
+		<cpu:BranchToRelative8IfGreater/>
+		<addressOf ref="compareClassName" type="Relative8"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="skipClass" type="Relative8"/>
+
+		<label id="compareClassName"/>
+
+		<cpu:RepeatWhileEqual/>
+		<cpu:CompareSIAddressToDIAddressAndIncrementSIAndDI8/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="classFound" type="Relative8"/>
+
+		<label id="skipClass"/>
+	</lst:ForEach>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="waitForKeystroke" type="Relative32"/>
+
+	<label id="classFound"/>
+
+	<cls:GetName/>
+
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:CX-DIAddress/>
+
+	<cpu:AddRegisterToOperand/>
+	<op:CX-SIRegister/>
+
+	<cpu:SubtractOperandFromRegister/>
+	<op:AX-CXRegister/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:AX-CXRegister/>
+
+	<label id="drawClassCharacter"/>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+
+	<cpu:PushSIToStack/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="writeCharacter" type="Relative32"/>
+
+	<cpu:PullSIFromStack/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="drawClassCharacter" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="updateCursorPosition" type="Relative32"/>
+
+	<!--Find Class-->
+	<label id="findAutocompleteClass"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushCXToStack/>
+
+	<sys:GetCatalog/>
+
+	<cat:FindClass/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-DIRegister/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="storeAutocompleteClassObject" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="waitForKeystroke" type="Relative32"/>
+
+	<label id="storeAutocompleteClassObject"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cpu:MathImmediate8ToOperandFunction/>
+	<math:CompareWithCXRegister/>
+	<byte>0</byte>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="getAutocompleteStaticMethodName" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="showStaticMethodList" type="Relative32"/>
+
+	<!--Get Static Method Name-->
+	<label id="getAutocompleteStaticMethodName"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="memberName" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<str:Clear/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<label id="getAutocompleteStaticMethodCharacter"/>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+
+	<cpu:CompareALToImmediate/>
+	<string>)</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notAutocompleteStaticMethodEnd" type="Relative8"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="pullClassAndMethodAndReturn" type="Relative32"/>
+
+	<cpu:DecrementCX/>
+
+	<cpu:BranchToRelative8IfZero/>
+	<addressOf ref="notAutocompleteStaticMethodEndMethod" type="Relative8"/>
+
+	<cpu:CopyOperandToRegister8/>
+	<op:AL-SIAddress/>
+
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notAutocompleteStaticMethodEndMethod" type="Relative8"/>
+
+	<cpu:IncrementSI/>
+	<cpu:DecrementCX/>
+
+	<cpu:BranchToRelative8IfZero/>
+	<addressOf ref="notAutocompleteStaticMethodEndMethod" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="getAutocompleteMemberName" type="Relative32"/>
+
+	<label id="notAutocompleteStaticMethodEndMethod"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="showInstanceMethodList" type="Relative32"/>
+
+	<label id="notAutocompleteStaticMethodEnd"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>(</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notAutocompleteStaticMethodStart" type="Relative8"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="findStaticMethodAndReturn" type="Relative32"/>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="autocompleteStaticMethodFound" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="waitForKeystroke" type="Relative32"/>
+
+	<label id="autocompleteStaticMethodFound"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="pushClassAndMethodAndReturn" type="Relative32"/>
+
+	<cpu:DecrementCX/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="autocompleteCommand" type="Relative32"/>
+
+	<label id="notAutocompleteStaticMethodStart"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>,</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notAutocompleteParameterEnd" type="Relative8"/>
+
+	<cpu:DecrementCX/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="autocompleteCommand" type="Relative32"/>
+
+	<label id="notAutocompleteParameterEnd"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notAutocompleteStaticMemberEnd" type="Relative8"/>
+
+	<cpu:DecrementCX/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="findAutocompleteStaticMethod" type="Relative32"/>
+
+	<label id="notAutocompleteStaticMemberEnd"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:PushSIToStack/>
+	<str:AppendCharacter/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:DecrementCX/>
+
+	<cpu:BranchToRelative8IfZero/>
+	<addressOf ref="findPartialStaticMethodName" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="getAutocompleteStaticMethodCharacter" type="Relative32"/>
+
+	<!--Find Partial Static Method Name-->
+	<label id="findPartialStaticMethodName"/>
+	
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cls:GetStaticMethods/>
+
+	<lst:ForEach>
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cls:GetMethodName/>
+
+		<!--Compare String Length-->
+		<cpu:CopyOperandToRegister/>
+		<op:CX-DIAddress/>
+
+		<cpu:CompareSIAddressToDIAddressAndIncrementSIAndDI/>
+
+		<cpu:BranchToRelative8IfGreater/>
+		<addressOf ref="compareMemberName" type="Relative8"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="skipMethod" type="Relative8"/>
+
+		<label id="compareMemberName"/>
+
+		<cpu:RepeatWhileEqual/>
+		<cpu:CompareSIAddressToDIAddressAndIncrementSIAndDI8/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="methodFound" type="Relative8"/>
+
+		<label id="skipMethod"/>
+	</lst:ForEach>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="waitForKeystroke" type="Relative32"/>
+
+	<label id="methodFound"/>
+
+	<cls:GetMethodName/>
+
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:CX-DIAddress/>
+
+	<cpu:AddRegisterToOperand/>
+	<op:CX-SIRegister/>
+
+	<cpu:SubtractOperandFromRegister/>
+	<op:AX-CXRegister/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:AX-CXRegister/>
+
+	<label id="drawMethodCharacter"/>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+
+	<cpu:PushSIToStack/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="writeCharacter" type="Relative32"/>
+
+	<cpu:PullSIFromStack/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="drawMethodCharacter" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="updateCursorPosition" type="Relative32"/>
+
+	<!--Find Static Method-->
+	<label id="findAutocompleteStaticMethod"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushDIToStack/>
+	<cpu:PushCXToStack/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cls:FindStaticMethod/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullDIFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="skipAutocompleteGetMember" type="Relative8"/>
+
+	<label id="findAutocompleteMethodType"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushDIToStack/>
+	<cpu:PushCXToStack/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cls:GetMethodType/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-DIRegister/>
+
+	<sys:GetCatalog/>
+
+	<cat:FindType/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullDIFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="skipAutocompleteGetMember" type="Relative8"/>
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="parseAutocompleteMemberName" type="Relative8"/>
+
+	<label id="skipAutocompleteGetMember"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="waitForKeystroke" type="Relative32"/>
+
+	<label id="findAutocompleteFieldType"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushDIToStack/>
+	<cpu:PushCXToStack/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cls:GetFieldType/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-DIRegister/>
+
+	<sys:GetCatalog/>
+
+	<cat:FindType/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullDIFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="autocompleteMemberTypeNotFound" type="Relative8"/>
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="parseAutocompleteMemberName" type="Relative8"/>
+
+	<label id="autocompleteMemberTypeNotFound"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="waitForKeystroke" type="Relative32"/>
+
+	<label id="parseAutocompleteMemberName"/>
+
+	<cpu:MathImmediate8ToOperandFunction/>
+	<math:CompareWithCXRegister/>
+	<byte>0</byte>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="getAutocompleteMemberName" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="showInstanceMethodList" type="Relative32"/>
+
+	<!--Get Member Name-->
+	<label id="getAutocompleteMemberName"/>
+	
+	<cpu:CopyOperandToRegister/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="memberName" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<str:Clear/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<label id="getAutocompleteMemberCharacter"/>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+
+	<cpu:CompareALToImmediate/>
+	<string>(</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notAutocompleteMethodStart" type="Relative8"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="findMethodAndReturn" type="Relative32"/>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="autocompleteNextMemberFound" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="waitForKeystroke" type="Relative32"/>
+	
+	<label id="autocompleteNextMemberFound"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="pushClassAndMethodAndReturn" type="Relative32"/>
+
+	<cpu:DecrementCX/>
+	
+	<cpu:JumpToRelative/>
+	<addressOf ref="autocompleteCommand" type="Relative32"/>
+
+	<label id="notAutocompleteMethodStart"/>
+
+	<cpu:CompareALToImmediate/>
+	<string>.</string>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="appendNextAutocompleteMemberCharacter" type="Relative8"/>
+
+	<cpu:DecrementCX/>
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="findAutocompleteMethod" type="Relative8"/>
+
+	<label id="appendNextAutocompleteMemberCharacter"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:PushSIToStack/>
+	<str:AppendCharacter/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SI-DIRegister/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="getAutocompleteMemberCharacter" type="Relative8"/>
+
+	<!--Find Partial Method Name-->
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cls:GetMethods/>
+
+	<lst:ForEach>
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cls:GetMethodName/>
+
+		<!--Compare String Length-->
+		<cpu:CopyOperandToRegister/>
+		<op:CX-DIAddress/>
+
+		<cpu:CompareSIAddressToDIAddressAndIncrementSIAndDI/>
+
+		<cpu:BranchToRelative8IfGreater/>
+		<addressOf ref="compareAutocompleteMemberName" type="Relative8"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="skipAutocompleteMethod" type="Relative8"/>
+
+		<label id="compareAutocompleteMemberName"/>
+
+		<cpu:RepeatWhileEqual/>
+		<cpu:CompareSIAddressToDIAddressAndIncrementSIAndDI8/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="partialMethodNameFound" type="Relative8"/>
+
+		<label id="skipAutocompleteMethod"/>
+	</lst:ForEach>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="findPartialFieldName" type="Relative32"/>
+
+	<label id="partialMethodNameFound"/>
+
+	<cls:GetMethodName/>
+
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:CX-DIAddress/>
+
+	<cpu:AddRegisterToOperand/>
+	<op:CX-SIRegister/>
+
+	<cpu:SubtractOperandFromRegister/>
+	<op:AX-CXRegister/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:AX-CXRegister/>
+
+	<label id="drawAutocompleteMethodCharacter"/>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+
+	<cpu:PushSIToStack/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="writeCharacter" type="Relative32"/>
+
+	<cpu:PullSIFromStack/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="drawAutocompleteMethodCharacter" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="updateCursorPosition" type="Relative32"/>
+
+	<!--Find Method-->
+	<label id="findAutocompleteMethod"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushDIToStack/>
+	<cpu:PushCXToStack/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cls:FindMethod/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullDIFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="findAutocompleteField" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="findAutocompleteMethodType" type="Relative32"/>
+
+	<!--Find Field-->
+	<label id="findAutocompleteField"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushDIToStack/>
+	<cpu:PushCXToStack/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cls:FindField/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullDIFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="nextAutocompleteMemberNotFound" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="findAutocompleteFieldType" type="Relative32"/>
+
+	<label id="nextAutocompleteMemberNotFound"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="waitForKeystroke" type="Relative32"/>
+
+	<!--Find Partial Field Name-->
+	<label id="findPartialFieldName"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cls:GetFields/>
+
+	<lst:ForEach>
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cls:GetFieldName/>
+
+		<!--Compare String Length-->
+		<cpu:CopyOperandToRegister/>
+		<op:CX-DIAddress/>
+
+		<cpu:CompareSIAddressToDIAddressAndIncrementSIAndDI/>
+
+		<cpu:BranchToRelative8IfGreater/>
+		<addressOf ref="compareFieldName" type="Relative8"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="skipField" type="Relative8"/>
+
+		<label id="compareFieldName"/>
+
+		<cpu:RepeatWhileEqual/>
+		<cpu:CompareSIAddressToDIAddressAndIncrementSIAndDI8/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="partialFieldFound" type="Relative8"/>
+
+		<label id="skipField"/>
+	</lst:ForEach>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="waitForKeystroke" type="Relative32"/>
+
+	<label id="partialFieldFound"/>
+
+	<cls:GetFieldName/>
+
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:CX-DIAddress/>
+
+	<cpu:AddRegisterToOperand/>
+	<op:CX-SIRegister/>
+
+	<cpu:SubtractOperandFromRegister/>
+	<op:AX-CXRegister/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:AX-CXRegister/>
+
+	<label id="drawPartialFieldCharacter"/>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+
+	<cpu:PushSIToStack/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="writeCharacter" type="Relative32"/>
+
+	<cpu:PullSIFromStack/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="drawPartialFieldCharacter" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="updateCursorPosition" type="Relative32"/>
+	
+	<!--Handle Up Arrow-->
+	<label id="handleUpArrow"/>
+	
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="commandHistory" type="Absolute32"/>
+
+	<obj:GetData/>
+
+	<col:GetCount/>
+
+	<cpu:CompareAXToImmediate/>
+	<int>0</int>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="skipRecall" type="Relative8"/>
+
+	<cpu:MathImmediateToOperandFunction/>
+	<math:CompareWithImmediateAddress/>
+	<addressOf ref="commandHistoryIndex" type="Absolute32"/>
+	<int>-1</int>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="skipLastCommand" type="Relative8"/>
+
+	<cpu:DecrementAX/>
+	
+	<cpu:CopyRegisterToOperand/>
+	<op:AX-ImmediateAddress/>
+	<addressOf ref="commandHistoryIndex" type="Absolute32"/>
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="getCommand" type="Relative8"/>
+	
+	<label id="skipLastCommand"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="eraseCommand" type="Relative32"/>
+
+	<cpu:IncrementFunction/>
+	<inc:DecrementImmediateAddress/>
+	<addressOf ref="commandHistoryIndex" type="Absolute32"/>
+
+	<cpu:MathImmediateToOperandFunction/>
+	<math:CompareWithImmediateAddress/>
+	<addressOf ref="commandHistoryIndex" type="Absolute32"/>
+	<int>-1</int>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="getCommand" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="updateCursorPosition" type="Relative32"/>
+
+	<label id="getCommand"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="drawHistoryCommand" type="Relative32"/>
+
+	<label id="skipRecall"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="updateCursorPosition" type="Relative32"/>
+	
+	<!--Handle Down Arrow-->
+	<label id="handleDownArrow"/>
+	
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="commandHistory" type="Absolute32"/>
+
+	<obj:GetData/>
+
+	<col:GetCount/>
+
+	<cpu:CompareAXToImmediate/>
+	<int>0</int>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="skipRecall" type="Relative8"/>
+
+	<cpu:IncrementFunction/>
+	<inc:IncrementImmediateAddress/>
+	<addressOf ref="commandHistoryIndex" type="Absolute32"/>
+
+	<cpu:CompareRegisterToOperand/>
+	<op:AX-ImmediateAddress/>
+	<addressOf ref="commandHistoryIndex" type="Absolute32"/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="skipFirstCommand" type="Relative8"/>
+
+	<cpu:CopyImmediateToOperandFunction/>
+	<imm:CopyImmediateToImmediateAddress/>
+	<addressOf ref="commandHistoryIndex" type="Absolute32"/>
+	<int>-1</int>
+
+	<label id="skipFirstCommand"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="eraseCommand" type="Relative32"/>
+
+	<cpu:MathImmediateToOperandFunction/>
+	<math:CompareWithImmediateAddress/>
+	<addressOf ref="commandHistoryIndex" type="Absolute32"/>
+	<int>-1</int>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="getCommand" type="Relative8"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="updateCursorPosition" type="Relative32"/>
+
+	<!--Show Static Class List-->
+	<label id="showClassList"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="moveCursorToNextLine" type="Relative32"/>
+
+	<sys:GetCatalog/>
+
+	<cat:GetObjects/>
+
+	<lst:ForEach>
+		<cpu:PushSIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cls:IsStatic/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="nextClass" type="Relative8"/>
+
+		<cls:GetName/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="writeString" type="Relative32"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToImmediateAddress/>
+		<addressOf ref="cursorPosition" type="Absolute32"/>
+		<byte>2</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="scrollScreen" type="Relative32"/>
+
+		<label id="nextClass"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullSIFromStack/>
+	</lst:ForEach>
+
+	<cpu:CallRelative/>
+	<addressOf ref="moveCursorToNextLine" type="Relative32"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="showPrompt" type="Relative32"/>
+
+	<!--Show Static Method List-->
+	<label id="showStaticMethodList"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="moveCursorToNextLine" type="Relative32"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cls:GetStaticMethods/>
+
+	<lst:ForEach>
+		<cpu:PushSIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cpu:PushSIToStack/>
+		<cls:IsMethodStatic/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="skipStaticMethod" type="Relative8"/>
+
+		<cls:GetMethodName/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="writeString" type="Relative32"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToImmediateAddress/>
+		<addressOf ref="cursorPosition" type="Absolute32"/>
+		<byte>2</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="scrollScreen" type="Relative32"/>
+
+		<label id="skipStaticMethod"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullSIFromStack/>
+	</lst:ForEach>
+
+	<cpu:CallRelative/>
+	<addressOf ref="moveCursorToNextLine" type="Relative32"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+
+	<cpu:Operand16/>
+	<cpu:CopyImmediateToAX/>
+	<string>&gt;</string>
+	<hex>07</hex>
+
+	<cpu:Operand16/>
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="commandBuffer" type="Absolute32"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="writeString" type="Relative32"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="updateCursorPosition" type="Relative32"/>
+
+	<!--Show Instance Method List-->
+	<label id="showInstanceMethodList"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="moveCursorToNextLine" type="Relative32"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cls:GetFields/>
+
+	<lst:ForEach>
+		<cpu:PushSIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cls:GetFieldName/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="writeString" type="Relative32"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToImmediateAddress/>
+		<addressOf ref="cursorPosition" type="Absolute32"/>
+		<byte>2</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="scrollScreen" type="Relative32"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullSIFromStack/>
+	</lst:ForEach>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cls:GetMethods/>
+
+	<lst:ForEach>
+		<cpu:PushSIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cpu:PushSIToStack/>
+		<cls:IsMethodStatic/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="skipInstanceMethod" type="Relative8"/>
+
+		<cls:GetMethodName/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="writeString" type="Relative32"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToImmediateAddress/>
+		<addressOf ref="cursorPosition" type="Absolute32"/>
+		<byte>2</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="scrollScreen" type="Relative32"/>
+
+		<label id="skipInstanceMethod"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullSIFromStack/>
+	</lst:ForEach>
+
+	<cpu:CallRelative/>
+	<addressOf ref="moveCursorToNextLine" type="Relative32"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+
+	<cpu:Operand16/>
+	<cpu:CopyImmediateToAX/>
+	<string>&gt;</string>
+	<hex>07</hex>
+
+	<cpu:Operand16/>
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="commandBuffer" type="Absolute32"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="writeString" type="Relative32"/>
+
+	<cpu:JumpToRelative/>
+	<addressOf ref="updateCursorPosition" type="Relative32"/>
+
+	<!--Routines-->
+	
+	<!--Erase Current Command-->
+	<label id="eraseCommand"/>
+	
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="commandBuffer" type="Absolute32"/>
+
+	<str:GetLength/>
+
+	<cpu:CompareAXToImmediate/>
+	<int>0</int>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="skipEraseCommand" type="Relative8"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:AX-CXRegister/>
+
+	<label id="deleteCharacter"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushDIToStack/>
+	<cpu:PushCXToStack/>
+
+	<str:TrimCharacter/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+
+	<cpu:MathImmediate8ToOperandFunction/>
+	<math:SubtractFromDIRegister/>
+	<byte>2</byte>
+
+	<cpu:Operand16/>
+	<cpu:CopyImmediateToOperandFunction/>
+	<imm:CopyImmediateToDIAddress/>
+	<hex>0720</hex>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+	
+	<cpu:PullCXFromStack/>
+	<cpu:PullDIFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="deleteCharacter" type="Relative8"/>
+	
+	<label id="skipEraseCommand"/>
+
+	<cpu:ReturnToNearCaller/>
+
+	<!--Draw History Command-->
+	<label id="drawHistoryCommand"/>
+	
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="commandHistory" type="Absolute32"/>
+
+	<obj:GetData/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:AX-ImmediateAddress/>
+	<addressOf ref="commandHistoryIndex" type="Absolute32"/>
+
+	<col:GetItem/>
+
+	<obj:GetData/>
+
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:AX-CXRegister/>
+
+	<label id="forEachHistoryCharacter"/>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushDIToStack/>
+	<cpu:PushCXToStack/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="writeCharacter" type="Relative32"/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="scrollScreen" type="Relative32"/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullDIFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="forEachHistoryCharacter" type="Relative8"/>
+
+	<cpu:ReturnToNearCaller/>
+	
+	<!--Find Class By Name-->
+	<label id="findClassAndReturn"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushCXToStack/>
+
+	<sys:GetCatalog/>
+
+	<cat:FindClass/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:ReturnToNearCaller/>
+
+	<label id="findStaticMethodAndReturn"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushDIToStack/>
+	<cpu:PushCXToStack/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cls:FindStaticMethod/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullDIFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:ReturnToNearCaller/>
+
+	<label id="findMethodAndReturn"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushDIToStack/>
+	<cpu:PushCXToStack/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cls:FindMethod/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullDIFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:ReturnToNearCaller/>
+
+	<label id="pushClassAndMethodAndReturn"/>
+
+	<cpu:PushSIToStack/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="commands" type="Absolute32"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cpu:PushSIToStack/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cpu:PushSIToStack/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="commands" type="Absolute32"/>
+
+	<cpu:PullSIFromStack/>
+
+	<cpu:ReturnToNearCaller/>
+
+	<label id="pullClassAndMethodAndReturn"/>
+
+	<cpu:PushSIToStack/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="commands" type="Absolute32"/>
+
+	<cpu:PullSIFromStack/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="memberObject" type="Absolute32"/>
+
+	<cpu:PullSIFromStack/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="classObject" type="Absolute32"/>
+
+	<cpu:ExchangeOperandWithRegister/>
+	<op:SP-ImmediateAddress/>
+	<addressOf ref="commands" type="Absolute32"/>
+
+	<cpu:PullSIFromStack/>
+
+	<cpu:ReturnToNearCaller/>
+
+	<label id="moveCursorToNextLine"/>
+
+	<cpu:CopyAbsoluteMemoryToAX/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+
+	<cpu:SubtractImmediateFromAX/>
+	<hex>000b8000</hex>
+
+	<cpu:CopyImmediateToBL/>
+	<byte>160</byte>
+
+	<cpu:ArithmeticAXOperandFunction/>
+	<ari:DivideByBLRegister/>
+
+	<cpu:CopyImmediateToAL/>
+	<byte>160</byte>
+
+	<cpu:SubtractOperandFromRegister8/>
+	<op:AL-AHRegister/>
+
+	<cpu:AndAXWithImmediate/>
+	<hex>000000ff</hex>
+
+	<cpu:AddRegisterToOperand/>
+	<op:AX-ImmediateAddress/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+
+	<!--Scroll Screen If Needed-->
+	<label id="scrollScreen"/>
+
+	<cpu:CopyAbsoluteMemoryToAX/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+
+	<cpu:CompareAXToImmediate/>
+	<hex>000b8fa0</hex>
+
+	<cpu:BranchToRelative8IfLess/>
+	<addressOf ref="skipScroll" type="Relative8"/>
+
+	<cpu:PushAXToStack/>
+	
+	<cpu:CopyImmediateToDI/>
+	<hex>000b8000</hex>
+
+	<cpu:CopyImmediateToSI/>
+	<hex>000b80a0</hex>
+
+	<cpu:CopyImmediateToCX/>
+	<int>960</int>
+
+	<cpu:Repeat/>
+	<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+
+	<cpu:PullAXFromStack/>
+
+	<cpu:SubtractImmediateFromAX/>
+	<int>160</int>
+	
+	<cpu:CopyRegisterToOperand/>
+	<op:AX-ImmediateAddress/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+
+	<cpu:CopyImmediateToCX/>
+	<int>40</int>
+
+	<cpu:CopyImmediateToAX/>
+	<hex>07200720</hex>
+
+	<cpu:Repeat/>
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<label id="skipScroll"/>
+
+	<cpu:ReturnToNearCaller/>
+
+	<!--Write String To Console-->
+	<label id="writeString"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:AX-CXRegister/>
+
+	<cpu:AddOperandToRegister/>
+	<op:AX-CXRegister/>
+
+	<cpu:AddRegisterToOperand/>
+	<op:DI-AXRegister/>
+
+	<cpu:CompareAXToImmediate/>
+	<hex>000b8fa0</hex>
+
+	<cpu:BranchToRelative8IfLess/>
+	<addressOf ref="skipScrollScreen" type="Relative8"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:AX-ImmediateAddress/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushDIToStack/>
+	<cpu:PushCXToStack/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="scrollScreen" type="Relative32"/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullDIFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:MathImmediateToOperandFunction/>
+	<math:SubtractFromDIRegister/>
+	<int>160</int>
+
+	<label id="skipScrollScreen"/>
+
+	<cpu:CopyImmediateToAH/>
+	<hex>07</hex>
+
+	<label id="writeStringCharacter"/>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+
+	<cpu:Operand16/>
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="writeStringCharacter" type="Relative8"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+
+	<cpu:ReturnToNearCaller/>
+
+	<!--Write Ascii String To Console-->
+	<label id="writeAsciiString"/>
+
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu:CompareAXToImmediate/>
+	<int>0</int>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="startWriteAsciiString" type="Relative8"/>
+
+	<cpu:ReturnToNearCaller/>
+
+	<label id="startWriteAsciiString"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:AX-CXRegister/>
+
+	<label id="drawAsciiCharacter"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+
+	<cpu:CopyImmediateToAH/>
+	<hex>07</hex>
+
+	<cpu:CopySIAddressToALAndIncrementSI/>
+
+	<cpu:CompareALToImmediate/>
+	<asc:CarriageReturn/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notCarriageReturn" type="Relative8"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-AXRegister/>
+
+	<cpu:SubtractImmediateFromAX/>
+	<hex>000b8000</hex>
+
+	<cpu:CopyImmediateToBL/>
+	<byte>160</byte>
+
+	<cpu:ArithmeticAXOperandFunction/>
+	<ari:DivideByBLRegister/>
+
+	<cpu:ShiftRegisterByImmediate8Function/>
+	<shift:ShiftAXRegisterRight/>
+	<byte>8</byte>
+
+	<cpu:SubtractRegisterFromOperand/>
+	<op:AX-DIRegister/>
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="nextAsciiCharacter" type="Relative8"/>
+
+	<label id="notCarriageReturn"/>
+
+	<cpu:CompareALToImmediate/>
+	<asc:LineFeed/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notLineFeed" type="Relative8"/>
+
+	<cpu:MathImmediateToOperandFunction/>
+	<math:AddToDIRegister/>
+	<int>160</int>
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="nextAsciiCharacter" type="Relative8"/>
+
+	<label id="notLineFeed"/>
+
+	<cpu:Operand16/>
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<label id="nextAsciiCharacter"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushCXToStack/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="scrollScreen" type="Relative32"/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="drawAsciiCharacter" type="Relative8"/>
+
+	<cpu:ReturnToNearCaller/>
+
+	<!--Write Character To Console-->
+	<label id="writeCharacter"/>
+
+	<cpu:PushAXToStack/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:SI-ImmediateAddress/>
+	<addressOf ref="commandBuffer" type="Absolute32"/>
+
+	<str:GetLength/>
+
+	<cpu:CompareAXToImmediate/>
+	<int>250</int>
+
+	<cpu:PullAXFromStack/>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="skipWriteCharacter" type="Relative8"/>
+
+	<str:AppendCharacter/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+
+	<cpu:CopyImmediateToAH/>
+	<hex>07</hex>
+
+	<cpu:Operand16/>
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="cursorPosition" type="Absolute32"/>
+
+	<cpu:PushSIToStack/>
+	<cpu:PushDIToStack/>
+	<cpu:PushCXToStack/>
+
+	<cpu:CallRelative/>
+	<addressOf ref="scrollScreen" type="Relative32"/>
+
+	<cpu:PullCXFromStack/>
+	<cpu:PullDIFromStack/>
+	<cpu:PullSIFromStack/>
+
+	<label id="skipWriteCharacter"/>
+
+	<cpu:ReturnToNearCaller/>
+
+	<!--Throw Exceptions-->
+	<label id="throwException"/>
+
+	<ex:CreateObject/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="returnValue" type="Absolute32"/>
+
+	<cpu:ReturnToNearCaller/>
+
+	<!--Local Variables-->
+	<var:integer id="cursorPosition">0</var:integer>
+	<var:integer id="keyboard">0</var:integer>
+	<var:integer id="commandBuffer">0</var:integer>
+	<!--<var:integer id="lastCommand">0</var:integer>-->
+	<var:integer id="commandHistory">0</var:integer>
+	<var:integer id="commandHistoryIndex">-1</var:integer>
+	<var:integer id="className">0</var:integer>
+	<var:integer id="classObject">0</var:integer>
+	<var:integer id="memberName">0</var:integer>
+	<var:integer id="memberObject">0</var:integer>
+	<var:integer id="commands">0</var:integer>
+	<var:integer id="commandsPointer">0</var:integer>
+	<var:integer id="arguments">0</var:integer>
+	<var:integer id="argumentsPointer">0</var:integer>
+	<var:integer id="returnValue">0</var:integer>
+
+	<!--Constants-->
+	<var:string id="toStringMemberName">ToString</var:string>
+	<var:string id="stringClassName">http://metalx.org/String</var:string>
+	<var:string id="integerClassName">http://metalx.org/Integer</var:string>
+	<var:string id="floatClassName">http://metalx.org/Float</var:string>
+
+	<!-- Exceptions-->
+	<var:string id="classNotFound">Class not found.</var:string>
+	<var:string id="memberNotFound">Member not found.</var:string>
+	<var:string id="staticClassNotFound">Static class not found.</var:string>
+	<var:string id="staticMemberNotFound">Static member not found.</var:string>
+</scope>

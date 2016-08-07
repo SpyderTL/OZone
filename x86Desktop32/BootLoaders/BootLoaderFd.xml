@@ -1,0 +1,314 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu16="http://metalx.org/Intel/80286/Operators"
+	xmlns:cpu32="http://metalx.org/Intel/80386/Operators"
+	xmlns:seg16="http://metalx.org/Intel/80286/Segments"
+	xmlns:op16="http://metalx.org/Intel/80286/Operands"
+	xmlns:op32="http://metalx.org/Intel/80386/Operands"
+	xmlns:ctrl="http://metalx.org/Intel/80286/Control"
+	xmlns:ex="http://metalx.org/Intel/80286/ExtendedOperators"
+	xmlns:gdt="http://metalx.org/Intel/80286/DescriptorTable"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:dsk="http://metalx.org/i286/Functions/Disk"
+	xmlns:flp="http://metalx.org/Pc/Bios/Disk"
+	xmlns:sys="http://metalx.org/Pc/Bios/System"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:vesa="http://metalx.org/Pc/Vesa/SuperVga"
+	xmlns:info="http://metalx.org/Pc/Vesa/SuperVga/Information"
+	xmlns:mode="http://metalx.org/Pc/Vesa/SuperVga/Mode"
+	xmlns:logic="http://metalx.org/Intel/80286/Logic"
+	xmlns:logic32="http://metalx.org/Intel/80386/Logic"
+	xmlns:debug="http://metalx.org/x86/Debug/Functions">
+
+	<cpu16:CopyImmediateToAX/>
+	<hex>0000</hex>
+
+	<cpu16:CopyOperandToSegmentRegister16/>
+	<seg16:SS-AXRegister/>
+
+	<cpu16:CopyOperandToSegmentRegister16/>
+	<seg16:DS-AXRegister/>
+
+	<cpu16:CopyOperandToSegmentRegister16/>
+	<seg16:ES-AXRegister/>
+
+	<cpu16:CopyOperandToSegmentRegister16/>
+	<seg16:FS-AXRegister/>
+
+	<cpu16:CopyOperandToSegmentRegister16/>
+	<seg16:GS-AXRegister/>
+
+	<cpu16:CopyRegisterToOperand16/>
+	<op16:AX-SPRegister/>
+
+	<cpu16:JumpToImmediatePointer16/>
+	<addressOf ref="start" type="Pointer16"/>
+
+	<label id="start"/>
+
+	<!--Set Video Mode to 1280x1024x32-->
+	<cpu16:CopyImmediateToAX/>
+	<vesa:GetSuperVgaInformation/>
+
+	<cpu16:CopyImmediateToDI/>
+	<hex>8000</hex>
+
+	<cpu16:CallImmediate8Interrupt/>
+	<bios:VideoFunctions/>
+
+	<cpu16:CopyImmediateToDI/>
+	<hex>8000</hex>
+
+	<cpu16:MathImmediate8ToOperand16Function/>
+	<math:AddToDIRegister/>
+	<info:SupportedVideoModeListPointer/>
+
+	<cpu16:CopyOperandToRegister16/>
+	<op16:SI-DIAddress/>
+
+	<cpu16:IncrementDI/>
+	<cpu16:IncrementDI/>
+
+	<cpu16:PushDSToStack/>
+	<cpu16:PullBXFromStack/>
+
+	<cpu16:LogicFunction/>
+	<logic:PushDIAddress/>
+	<cpu16:PullDSFromStack/>
+
+	<cpu16:CopyImmediateToCX/>
+	<short>0</short>
+
+	<!--Store Video Modes-->
+	<label id="storeVideoModes"/>
+
+	<cpu16:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu16:CompareAXToImmediate/>
+	<hex>ffff</hex>
+
+	<cpu16:BranchToRelativeIfEqual8/>
+	<addressOf ref="findVideoMode" type="Relative8"/>
+
+	<cpu16:PushAXToStack/>
+
+	<cpu16:IncrementCX/>
+
+	<cpu16:JumpToRelative8/>
+	<addressOf ref="storeVideoModes" type="Relative8"/>
+
+	<!--Find Video Mode-->
+	<label id="findVideoMode"/>
+
+	<cpu16:PushBXToStack/>
+	<cpu16:PullDSFromStack/>
+
+	<label id="forEachVideoMode"/>
+
+	<cpu16:PullAXFromStack/>
+
+	<cpu16:PushCXToStack/>
+
+	<cpu16:CopyRegisterToOperand16/>
+	<op16:AX-CXRegister/>
+
+	<cpu16:CopyImmediateToAX/>
+	<vesa:GetVideoModeInformation/>
+
+	<cpu16:CopyOperandToRegister16/>
+	<op16:DI-ImmediateAddress/>
+	<hex>8000</hex>
+
+	<cpu16:CallImmediate8Interrupt/>
+	<bios:VideoFunctions/>
+
+	<!--Check Width-->
+	<cpu16:CopyOperandToRegister16/>
+	<op16:SI-ImmediateAddress/>
+	<hex>8000</hex>
+
+	<cpu16:MathImmediate8ToOperand16Function/>
+	<math:AddToSIRegister/>
+	<mode:Width/>
+
+	<cpu16:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu16:CompareAXToImmediate/>
+	<short>1280</short>
+
+	<cpu16:BranchToRelativeIfNotEqual8/>
+	<addressOf ref="nextMode" type="Relative8"/>
+
+	<!--Check Height-->
+	<cpu16:CopyOperandToRegister16/>
+	<op16:SI-ImmediateAddress/>
+	<hex>8000</hex>
+
+	<cpu16:MathImmediate8ToOperand16Function/>
+	<math:AddToSIRegister/>
+	<mode:Height/>
+
+	<cpu16:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu16:CompareAXToImmediate/>
+	<short>1024</short>
+
+	<cpu16:BranchToRelativeIfNotEqual8/>
+	<addressOf ref="nextMode" type="Relative8"/>
+
+	<!--Check Bits Per Pixel-->
+	<cpu16:CopyOperandToRegister16/>
+	<op16:SI-ImmediateAddress/>
+	<hex>8000</hex>
+
+	<cpu16:MathImmediate8ToOperand16Function/>
+	<math:AddToSIRegister/>
+	<mode:BitsPerPixel/>
+
+	<cpu16:CopySIAddressToALAndIncrementSI/>
+
+	<cpu16:CompareALToImmediate/>
+	<byte>32</byte>
+
+	<cpu16:BranchToRelativeIfNotEqual8/>
+	<addressOf ref="nextMode" type="Relative8"/>
+
+	<cpu16:CopyRegisterToOperand16/>
+	<op16:CX-BXRegister/>
+
+	<cpu16:CopyOperandToRegister16/>
+	<op16:SI-ImmediateAddress/>
+	<hex>8000</hex>
+
+	<cpu16:MathImmediate8ToOperand16Function/>
+	<math:AddToSIRegister/>
+	<mode:LinearBufferAddress/>
+
+	<cpu16:Operand32/>
+	<cpu16:CopyOperandToRegister16/>
+	<op16:AX-SIAddress/>
+
+	<cpu16:Operand32/>
+	<cpu16:CopyRegisterToOperand16/>
+	<op16:AX-ImmediateAddress/>
+	<addressOf ref="linearFrameBuffer" type="Absolute16"/>
+
+	<label id="nextMode"/>
+
+	<cpu16:PullCXFromStack/>
+
+	<cpu16:LoopToRelative8/>
+	<addressOf ref="forEachVideoMode" type="Relative8"/>
+
+	<!--Set Video Mode-->
+	<cpu16:CopyImmediateToAX/>
+	<vesa:SetVideoMode/>
+
+	<cpu16:MathImmediateToOperandFunction16/>
+	<math:OrWithBXRegister/>
+	<hex>4000</hex>
+
+	<cpu16:CallImmediate8Interrupt/>
+	<bios:VideoFunctions/>
+	
+	<!--Enable A20 Gate-->
+	<cpu16:CopyImmediateToAX/>
+	<sys:EnableA20Gate/>
+
+	<cpu16:CallImmediate8Interrupt/>
+	<bios:SystemFunctions/>
+	
+	<!--Load System Loader-->
+	<cpu16:CopyImmediateToBX/>
+	<hex>8000</hex>
+	
+	<dsk:ReadSectors count="1" drive="00" head="0" sector="1" track="0"/>
+
+	<!--Load Global Descriptor Table-->
+	<cpu16:ClearInterruptFlag/>
+
+	<cpu16:ExtendedOperator/>
+	<ex:DescriptorTableFunction/>
+	<gdt:CopyImmediate16AddressToGlobalDescriptorTableRegister/>
+	<addressOf ref="globalDescriptorTablePointer" type="Absolute16"/>
+
+	<!--Switch To 32-Bit Protected Mode-->
+	<cpu16:ExtendedOperator/>
+	<ex:CopyControlRegisterToRegister/>
+	<ctrl:AX-ControlRegister0/>
+
+	<cpu16:OrALWithImmediate/>
+	<binary>00000001</binary>
+
+	<cpu16:ExtendedOperator/>
+	<ex:CopyRegisterToControlRegister/>
+	<ctrl:AX-ControlRegister0/>
+
+	<!--Send Linear Video Address-->
+	<cpu16:Operand32/>
+	<cpu16:CopyOperandToRegister16/>
+	<op16:DI-ImmediateAddress/>
+	<addressOf ref="linearFrameBuffer" type="Absolute16"/>
+
+	<cpu16:JumpToImmediatePointer16/>
+	<hex>8000</hex>
+	<hex>0008</hex>
+	
+	<!--Global Descriptor Table Pointer-->
+	<label id="globalDescriptorTablePointer"/>
+	<hex>0017</hex>
+	<addressOf ref="globalDescriptorTable" type="Absolute16"/>
+
+	<!--Global Descriptor Table-->
+	<label id="globalDescriptorTable"/>
+	<!--Null Descriptor (0000)-->
+
+	<!--Size-->
+	<hex>0000</hex>
+	<!--Base (Low)-->
+	<hex>0000</hex>
+	<!--Base (Mid)-->
+	<hex>00</hex>
+	<!--Access-->
+	<binary>00000000</binary>
+	<!--Flags / Size (High)-->
+	<binary>00000000</binary>
+	<!--Base (High)-->
+	<hex>00</hex>
+
+	<!--Code Descriptor (0008)-->
+
+	<!--Size-->
+	<hex>ffff</hex>
+	<!--Base (Low)-->
+	<hex>0000</hex>
+	<!--Base (Mid)-->
+	<hex>00</hex>
+	<!--Access-->
+	<binary>10011010</binary>
+	<!--Flags / Size (High)-->
+	<binary>11001111</binary>
+	<!--Base (High)-->
+	<hex>00</hex>
+
+	<!--Data Descriptor (0010)-->
+
+	<!--Size-->
+	<hex>ffff</hex>
+	<!--Base (Low)-->
+	<hex>0000</hex>
+	<!--Base (Mid)-->
+	<hex>00</hex>
+	<!--Access-->
+	<binary>10010010</binary>
+	<!--Flags / Size (High)-->
+	<binary>11001111</binary>
+	<!--Base (High)-->
+	<hex>00</hex>
+
+	<!--Linear Frame Buffer-->
+	<label id="linearFrameBuffer"/>
+	<int>0</int>
+</scope>

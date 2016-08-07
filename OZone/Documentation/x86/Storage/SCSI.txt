@@ -1,0 +1,114 @@
+﻿Format Unit
+	Request
+		Command					8 bits		(0x04)
+		FormatProtection		1 bit
+		ReferenceTag			1 bit
+		LongParameters			1 bit
+		FormatData				1 bit
+		CompleteList				1 bit
+		DefectListFormat		3 bits
+		Reserved					32 bits
+
+Inquiry
+	Request
+		Command					8 bits		(0x12)
+		Reserved					7 bits
+		VitalProductData		1 bit
+		PageCode					8 bits
+		AllocationLength		16 bits
+		Reserved					8 bits
+	Response
+		PeripheralQualifier		3 bits		(0 = Connected, 1 = Not Connected, 3 = Not Supported)
+		PeripheralType			5 bits		(0 = Direct Access, 1 = Sequential Access, 2 = Printer, 3 = Processor, 4 = Write-Once, 5 = CD/DVD, 7 = Optical, 8 = Changer, 12 = Storage Array, 13 = Enclosure, 14 = Simple Direct, 15 = Optical Card, 16 = Bridge, 17 = Object)
+		Removable				1 bit
+		Reserved					7 bits
+		Version						8 bits
+		Reserved					2 bits
+		NormalAca				1 bit
+		HeirarchicalAddress	1 bit
+		ResponseFormat		4 bits
+		AdditionalLength		8 bits
+		[more]
+
+Read6
+	Request
+		Command					8 bits		(0x08)
+		Reserved					3 bits
+		LogicalBlockAddress	21 bits
+		TransferLength			8 bits
+		Reserved					8 bits
+
+Read10
+	Request
+		Command					8 bits		(0x28)
+		ProtectionInfo			3 bit
+		DisablePageOut			1 bit
+		ForceUnitAccess			1 bit
+		Reserved					1 bit
+		NonVolatile				1 bit
+		Reserved					1 bit
+		LogicalBlockAddress	32 bits
+		Reserved					3 bits
+		GroupNumber			5 bits
+		TransferLength			16 bits
+		Reserved					8 bits
+
+Read12
+	Request
+		Command					8 bits		(0xa8)
+
+Read16
+	Request
+		Command					8 bits		(0x88)
+
+Read32
+	Request
+		Command					8 bits		(0x7f)
+
+ReadCapacity10
+	Request
+		Command					8 bits		(0x25)
+		Reserved					8 bits
+		PartialLogicalBlock		32 bits
+		Reserved					23 bits
+		PartialMode				1 bit
+		Reserved					8 bits
+	Response
+		LastBlock					32 bits
+		BlockLength				32 bits
+
+ReadCapacity16
+	Request
+		Command					8 bits		(0x9e)
+
+Write6
+	Request
+		Command					8 bits		(0x0a)
+
+Write10
+	Request
+		Command					8 bits		(0x2a)
+
+Write12
+	Request
+		Command					8 bits		(0xaa)
+
+Write16
+	Request
+		Command					8 bits		(0x8a)
+
+Write32
+	Request
+		Command					8 bits		(0x7f)
+
+StartStopUnit
+	Request
+		Command					8 bits		(0x1b)
+		Reserved					7 bits
+		Immediate					1 bit
+		Reserved					16 bits
+		PowerCondition			4 bits		(1 = Active, 2 = Idle, 3 = Standby)
+		Reserved					2 bits
+		LoadEjectMode			1 bit
+		Start							1 bit
+		Reserved					8 bits

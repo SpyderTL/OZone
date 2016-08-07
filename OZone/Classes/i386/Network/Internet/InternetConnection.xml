@@ -1,0 +1,2544 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="InternetConnection"
+	type="http://metalx.org/Network/Internet/InternetConnection"
+	static="true"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:net="http://metalx.org/i386/Functions/Network"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:inc="http://metalx.org/Intel/80386/Increment"
+	xmlns:index="http://metalx.org/Intel/80386/Index"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands">
+
+	<cls:field name="NetworkConnection" type="http://metalx.org/Reference" offset="0"/>
+	<cls:field name="ReadPacket" type="http://metalx.org/Reference" offset="4"/>
+	<cls:field name="WritePacket" type="http://metalx.org/Reference" offset="8"/>
+	<cls:field name="RemoteAddress" type="http://metalx.org/Network/Internet/InternetAddress" offset="12"/>
+	<cls:field name="Sequence" type="http://metalx.org/Integer" offset="16"/>
+	<cls:field name="Acknowledge" type="http://metalx.org/Integer" offset="20"/>
+	<cls:field name="RemotePort" type="http://metalx.org/Short" offset="24"/>
+	<cls:field name="LocalPort" type="http://metalx.org/Short" offset="26"/>
+	<cls:field name="ReadPosition" type="http://metalx.org/Short" offset="28"/>
+	<cls:field name="WritePosition" type="http://metalx.org/Short" offset="30"/>
+	<cls:field name="Status" type="http://metalx.org/Byte" offset="32"/>
+
+	<cls:method name="Create" type="http://metalx.org/Network/Internet/InternetConnection" static="true">
+		<cls:parameter name="NetworkConnection" type="http://metalx.org/Network/NetworkConnection"/>
+		<cls:parameter name="RemoteAddress" type="http://metalx.org/Network/Internet/InternetAddress"/>
+		<cls:parameter name="RemotePort" type="http://metalx.org/Short"/>
+		<cls:parameter name="LocalPort" type="http://metalx.org/Short"/>
+
+		<mm:CheckOut length="33"/>
+
+		<!--Get Network Connection-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIAddress/>
+
+		<!--Set Read Packet-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>0</int>
+
+		<!--Set Write Packet-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>0</int>
+
+		<!--Get Remote Address-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<!--Set Sequence-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<int>0</int>
+
+		<!--Set Acknowledge-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<int>0</int>
+
+		<!--Get Remote Port-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<obj:GetData/>
+
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>24</byte>
+
+		<!--Get Local Port-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetData/>
+
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>26</byte>
+
+		<!--Set Read Position-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<short>0</short>
+
+		<!--Set Write Position-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>30</byte>
+		<short>0</short>
+
+		<!--Set Status-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<byte>0</byte>
+
+		<obj:Create length="33"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>16</byte>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetAvailableByteCount" type="http://metalx.org/Integer">
+		<cpu:PushDIToStack/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:CompareWithSIRegister/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notNull" type="Relative8"/>
+
+		<label id="nextPacket"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="getPacket" type="Relative32"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:CompareWithSIRegister/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notNull" type="Relative8"/>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="createObject" type="Relative32"/>
+
+		<label id="notNull"/>
+
+		<obj:GetData/>
+		
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<cpu:AddImmediateToAX/>
+		<int>14</int>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:Operand16/>
+		<cpu:SubtractOperandFromRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>28</byte>
+
+		<cpu:CompareAXToImmediate/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+		
+		<cpu:PushSIToStack/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="nextPacket" type="Relative8"/>
+
+		<label id="createObject"/>
+
+		<cpu:PullDIFromStack/>
+		
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ReadString" type="http://metalx.org/String">
+		<cls:parameter name="length" type="http://metalx.org/Integer"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<!--<cpu:AddImmediateToAX/>
+		<int>4</int>
+
+		<mm:CheckOut/>-->
+
+		<str:Create/>
+
+		<cpu:PushDIToStack/>
+
+		<label id="forEachCharacter"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:PushCXToStack/>
+
+		<obj:ExecuteMethod name="GetAvailableByteCount"/>
+
+		<cpu:PullCXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:CompareWithSIAddress/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="forEachCharacter" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:PushCXToStack/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="readByte" type="Relative32"/>
+
+		<cpu:PullCXFromStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendCharacter/>
+
+		<cpu:DecrementCX/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="forEachCharacter" type="Relative32"/>
+
+		<label id="createObject"/>
+
+		<cpu:PullDIFromStack/>
+
+		<str:CreateObject/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ReadLine" type="http://metalx.org/String">
+		<cpu:PushDIToStack/>
+
+		<str:Create length="255"/>
+
+		<cpu:PushDIToStack/>
+
+		<label id="nextCharacter"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<obj:ExecuteMethod name="GetAvailableByteCount"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:CompareWithSIAddress/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="readByte" type="Relative32"/>
+
+		<!--Check For CR-->
+		<cpu:CompareALToImmediate/>
+		<hex>0d</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="checkForLF" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="nextCharacter" type="Relative32"/>
+
+		<!--Check For LF-->
+		<label id="checkForLF"/>
+		
+		<cpu:CompareALToImmediate/>
+		<hex>0a</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<str:AppendCharacter/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="nextCharacter" type="Relative32"/>
+
+		<label id="createObject"/>
+
+		<cpu:PullDIFromStack/>
+		
+		<str:CreateObject/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="WriteString" type="http://metalx.org/Network/Internet/InternetConnection">
+		<cls:parameter name="value" type="http://metalx.org/String"/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<label id="forEachCharacter"/>
+
+		<cpu:CopySIAddressToALAndIncrementSI/>
+
+		<cpu:PushDIToStack/>
+		<cpu:PushSIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="writeByte" type="Relative32"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullSIFromStack/>
+		<cpu:PullDIFromStack/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachCharacter" type="Relative8"/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="WriteByte" type="http://metalx.org/Network/Internet/InternetConnection">
+		<cls:parameter name="value" type="http://metalx.org/Byte"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToALAndIncrementSI/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="writeByte" type="Relative32"/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Flush" type="http://metalx.org/Network/Internet/InternetConnection">
+		<cpu:PushDIToStack/>
+		
+		<cpu:CallRelative/>
+		<addressOf ref="sendPacket" type="Relative32"/>
+
+		<cpu:PullDIFromStack/>
+		
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Enable" type="http://metalx.org/Network/Internet/InternetConnection">
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:PushSIToStack/>
+
+		<mm:CheckOut length="54"/>
+
+		<cpu:PushDIToStack/>
+
+		<!--Write Network Header-->
+
+		<!--Destination Network Address-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<obj:GetFieldValue name="GatewayNetworkAddress"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+		<!--Source Network Address-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<obj:ExecuteMethod name="GetNetworkAddress"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIRegister/>
+		<byte>6</byte>
+
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+		<!--Type-->
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<hex>08</hex>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>13</byte>
+		<hex>00</hex>
+
+		<!--Write IP Header-->
+
+		<!--Version and Header Length-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>14</byte>
+		<hex>45</hex>
+
+		<!--Code Point and Congestion-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>15</byte>
+		<hex>00</hex>
+
+		<!--Total Length (40)-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<hex>00</hex>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>17</byte>
+		<hex>28</hex>
+
+		<!--Identification-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>18</byte>
+		<hex>00</hex>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>19</byte>
+		<hex>00</hex>
+
+		<!--Flags and Fragmentation Offset (None)-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<hex>00</hex>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>21</byte>
+		<hex>00</hex>
+
+		<!--Time To Live (64)-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>22</byte>
+		<hex>40</hex>
+
+		<!--Protocol (TCP)-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>23</byte>
+		<hex>06</hex>
+
+		<!--Header Checksum-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<hex>00</hex>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>25</byte>
+		<hex>00</hex>
+
+		<!--Source IP Address-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>26</byte>
+
+		<!--Destination IP Address-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>30</byte>
+
+		<!--Write TCP Header-->
+
+		<!--Source Port-->
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>26</byte>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>34</byte>
+
+		<!--Destination Port-->
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>24</byte>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>36</byte>
+
+		<!--Sequence Number-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>38</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>39</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>40</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>41</byte>
+
+		<!--Acknowledge Number-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>20</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>42</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>43</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>44</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>45</byte>
+
+		<!--Header Size / Flags-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>46</byte>
+		<hex>50</hex>
+
+		<!--Flags (SYN)-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>47</byte>
+		<binary>00000010</binary>
+
+		<!--Window Size (1460)-->
+		<label id="windowSize"/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<hex>b405</hex>
+
+		<!--Checksum-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>50</byte>
+		<hex>0000</hex>
+
+		<!--Urgent Pointer-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<hex>0000</hex>
+
+		<!--Calculate IP Checksum-->
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<net:CalculateIpChecksum/>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>24</byte>
+
+		<!--Calcualte TCP Checksum-->
+		<net:CalculateTcpChecksum/>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>50</byte>
+
+		<!--Create Object-->
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<obj:Create type="http://metalx.org/Network/Internet/InternetConnectionPacket" length="54"/>
+
+		<!--Send Packet-->
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<cpu:PushSIToStack/>
+
+		<obj:ExecuteMethod name="SendPacket"/>
+
+		<!--Wait For Response-->
+		<label id="waitForResponse"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<obj:ExecuteMethod name="IsPacketAvailable"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="waitForResponse" type="Relative8"/>		
+
+		<!--Get Packet-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<obj:ExecuteMethod name="GetPacket"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetFieldValue name="InternetPacket"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetFieldValue name="ConnectionPacket"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<!--Verify Flags (SYN, ACK)-->
+		<cpu:PushSIToStack/>
+
+		<obj:ExecuteMethod name="GetFlags"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToALAndIncrementSI/>
+
+		<cpu:TestALWithImmediate/>
+		<binary>00010010</binary>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="getSequence" type="Relative8"/>
+
+		<cpu:PullSIFromStack/>
+		
+		<cpu:JumpToRelative/>
+		<addressOf ref="waitForResponse" type="Relative32"/>
+
+		<!--Get Sequence-->
+		<label id="getSequence"/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+		
+		<obj:ExecuteMethod name="GetSequence"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:IncrementAX/>
+
+		<!--Update Connection-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>12</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>20</byte>
+
+		<!--Update Packet-->
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>42</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>43</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>44</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>45</byte>
+
+		<!--Get Acknowledge-->
+		<cpu:PullSIFromStack/>
+
+		<obj:ExecuteMethod name="GetAcknowledge"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<!--Update Connection-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<!--Update Packet-->
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>38</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>39</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>40</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>41</byte>
+
+		<!--Update Flags (ACK)-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>47</byte>
+		<binary>00010000</binary>
+
+		<!--Reset Checksums-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<hex>0000</hex>
+		
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>50</byte>
+		<hex>0000</hex>
+
+		<!--Calculate IP Checksum-->
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<net:CalculateIpChecksum/>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>24</byte>
+
+		<!--Calcualte TCP Checksum-->
+		<net:CalculateTcpChecksum/>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>50</byte>
+
+		<!--Send Packet-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<obj:ExecuteMethod name="SendPacket"/>
+
+		<cpu:PullSIFromStack/>
+		<cpu:PullSIFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Disable" type="http://metalx.org/Network/Internet/InternetConnection">
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:PushSIToStack/>
+
+		<mm:CheckOut length="54"/>
+
+		<cpu:PushDIToStack/>
+
+		<!--Write Network Header-->
+
+		<!--Destination Network Address-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<obj:GetFieldValue name="GatewayNetworkAddress"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+		<!--Source Network Address-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<obj:ExecuteMethod name="GetNetworkAddress"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIRegister/>
+		<byte>6</byte>
+
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+		<!--Type-->
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<hex>08</hex>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>13</byte>
+		<hex>00</hex>
+
+		<!--Write IP Header-->
+
+		<!--Version and Header Length-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>14</byte>
+		<hex>45</hex>
+
+		<!--Code Point and Congestion-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>15</byte>
+		<hex>00</hex>
+
+		<!--Total Length (40)-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<hex>00</hex>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>17</byte>
+		<hex>28</hex>
+
+		<!--Identification-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>18</byte>
+		<hex>00</hex>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>19</byte>
+		<hex>00</hex>
+
+		<!--Flags and Fragmentation Offset (None)-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<hex>00</hex>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>21</byte>
+		<hex>00</hex>
+
+		<!--Time To Live (64)-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>22</byte>
+		<hex>40</hex>
+
+		<!--Protocol (TCP)-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>23</byte>
+		<hex>06</hex>
+
+		<!--Header Checksum-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<hex>00</hex>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>25</byte>
+		<hex>00</hex>
+
+		<!--Source IP Address-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>26</byte>
+
+		<!--Destination IP Address-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>30</byte>
+
+		<!--Write TCP Header-->
+
+		<!--Source Port-->
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>26</byte>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>34</byte>
+
+		<!--Destination Port-->
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>24</byte>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>36</byte>
+
+		<!--Sequence Number-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>38</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>39</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>40</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>41</byte>
+
+		<!--Acknowledge Number-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>20</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>42</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>43</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>44</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>45</byte>
+
+		<!--Header Size / Flags-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>46</byte>
+		<hex>50</hex>
+
+		<!--Flags (ACK, FIN)-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>47</byte>
+		<binary>00010001</binary>
+
+		<!--Window Size (1460)-->
+		<label id="windowSize"/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<hex>b405</hex>
+
+		<!--Checksum-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>50</byte>
+		<hex>0000</hex>
+
+		<!--Urgent Pointer-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<hex>0000</hex>
+
+		<!--Calculate IP Checksum-->
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<net:CalculateIpChecksum/>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>24</byte>
+
+		<!--Calcualte TCP Checksum-->
+		<net:CalculateTcpChecksum/>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>50</byte>
+
+		<!--Create Object-->
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<obj:Create type="http://metalx.org/Network/Internet/InternetConnectionPacket" length="54"/>
+
+		<!--Send Packet-->
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<cpu:PushSIToStack/>
+
+		<obj:ExecuteMethod name="SendPacket"/>
+
+		<!--Wait For Response-->
+		<label id="waitForResponse"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<obj:ExecuteMethod name="IsPacketAvailable"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="waitForResponse" type="Relative8"/>
+
+		<!--Verify Packet-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<obj:ExecuteMethod name="GetPacket"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetFieldValue name="InternetPacket"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:PushSIToStack/>
+
+		<obj:ExecuteMethod name="GetProtocol"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:MathImmediateToOperandFunction8/>
+		<math:CompareWithSIAddress/>
+		<byte>6</byte>
+
+		<cpu:PullSIFromStack/>
+		
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="getConnectionPacket" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="waitForResponse" type="Relative32"/>
+
+		<!--Verify Flags (ACK)-->
+		<label id="getConnectionPacket"/>
+		
+		<obj:GetFieldValue name="ConnectionPacket"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:ExecuteMethod name="GetFlags"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToALAndIncrementSI/>
+
+		<cpu:TestALWithImmediate/>
+		<binary>00010000</binary>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="done" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="waitForResponse" type="Relative32"/>
+		
+		<label id="done"/>
+		
+		<cpu:PullSIFromStack/>
+		<cpu:PullSIFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetNetworkConnection" type="http://metalx.org/Network/NetworkConnection">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-SIAddress/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:PushDIToStack/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<net:GetInternetAddress/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<!--Read Byte From Read Packet-->
+	<label id="readByte">
+		<!--Get Read Packet-->
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>28</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<cpu:Operand16/>
+		<cpu:IncrementFunction/>
+		<inc:IncrementSIAddressPlusImmediate8/>
+		<byte>28</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<obj:GetData/>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:CopySIAddressToALAndIncrementSI/>
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+
+		<!--Write Byte To Write Packet-->
+	<label id="writeByte">
+		<cpu:PushDIToStack/>
+
+		<!--Get Write Packet-->
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithDIRegister/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="createPacket" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="notNull" type="Relative32"/>
+
+		<!--Create New Packet-->
+		<label id="createPacket"/>
+
+		<cpu:PushSIToStack/>
+
+		<mm:CheckOut length="1514"/>
+
+		<obj:Create type="http://metalx.org/Network/Internet/InternetConnectionPacket" length="1514"/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>30</byte>
+		<short>54</short>
+
+		<label id="notNull"/>
+
+		<!--Get Write Position-->
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddressPlusImmediate8/>
+		<byte>30</byte>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AndWithDXRegister/>
+		<hex>0000ffff</hex>
+
+		<!--Write Byte-->
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SI-DIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-IndexAddress/>
+		<index:SIPlusDX/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SI-DIRegister/>
+
+		<!--Update Write Position-->
+		<cpu:IncrementDX/>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-SIAddressPlusImmediate8/>
+		<byte>30</byte>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithDXRegister/>
+		<int>1514</int>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFull" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sendPacket" type="Relative32"/>
+
+		<label id="notFull"/>
+
+		<cpu:PullDIFromStack/>
+		
+		<cpu:ReturnToNearCaller/>
+	</label>
+
+	<label id="sendPacket">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:PushSIToStack/>
+		
+		<!--Check For Null Packet-->
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:CompareWithSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="writePacketNull" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="writePacketNotNull" type="Relative32"/>
+
+		<label id="writePacketNull"/>
+
+		<cpu:PushSIToStack/>
+
+		<mm:CheckOut length="54"/>
+
+		<obj:Create type="http://metalx.org/Network/Internet/InternetConnectionPacket" length="54"/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>30</byte>
+		<short>54</short>
+
+		<label id="writePacketNotNull"/>
+
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>30</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<obj:GetData/>
+
+		<cpu:PushSIToStack/>
+
+		<!--Write Network Header-->
+
+		<!--Destination Network Address-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<obj:GetFieldValue name="GatewayNetworkAddress"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+		<!--Source Network Address-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<obj:ExecuteMethod name="GetNetworkAddress"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIRegister/>
+		<byte>6</byte>
+
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+		<!--Type-->
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<hex>08</hex>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>13</byte>
+		<hex>00</hex>
+
+		<!--Write IP Header-->
+
+		<!--Version and Header Length-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>14</byte>
+		<hex>45</hex>
+
+		<!--Code Point and Congestion-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>15</byte>
+		<hex>00</hex>
+
+		<!--Total Length-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>30</byte>
+
+		<cpu:Operand16/>
+		<cpu:SubtractImmediateFromAX/>
+		<short>14</short>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<!--Identification-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>18</byte>
+		<hex>00</hex>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>19</byte>
+		<hex>00</hex>
+
+		<!--Flags and Fragmentation Offset (None)-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<hex>00</hex>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>21</byte>
+		<hex>00</hex>
+
+		<!--Time To Live (64)-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>22</byte>
+		<hex>40</hex>
+
+		<!--Protocol (TCP)-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>23</byte>
+		<hex>06</hex>
+
+		<!--Header Checksum-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<hex>00</hex>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>25</byte>
+		<hex>00</hex>
+
+		<!--Source IP Address-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>26</byte>
+
+		<!--Destination IP Address-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>30</byte>
+
+		<!--Write TCP Header-->
+
+		<!--Source Port-->
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>26</byte>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>34</byte>
+
+		<!--Destination Port-->
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>24</byte>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>36</byte>
+
+		<!--Sequence Number-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>38</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>39</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>40</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>41</byte>
+
+		<!--Update Connection-->
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>30</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<cpu:SubtractImmediateFromAX/>
+		<int>54</int>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<!--Acknowledge Number-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>20</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>42</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>43</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>44</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>45</byte>
+
+		<!--Header Size / Flags-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>46</byte>
+		<hex>50</hex>
+
+		<!--Flags (ACK)-->
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>47</byte>
+		<binary>00010000</binary>
+
+		<!--Window Size (1460)-->
+		<label id="windowSize"/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>48</byte>
+		<hex>b405</hex>
+
+		<!--Checksum-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>50</byte>
+		<hex>0000</hex>
+
+		<!--Urgent Pointer-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>52</byte>
+		<hex>0000</hex>
+
+		<!--Calculate IP Checksum-->
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<net:CalculateIpChecksum/>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>24</byte>
+
+		<!--Calculate TCP Checksum-->
+		<net:CalculateTcpChecksum/>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>50</byte>
+
+		<!--Send Packet-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<cpu:PushSIToStack/>
+
+		<obj:ExecuteMethod name="SendPacket"/>
+
+		<!--Wait For Response-->
+		<!--<label id="waitForResponse"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<obj:ExecuteMethod name="IsPacketAvailable"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="waitForResponse" type="Relative8"/>-->
+
+		<!--Reset Write Packet-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>0</int>
+
+		<!--Reset Write Position-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>30</byte>
+		<short>0</short>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSPRegister/>
+		<byte>12</byte>
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+
+	<label id="getPacket">
+		<cpu:PushDIToStack/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+		
+		<obj:GetData/>
+		
+		<label id="getNextPacket"/>
+		
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<obj:GetData/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+		
+		<cpu:PushSIToStack/>
+		
+		<obj:ExecuteMethod name="IsPacketAvailable"/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+		
+		<obj:GetData/>
+		
+		<cpu:CopySIAddressToALAndIncrementSI/>
+		
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+		
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="packetAvailable" type="Relative8"/>
+		
+		<cpu:PullSIFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<short>0</short>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+		
+		<label id="packetAvailable"/>
+		
+		<cpu:PullSIFromStack/>
+		
+		<obj:ExecuteMethod name="GetPacket"/>
+		
+		<cpu:PullSIFromStack/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SI-DIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SI-DIRegister/>
+
+		<!--Check IP Addresses-->
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-DXRegister/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIRegister/>
+		<byte>14</byte>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-DIAddress/>
+		
+		<cpu:AndAXWithImmediate/>
+		<hex>0000000f</hex>
+		
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+		
+		<cpu:AddRegisterToOperand/>
+		<op:AX-DIRegister/>
+		
+		<!--Check Ports-->
+		
+		<!--Check Sequence-->
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>5</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>6</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>7</byte>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>20</byte>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="match" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="getNextPacket" type="Relative32"/>
+
+		<label id="match"/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>12</byte>
+		
+		<cpu:AndAXWithImmediate/>
+		<hex>000000f0</hex>
+		
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterRight/>
+		<byte>2</byte>
+
+		<!--Update Connection-->
+		<cpu:AddRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:DX-DIRegister/>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>28</byte>
+
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-DXAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<cpu:AddImmediateToAX/>
+		<int>14</int>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:DI-AXRegister/>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>20</byte>
+		
+		<!--Send Acknowledgement-->
+		<cpu:PullDIFromStack/>
+		
+		<cpu:JumpToRelative/>
+		<addressOf ref="sendPacket" type="Relative32"/>
+
+		<!--<cpu:ReturnToNearCaller/>-->
+	</label>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

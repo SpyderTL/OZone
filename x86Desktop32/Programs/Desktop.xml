@@ -1,0 +1,560 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:inc="http://metalx.org/Intel/80386/Increment"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:mouse="http://metalx.org/i386/Functions/Mouse"
+	xmlns:rect="http://metalx.org/i386/Functions/Rectangle"
+	xmlns:gfx="http://metalx.org/i386/Functions/Graphics"
+	xmlns:sys="http://metalx.org/i386/Functions/System">
+
+	<label id="getLinearFrameBuffer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-ImmediateAddress/>
+		<addressOf ref="linearFrameBuffer" type="Absolute32"/>
+	</label>
+
+	<label id="enableMouse">
+		<mouse:Enable/>
+	</label>
+
+	<label id="clearScreen">
+		<cpu:CopyImmediateToAX/>
+		<hex>ff303090</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-ImmediateAddress/>
+		<addressOf ref="linearFrameBuffer" type="Absolute32"/>
+
+		<gfx:ClearScreen/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="drawScreen" type="Relative32"/>
+	</label>
+
+	<label id="updateMousePosition">
+		<cpu:ReadFromImmediate8PortToAL/>
+		<hex>64</hex>
+
+		<cpu:TestALWithImmediate/>
+		<binary>00000001</binary>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="readKeyboardBuffer" type="Relative8"/>
+
+		<cpu:WaitForInterrupt/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="updateMousePosition" type="Relative8"/>
+
+		<label id="readKeyboardBuffer"/>
+
+		<cpu:TestALWithImmediate/>
+		<binary>00100000</binary>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="readMouseField" type="Relative8"/>
+
+		<cpu:ReadFromImmediate8PortToAL/>
+		<hex>60</hex>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="updateMousePosition" type="Relative8"/>
+	</label>
+
+	<label id="readMouseField">
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<addressOf ref="mouseField" type="Absolute32"/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFlags" type="Relative8"/>
+
+		<!--Read Flags-->
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<addressOf ref="mouseFlags" type="Absolute32"/>
+
+		<cpu:CopyALToAbsoluteMemory/>
+		<addressOf ref="lastMouseFlags" type="Absolute32"/>
+
+		<cpu:ReadFromImmediate8PortToAL/>
+		<hex>60</hex>
+
+		<cpu:CopyALToAbsoluteMemory/>
+		<addressOf ref="mouseFlags" type="Absolute32"/>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<addressOf ref="mouseField" type="Absolute32"/>
+		<byte>1</byte>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="updateMousePosition" type="Relative32"/>
+
+		<label id="notFlags"/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>1</byte>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="readX" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="notX" type="Relative32"/>
+
+		<!--Read X-->
+		<label id="readX"/>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<addressOf ref="mouseFlags" type="Absolute32"/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>00010000</binary>
+
+		<cpu:CompareALToImmediate/>
+		<binary>00010000</binary>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="negativeX" type="Relative8"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:ReadFromImmediate8PortToAL/>
+		<hex>60</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="mousePositionX" type="Absolute32"/>
+
+		<cpu:CompareAXToImmediate/>
+		<!--<int>1280</int>-->
+		<int>1024</int>
+		<!--<int>800</int>-->
+
+		<cpu:BranchToRelative8IfLess/>
+		<addressOf ref="mousePositionXMax" type="Relative8"/>
+
+		<cpu:CopyImmediateToAX/>
+		<!--<int>1279</int>-->
+		<int>1023</int>
+		<!--<int>799</int>-->
+
+		<label id="mousePositionXMax"/>
+
+		<cpu:CopyAXToAbsoluteMemory/>
+		<addressOf ref="mousePositionX" type="Absolute32"/>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<addressOf ref="mouseField" type="Absolute32"/>
+		<byte>2</byte>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="updateMousePosition" type="Relative32"/>
+
+		<label id="negativeX"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>-1</int>
+
+		<cpu:ReadFromImmediate8PortToAL/>
+		<hex>60</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="mousePositionX" type="Absolute32"/>
+
+		<cpu:CompareAXToImmediate/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfGreaterOrEqual/>
+		<addressOf ref="mousePositionXMin" type="Relative8"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<label id="mousePositionXMin"/>
+
+		<cpu:CopyAXToAbsoluteMemory/>
+		<addressOf ref="mousePositionX" type="Absolute32"/>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<addressOf ref="mouseField" type="Absolute32"/>
+		<byte>2</byte>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="updateMousePosition" type="Relative32"/>
+
+		<label id="notX"/>
+
+		<!--Read Y-->
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<addressOf ref="mouseFlags" type="Absolute32"/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>00100000</binary>
+
+		<cpu:CompareALToImmediate/>
+		<binary>00100000</binary>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="negativeY" type="Relative8"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:ReadFromImmediate8PortToAL/>
+		<hex>60</hex>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="mousePositionY" type="Absolute32"/>
+
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<addressOf ref="mousePositionY" type="Absolute32"/>
+
+		<cpu:CompareAXToImmediate/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfGreaterOrEqual/>
+		<addressOf ref="mousePositionYMax" type="Relative8"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<label id="mousePositionYMax"/>
+
+		<cpu:CopyAXToAbsoluteMemory/>
+		<addressOf ref="mousePositionY" type="Absolute32"/>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<addressOf ref="mouseField" type="Absolute32"/>
+		<byte>0</byte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="handleMouseEvent" type="Relative8"/>
+
+		<label id="negativeY"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>-1</int>
+
+		<cpu:ReadFromImmediate8PortToAL/>
+		<hex>60</hex>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="mousePositionY" type="Absolute32"/>
+
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<addressOf ref="mousePositionY" type="Absolute32"/>
+
+		<cpu:CompareAXToImmediate/>
+		<!--<int>1024</int>-->
+		<int>768</int>
+		<!--<int>600</int>-->
+
+		<cpu:BranchToRelative8IfLess/>
+		<addressOf ref="mousePositionYMin" type="Relative8"/>
+
+		<cpu:CopyImmediateToAX/>
+		<!--<int>1023</int>-->
+		<int>767</int>
+		<int>599</int>
+
+		<label id="mousePositionYMin"/>
+
+		<cpu:CopyAXToAbsoluteMemory/>
+		<addressOf ref="mousePositionY" type="Absolute32"/>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<addressOf ref="mouseField" type="Absolute32"/>
+		<byte>0</byte>
+	</label>
+
+	<label id="handleMouseEvent">
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<addressOf ref="mouseFlags" type="Absolute32"/>
+
+		<cpu:TestALWithImmediate/>
+		<binary>00000001</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="drawScreen" type="Relative8"/>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<addressOf ref="lastMouseFlags" type="Absolute32"/>
+
+		<cpu:TestALWithImmediate/>
+		<binary>00000001</binary>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="drawScreen" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="handleMouseClick" type="Relative32"/>
+	</label>
+
+	<label id="drawScreen">
+		<label id="waitForVSyncOff">
+			<cpu:CopyImmediateToDX/>
+			<hex>000003da</hex>
+
+			<cpu:ReadFromDXPortToAL/>
+
+			<cpu:TestALWithImmediate/>
+			<binary>00001000</binary>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="waitForVSyncOff" type="Relative8"/>
+		</label>
+
+		<label id="waitForVSyncOn">
+			<cpu:ReadFromDXPortToAL/>
+
+			<cpu:TestALWithImmediate/>
+			<binary>00001000</binary>
+
+			<cpu:BranchToRelative8IfZero/>
+			<addressOf ref="waitForVSyncOn" type="Relative8"/>
+		</label>
+
+		<label id="clearMouse">
+			<cpu:CopyImmediateToSI/>
+			<addressOf ref="lastMousePositionX" type="Absolute32"/>
+
+			<cpu:CopyImmediateToAX/>
+			<hex>ff303090</hex>
+
+			<cpu:CopyOperandToRegister/>
+			<op:DI-ImmediateAddress/>
+			<addressOf ref="linearFrameBuffer" type="Absolute32"/>
+
+			<gfx:FillRectangle/>
+		</label>
+		
+		<!--<label id="clearLine">
+			<cpu:CopyImmediateToBX/>
+			<addressOf ref="lastMousePositionX2" type="Absolute32"/>
+
+			<cpu:CopyImmediateToDX/>
+			<addressOf ref="lastMousePositionX" type="Absolute32"/>
+
+			<cpu:CopyImmediateToAX/>
+			<hex>ff303090</hex>
+
+			<cpu:CopyOperandToRegister/>
+			<op:DI-ImmediateAddress/>
+			<addressOf ref="linearFrameBuffer" type="Absolute32"/>
+
+			<gfx:DrawLine/>
+		</label>-->
+
+		<label id="drawShutdownButton">
+			<cpu:CopyImmediateToSI/>
+			<addressOf ref="shutdownButton" type="Absolute32"/>
+
+			<cpu:CopyImmediateToAX/>
+			<hex>ff303090</hex>
+
+			<cpu:CopyOperandToRegister/>
+			<op:DI-ImmediateAddress/>
+			<addressOf ref="linearFrameBuffer" type="Absolute32"/>
+
+			<gfx:FillRectangle/>
+
+			<cpu:CopyImmediateToAX/>
+			<addressOf ref="shutdownButton" type="Absolute32"/>
+
+			<cpu:CopyImmediateToSI/>
+			<hex>0000e000</hex>
+
+			<cpu:CopyOperandToRegister/>
+			<op:DI-ImmediateAddress/>
+			<addressOf ref="linearFrameBuffer" type="Absolute32"/>
+
+			<gfx:RenderBitmap/>
+		</label>
+
+		<label id="drawMouse">
+			<cpu:CopyImmediateToAX/>
+			<addressOf ref="mousePositionX" type="Absolute32"/>
+
+			<cpu:CopyImmediateToSI/>
+			<hex>0000d000</hex>
+
+			<cpu:CopyOperandToRegister/>
+			<op:DI-ImmediateAddress/>
+			<addressOf ref="linearFrameBuffer" type="Absolute32"/>
+
+			<gfx:RenderBitmap/>
+		</label>
+
+		<!--<label id="drawLine">
+			<cpu:CopyImmediateToBX/>
+			<addressOf ref="lastMousePositionX" type="Absolute32"/>
+
+			<cpu:CopyImmediateToDX/>
+			<addressOf ref="mousePositionX" type="Absolute32"/>
+
+			<cpu:CopyImmediateToAX/>
+			<hex>ffffffff</hex>
+
+			<cpu:CopyOperandToRegister/>
+			<op:DI-ImmediateAddress/>
+			<addressOf ref="linearFrameBuffer" type="Absolute32"/>
+
+			<gfx:DrawLine/>
+		</label>-->
+
+		<!--<label id="drawPixel">
+			<cpu:CopyOperandToRegister/>
+			<op:DI-ImmediateAddress/>
+			<addressOf ref="linearFrameBuffer" type="Absolute32"/>
+
+			<cpu:CopyImmediateToSI/>
+			<addressOf ref="mousePositionX" type="Absolute32"/>
+
+			<cpu:CopyImmediateToAX/>
+			<hex>ffffffff</hex>
+
+			<gfx:DrawPixel/>
+		</label>-->
+
+		<label id="updateLastMousePosition">
+			<cpu:CopyImmediateToSI/>
+			<addressOf ref="lastMousePositionX" type="Absolute32"/>
+
+			<cpu:CopyImmediateToDI/>
+			<addressOf ref="lastMousePositionX2" type="Absolute32"/>
+
+			<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+			<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+
+			<cpu:CopyImmediateToSI/>
+			<addressOf ref="mousePositionX" type="Absolute32"/>
+
+			<cpu:CopyImmediateToDI/>
+			<addressOf ref="lastMousePositionX" type="Absolute32"/>
+
+			<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+			<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+		</label>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="updateMousePosition" type="Relative32"/>
+	</label>
+
+	<label id="handleMouseClick">
+
+		<cpu:CopyImmediateToSI/>
+		<addressOf ref="shutdownButton" type="Absolute32"/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="mousePositionX" type="Absolute32"/>
+
+		<rect:Contains/>
+
+		<cpu:BranchToRelative8IfCarry/>
+		<addressOf ref="shutdown" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="drawScreen" type="Relative32"/>
+	</label>
+
+	<label id="shutdown">
+		<sys:Shutdown/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="drawScreen" type="Relative32"/>
+	</label>
+
+	<label id="linearFrameBuffer">
+		<int>0</int>
+	</label>
+
+	<label id="mouseFlags">
+		<byte>0</byte>
+	</label>
+
+	<label id="mousePositionX">
+		<!--<int>640</int>-->
+		<int>512</int>
+		<!--<int>400</int>-->
+	</label>
+
+	<label id="mousePositionY">
+		<!--<int>512</int>-->
+		<int>384</int>
+		<!--<int>300</int>-->
+	</label>
+
+	<label id="mouseField">
+		<byte>0</byte>
+	</label>
+
+	<label id="lastMouseFlags">
+		<byte>0</byte>
+	</label>
+
+	<label id="lastMousePositionX">
+		<!--<int>640</int>-->
+		<int>512</int>
+		<!--<int>400</int>-->
+	</label>
+
+	<label id="lastMousePositionY">
+		<!--<int>512</int>-->
+		<int>384</int>
+		<!--<int>300</int>-->
+	</label>
+
+	<label id="mouseSize">
+		<int>11</int>
+		<int>16</int>
+	</label>
+
+	<label id="lastMouseFlags2">
+		<byte>0</byte>
+	</label>
+
+	<label id="lastMousePositionX2">
+		<!--<int>640</int>-->
+		<int>512</int>
+		<!--<int>400</int>-->
+	</label>
+
+	<label id="lastMousePositionY2">
+		<!--<int>512</int>-->
+		<int>384</int>
+		<!--<int>300</int>-->
+	</label>
+
+	<label id="shutdownButton">
+		<!--<int>1248</int>
+	<int>992</int>
+	<int>32</int>
+	<int>32</int>-->
+		<!--<int>624</int>
+		<int>496</int>
+		<int>32</int>
+		<int>32</int>-->
+		<int>496</int>
+		<int>368</int>
+		<int>32</int>
+		<int>32</int>
+	</label>
+</scope>

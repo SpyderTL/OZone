@@ -1,0 +1,803 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:seg="http://metalx.org/Intel/80286/Segments"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:logic="http://metalx.org/Intel/80286/Logic"
+	xmlns:int="http://metalx.org/Pc/Bios/Functions"
+	xmlns:vid="http://metalx.org/Pc/Bios/Video"
+	xmlns:key="http://metalx.org/Pc/Bios/Keyboard"
+	xmlns:str="http://metalx.org/i286/Functions/String"
+	xmlns:cls="http://metalx.org/i286/Functions/Class"
+	xmlns:lsts="http://metalx.org/i286/Structures/List"
+	xmlns:lst="http://metalx.org/i286/Functions/List"
+	xmlns:sys="http://metalx.org/i286/Functions/System"
+	xmlns:mm="http://metalx.org/i286/Functions/MemoryManager"
+	xmlns:cat="http://metalx.org/i286/Functions/Catalog"
+	xmlns:obj="http://metalx.org/i286/Functions/Object"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:pwr="http://metalx.org/Pc/Vesa/Power">
+
+	<label id="resetInputBuffer"/>
+
+	<sys:GetMemoryManager/>
+
+	<mm:Reset/>
+
+	<cpu:CopyImmediateToAX/>
+	<hex>1000</hex>
+	
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:ES-AXRegister/>
+	
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="inputBuffer" type="Absolute16"/>
+
+	<str:Clear/>
+
+	<!--Show Prompt-->
+	<label id="showPrompt"/>
+
+	<con:WriteCharacters>&gt;</con:WriteCharacters>
+
+	<!--Wait For Keystroke-->
+	<label id="waitForKeystroke"/>
+
+	<cpu:CopyImmediateToAH/>
+	<key:ReadInputStatus/>
+
+	<cpu:CallImmediate8Interrupt/>
+	<int:KeyboardFunctions/>
+
+	<cpu:BranchToRelativeIfNotZero8/>
+	<addressOf ref="readKeystroke" type="Relative8"/>
+
+	<!--Notify Cpu Idle-->
+	<cpu:CopyImmediateToAX/>
+	<pwr:CpuIdle/>
+
+	<cpu:CallImmediate8Interrupt/>
+	<int:SystemFunctions/>
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="waitForKeystroke" type="Relative8"/>
+
+	<label id="readKeystroke"/>
+
+	<cpu:CopyImmediateToAH/>
+	<key:ReadCharacter/>
+
+	<cpu:CallImmediate8Interrupt/>
+	<int:KeyboardFunctions/>
+
+	<!--Check For Enter Key-->
+	<cpu:CompareALToImmediate/>
+	<asc:CarriageReturn/>
+
+	<cpu:BranchToRelativeIfEqual8/>
+	<addressOf ref="handleEnterKey" type="Relative8"/>
+
+	<!--Check For Backspace Key-->
+	<cpu:CompareALToImmediate/>
+	<asc:Backspace/>
+
+	<cpu:BranchToRelativeIfNotEqual8/>
+	<addressOf ref="notBackspaceKey" type="Relative8"/>
+
+	<cpu:JumpToRelative16/>
+	<addressOf ref="handleBackspaceKey" type="Relative16"/>
+
+	<label id="notBackspaceKey"/>
+
+	<!--Check For Tab Key-->
+	<cpu:CompareALToImmediate/>
+	<asc:Tab/>
+
+	<cpu:BranchToRelativeIfNotEqual8/>
+	<addressOf ref="notTabKey" type="Relative8"/>
+
+	<cpu:JumpToRelative16/>
+	<addressOf ref="handleTabKey" type="Relative16"/>
+
+	<label id="notTabKey"/>
+
+	<!--Check For Escape Key-->
+	<cpu:CompareALToImmediate/>
+	<asc:Escape/>
+
+	<cpu:BranchToRelativeIfNotEqual8/>
+	<addressOf ref="notEscapeKey" type="Relative8"/>
+
+	<cpu:JumpToRelative16/>
+	<addressOf ref="handleEscapeKey" type="Relative16"/>
+
+	<label id="notEscapeKey"/>
+
+	<!--Check Buffer Length-->
+	<cpu:PushAXToStack/>
+
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="inputBuffer" type="Absolute16"/>
+
+	<str:GetLength/>
+
+	<!--If buffer is full, ignore keystroke-->
+	<cpu:CompareAXToImmediate/>
+	<short>78</short>
+
+	<cpu:BranchToRelativeIfEqual8/>
+	<addressOf ref="waitForKeystroke" type="Relative8"/>
+
+	<!--Add Character To Buffer-->
+	<cpu:PullAXFromStack/>
+
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="inputBuffer" type="Absolute16"/>
+
+	<str:AppendByte/>
+
+	<!--Display Character-->
+	<cpu:CopyImmediateToAH/>
+	<vid:TeletypeOutput/>
+
+	<cpu:CallImmediate8Interrupt/>
+	<int:VideoFunctions/>
+
+	<!--Wait For Next Keystroke-->
+	<cpu:JumpToRelative8/>
+	<addressOf ref="waitForKeystroke" type="Relative8"/>
+
+	<!--Enter Key Pressed-->
+	<label id="handleEnterKey"/>
+
+	<!--Move to next line-->
+	<con:WriteCharacters endLine="true"/>
+
+	<!--Find Class Name And Method Name-->
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="className" type="Absolute16"/>
+
+	<str:Clear/>
+
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="methodName" type="Absolute16"/>
+
+	<str:Clear/>
+
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="inputBuffer" type="Absolute16"/>
+
+	<cpu:CopyImmediateToDX/>
+	<addressOf ref="className" type="Absolute16"/>
+
+	<str:ForEach>
+		<cpu:CompareALToImmediate/>
+		<asc:Period/>
+
+		<cpu:BranchToRelativeIfNotEqual8/>
+		<addressOf ref="appendCharacter" type="Relative8"/>
+
+		<cpu:CopyImmediateToDX/>
+		<addressOf ref="methodName" type="Absolute16"/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="nextCharacter2" type="Relative8"/>
+
+		<label id="appendCharacter"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DX-SIRegister/>
+
+		<str:AppendByte/>
+
+		<cpu:PullSIFromStack/>
+
+		<label id="nextCharacter2"/>
+	</str:ForEach>
+
+	<!--Find Class-->
+	<sys:GetCatalog/>
+
+	<cpu:CopyImmediateToDI/>
+	<addressOf ref="className" type="Absolute16"/>
+
+	<lst:ForEach>
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cls:GetName/>
+
+		<str:Compare/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:BranchToRelativeIfEqual8/>
+		<addressOf ref="findMethod" type="Relative8"/>
+	</lst:ForEach>
+
+	<!--Class Name Not Found-->
+	<con:WriteText endLine="true">Error: Unknown class or object name</con:WriteText>
+
+	<cpu:JumpToRelative16/>
+	<addressOf ref="resetInputBuffer" type="Relative16"/>
+
+	<!--Find Method-->
+	<label id="findMethod"/>
+
+	<cpu:CopyImmediateToDI/>
+	<addressOf ref="methodName" type="Absolute16"/>
+
+	<cpu:PushSIToStack/>
+
+	<cls:FindStaticMethod/>
+	
+	<cpu:BranchToRelativeIfEqual8/>
+	<addressOf ref="executeMethod" type="Relative8"/>
+
+	<con:WriteText endLine="true">Error: Unknown static method name</con:WriteText>
+
+	<cpu:PullSIFromStack/>
+
+	<cpu:JumpToRelative16/>
+	<addressOf ref="resetInputBuffer" type="Relative16"/>
+
+	<!--Execute Method-->
+	<label id="executeMethod"/>
+
+	<!--Dereference SI to method description-->
+	<cpu:CopyOperandToRegister16/>
+	<op:DI-SIAddress/>
+
+	<!--Get Entry Point-->
+	<cpu:AddOperandToRegister16/>
+	<op:DI-DIAddressPlusImmediate8/>
+	<byte>6</byte>
+
+	<cpu:PullSIFromStack/>
+
+	<cpu:LogicFunction/>
+	<logic:CallDIRegister/>
+
+	<cpu:MathImmediate8ToOperand16Function/>
+	<math:CompareWithSIRegister/>
+	<byte>0</byte>
+
+	<cpu:BranchToRelativeIfNotEqual8/>
+	<addressOf ref="writeResult" type="Relative8"/>
+
+	<cpu:JumpToRelative16/>
+	<addressOf ref="resetInputBuffer" type="Relative16"/>
+
+	<label id="writeResult"/>
+
+	<cpu:PushDSToStack/>
+	<cpu:PushSIToStack/>
+
+	<obj:GetType/>
+
+	<cpu:PushImmediateToStack16/>
+	<hex>1000</hex>
+
+	<cpu:PullDSFromStack/>
+
+	<cpu:PushImmediateToStack16/>
+	<hex>1000</hex>
+
+	<cpu:PullESFromStack/>
+
+	<cpu:CopyImmediateToDI/>
+	<addressOf ref="toStringMethodName" type="Absolute16"/>
+
+	<cls:FindInstanceMethod/>
+
+	<cpu:BranchToRelativeIfEqual8/>
+	<addressOf ref="writeString" type="Relative8"/>
+
+	<cpu:PullSIFromStack/>
+	<cpu:PullDSFromStack/>
+	
+	<cpu:JumpToRelative16/>
+	<addressOf ref="resetInputBuffer" type="Relative16"/>
+
+	<label id="writeString"/>
+
+	<!--Dereference DI to method description-->
+	<cpu:CopyOperandToRegister16/>
+	<op:DI-SIAddress/>
+
+	<!--Dereference DI to method entry point-->
+	<cpu:AddOperandToRegister16/>
+	<op:DI-DIAddressPlusImmediate8/>
+	<byte>6</byte>
+
+	<cpu:PullSIFromStack/>
+	<cpu:PullDSFromStack/>
+
+	<cpu:LogicFunction/>
+	<logic:CallDIRegister/>
+
+	<cpu:MathImmediate8ToOperand16Function/>
+	<math:CompareWithSIRegister/>
+	<byte>0</byte>
+
+	<cpu:BranchToRelativeIfNotEqual8/>
+	<addressOf ref="writeString2" type="Relative8"/>
+
+	<cpu:JumpToRelative16/>
+	<addressOf ref="resetInputBuffer" type="Relative16"/>
+
+	<label id="writeString2"/>
+
+	<obj:GetData />
+
+	<con:WriteString endLine="true"/>
+
+	<cpu:JumpToRelative16/>
+	<addressOf ref="resetInputBuffer" type="Relative16"/>
+
+	<!--Escape Key Pressed-->
+	<label id="handleEscapeKey"/>
+
+	<con:WriteCharacters endLine="true"/>
+
+	<!--Reset Buffer-->
+	<cpu:JumpToRelative16/>
+	<addressOf ref="resetInputBuffer" type="Relative16"/>
+
+	<!--Backspace Key Pressed-->
+	<label id="handleBackspaceKey"/>
+
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="inputBuffer" type="Absolute16"/>
+
+	<str:GetLength/>
+
+	<!--Ignore if buffer length is zero-->
+	<cpu:CompareALToImmediate/>
+	<byte>0</byte>
+
+	<cpu:BranchToRelativeIfEqual8/>
+	<addressOf ref="ignoreBackspace" type="Relative8"/>
+
+	<!--Remove 1 character from buffer-->
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="inputBuffer" type="Absolute16"/>
+
+	<str:TrimLastCharacter/>
+
+	<!--Remove 1 character from display-->
+	<cpu:CopyImmediateToAH/>
+	<vid:TeletypeOutput/>
+
+	<cpu:CopyImmediateToAL/>
+	<hex>08</hex>
+
+	<cpu:CallImmediate8Interrupt/>
+	<int:VideoFunctions/>
+
+	<cpu:CopyImmediateToAL/>
+	<hex>20</hex>
+
+	<cpu:CallImmediate8Interrupt/>
+	<int:VideoFunctions/>
+
+	<cpu:CopyImmediateToAL/>
+	<hex>08</hex>
+
+	<cpu:CallImmediate8Interrupt/>
+	<int:VideoFunctions/>
+
+	<!--Wait For Next Keystroke-->
+	<label id="ignoreBackspace"/>
+
+	<cpu:JumpToRelative16/>
+	<addressOf ref="waitForKeystroke" type="Relative16"/>
+
+	<!--Handle Tab Key-->
+	<label id="handleTabKey"/>
+
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="inputBuffer" type="Absolute16"/>
+
+	<str:GetLength/>
+
+	<cpu:CompareAXToImmediate/>
+	<short>0</short>
+
+	<cpu:BranchToRelativeIfNotEqual8/>
+	<addressOf ref="findClassName" type="Relative8"/>
+
+	<cpu:JumpToRelative16/>
+	<addressOf ref="showClassList" type="Relative16"/>
+
+	<!--Find Class Name And Method Name-->
+	<label id="findClassName"/>
+
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="className" type="Absolute16"/>
+
+	<str:Clear/>
+
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="methodName" type="Absolute16"/>
+
+	<str:Clear/>
+
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="inputBuffer" type="Absolute16"/>
+
+	<cpu:CopyImmediateToDX/>
+	<addressOf ref="className" type="Absolute16"/>
+
+	<str:ForEach>
+		<scope>
+			<cpu:CompareALToImmediate/>
+			<asc:Period/>
+
+			<cpu:BranchToRelativeIfNotEqual8/>
+			<addressOf ref="appendCharacter2" type="Relative8"/>
+
+			<cpu:CopyImmediateToDX/>
+			<addressOf ref="methodName" type="Absolute16"/>
+
+			<cpu:JumpToRelative8/>
+			<addressOf ref="nextCharacter3" type="Relative8"/>
+
+			<label id="appendCharacter2"/>
+
+			<cpu:PushSIToStack/>
+
+			<cpu:CopyRegisterToOperand16/>
+			<op:DX-SIRegister/>
+
+			<str:AppendByte/>
+
+			<cpu:PullSIFromStack/>
+
+			<label id="nextCharacter3"/>
+		</scope>
+	</str:ForEach>
+
+	<!--Autocomplete Class Or Method-->
+	<cpu:CopyRegisterToOperand16/>
+	<op:DX-AXRegister/>
+	
+	<cpu:CompareAXToImmediate/>
+	<addressOf ref="className" type="Absolute16"/>
+
+	<cpu:BranchToRelativeIfEqual8/>
+	<addressOf ref="autocompleteClassName" type="Relative8"/>
+
+	<cpu:JumpToRelative16/>
+	<addressOf ref="autocompleteMethodName" type="Relative16"/>
+
+	<!--Find Partial Class-->
+	<label id="autocompleteClassName"/>
+
+	<sys:GetCatalog/>
+
+	<cpu:CopyImmediateToDI/>
+	<addressOf ref="inputBuffer" type="Absolute16"/>
+
+	<lst:ForEach>
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cls:IsStatic/>
+
+		<cpu:BranchToRelativeIfNotEqual8/>
+		<addressOf ref="skipClass" type="Relative8"/>
+		
+		<cls:GetName/>
+
+		<str:BeginsWith/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:BranchToRelativeIfEqual8/>
+		<addressOf ref="completeClassName" type="Relative8"/>
+
+		<label id="skipClass"/>
+	</lst:ForEach>
+
+	<cpu:JumpToRelative16/>
+	<addressOf ref="waitForKeystroke" type="Relative16"/>
+
+	<!--Autocomplete Class Name-->
+	<label id="completeClassName"/>
+
+	<!--Save Class-->
+	<cpu:PushSIToStack/>
+
+	<!--Get Buffer Length-->
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="className" type="Absolute16"/>
+
+	<str:GetLength/>
+
+	<!--Restore Class-->
+	<cpu:PullSIFromStack/>
+
+	<!--Get Class Name-->
+	<cls:GetName/>
+
+	<scope>
+		<cpu:CopyOperandToRegister16/>
+		<op:CX-SIAddress/>
+
+		<cpu:SubtractOperandFromRegister16/>
+		<op:CX-AXRegister/>
+
+		<cpu:BranchToRelativeIfZero8/>
+		<addressOf ref="end" type="Relative8"/>
+
+		<cpu:AddOperandToRegister16/>
+		<op:SI-AXRegister/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:CopyImmediateToAH/>
+		<vid:TeletypeOutput/>
+
+		<label id="nextCharacter"/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:PushAXToStack/>
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyImmediateToSI/>
+		<addressOf ref="inputBuffer" type="Absolute16"/>
+
+		<str:AppendByte/>
+
+		<cpu:PullSIFromStack/>
+		<cpu:PullAXFromStack/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<int:VideoFunctions/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextCharacter" type="Relative8"/>
+
+		<label id="end"/>
+	</scope>
+
+	<cpu:JumpToRelative16/>
+	<addressOf ref="waitForKeystroke" type="Relative16"/>
+
+	<!--Find Class-->
+	<label id="autocompleteMethodName"/>
+
+	<sys:GetCatalog/>
+
+	<cpu:CopyImmediateToDI/>
+	<addressOf ref="className" type="Absolute16"/>
+
+	<cat:FindClass/>
+
+	<cpu:BranchToRelativeIfEqual8/>
+	<addressOf ref="findMethod2" type="Relative8"/>
+
+	<cpu:JumpToRelative16/>
+	<addressOf ref="waitForKeystroke" type="Relative16"/>
+
+	<!--Find Method-->
+	<label id="findMethod2"/>
+
+	<cpu:CopyImmediateToDI/>
+	<addressOf ref="methodName" type="Absolute16"/>
+
+	<cpu:CopyOperandToRegister16/>
+	<op:AX-DIAddress/>
+
+	<cpu:CompareAXToImmediate/>
+	<short>0</short>
+
+	<cpu:BranchToRelativeIfNotEqual8/>
+	<addressOf ref="findMethod3" type="Relative8"/>
+
+	<cpu:JumpToRelative16/>
+	<addressOf ref="showMethodList" type="Relative16"/>
+	
+	<label id="findMethod3"/>
+
+	<cpu:CopyImmediateToDI/>
+	<addressOf ref="methodName" type="Absolute16"/>
+
+	<cls:GetStaticMethods/>
+
+	<lst:ForEach>
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cls:GetMethodName/>
+
+		<str:BeginsWith/>
+
+		<label id="nextMethod"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:BranchToRelativeIfEqual8/>
+		<addressOf ref="methodFound" type="Relative8"/>
+	</lst:ForEach>
+
+	<cpu:JumpToRelative16/>
+	<addressOf ref="waitForKeystroke" type="Relative16"/>
+
+	<!--Autocomplete Method Name-->
+	<label id="methodFound"/>
+
+	<!--Save method-->
+	<cpu:PushSIToStack/>
+
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="methodName" type="Absolute16"/>
+
+	<str:GetLength/>
+
+	<!--Restore method-->
+	<cpu:PullSIFromStack/>
+
+	<cls:GetMethodName/>
+
+	<scope>
+		<cpu:CopyOperandToRegister16/>
+		<op:CX-SIAddress/>
+
+		<cpu:SubtractOperandFromRegister16/>
+		<op:CX-AXRegister/>
+
+		<cpu:BranchToRelativeIfZero8/>
+		<addressOf ref="methodNotFound" type="Relative8"/>
+
+		<cpu:AddOperandToRegister16/>
+		<op:SI-AXRegister/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:CopyImmediateToAH/>
+		<vid:TeletypeOutput/>
+
+		<label id="nextCharacter4"/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:PushAXToStack/>
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyImmediateToSI/>
+		<addressOf ref="inputBuffer" type="Absolute16"/>
+
+		<str:AppendByte/>
+
+		<cpu:PullSIFromStack/>
+		<cpu:PullAXFromStack/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<int:VideoFunctions/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextCharacter4" type="Relative8"/>
+	</scope>
+
+	<label id="methodNotFound"/>
+
+	<cpu:JumpToRelative16/>
+	<addressOf ref="waitForKeystroke" type="Relative16"/>
+
+	<!--Show Class List-->
+	<label id="showClassList"/>
+
+	<con:WriteCharacters endLine="true"/>
+
+	<sys:GetCatalog/>
+
+	<lst:ForEach>
+		<cpu:PushSIToStack/>
+		<cpu:PushCXToStack/>
+		<cpu:PushDXToStack/>
+
+		<cls:IsStatic/>
+
+		<cpu:BranchToRelativeIfNotEqual8/>
+		<addressOf ref="nextClass" type="Relative8"/>
+		
+		<cls:GetName/>
+
+		<cpu:PushAllRegistersToStack/>
+		<con:WriteString/>
+		<cpu:PullAllRegistersFromStack/>
+
+		<!--Space-->
+		<con:WriteCharacters xml:space="preserve"> </con:WriteCharacters>
+
+		<label id="nextClass"/>
+		
+		<cpu:PullDXFromStack/>
+		<cpu:PullCXFromStack/>
+		<cpu:PullSIFromStack/>
+	</lst:ForEach>
+
+	<con:WriteCharacters endLine="true"/>
+
+	<cpu:JumpToRelative16/>
+	<addressOf ref="showPrompt" type="Relative16"/>
+
+	<!--Show Method List-->
+	<label id="showMethodList"/>
+
+	<con:WriteCharacters endLine="true"/>
+
+	<cls:GetStaticMethods/>
+	
+	<lst:ForEach>
+		<cpu:PushSIToStack/>
+		<cpu:PushCXToStack/>
+		<cpu:PushDXToStack/>
+
+		<cls:GetMethodName/>
+
+		<cpu:PushAllRegistersToStack/>
+		<con:WriteString/>
+		<cpu:PullAllRegistersFromStack/>
+
+		<!--Space-->
+		<con:WriteCharacters xml:space="preserve"> </con:WriteCharacters>
+
+		<cpu:PullDXFromStack/>
+		<cpu:PullCXFromStack/>
+		<cpu:PullSIFromStack/>
+	</lst:ForEach>
+
+	<con:WriteCharacters endLine="true"/>
+
+	<con:WriteCharacters>&gt;</con:WriteCharacters>
+
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="inputBuffer" type="Absolute16"/>
+
+	<con:WriteString/>
+
+	<cpu:JumpToRelative16/>
+	<addressOf ref="waitForKeystroke" type="Relative16"/>
+
+	<!--Data-->
+	<label id="inputBuffer"/>
+	<empty length="82"/>
+
+	<label id="className"/>
+	<empty length="82"/>
+
+	<label id="methodName"/>
+	<empty length="82"/>
+
+	<label id="toStringMethodName"/>
+	<short>8</short>
+	<string>ToString</string>
+</scope>

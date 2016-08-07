@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema
+    targetNamespace="http://metalx.org/i286/Functions/Table"
+    elementFormDefault="qualified"
+    xmlns="http://metalx.org/i286/Functions/Table"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:element name="Create">
+		<xsd:annotation>
+			<xsd:documentation>
+				Creates a new table.
+
+				Input:
+				SI=MemoryManager
+				AX=Length
+
+				Output:
+				DI=Table
+
+				Modifies: AX
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="length" type="xsd:short"/>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="Set">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sets a value in a table.
+				
+				Input:
+				SI=Table
+				DI=Key
+				AX=Value
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="Get">
+		<xsd:annotation>
+			<xsd:documentation>
+				Gets the value in a table.
+
+				Input:
+				SI=Table
+				DI=Key
+				
+				Output:
+				SI=Value
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="GetLength">
+		<xsd:annotation>
+			<xsd:documentation>
+				Gets the length of a string.
+				
+				Input:
+				SI=String
+				
+				Output:
+				AX=Length
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="ForEach">
+		<xsd:annotation>
+			<xsd:documentation>
+				Executes code for each item in the table.
+				
+				Input:
+				SI=Table
+				
+				Modifies: CX
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:any/>
+			</xsd:choice>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

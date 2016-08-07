@@ -1,0 +1,511 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Storage"
+	type="http://metalx.org/Storage"
+	static="true"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:hd="http://metalx.org/i386/Functions/HardDrive"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:pcic="http://metalx.org/Pc/Pci/Classes"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:pata="http://metalx.org/Pc/Pata/Ports"
+	xmlns:drive="http://metalx.org/Pc/Pata/DriveSelect"
+	xmlns:sta="http://metalx.org/Pc/Pata/Status"
+	xmlns:cmd="http://metalx.org/Pc/Pata/Commands"
+	xmlns:id="http://metalx.org/Pc/Pata/DriveIdentity"
+	xmlns:flp="http://metalx.org/Pc/Floppy/Ports"
+	xmlns:fst="http://metalx.org/Pc/Floppy/Status"
+	xmlns:fcmd="http://metalx.org/Pc/Floppy/Commands"
+	xmlns:fdor="http://metalx.org/Pc/Floppy/DigitalOutput">
+
+	<cls:method name="GetFloppyControllerVersion" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToAL/>
+		<fcmd:GetVersion/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToDX/>
+		<flp:Controller0/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<flp:Data/>
+
+		<cpu:Operand16/>
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetControllers" type="http://metalx.org/Storage/StorageControllerList" static="true">
+		<cpu:CopyImmediateToSI/>
+		<int>0</int>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>00001000</hex>
+
+		<cpu:CopyImmediateToBX/>
+		<int>0</int>
+
+		<label id="forEachSlot"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-AXRegister/>
+
+		<pcif:GetDeviceID/>
+
+		<!--VirtIO FileSystem-->
+		<cpu:CompareAXToImmediate/>
+		<hex>1af4</hex>
+		<hex>1009</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="busLogicScsi" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="virtIoFileSystemClass" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="slotEmpty" type="Relative8"/>
+
+		<!--BusLogic SCSI Controller-->
+		<label id="busLogicScsi"/>
+		<cpu:CompareAXToImmediate/>
+		<hex>1040104B</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="lsiScsi" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="busLogicScsiControllerClass" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="slotEmpty" type="Relative8"/>
+
+		<!--LSI SCSI Controller-->
+		<label id="lsiScsi"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>00301000</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="lsiSas" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="lsiScsiControllerClass" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="slotEmpty" type="Relative8"/>
+
+		<!--BusLogic SCSI Controller-->
+		<label id="lsiSas"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>00541000</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="ahci" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="lsiSasControllerClass" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<!--AHCI Controller-->
+		<label id="ahci"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-AXRegister/>
+
+		<pcif:GetClassCode/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>ffffff00</hex>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>01060100</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="ide" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="ahciControllerClass" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<!--IDE Controller-->
+		<label id="ide"/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>ffff0000</hex>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>01010000</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="slotEmpty" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="ideControllerClass" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<label id="slotEmpty"/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:DecrementCX/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="floppyControllers" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="forEachSlot" type="Relative32"/>
+
+		<!--Floppy Controllers-->
+		<label id="floppyControllers"/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003f2</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<fdor:Enabled/>
+
+		<cpu:WriteALToDXPort/>
+
+		<!--Wait For Reset-->
+		<cpu:CopyImmediateToDX/>
+		<hex>000003f4</hex>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>00001000</hex>
+
+		<label id="waitForReset"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<hex>c0</hex>
+
+		<cpu:CompareALToImmediate/>
+		<hex>80</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="fdc1" type="Relative8"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="waitForReset" type="Relative8"/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="fdc2" type="Relative8"/>
+
+		<label id="fdc1"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="fdcControllerClass" type="Absolute32"/>
+
+		<cpu:PushImmediateToStack/>
+		<hex>000003f0</hex>
+
+		<cpu:IncrementBX/>
+
+		<label id="fdc2"/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>00000372</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<fdor:Enabled/>
+
+		<cpu:WriteALToDXPort/>
+
+		<!--Wait For Reset-->
+		<cpu:CopyImmediateToDX/>
+		<hex>00000374</hex>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>00001000</hex>
+
+		<label id="waitForReset2"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<hex>c0</hex>
+
+		<cpu:CompareALToImmediate/>
+		<hex>80</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="fdc22" type="Relative8"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="waitForReset2" type="Relative8"/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createList" type="Relative8"/>
+
+		<label id="fdc22"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="fdcControllerClass" type="Absolute32"/>
+
+		<cpu:PushImmediateToStack/>
+		<hex>00000370</hex>
+
+		<cpu:IncrementBX/>
+
+		<!--Create List-->
+		<label id="createList"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<lst:Create/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CompareAXToImmediate/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="findClass" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="createListObject" type="Relative32"/>
+
+		<!--Find PciDevice Classes-->
+		<label id="findClass"/>
+
+		<cpu:PushDIToStack/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="virtIoFileSystem" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="virtIoFileSystemClass" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="busLogicScsiController" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="busLogicScsiControllerClass" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="lsiScsiController" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="lsiScsiControllerClass" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="lsiSasController" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="lsiSasControllerClass" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="ahciController" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="ahciControllerClass" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="ideController" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="ideControllerClass" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="fdcController" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="fdcControllerClass" type="Absolute32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-CXRegister/>
+
+		<!--<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>-->
+
+		<cpu:PullDIFromStack/>
+
+		<!--Create PciDevice Object-->
+		<label id="forEachDevice"/>
+
+		<cpu:PushDIToStack/>
+
+		<mm:CheckOut length="4"/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddress/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>4</int>
+
+		<cpu:PullBXFromStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-BXAddress/>
+
+		<cpu:PushSIToStack/>
+
+		<obj:Create/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:DecrementAX/>
+
+		<lst:SetItem/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachDevice" type="Relative8"/>
+
+		<!--Create List Object-->
+		<label id="createListObject"/>
+
+		<!--Get Item Count-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-DIAddress/>
+
+		<cpu:IncrementAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:PushAXToStack/>
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="storageControllerList" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+		<cpu:PullAXFromStack/>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<var:string id="virtIoFileSystem">http://metalx.org/Storage/Kvm/VirtioFileSystem</var:string>
+	<var:integer id="virtIoFileSystemClass">0</var:integer>
+	<var:string id="busLogicScsiController">http://metalx.org/Storage/Scsi/BusLogic/BusLogicScsiController</var:string>
+	<var:integer id="busLogicScsiControllerClass">0</var:integer>
+	<var:string id="lsiScsiController">http://metalx.org/Storage/Scsi/Lsi/LsiScsiController</var:string>
+	<var:integer id="lsiScsiControllerClass">0</var:integer>
+	<var:string id="lsiSasController">http://metalx.org/Storage/Sas/Lsi/LsiSasController</var:string>
+	<var:integer id="lsiSasControllerClass">0</var:integer>
+	<var:string id="ahciController">http://metalx.org/Storage/Ahci/AhciController</var:string>
+	<var:integer id="ahciControllerClass">0</var:integer>
+	<var:string id="ideController">http://metalx.org/Storage/Ide/IdeController</var:string>
+	<var:integer id="ideControllerClass">0</var:integer>
+	<var:string id="fdcController">http://metalx.org/Storage/Fdc/FdcController</var:string>
+	<var:integer id="fdcControllerClass">0</var:integer>
+	<var:string id="storageControllerList">http://metalx.org/Storage/StorageControllerList</var:string>
+</cls:class>

@@ -1,0 +1,487 @@
+﻿PCI Device
+	Base Address (BAR0) 10h
+
+HdAudio Memory Mapped Registers
+	GlobalCapabilities						2				(0x00)
+		OutputStreamCount					4 bits
+		InputStreamCount						4 bits
+		BidirectionalStreamCount			5 bits
+		SerialDataStreamCount				2 bits
+		64BitAddressesSupported			1 bit
+	MinorVersion								1				(0x02)
+	MajorVersion								1				(0x03)
+	OutputPayloadCapability				2				(0x04)	// Number of words per frame
+	InputPayloadCapability				2				(0x06)
+	GlobalControl							4				(0x08)
+		Reserved									23 bits
+		AcceptUnsolicitiedResponses		1 bit
+		Reserved									6 bits
+		Flush											1 bit
+		Reset										1 bit
+	WakeEnable								2				(0x0c)
+	StateChangeStatus						2				(0x0e)
+	GlobalStatus								2				(0x10)
+	Reserved									6				
+	OutputStreamPayloadCapability	2				(0x18)
+	InputStreamPayloadCapability		2				(0x1a)
+	Reserved									4
+	InterruptControl							4				(0x20)
+		GlobalInterruptEnable					1 bit
+		ControllerInterruptEnable			1 bit
+		StreamInterruptEnable				30 bits			// 0 - 29: Input Streams, Output Streams, Bidirectional Streams
+	InterruptStatus							4				(0x24)
+		GlobalInterruptStatus					1 bit
+		ControllerInterruptStatus				1 bit
+		StreamInterruptStatus					30 bits
+	Reserved									8
+	WallClockCounter						4				(0x30)
+	Reserved									4								// StreamSynchronization on some implementations
+	StreamSynchronization				4				(0x38)		// 0 - 29: 1 = Stream Stopped
+	Reserved									4
+	CommandOutputRingLower		4				(0x40)
+		Address									25 bits
+		Reserved (0)								7 bits			// 128-byte Alignment
+	CommandOutputRingUpper		4				(0x44)
+	CommandOutputWritePointer		2				(0x48)
+		Reserved									8 bits
+		LastEntry									8 bits
+	CommandOutputReadPointer		2				(0x4a)
+		Reset										1 bit
+		Reserved									7 bits
+		CurrentEntry								8 bits
+	CommandOutputControl				1				(0x4c)
+		Reserved									6 bits
+		DmaEnable								1 bit
+		MemoryErrorInterruptEnable		1 bit
+	CommandOutputStatus				1				(0x4d)
+		Reserved									7 bits
+		MemoryErrorIndicator				1 bit
+	CommandOutputRingSize			1				(0x4e)
+		SupportedSizes							4 bits			// 1 = 2, 2 = 16, 4 = 256
+		Reserved									2 bits
+		CurrentSize								2 bits			// 0 = 2, 1 = 16, 2 = 256
+	Reserved									1
+	ResponseBufferAddressLower		4				(0x50)
+		Address									25 bits
+		Reserved (0)								7 bits			// 128-byte alignment
+	ResponseBufferAddressUpper	4				(0x54)
+	ResponseBufferWritePointer		2				(0x58)
+		Reset										1 bit
+		Reserved									7 bits
+		LastEntry									8 bits
+	ResponseInterruptCount				2				(0x5a)
+		Reserved									8 bits
+		Count										8 bits
+	ResponseBufferControl				1				(0x5c)
+		Reserved									5 bits
+		OverrunInterruptEnable				1 bit
+		DmaEnable								1 bit
+		InterruptEnable							1 bit
+	ResponseBufferStatus					1				(0x5d)
+		Reserved									5 bits
+		OverrunIndicator						1 bit
+		Reserved									1 bit
+		InterruptIndicator						1 bit
+	ResponseBufferSize					1				(0x5e)
+		SupportedSizes							4 bits			// 1 = 2, 2 = 16, 4 = 256
+		Reserved									2 bits
+		CurrentSize								2 bits			// 0 = 2, 1 = 16, 2 = 256
+	Reserved									1
+	ImmediateCommand					4				(0x60)
+	ImmediateResponse					4				(0x64)
+	ImmediateStatus						2				(0x68)
+		Reserved									8 bits
+		ResultAddress							4 bits
+		ResultUnsolicited						1 bit
+		AddressUnsolicitedSupported		1 bit
+		ResultValid								1 bit				// Clear before sending command
+		CommandBusy							1 bit				// Set to send command
+	Reserved									6
+	DmaPositionLower						4				(0x70)
+		Address									25 bits
+		Reserved									6 bits			// 128-byte alignment
+		DmaPositionEnabled					1 bit
+	DmaPositionUpper						4				(0x74)
+	Reserved									8
+	InputStreamDescriptors[GlobalCapabilities.InputStreamCount]	0x20		(0x80)
+	OutputStreamDescriptors[GlobalCapabilities.OutputStreamCount]		0x20			(0x80 + (0x20 * GlobalCapabilities.InputStreamCount))  (0x100)
+	BidirectionalStreamDescriptors[GlobalCapabilities.OutputStreamCount]		0x20			(0x80 + (0x20 * GlobalCapabilities.InputStreamCount) + (0x20 * GlobalCapabilities.OutputStreamCount))  (0x180)
+
+StreamDescriptor						0x20
+	Control										3			(0x00)
+		StreamNumber							4 bits			(0 = None)
+		DirectionOutput							1 bit				// Bidirectional streams only
+		Priority										1 bit
+		StripeControl								2 bits			(0 = 1, 1 = 2, 2 = 4)
+		Reserved									11 bits
+		DiscriptorErrorInterruptEnable	1 bit
+		FifoErrorInterruptEnable				1 bit
+		CompleteInterruptEnable			1 bit
+		DmaEnable								1 bit
+		Reset										1 bit
+	Status										1			(0x03)
+		Reserved									2 bits
+		FifoReady									1 bit
+		DescriptorError							1 bit
+		FifoError									1 bit
+		Complete									1 bit
+		FifoReady									1 bit
+		Reserved									2 bits
+	LinkBufferPosition						4			(0x04)	(Resets to 1 when BufferLength is reached)
+	BufferLength								4			(0x08)	(Total bytes in buffer)
+	LastValidIndex							2			(0x0c)	(Last valid buffer descriptor index)
+		Reserved									8 bits
+		Index											8 bits
+	Reserved									2
+	FifoData									2			(0x10)
+	Format										2			(0x12)
+		NonPcm									1 bit
+		SampleBaseRate						1 bit				(0 = 48 kHz, 1 = 44.1 kHz)
+		BaseRateMultiplier						3 bits			(0 = 1)
+		BaseRateDivider							3 bits			(0 = 1)
+		Reserved									1 bit
+		BitsPerSample							3 bits			(0 = 8, 1 = 16, 2 = 20, 3 = 24, 4 = 32)
+		Channels									4 bits			(0 = 1)
+	Reserved									4
+	BufferListAddressLow					4			(0x18)
+	BufferListAddressHigh				4			(0x1c)
+
+BufferList
+	Buffer[256]									16
+		Address									8
+		Length										4
+		Flags											4
+			Reserved									31 bits
+			Interrupt									1 bit
+
+Command										4
+	CodecAddress								4 bits
+	NodeID											8 bits
+	Payload											20 bits
+
+Response										4
+
+UnsolicitedResponse						4
+	Tag												6 bits
+	SubTag											5 bits
+	VendorSpecificContents					21 bits
+
+CodecCommands16
+	GetCoefficientIndex						0xd				(Input Converter, Output Converter, Selector, Pin Complex, Other)
+	SetCoefficientIndex							0x5				(Input Converter, Output Converter, Selector, Pin Complex, Other)
+	GetProcessingCoefficient				0xc				(Input Converter, Output Converter, Selector, Pin Complex, Other)
+	SetProcessingCoefficient					0x4				(Input Converter, Output Converter, Selector, Pin Complex, Other)
+	GetAmplifierGain							0xb				(Input Converter, Output Converter, Selector, Pin Complex, Mixer, Other)
+		Command
+			OutputAmplifier								1 bit
+			Reserved										1 bit
+			LeftChannel									1 bit
+			Reserved										9 bits
+			AmplifierIndex								4 bits				
+		Response
+			Reserved										24 bits
+			Mute												1 bit
+			Gain												7 bits
+	SetAmplifierGain							0x3				(Input Converter, Output Converter, Selector, Pin Complex, Mixer, Other)
+		OutputAmp									1 bit
+		InputAmp										1 bit
+		LeftChannel									1 bit
+		RightChannel									1 bit
+		AmpIndex										4 bits
+		Mute												1 bit
+		Gain												7 bits
+	GetConverterFormat						0xa				(Input Converter, Output Converter)
+		NonPcm										1 bit
+		SampleBaseRate							1 bit				(0 = 48 kHz, 1 = 44.1 kHz)
+		BaseRateMultiplier							3 bits			(0 = 1)
+		BaseRateDivider								3 bits			(0 = 1)
+		Reserved										1 bit
+		BitsPerSample								3 bits			(0 = 8, 1 = 16, 2 = 20, 3 = 24, 4 = 32)
+		Channels										4 bits			(0 = 1)
+	SetConverterFormat						0x2				(Input Converter, Output Converter)
+		NonPcm										1 bit
+		SampleBaseRate							1 bit				(0 = 48 kHz, 1 = 44.1 kHz)
+		BaseRateMultiplier							3 bits			(0 = 1)
+		BaseRateDivider								3 bits			(0 = 1)
+		Reserved										1 bit
+		BitsPerSample								3 bits			(0 = 8, 1 = 16, 2 = 20, 3 = 24, 4 = 32)
+		Channels										4 bits			(0 = 1)
+
+CodecCommands8
+	GetParameter								0xf00	
+	GetSelectedInput							0xf01				(Input, Selector, Pin Complex, Other)
+	SetSelectedInput							0x701			(Input, Selector, Pin Complex, Other)
+	GetConnectionListEntries					0xf02				(Input Converter, Mixer, Selector, Pin, Power, Other)
+	GetProcessingState						0xf03				(Input Converter, Output Converter, Selector, Pin Complex, Other)
+	SetProcessingState							0x703			(Input Converter, Output Converter, Selector, Pin Complex, Other)
+	GetDigitalConverterControl				0xf0d			(Input Converter, Output Converter)
+	SetDigitalConverterControl0			0x70d			(Input Converter, Output Converter)
+	SetDigitalConverterControl1			0x70e			(Input Converter, Output Converter)
+	SetDigitalConverterControl2			0x73e			(Input Converter, Output Converter)
+	SetDigitalConverterControl3			0x73f				(Input Converter, Output Converter)
+	GetInputConverterSdi						0xf04				(Input Converter)
+	SetInputConverterSdi						0x704			(Input Converter)
+	GetPowerState								0xf05				(Audio, Modem, Other, Power, Input Converter, Output Converter, Selector, Mixer, Pin, Digital Pin, Other)
+	SetPowerState								0x705			(Audio, Modem, Other, Power, Input Converter, Output Converter, Selector, Mixer, Pin, Digital Pin, Other)
+	GetStreamChannel							0xf06				(Input Converter, Output Converter)
+		Reserved										24 bits
+		Stream											4 bits			(0 = None)
+		FirstChannel									4 bits
+	SetStreamChannel							0x706			(Input Converter, Output Converter)
+		Stream											4 bits			(0 = None)
+		FirstChannel									4 bits
+	GetPinWidgetControl						0xf07				(Pin Complex)
+		Reserved										24 bits
+		LowImpedenceAmplifierEnable		1 bit
+		OutputEnable									1 bit
+		InputEnable									1 bit
+		Reserved										2 bits
+		VoltageReferenceEnable					3 bits
+		-------------------- or ------------------------
+		EncodedPacketType						3 bits
+			Reserved										1 bit
+			EncodedPacketType						2 bits	(0 = Native, 3 = High Bit Rate)
+	SetPinWidgetControl						0x707			(Pin Complex)
+		LowImpedenceAmplifierEnable		1 bit
+		OutputEnable									1 bit
+		InputEnable									1 bit
+		Reserved										2 bits
+		VoltageReferenceEnable					3 bits
+		-------------------- or ------------------------
+		EncodedPacketType						3 bits
+			Reserved										1 bit
+			EncodedPacketType						2 bits	(0 = Native, 3 = High Bit Rate)
+	GetUnsolicitedEnable						0xf08	
+	SetUnsolicitedEnable						0x708
+	GetPinSense									0xf09				(Pin Complex)
+	ExecutePinSense								0x709			(Pin Complex)
+	GetChannelOptions						0xf0c	
+	SetChannelOptions							0x70c
+	GetVolumeControl							0xf0f				(Volume Knob)
+		Direct											1 bit
+		Volume											7 bits
+	SetVolumeControl							0x70f				(Volume Knob)
+		Direct											1 bit
+		Volume											7 bits
+	GetGpiStatus									0xf10
+	SetGpiStatus									0x710
+	GetGpiWakeEnable							0xf11
+	SetGpiWakeEnable							0x711
+	GetGpiUnsolicitedEnable					0xf12
+	SetGpiUnsolicitedEnable					0x712
+	GetGpiStickyEnable							0xf13
+	SetGpiStickyEnable							0x713
+	GetGpoData									0xf14
+	SetGpoData									0x714
+	GetGpioData									0xf15
+	SetGpioData									0x715
+	GetGpioEnable								0xf16
+	SetGpioEnable								0x716
+	GetGpioDirection							0xf16
+	SetGpioDirection							0x716
+	GetGpioWakeEnable						0xf18
+	GetGpioWakeEnable						0xf18
+	GetGpioUnsolicitedEnable				0xf19
+	GetGpioUnsolicitedEnable				0xf19
+	GetConfigurationDefault					0xf1c				(Pin)
+		PortConnectivity								2 bits	(0 = Jack, 1 = None, 2 = Integrated, 3 = Both)
+		Device											2 bits	(0 = External, 1 = Internal, 2 = Device, 3 = Other)
+		Location										4 bits	(1 = Rear, 2 = Front, 3 = Left, 4 = Right, 5 = Top, 6 = Bottom, 7 = Rear Panel/Riser/Inside Lid, 8 = Drive Bay/Digital Display/Outside Lid, 9 = ATAPI)
+		DefaultDevice									4 bits	(0 = Line Out, 1 = Speaker, 2 = Headphones, 3 = CD, 4 = SPDIF Out, 5 = Digital Out, 6 = Modem Line, 7 = Modem Handset, 8 = Line In, 9 = Aux, 10 = Mic In, 11 = Telephony, 12 = SPDIF In, 13 = Digital In)
+		ConnectionType								4 bits	(1 = 1/8", 2 = 1/4", 3 = ATAPI, 4 = RCA, 5 = Optical, 6 = Digital, 7 = Analog, 8 = DIN, 9 = XLR, 10 = RJ-11, 11 = Combination)
+		Color											4 bits	(1 = Black, 2 = Grey, 3 = Blue, 4 = Green, 5 = Red, 6 = Orange, 7 = Yellow, 8 = Purple, 9 = Pink, 14 = White)
+		Miscellaneous								4 bits
+			Reserved										3 bits
+			JackDetectOverride						1 bit
+		Group											4 bits
+		Sequence										4 bits
+	SetConfigurationDefault0				0x71c
+	SetConfigurationDefault1				0x71d
+	SetConfigurationDefault2				0x71e
+	SetConfigurationDefault3				0x71f
+	GetConverterChannelCount				0xf2d
+		Reserved										24 bits
+		ChannelCount								8 bits
+	SetConverterChannelCount				0x72d
+		ChannelCount								8 bits
+	FunctionReset								0x7ff
+
+CodecParameters
+	VendorID										0x00				(Root Node)
+		VendorID										16 bits
+		DeviceID										16 bits
+	RevisionID										0x02				(Root Node)
+		Reserved										8 bits
+		Major											4 bits
+		Minor											4 bits
+		Revision										8 bits
+		Step												8 bits
+	SubordinateNodeCount					0x04				(Root Node, Audio, Modem, Other)
+		Reserved										8 bits
+		FirstNodeIndex								8 bits
+		Reserved										8 bits
+		NodeCount									8 bits
+	FunctionGroupType						0x05				(Audio, Modem, Other, Vendor Defined Widget)
+		Reserved										23 bits
+		UnsolicitedSupported						1 bit
+		NodeType										8 bits			(1 = Audio, 2 = Modem)
+	AudioGroupCapabilities					0x08				(Audio)
+		Reserved										15 bits
+		Beep												1 bit
+		Reserved										4 bits
+		InputDelay										4 bits
+		Reserved										4 bits
+		OutputDelay									4 bits
+	AudioWidgetCapabilities					0x09				(Input Converter, Output Converter, Selector, Mixer, Pin)
+		Reserved										8 bits
+		Type												4 bits			(0 = Audio Output, 1 = Audio Input, 2 = Audio Mixer, 3 = Audio Selector, 4 = Pin Complex, 5 = Power, 6 = Volume, 7 = Beep Generator, 15 = Vendor Defined)
+		Delay											4 bits
+		ChannelCountHigh							3 bits
+		ContentProtection							1 bit
+		LeftRightSwap								1 bit
+		PowerControl									1 bit
+		Digital											1 bit
+		ConnectionList								1 bit
+		UnsolicitedSupported						1 bit
+		WidgetProcessingControls				1 bit
+		Stripe											1 bit
+		FormatOverride								1 bit
+		AmpParameterOverride					1 bit
+		OutAmpPresent								1 bit
+		InAmpPresent								1 bit
+		ChannelCountLow							1 bit
+	SupportedPcmRates						0x0a				(Audio, Input Converter, Output Converter)
+		Reserved										11 bits
+		32Bits											1 bit
+		24Bits											1 bit
+		20Bits											1 bit
+		16Bits											1 bit
+		8Bits												1 bit
+		Reserved										4 bits
+		384Khz											1 bit
+		192Khz											1 bit
+		176_4Khz										1 bit
+		96Khz											1 bit
+		88_2Khz											1 bit
+		48Khz											1 bit
+		44_1Khz											1 bit
+		32Khz											1 bit
+		22_05Khz										1 bit
+		16Khz											1 bit
+		11_025Khz										1 bit
+		8Khz												1 bit
+	SupportedFormats							0x0b				(Audio, Input Converter, Output Converter)
+		Reserved										29 bits
+		Ac3												1 bit
+		Float32											1 bit
+		Pcm												1 bit
+	PinCapabilities								0x0c				(Pin)
+		Reserved										4 bits
+		HdmiHighBitRate							1 bit
+		Reserved										2 bits
+		DisplayPort									1 bit
+		Reserved										7 bits
+		EapdSupport									1 bit
+		VrefControl									8 bits
+			Reserved										2 bits
+			100Percent									1 bit
+			80Percent										1 bit
+			Reserved										1 bit
+			Ground											1 bit
+			50Percent										1 bit
+			HiZSupport									1 bit
+		Hdmi												1 bit
+		BalancedIO									1 bit
+		InputCapable									1 bit
+		OutputCapable								1 bit
+		HeadphoneCapable						1 bit
+		PresenceDetectCapable					1 bit
+		TriggerRequired							1 bit
+		ImpedenceSenseCapable				1 bit
+	InputAmplifierCapabilities				0x0d				(Audio, Input Converter, Output Converter, Mixer, Selector, Pin, Other)
+		Mute												1 bit
+		Reserved										8 bits
+		StepSize										7 bits
+		Reserved										1 bit
+		NumberOfSteps								7 bits
+		Reserved										1 bit
+		Offset											7 bits
+	OutputAmplifierCapabilities				0x12				(Audio, Input Converter, Output Converter, Mixer, Selector, Pin, Other)
+		Mute												1 bit
+		Reserved										8 bits
+		StepSize										7 bits
+		Reserved										1 bit
+		NumberOfSteps								7 bits
+		Reserved										1 bit
+		Offset											7 bits
+	ConnectionListLength						0x0e				(Input Converter, Mixer, Selector, Pin, Power)
+		Reserved										24 bits
+		LongForm										1 bit
+		ConnectionListLength						7 bits
+	SupportedPowerStates					0x0f				(Audio, Modem, Other, Power, Other)
+		SupportsLowPower						1 bit
+		ClockStop										1 bit
+		S3D3ColdSupport							1 bit
+		Reserved										24 bits
+		D3ColdSupport								1 bit
+		D3Support										1 bit
+		D2Support										1 bit
+		D1Support										1 bit
+		D0Support										1 bit
+	ProcessingCapabilities					0x10				(Input, Output, Selector, Pin, Other)
+		Reserved										16 bits
+		NumberOfCoefficients					8 bits
+		Reserved										7 bits
+		Benign											1 bit
+	GpioCount										0x11				(Audio, Modem, Other)
+		GpioWake										1 bit
+		GpioUnsolicitedSupported				1 bit
+		Reserved										6 bits
+		NumberOfGpis								8 bits
+		NumberOfGpos								8 bits
+		NumberOfGpios							8 bits
+	VolumeCapabilities							0x13				(Volume)
+		Reserved										24 bits
+		Delta												1 bit		(0 = HardwareOnly, 1 = SoftwarePlusHardwareDelta)
+		NumberOfSteps								7 bits
+
+Nodes
+	Root (NID = 0)
+		Function Groups
+			Widgets
+
+HdAudioDevice
+	Command (Output) Ring Buffer
+	Response (Input) Ring Buffer
+	Immediate Command/Response Registers
+
+Stream
+	System Memory
+	Codec
+	Dma Engine
+	Channels
+		Converter (i.e. Left/Right)
+
+Sample Rate 6000-192000 Hz
+Sample Depth 8, 16, 20, 24, 32 bits
+Channels 1-16
+
+
+Link
+	Frames
+		Command/Response
+		Streams
+			Channel
+		Null
+
+Enumeration
+	Controller (Link)
+		Codecs
+			Unique ID
+			Capabilities
+			Devices
+				Type (Speaker, Headphone, etc.)
+				Connected
+
+
+

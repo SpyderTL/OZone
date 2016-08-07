@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:ex="http://metalx.org/Intel/80386/ExtendedOperators"
+	xmlns:seg="http://metalx.org/Intel/80386/Segments"
+	xmlns:desc="http://metalx.org/Intel/80386/DescriptorTable"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:flp="http://metalx.org/i386/Functions/FloppyDrive"
+	xmlns:pic="http://metalx.org/Pc/Pic/Ports"
+	xmlns:cmd="http://metalx.org/Pc/Pic/Commands"
+	xmlns:debug="http://metalx.org/x86/Debug/Functions">
+
+	<!--Store Linear Frame Buffer Address-->
+	<cpu:PushDIToStack/>
+
+	<!--Store Startup Address-->
+	<cpu:PushSIToStack/>
+
+	<!--Setup Segment Registers-->
+	<cpu:CopyImmediateToAX/>
+	<hex>00000010</hex>
+
+	<cpu:CopyOperandToSegmentRegister/>
+	<seg:SS-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister/>
+	<seg:DS-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister/>
+	<seg:ES-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister/>
+	<seg:FS-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister/>
+	<seg:GS-AXRegister/>
+
+	<!--Setup Interrupt Descriptor Table-->
+	<cpu:CopyImmediateToDI/>
+	<hex>00000500</hex>
+
+	<cpu:CopyImmediateToCX/>
+	<int>32</int>
+
+	<label id="writeDefaultInterruptDescriptor"/>
+
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="defaultInterruptDescriptor" type="Absolute32"/>
+
+	<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+	<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="writeDefaultInterruptDescriptor" type="Relative8"/>
+
+	<cpu:CopyImmediateToCX/>
+	<int>8</int>
+
+	<label id="writeMasterInterruptDescriptor"/>
+
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="masterInterruptDescriptor" type="Absolute32"/>
+
+	<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+	<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="writeMasterInterruptDescriptor" type="Relative8"/>
+
+	<cpu:CopyImmediateToCX/>
+	<int>8</int>
+
+	<label id="writeSlaveInterruptDescriptor"/>
+
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="slaveInterruptDescriptor" type="Absolute32"/>
+
+	<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+	<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="writeSlaveInterruptDescriptor" type="Relative8"/>
+
+	<cpu:CopyImmediateToCX/>
+	<int>208</int>
+
+	<label id="writeDefaultInterruptDescriptor2"/>
+
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="defaultInterruptDescriptor" type="Absolute32"/>
+
+	<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+	<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="writeDefaultInterruptDescriptor2" type="Relative8"/>
+
+	<!--Load Interrupt Descriptor Table-->
+	<cpu:ExtendedOperator/>
+	<ex:DescriptorTableFunction/>
+	<desc:CopyImmediateAddressToInterruptDescriptorTableRegister/>
+	<addressOf ref="interruptDescriptorTablePointer" type="Absolute32"/>
+
+	<!--Reprogram Master Interrupt Controller-->
+	<cpu:CopyImmediateToAL/>
+	<cmd:InitializeForEnvironment/>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:MasterCommand/>
+
+	<cpu:CopyImmediateToAL/>
+	<byte>32</byte>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:MasterData/>
+
+	<cpu:CopyImmediateToAL/>
+	<binary>00000100</binary>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:MasterData/>
+
+	<cpu:CopyImmediateToAL/>
+	<cmd:Environment8086Mode/>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:MasterData/>
+	
+	<!--Enable All Master Interrupts-->
+	<cpu:CopyImmediateToAL/>
+	<binary>00000000</binary>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:MasterData/>
+
+	<!--Reprogram Slave Interrupt Controller-->
+	<cpu:CopyImmediateToAL/>
+	<cmd:InitializeForEnvironment/>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:SlaveCommand/>
+
+	<cpu:CopyImmediateToAL/>
+	<byte>40</byte>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:SlaveData/>
+
+	<cpu:CopyImmediateToAL/>
+	<binary>00000010</binary>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:SlaveData/>
+
+	<cpu:CopyImmediateToAL/>
+	<cmd:Environment8086Mode/>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:SlaveData/>
+
+	<!--Enable All Slave Interrupts-->
+	<cpu:CopyImmediateToAL/>
+	<binary>00000000</binary>
+
+	<cpu:WriteALToImmediate8Port/>
+	<pic:SlaveData/>
+
+	<!--Restore Starup Address-->
+	<cpu:PullSIFromStack/>
+
+	<!--Restore Linear Frame Buffer Address-->
+	<cpu:PullDIFromStack/>
+	
+	<!--Enable Interrupts-->
+	<cpu:SetInterruptFlag/>
+
+	<cpu:LogicFunction/>
+	<logic:JumpToSIRegister/>
+
+	<!--Interrupt Descriptor Table Pointer-->
+	<label id="interruptDescriptorTablePointer"/>
+	<short>2048</short>
+	<hex>00000500</hex>
+
+	<!--Default Interrupt Descriptor-->
+	<label id="defaultInterruptDescriptor"/>
+
+	<!--Base (Low)-->
+	<hex>0d00</hex>
+	<!--Segment-->
+	<hex>0008</hex>
+	<!--Reserved-->
+	<hex>00</hex>
+	<!--Attributes-->
+	<binary>10001110</binary>
+	<!--Base (High)-->
+	<hex>0000</hex>
+
+	<!--Master Interrupt Descriptor-->
+	<label id="masterInterruptDescriptor"/>
+
+	<!--Base (Low)-->
+	<hex>0e00</hex>
+	<!--Segment-->
+	<hex>0008</hex>
+	<!--Reserved-->
+	<hex>00</hex>
+	<!--Attributes-->
+	<binary>10001110</binary>
+	<!--Base (High)-->
+	<hex>0000</hex>
+
+	<!--Slave Interrupt Descriptor-->
+	<label id="slaveInterruptDescriptor"/>
+
+	<!--Base (Low)-->
+	<hex>0f00</hex>
+	<!--Segment-->
+	<hex>0008</hex>
+	<!--Reserved-->
+	<hex>00</hex>
+	<!--Attributes-->
+	<binary>10001110</binary>
+	<!--Base (High)-->
+	<hex>0000</hex>
+
+</scope>

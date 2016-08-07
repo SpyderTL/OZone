@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:dsk="http://metalx.org/Pc/Bios/DiskExtensions"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:logic="http://metalx.org/Intel/80286/Logic"
+	xmlns:seg="http://metalx.org/Intel/80286/Segments"
+	xmlns:sys="http://metalx.org/Pc/Bios/System">
+
+	<cpu:JumpToImmediatePointer16/>
+	<addressOf ref="start" type="Pointer16"/>
+
+	<label id="start"/>
+
+	<!--Enable A20 Gate-->
+	<cpu:CopyImmediateToAX/>
+	<sys:EnableA20Gate/>
+
+	<cpu:CallImmediate8Interrupt/>
+	<bios:SystemFunctions/>
+
+	<cpu:CopyImmediateToAX/>
+	<short>0</short>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:ES-AXRegister/>
+
+	<!--Load Disk Info Block-->
+	<cpu:CopyImmediateToAH/>
+	<dsk:ReadSectorsFromDrive/>
+
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="packet" type="Absolute16"/>
+
+	<cpu:CallImmediate8Interrupt/>
+	<bios:DiskFunctions/>
+
+	<cpu:CopyImmediateToSI/>
+	<hex>0500</hex>
+
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu:CopyRegisterToOperand16/>
+	<op:AX-CXRegister/>
+
+	<!--Load Programs-->
+	<label id="loadProgram"/>
+
+	<cpu:PushCXToStack/>
+
+	<!--Read Block-->
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu:CopyRegisterToOperand16/>
+	<op:AX-ImmediateAddress/>
+	<addressOf ref="block" type="Absolute16"/>
+
+	<!--Read Block Count-->
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu:CopyRegisterToOperand16/>
+	<op:AX-ImmediateAddress/>
+	<addressOf ref="blockCount" type="Absolute16"/>
+
+	<!--Read Address-->
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu:CopyRegisterToOperand16/>
+	<op:AX-ImmediateAddress/>
+	<addressOf ref="address" type="Absolute16"/>
+	
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu:CopyRegisterToOperand16/>
+	<op:AX-ImmediateAddress/>
+	<addressOf ref="segment" type="Absolute16"/>
+
+	<cpu:PushSIToStack/>
+
+	<cpu:CopyImmediateToAH/>
+	<dsk:ReadSectorsFromDrive/>
+
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="packet" type="Absolute16"/>
+
+	<cpu:CallImmediate8Interrupt/>
+	<bios:DiskFunctions/>
+
+	<cpu:PullSIFromStack/>
+
+	<cpu:BranchToRelativeIfCarry8/>
+	<addressOf ref="error" type="Relative8"/>
+
+	<cpu:PullCXFromStack/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="loadProgram" type="Relative8"/>
+
+	<!--Jump To Startup Address-->
+	<cpu:LogicFunction/>
+	<logic:JumpToPointerAtSIAddress/>
+
+	<label id="error"/>
+	<con:WriteShortHex />
+
+	<cpu:ClearInterruptFlag/>
+	<cpu:HaltProcessing/>
+
+	<label id="packet"/>
+	<!--Record Size-->
+	<byte>16</byte>
+	<!--Reserved-->
+	<byte>0</byte>
+	<!--Block Count-->
+	<label id="blockCount"/>
+	<short>1</short>
+	<!--Address-->
+	<label id="address"/>
+	<hex>0500</hex>
+	<label id="segment"/>
+	<hex>0000</hex>
+	<!--First Block-->
+	<label id="block"/>
+	<long>1</long>
+</scope>

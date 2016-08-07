@@ -1,0 +1,335 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema
+    targetNamespace="http://metalx.org/i386/Functions/String"
+    elementFormDefault="qualified"
+    xmlns="http://metalx.org/i386/Functions/String"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:element name="Create">
+		<xsd:annotation>
+			<xsd:documentation>
+				Creates a new string.
+
+				Input:
+				AX=Length
+
+				Output:
+				DI=String
+				
+				Modifies: AX
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="length" type="xsd:unsignedInt"/>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="CreateObject">
+		<xsd:annotation>
+			<xsd:documentation>
+				Creates a new string object from a string structure.
+
+				Input:
+				DI=String
+
+				Output:
+				DI=Object
+				
+				Modifies: AX BX CX DX
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="Clear">
+		<xsd:annotation>
+			<xsd:documentation>
+				Removes all bytes from a string.
+				
+				Input:
+				SI=String
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="Copy">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sets the value of a string to the value of a string.
+
+				Input:
+				SI=Source
+				DI=Destination
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="Clone">
+		<xsd:annotation>
+			<xsd:documentation>
+				Creates a new string containing the characters of the specified string.
+
+				Input:
+				SI=String
+				
+				Output:
+				DI=String
+				
+				Modifies: AX CX SI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="ContainsCharacter">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sets the zero flag if the string value contains the specified character.
+				
+				Input:
+				AL=Character
+				DI=String
+				
+				Ouput:
+				ZF=StringContainsCharacter
+				
+				Modifies: CX DI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="ContainsString">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sets the zero flag if the string value contains the substring value.
+				
+				Input:
+				SI=Substring
+				DI=String
+				
+				Ouput:
+				ZF=StringContainsSubstring
+				
+				Modifies: AX CX SI DI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="IndexOfCharacter">
+		<xsd:annotation>
+			<xsd:documentation>
+				Returns the position of a character in a string, or -1 if the character can not be found.
+				
+				Input:
+				AL=Character
+				SI=String
+				
+				Ouput:
+				AX=Position
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="IndexOfString">
+		<xsd:annotation>
+			<xsd:documentation>
+				Returns the position of the first character of a substring in a string, or -1 if the string can not be found.
+				
+				Input:
+				SI=Substring
+				DI=String
+				
+				Ouput:
+				AX=Position
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="AppendCharacter">
+		<xsd:annotation>
+			<xsd:documentation>
+				Appends a character to the end of a string.
+
+				Input:
+				AL=Character
+				SI=String
+
+				Modifies: BX SI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="value">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:length value="1" fixed="true"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="AppendString">
+		<xsd:annotation>
+			<xsd:documentation>
+				Appends the source string to the end of the destination string.
+
+				Input:
+				SI=Source
+				DI=Destination
+				
+				Modifies: CX SI DI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="GetLength">
+		<xsd:annotation>
+			<xsd:documentation>
+				Gets the length of the string.
+				
+				Input:
+				SI=String
+				
+				Output:
+				AX=Length
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="TrimCharacter">
+		<xsd:annotation>
+			<xsd:documentation>
+				Removes the last character from a string.
+				
+				Input:
+				SI=String
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="Trim">
+		<xsd:annotation>
+			<xsd:documentation>
+				Removes whitespace from the end of a string.
+				
+				Input:
+				SI=String
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="Compare">
+		<xsd:annotation>
+			<xsd:documentation>
+				Compares two strings.
+				
+				Input:
+				SI=String1
+				DI=String2
+				
+				Output:
+				ZF=Equal
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="BeginsWith">
+		<xsd:annotation>
+			<xsd:documentation>
+				Compares the initial characters of a string.
+
+				Input:
+				SI=String
+				DI=Substring
+
+				Output:
+				ZF=StringBeginsWithSubstring
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="EndsWith">
+		<xsd:annotation>
+			<xsd:documentation>
+				Compares the final characters of a string.
+
+				Input:
+				SI=String
+				DI=Substring
+
+				Output:
+				ZF=StringEndsWithSubstring
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="CopySegment">
+		<xsd:annotation>
+			<xsd:documentation>
+				Copies a segment of a string to another string.
+
+				Input:
+				SI=Source
+				DI=Destination
+				AX=Start
+				CX=Count
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="ForEach">
+		<xsd:annotation>
+			<xsd:documentation>
+				Executes code for each character in a string.
+
+				Input:
+				SI=String
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:any/>
+			</xsd:choice>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="Split">
+		<xsd:annotation>
+			<xsd:documentation>
+				Returns an array that contains the specified string split up by the specified delimiter.
+				
+				Input:
+				SI=String
+				AL=Delimiter
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="Join">
+		<xsd:annotation>
+			<xsd:documentation>
+				Creates a new string by combining the elements of an array of strings.
+				
+				Input:
+				SI=Array
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+</xsd:schema>

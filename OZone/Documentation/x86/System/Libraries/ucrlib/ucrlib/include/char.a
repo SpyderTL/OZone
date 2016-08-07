@@ -1,0 +1,88 @@
+		.386
+		option	segment:use16, proc:private
+		
+		ifndef	$char_a
+$char_a		=	0
+		echo	char.a
+
+		include	consts.a
+		
+ucrlib		segment	para public 'ucrlib'
+
+
+
+; IsAlNum-
+;
+;	Checks to see if a character is an alphabetic or numeric character.
+
+		xtrn		IsAlNum,CS,Stk,TOS
+IsAlNum		macro		Operand
+		bCSStkTOS 	IsAlNum,Operand
+		endm
+
+; IsAlpha-	Sets zero flag if char in AL is alphabetic.
+
+		xtrn		IsAlpha,CS,Stk,TOS
+IsAlpha		macro		Operand
+		bCSStkTOS 	IsAlpha, Operand
+		endm
+
+; IsLower-	Sets zero flag if char in AL is lower case.
+
+		xtrn		IsLower,CS,Stk,TOS
+IsLower		macro		Operand
+		bCSStkTOS 	IsLower, Operand
+		endm
+
+
+; IsUpper-	Sets zero flag if char in AL is upper case.
+
+		xtrn		IsUpper,CS,Stk,TOS
+IsUpper		macro		Operand
+		bCSStkTOS 	IsUpper, Operand
+		endm
+
+
+
+; IsDigit-	
+;
+;	Sets zero flag if the char in AL is a decimal digit.
+
+		xtrn		IsDigit,CS,Stk,TOS
+IsDigit		macro		Operand
+		bCSStkTOS	IsDigit, Operand
+		endm
+
+
+; IsXDigit-
+;
+;	Checks the specified character to see if it is a valid
+;	hexadecimal digit.
+
+		xtrn		IsXDigit,CS,Stk,TOS
+IsXDigit	macro		Operand
+		bCSStkTOS 	IsXDigit, Operand
+		endm
+
+
+; ToLower-	Converts the character in AL to lower case if
+;		it is currently upper case.
+
+		xtrn		ToLower,CS,Stk,TOS
+ToLower		macro		Operand
+		bCSStkTOS	ToLower, Operand
+		endm
+
+
+; ToUpper-	Converts lower case character in AL to upper case.
+
+		xtrn		ToUpper,CS,Stk,TOS
+ToUpper		macro		Operand
+		bCSStkTOS	ToUpper, Operand
+		endm
+
+
+
+
+ucrlib		ends
+		endif	;ifndef $char_a

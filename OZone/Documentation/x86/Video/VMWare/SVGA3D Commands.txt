@@ -1,0 +1,343 @@
+﻿DefineContext
+	Command			4		(1045)
+	Size					4
+	ContextID			4
+
+DefineSurface
+	Command			4		(1040)
+	Size					4
+	SurfaceID			4
+	Flags					4		(1 = Cubemap, 2 = Static, 4 = Dynamic, 8 = IndexBuffer, 16 = VertexBuffer, 32 = Texture, 64 = RenderTarget, 128 = DepthStencil, 256 = WriteOnly, 512 = Antialias, 1024 = AutoGenMipMaps)
+	Format				4		(1 = X8R8G8B8, 2 = A8R8G8B8, 3 = R5G6B5, 7 = D32, 8 = D16, 32 = A8, 37 = Buffer)
+	Faces[6]
+		MipLevelCount	4
+	MipLevels[]
+		Width			4
+		Height			4
+		Depth			4
+
+DefineSurface2
+	Command			4		(1070)
+	Size					4
+	SurfaceID			4
+	Flags					4		(1 = Cubemap, 2 = Static, 4 = Dynamic, 8 = IndexBuffer, 16 = VertexBuffer, 32 = Texture, 64 = RenderTarget, 128 = DepthStencil, 256 = WriteOnly, 512 = Antialias, 1024 = AutoGenMipMaps)
+	Format				4		(1 = X8R8G8B8, 2 = A8R8G8B8, 3 = R5G6B5, 7 = D32, 8 = D16, 32 = A8, 37 = Buffer)
+	Faces[6]
+		MipLevels		4
+	MultisampleCount	4
+	AutoGenFilter		4		(0 = None, 1 = Nearest, 2 = Linear, 3 = Ansiotropic)
+	MipLevels[]
+		Width			4
+		Height			4
+		Depth			4
+
+DefineShader
+	Command			4		(1059)
+	Size					4
+	ContextID			4
+	ShaderID			4
+	ShaderType		4		(1 = Vertex Shader, 2 = Pixel Shader)
+	ByteCode[]					(Length must be a multiple of 4)
+
+SetShaderRegister
+	Command			4		(1062)
+	Size					4		(32)
+	ContextID			4
+	Register			4
+	ShaderType		4		(1 = Vertex Shader, 2 = Pixel Shader)
+	RegisterType		4		(0 = Float, 1 = Integer, 2 = Boolean)
+	Value				16
+
+SetShader
+	Command			4		(1061)
+	Size					4		(12)
+	ContextID			4
+	ShaderType		4		(1 = Vertex Shader, 2 = Pixel Shader)
+	ShaderID			4
+
+SetRenderTarget
+	Command			4		(1050)
+	Size					4
+	ContextID			4
+	Type					4		(0 = Depth, 1 = Stencil, 2 = Color0)
+	SurfaceImage
+		SurfaceID		4
+		Face				4
+		MipMap		4
+
+SetViewport
+	Command			4		(1055)
+	Size					4		(20)
+	ContextID			4
+	Rectangle
+		X					4
+		Y					4
+		Width			4
+		Height			4
+
+SetZRange
+	Command			4		(1048)
+	Size					4		(12)
+	ContextID			4
+	ZMin					4
+	ZMax				4
+
+Clear
+	Command			4		(1057)
+	Size					4
+	ContextID			4
+	Flags					4		(1 = Color, 2 = Depth, 4 = Stencil)
+	Color				4
+	Depth				4
+	Stencil				4
+	Rectangles	[]
+		X					4
+		Y					4
+		Width			4
+		Height			4
+
+Present
+	Command			4		(1058)
+	Size					4
+	SurfaceID			4
+	Rectangles	[]
+		X					4
+		Y					4
+		Width			4
+		Height			4
+		SourceX		4
+		SourceY			4
+
+TransferSurfaceData
+	Command			4		(1044)
+	Size					4
+	Guest
+		RegionID		4		(-1 = Null, -2 = Frame Buffer)
+		Offset			4
+		Pitch				4		(0 = Auto)
+	Host
+		SurfaceID		4
+		Face				4
+		MipMap		4
+	TransferType		4		(1 = Write, 2 = Read)
+	Boxes[]
+		X					4
+		Y					4
+		Z					4
+		Width			4
+		Height			4
+		Depth			4
+		SourceX		4
+		SourceY			4
+		SourceZ			4
+
+SetTransform
+	Command			4		(1047)
+	Size					4		(72)
+	ContextID			4
+	Type					4		(1 = World, 2 = View, 3 = Projection, 4-11 = Texture, 12-14 = WorldX)
+	Matrix
+		M11				4
+		M12				4
+		M13				4
+		M14				4
+		M21				4
+		M22				4
+		M23				4
+		M24				4
+		M31				4
+		M32				4
+		M33				4
+		M34				4
+		M41				4
+		M42				4
+		M43				4
+		M44				4
+
+SetRenderState
+	Command			4		(1049)
+	Size					4
+	ContextID			4
+	RenderStates[]
+		RenderState	4
+		Value			4
+
+SetTextureState				(1051)
+	Command			4
+	Size					4
+	ContextID			4
+	TexureStates[]
+		Stage			4
+		TextureState	4
+		Value			4
+
+DrawPrimitives
+	Command							4		(1063)
+	Size									4
+	ContextID							4
+	VertexDeclarationCount		4
+	RangeCount						4
+	VertexDeclarations[VertexDeclarationCount]
+		Type								4		(0 = Float1, 1 = Float2, 2 = Float3, 3 = Float4, 4 = Color)
+		Method							4		(0 = Default, 1 = Partial U, 2 = Partial V, 3 = Cross UV, 4 = UV, 5 = Lookup, 6 = Lookup Presampled)
+		Usage							4		(0 = Position, 1 = Blend Weight, 2 = Blend Indices, 3 = Normal, 4 = Point Size, 5 = Texture Coordinate, 6 = Tangent, 7 = Binormal, 8 = Tesselation Factor, 9 = Position T, 10 = Color, 11 = Fog, 12 = Depth, 13 = Sample)
+		UsageIndex					4
+		SurfaceID						4
+		SurfaceOffset					4
+		SurfaceStride					4
+		FirstIndex						4
+		LastIndex						4		(0 = Last Vertex)
+	Ranges[RangeCount]
+		PrimitiveType					4		(1 = Triangle List, 2 = Point List, 3 = Line List, 4 = Line Strip, 5 = Triangle Strip, 6 = Triangle Fan)
+		PrimitiveCount				4
+		IndexSurfaceID				4		(-1 = No Index)
+		IndexSurfaceOffset			4
+		IndexSurfaceStride			4
+		IndexWidth					4		(Should be equal to IndexSurfaceStride)
+		IndexBias						4		(Index Offset)
+	Instances[VertexDeclarationCount]
+		Count							30 bits
+		Indexed							1 bit
+		Instance							1 bit
+
+RenderState
+	ZEnable										1			bool
+	ZWriteEnable								2			bool
+	AlphaTestEnable						3			bool
+	DitherEnable								4			bool
+	BlendEnable								5			bool
+	FogEnable									6			bool
+	SpecularEnable							7			bool
+	StencilEnable								8			bool
+	LightingEnable							9			bool
+	NormalizeNormals						10			bool
+	PointSpriteEnable						11			bool
+	PointScaleEnable						12			bool
+	StencilRef									13			int
+	StencilMask								14			int
+	StencilWriteMask						15			int
+	FogStart									16			float
+	FogEnd										17			float
+	FogDensity								18			float
+	PointSize									19			float
+	PointSizeMin								20			float
+	PointSizeMax								21			float
+	PointScaleA								22			float
+	PointScaleB								23			float
+	PointScaleC								24			float
+	FogColor									25			int
+	AmbientColor							26			int
+	ClipPlaneEnable							27			int				(1 = Clip Plane 0, 2 = Clip Plane 1, 4 = Clip Plane 2, 8 = Clip Plane 3, 16 = Clip Plane 4, 32 = Clip Plane 5)
+	FogMode									28			int
+		Function												short		(1 = Exponential, 2 = ExponentialSquared, 3 = Linear, 4 = Per Vertex)
+		Type														byte		(1 = Vertex, 2 = Pixel)
+		Base														byte		(1 = Depth, 2 = Range)
+	Fillmode									29			int
+		Mode													short		(1 = Point, 2 = Line, 3 = Fill)
+		Face														short		(1 = None, 2 = Front, 3 = Back, 4 = Front and Back)
+	ShadeMode								30			int			(1 = Flat, 2 = Smooth, 3 = Phong)
+	LinePattern								31			int
+		Repeat													short
+		Pattern													short
+	SourceBlend								32			int			(1 = Zero, 2 = One, 3 = Source Color, 4 = Inverse Source Color, 5 = Source Alpha, 6 = Inverse Source Alpha, 7 = Destination Alpha, 8 = Inverse Destination Alpha, 9 = Destination Color, 10 = Inverse Destination Color, 11 = Source Alpha Saturated, 12 = Blend Factor, 13 = Inverse Blend Factor)
+	DestinationBlend						33			int			(1 = Zero, 2 = One, 3 = Source Color, 4 = Inverse Source Color, 5 = Source Alpha, 6 = Inverse Source Alpha, 7 = Destination Alpha, 8 = Inverse Destination Alpha, 9 = Destination Color, 10 = Inverse Destination Color, 11 = Source Alpha Saturated, 12 = Blend Factor, 13 = Inverse Blend Factor)
+	BlendEquation							34			int			(1 = Add, 2 = Subtract, 3 = ReverseSubtract, 4 = Minimum, 5 = Maximum)			
+	CullMode									35			int			(1 = None, 2 = Front, 3 = Back, 4 = Front and Back)
+	ZFunction									36			int			(1 = Never, 2 = Less, 3 = Equal, 4 = Less Or Equal, 5 = Greater, 6 = Not Equal, 7 = Greater Or Equal, 8 = Always)
+	AlphaFunction							37			int			(1 = Never, 2 = Less, 3 = Equal, 4 = Less Or Equal, 5 = Greater, 6 = Not Equal, 7 = Greater Or Equal, 8 = Always)
+	StencilFunction							38			int			(1 = Never, 2 = Less, 3 = Equal, 4 = Less Or Equal, 5 = Greater, 6 = Not Equal, 7 = Greater Or Equal, 8 = Always)
+	StencilFail									39			int			(1 = Keep, 2 = Zero, 3 = Replace, 4 = Increment Saturate, 5 = Decrement Saturate, 6 = Invert, 7 = Increment, 8 = Decrement)
+	StencilZFail									40			int			(1 = Keep, 2 = Zero, 3 = Replace, 4 = Increment Saturate, 5 = Decrement Saturate, 6 = Invert, 7 = Increment, 8 = Decrement)
+	StencilPass									41			int			(1 = Keep, 2 = Zero, 3 = Replace, 4 = Increment Saturate, 5 = Decrement Saturate, 6 = Invert, 7 = Increment, 8 = Decrement)			
+	AlphaReference							42			float
+	FrontWinding								43			int			(1 = Clockwise, 2 = Counter Clockwise)
+	CoordinateType							44			int			(1 = Left Handed, 2 = Right Handed)
+	ZBias											45			float
+	RangeFogEnable						46			bool
+	ColorWriteEnable						47			int			(1 = Red, 2 = Green, 4 = Blue, 8 = Alpha)
+	VertexMaterialEnable					48			bool
+	DiffuseMaterialSource				49			int			(0 = None, 1 = Diffuse, 2 = Specular)
+	SpecularMaterialSource				50			int			(0 = None, 1 = Diffuse, 2 = Specular)
+	AmbientMaterialSource				51			int			(0 = None, 1 = Diffuse, 2 = Specular)	
+	EmissiveMaterialSource				52			int			(0 = None, 1 = Diffuse, 2 = Specular)
+	TextureFactor								53			int
+	LocalViewer								54			bool
+	ScissorTestEnable						55			bool
+	BlendColor								56			int
+	StencilEnable2Sided					57			bool
+	CounterStencilFunction				58			int			(1 = Never, 2 = Less, 3 = Equal, 4 = Less Or Equal, 5 = Greater, 6 = Not Equal, 7 = Greater Or Equal, 8 = Always)
+	CounterStencilFail						59			int			(1 = Keep, 2 = Zero, 3 = Replace, 4 = Increment Saturate, 5 = Decrement Saturate, 6 = Invert, 7 = Increment, 8 = Decrement)
+	CounterStencilZFail						60			int			(1 = Keep, 2 = Zero, 3 = Replace, 4 = Increment Saturate, 5 = Decrement Saturate, 6 = Invert, 7 = Increment, 8 = Decrement)
+	CounterStencilPass						61			int			(1 = Keep, 2 = Zero, 3 = Replace, 4 = Increment Saturate, 5 = Decrement Saturate, 6 = Invert, 7 = Increment, 8 = Decrement)
+	VertexBlend								62			int			(0 = Disabled, 1 = 1 Weight, 2 = 2 Weight, 3 = 3 Weight)
+	SlopeScaleDepthBias					63			float
+	DepthBias									64			float
+	OutputGamma							65			float
+	ZVisible										66			bool
+	LastPixel									67			bool
+	Clipping									68			bool
+	Wrap0-15									69			int			(1 = Wrap Coordinate 0, 2 = Wrap Coordinate 1, 4 = Wrap Coordinate 2, 8 = Wrap Coordinate 3)
+	MultiSampleAntialias					85			bool
+	MultiSampleMask						86			int
+	IndexedVertexBlendEnable			87			bool
+	TweenFactor								88			float
+	AntialiasedLineEnable					89			bool
+	ColorWriteEnable1-3					90			int			(1 = Red, 2 = Green, 4 = Blue, 8 = Alpha)
+	SeparateAlphaBlendEnable			93			bool
+	SourceBlendAlpha						94			int			(1 = Zero, 2 = One, 3 = Source Color, 4 = Inverse Source Color, 5 = Source Alpha, 6 = Inverse Source Alpha, 7 = Destination Alpha, 8 = Inverse Destination Alpha, 9 = Destination Color, 10 = Inverse Destination Color, 11 = Source Alpha Saturated, 12 = Blend Factor, 13 = Inverse Blend Factor)
+	DestinationBlendAlpha				95			int			(1 = Zero, 2 = One, 3 = Source Color, 4 = Inverse Source Color, 5 = Source Alpha, 6 = Inverse Source Alpha, 7 = Destination Alpha, 8 = Inverse Destination Alpha, 9 = Destination Color, 10 = Inverse Destination Color, 11 = Source Alpha Saturated, 12 = Blend Factor, 13 = Inverse Blend Factor)
+	BlendEquationAlpha					96			int			(1 = Add, 2 = Subtract, 3 = ReverseSubtract, 4 = Minimum, 5 = Maximum)
+	TransparencyAntialias					97			int			(0 = Normal, 1 = Alpha To Coverage, 2 = Supersample)
+	LineAntiAlias								98			bool
+	LineWidth									99			float
+
+TextureState
+	BindTexture								1			int			(Surface ID)
+	ColorOperation							2			int			(TextureOperation)
+	ColorArgument1						3			int			(1 = Constant, 2 = Previous, 3 = Diffuse, 4 = Texture, 5 = Specular)
+	ColorArgument2						4			int			(1 = Constant, 2 = Previous, 3 = Diffuse, 4 = Texture, 5 = Specular)
+	AlphaOperation							5			int			(TextureOperation)
+	AlphaArgument1						6			int			(1 = Constant, 2 = Previous, 3 = Diffuse, 4 = Texture, 5 = Specular)
+	AlphaArgument2						7			int			(1 = Constant, 2 = Previous, 3 = Diffuse, 4 = Texture, 5 = Specular)
+	AddressU									8			int			(1 = Wrap, 2 = Mirror, 3 = Clamp, 4 = Border, 5 = Mirror Once, 6 = Edge)
+	AddressV									9			int			(1 = Wrap, 2 = Mirror, 3 = Clamp, 4 = Border, 5 = Mirror Once, 6 = Edge)
+	MipFilter									10			int			(1 = Nearest, 2 = Linear, 3 = Ansiotropic)
+	MagFilter									11			int			(1 = Nearest, 2 = Linear, 3 = Ansiotropic)
+	MinFilter									12			int			(1 = Nearest, 2 = Linear, 3 = Ansiotropic)
+	BorderColor								13			int
+	TextureCoordinateIndex				14			int
+	TextureTransformFlags				15			int			(1 = S, 2 = T, 4 = R, 8 = Q)
+	TextureCoordinateGenerate		16			int			(0 = Off, 1 = Eye Position, 2 = Eye Normal, 3 = Reflection Vector, 4 = Sphere)
+	BumpEnvironmentMaterial0-3		17			float
+	TextureMipMapLevel					21			int
+	TextureLodBias							22			float
+	TextureAnisotropicLevel				23			int
+	AddressW									24			int			(1 = Wrap, 2 = Mirror, 3 = Clamp, 4 = Border, 5 = Mirror Once, 6 = Edge)
+
+TextureOperation
+	Disable											1
+	SelectArgument1							2
+	SelectArgument2							3
+	Modulate										4
+	Add												5
+	AddSigned									6
+	Subtract										7
+	BlendTextureAlpha							8
+	BlendDiffuseAlpha							9
+	BlendCurrentAlpha							10
+	BlendFactorAlpha							11
+	Modulate2X									12
+	Modulate4X									13
+	DSDT											14
+	DotProduct3									15	
+	BlendTextureAlphaPM						16
+	AddSigned2X									17
+	AddSmooth									18
+	Premodulate									19
+	ModulateAlphaAddColor				20
+	ModulateColorAddAlpha				21
+	ModulateInverseAlphaAddColor		22
+	ModulateInverseColorAddAlpha		23
+	BumpEnvironmentMapLuminance	24
+	MultiplyAdd									25
+	Lerp												26

@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Viewport"
+	static="true"
+	type="http://metalx.org/Video/Graphics/Viewport"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:vector="http://metalx.org/i386/Functions/Vector2"
+	xmlns:float="http://metalx.org/i386/Functions/Float"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:fpu="http://metalx.org/Intel/80386/FpuOperators">
+
+	<cls:field name="X" type="http://metalx.org/Float" offset="0"/>
+	<cls:field name="Y" type="http://metalx.org/Float" offset="4"/>
+	<cls:field name="Width" type="http://metalx.org/Float" offset="8"/>
+	<cls:field name="Height" type="http://metalx.org/Float" offset="12"/>
+	<cls:field name="MinZ" type="http://metalx.org/Float" offset="16"/>
+	<cls:field name="MaxZ" type="http://metalx.org/Float" offset="20"/>
+
+	<cls:method name="Create" type="http://metalx.org/Video/Graphics/Viewport" static="true">
+		<cls:parameter name="X" type="http://metalx.org/Float"/>
+		<cls:parameter name="Y" type="http://metalx.org/Float"/>
+		<cls:parameter name="Width" type="http://metalx.org/Float"/>
+		<cls:parameter name="Height" type="http://metalx.org/Float"/>
+		<cls:parameter name="MinZ" type="http://metalx.org/Float"/>
+		<cls:parameter name="MaxZ" type="http://metalx.org/Float"/>
+
+		<mm:CheckOut length="24"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>20</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+
+		<cpu:PullDIFromStack/>
+		
+		<obj:Create length="24"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>24</byte>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="className" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="className">Viewport</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

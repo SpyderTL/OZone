@@ -1,0 +1,245 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<scope xmlns="http://metalx.org/Program" xmlns:cpu="http://metalx.org/Intel/80386/Operators" xmlns:op="http://metalx.org/Intel/80386/Operands" xmlns:pic="http://metalx.org/Pc/Pic/Ports" xmlns:cmd="http://metalx.org/Pc/Pic/Commands" xmlns:imm="http://metalx.org/Intel/80386/Immediate" xmlns:inc="http://metalx.org/Intel/80386/Increment" xmlns:logic="http://metalx.org/Intel/80386/Logic" xmlns:math="http://metalx.org/Intel/80386/Math">
+	<!--<cpu:PushAXToStack/>-->
+	<!--<cpu:IncrementFunction8/>
+		<inc:IncrementImmediateAddress/>
+		<hex>000b8f98</hex>-->
+	<!--<cpu:LogicFunction/>
+		<logic:CallImmediateAddress/>
+		<addressOf ref="switch" type="Absolute32"/>-->
+	<!--<cpu:JumpToRelative8/>
+		<addressOf ref="switch" type="Relative8"/>-->
+	<!--Check for Ctrl-Alt-Del-->
+	<!--<cpu:MathImmediateToOperandFunction8/>
+	<math:CompareWithImmediateAddress/>
+	<hex>00007053</hex>
+	<byte>0</byte>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="returnFromSwitch" type="Relative8"/>
+
+	<cpu:CopyImmediateToOperandFunction/>
+	<imm:CopyImmediateToIndexAddress/>
+	<index:SP xmlns:index="http://metalx.org/Intel/80386/Index"/>
+	<hex>00100000</hex>
+
+	<cpu:CopyImmediateToOperandFunction/>
+	<imm:CopyImmediateToIndexAddressPlusImmediate8/>
+	<index:SP xmlns:index="http://metalx.org/Intel/80386/Index"/>
+	<byte>4</byte>
+	<hex>00000008</hex>-->
+	<!--Update Interrupt Counts On Screen-->
+	<!--<cpu:PushAllRegistersToStack/>
+
+	<cpu:CopyImmediateToSI/>
+	<hex>00001000</hex>
+
+	<cpu:CopyImmediateToDI/>
+	<hex>000b8000</hex>
+
+	<cpu:CopyImmediateToCX/>
+	<int>80</int>
+
+	<label id="nextInterrupt"/>
+
+	<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+	<cpu:IncrementDI/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="nextInterrupt" type="Relative8"/>
+
+	<cpu:PullAllRegistersFromStack/>-->
+	<label id="returnFromSwitch" />
+	<hex>50</hex>
+	<hex>B0</hex>
+	<hex>20</hex>
+	<hex>E6</hex>
+	<hex>20</hex>
+	<hex>58</hex>
+	<hex>CF</hex>
+	<label id="switch" />
+	<!--Store CPU State To Stack-->
+	<hex>60</hex>
+	<hex>1E</hex>
+	<hex>06</hex>
+	<hex>9C</hex>
+	<!--DEBUG-->
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">05</prg:hex>
+	<addressOf ref="nextSP" type="Absolute32" />
+	<hex>3D</hex>
+	<int>0</int>
+	<hex>74</hex>
+	<addressOf ref="InstallThreads" type="Relative8" />
+	<hex>E9</hex>
+	<addressOf ref="skip" type="Relative32" />
+	<label id="InstallThreads" />
+	<!--Thread 1-->
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+	<hex xmlns:mm="http://metalx.org/i386/Functions/MemoryManager">01000010</hex>
+	<hex>81</hex>
+	<hex>05</hex>
+	<hex xmlns:mm="http://metalx.org/i386/Functions/MemoryManager">01000010</hex>
+	<int xmlns:mm="http://metalx.org/i386/Functions/MemoryManager">4096</int>
+	<hex>81</hex>
+	<hex>C7</hex>
+	<int>4096</int>
+	<hex>87</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">FC</prg:hex>
+	<!--<cpu:SetInterruptFlag/>-->
+	<!--<cpu:PushFlagsToStack/>-->
+	<hex>68</hex>
+	<hex>00000202</hex>
+	<hex>0E</hex>
+	<hex>68</hex>
+	<addressOf ref="thread1" type="Absolute32" />
+	<hex>60</hex>
+	<hex>1E</hex>
+	<hex>06</hex>
+	<!--<cpu:PushFlagsToStack/>-->
+	<hex>68</hex>
+	<hex>00000002</hex>
+	<hex>57</hex>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">25</prg:hex>
+	<addressOf ref="lastSP" type="Absolute32" />
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">E0</prg:hex>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">FC</prg:hex>
+	<hex>A3</hex>
+	<addressOf ref="nextSP" type="Absolute32" />
+	<!--Thread 2-->
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+	<hex xmlns:mm="http://metalx.org/i386/Functions/MemoryManager">01000010</hex>
+	<hex>81</hex>
+	<hex>05</hex>
+	<hex xmlns:mm="http://metalx.org/i386/Functions/MemoryManager">01000010</hex>
+	<int xmlns:mm="http://metalx.org/i386/Functions/MemoryManager">4096</int>
+	<hex>81</hex>
+	<hex>C7</hex>
+	<int>4096</int>
+	<hex>87</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">FC</prg:hex>
+	<!--<cpu:SetInterruptFlag/>-->
+	<!--<cpu:PushFlagsToStack/>-->
+	<hex>68</hex>
+	<hex>00000202</hex>
+	<hex>0E</hex>
+	<hex>68</hex>
+	<addressOf ref="thread2" type="Absolute32" />
+	<hex>60</hex>
+	<hex>1E</hex>
+	<hex>06</hex>
+	<!--<cpu:PushFlagsToStack/>-->
+	<hex>68</hex>
+	<hex>00000002</hex>
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">05</prg:hex>
+	<addressOf ref="nextSP" type="Absolute32" />
+	<hex>50</hex>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">25</prg:hex>
+	<addressOf ref="nextSP" type="Absolute32" />
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">FC</prg:hex>
+	<!--Thread 3-->
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+	<hex xmlns:mm="http://metalx.org/i386/Functions/MemoryManager">01000010</hex>
+	<hex>81</hex>
+	<hex>05</hex>
+	<hex xmlns:mm="http://metalx.org/i386/Functions/MemoryManager">01000010</hex>
+	<int xmlns:mm="http://metalx.org/i386/Functions/MemoryManager">4096</int>
+	<hex>81</hex>
+	<hex>C7</hex>
+	<int>4096</int>
+	<hex>87</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">FC</prg:hex>
+	<!--<cpu:SetInterruptFlag/>-->
+	<!--<cpu:PushFlagsToStack/>-->
+	<hex>68</hex>
+	<hex>00000202</hex>
+	<hex>0E</hex>
+	<hex>68</hex>
+	<addressOf ref="thread3" type="Absolute32" />
+	<hex>60</hex>
+	<hex>1E</hex>
+	<hex>06</hex>
+	<!--<cpu:PushFlagsToStack/>-->
+	<hex>68</hex>
+	<hex>00000002</hex>
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">05</prg:hex>
+	<addressOf ref="nextSP" type="Absolute32" />
+	<hex>50</hex>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">25</prg:hex>
+	<addressOf ref="nextSP" type="Absolute32" />
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">FC</prg:hex>
+	<label id="skip" />
+	<!--Store Next Stack Pointer-->
+	<hex>A1</hex>
+	<addressOf ref="nextSP" type="Absolute32" />
+	<hex>50</hex>
+	<!--Update Last Stack's Next Stack Pointer-->
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+	<addressOf ref="lastSP" type="Absolute32" />
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">27</prg:hex>
+	<!--Update Last Stack Pointer-->
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">25</prg:hex>
+	<addressOf ref="lastSP" type="Absolute32" />
+	<!--Switch To New Stack-->
+	<hex>94</hex>
+	<!--<cpu:CopyRegisterToOperand/>
+  <op:AX-ImmediateAddress/>
+  <addressOf ref="nextSP" type="Absolute32"/>-->
+	<!--Reload CPU State From Stack-->
+	<hex>58</hex>
+	<hex>A3</hex>
+	<addressOf ref="nextSP" type="Absolute32" />
+	<hex>9D</hex>
+	<hex>07</hex>
+	<hex>1F</hex>
+	<hex>61</hex>
+	<hex>E9</hex>
+	<addressOf ref="returnFromSwitch" type="Relative32" />
+	<label id="nextSP" />
+	<int>0</int>
+	<label id="lastSP" />
+	<int>0</int>
+	<label id="thread1" />
+	<hex>FE</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">05</prg:hex>
+	<hex>000b8f9a</hex>
+	<hex>CD</hex>
+	<byte>32</byte>
+	<!--<cpu:WaitForInterrupt/>-->
+	<hex>EB</hex>
+	<addressOf ref="thread1" type="Relative8" />
+	<label id="thread2" />
+	<hex>FE</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">05</prg:hex>
+	<hex>000b8f9c</hex>
+	<hex>CD</hex>
+	<byte>32</byte>
+	<!--<cpu:WaitForInterrupt/>-->
+	<hex>EB</hex>
+	<addressOf ref="thread2" type="Relative8" />
+	<label id="thread3" />
+	<hex>FE</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">05</prg:hex>
+	<hex>000b8f9e</hex>
+	<hex>CD</hex>
+	<byte>32</byte>
+	<!--<cpu:WaitForInterrupt/>-->
+	<hex>EB</hex>
+	<addressOf ref="thread3" type="Relative8" />
+</scope>

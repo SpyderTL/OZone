@@ -1,0 +1,92 @@
+﻿ICH4 Audio Device
+	Native Audio Mixer (BAR0)
+	Native Audio Bus Master (BAR1)
+		PcmIn1StreamDescriptor							11				(0x00)
+		Reserved												5
+		PcmOutStreamDescriptor						11				(0x10)
+		Reserved												5
+		Mic1StreamDescriptor							11				(0x20)
+		GlobalControl										4				(0x2c)
+			SpdifSlotMap											2 bit
+			Reserved												6 bits
+			PcmOutMode										2 bits				(0 = 16-bit, 1 = 20-bit)
+			PcmChannelMode									2 bits				(0 = 2 channels, 1 = 4 channels, 2 = 6 channels)
+			Reserved												12 bits
+			AcSdin2ResumeInterruptEnable				1 bit
+			AcSdin1ResumeInterruptEnable				1 bit
+			AcSdin0ResumeInterruptEnable				1 bit
+			AcLinkShutoff											1 bit
+			Ac97WarmReset										1 bit
+			Ac97ColdReset										1 bit
+			GpiInterruptEnable									1 bit
+		GlobalStatus											4				(0x30)
+			Reserved												2 bits
+			AcSdin2ResumeInterrupt							1 bit
+			AcSdin2CodecReady								1 bit
+			BitClockStopped										1 bit
+			SpdifInterrupt										1 bit
+			PcmIn2Interrupt										1 bit
+			Mic2Interrupt											1 bit
+			SampleCapabilities									2 bits
+			MultichannelCapabilities							2 bits
+			Reserved												2 bits
+			ModemPowerDown								1 bit
+			AudioPowerDown									1 bit
+			CodecReadTimeout								1 bit
+			Slot12Bit3												1 bit
+			Slot12Bit2												1 bit
+			Slot12Bit1												1 bit
+			AcSdin1ResumeInterrupt							1 bit
+			AcSdin0ResumeInterrupt							1 bit
+			AcSdin1CodecReady								1 bit
+			AcSdin0CodecReady								1 bit
+			Mic0Interrupt											1 bit
+			PcmOutInterrupt										1 bit
+			PcmInInterrupt										1 bit
+			Reserved												2 bits
+			ModemOutInterrupt								1 bit
+			ModemInInterrupt									1 bit
+			GpiStatusChangeInterrupt						1 bit
+		CodecWriteSemaphore							1				(0x34)	(Read to set to 1, access codec to set to 0)
+		Reserved												11
+		Mic2StreamDescriptor							11				(0x40)
+		Reserved												5
+		PcmIn2StreamDescriptor							11				(0x50)
+		Reserved												5
+		SpdifStreamDescriptor							11				(0x60)
+		Reserved												21
+		SDataInMap											1				(0x80)
+			LineOrMic2											2 bits				(0 = AcSdin0, 1 = AcSdin1, 2 = AcSdin2)
+			LineOrMic1											2 bits				(0 = AcSdin0, 1 = AcSdin1, 2 = AcSdin2)
+			Enabled													1 bits				(0 = OR, 1 = Select)
+			Reserved												1 bit
+			LastCodecReadIndex								2 bits				(0 = AcSdin0, 1 = AcSdin1, 2 = AcSdin2)
+
+StreamDescriptor									11
+	BufferDescriptorListAddress					4					(0x00)
+		Address												29 bits
+		Reserved												3 bits		(8 byte aligned)
+	CurrentBufferIndex									1					(0x04)
+		Reserved												3 bits
+		BufferIndex											5 bits
+	LastValidBufferIndex								1					(0x05)
+		Reserved												3 bits
+		BufferIndex											5 bits
+	Status													2					(0x06)
+		Reserved												11 bits
+		FifoError												1 bit
+		BufferComplete										1 bit
+		LastValidBufferComplete							1 bit
+		CurrentEqualsLastIndex							1 bit
+		DmaHalted											1 bit
+	CurrentBufferSamplesRemaining				2					(0x08)
+	PrefetchedBufferIndex								1					(0x0a)
+		Reserved												3 bits
+		BufferIndex											5 bits
+	Control													1					(0x0b)
+		Reserved												3 bits
+		BufferCompleteInterruptEnable				1 bit
+		FifoErrorInterruptEnable							1 bit
+		LastValidBufferInterruptEnable					1 bit
+		Reset													1 bit
+		Run														1 bit

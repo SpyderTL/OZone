@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema
+    targetNamespace="http://metalx.org/Table"
+    elementFormDefault="qualified"
+    xmlns="http://metalx.org/Table"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:element name="table">
+		<xsd:complexType>
+			<xsd:choice maxOccurs="unbounded">
+				<xsd:element name="row">
+					<xsd:complexType>
+						<xsd:choice maxOccurs="unbounded">
+							<xsd:element name="cell">
+								<xsd:complexType>
+									<xsd:choice maxOccurs="unbounded">
+										<xsd:any/>
+									</xsd:choice>
+									<xsd:attribute name="type" type="CellType"/>
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:choice>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:choice>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:simpleType name="CellType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="value"/>
+			<xsd:enumeration value="offset"/>
+			<xsd:enumeration value="address"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+</xsd:schema>

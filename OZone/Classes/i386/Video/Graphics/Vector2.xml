@@ -1,0 +1,463 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Vector2"
+	static="true"
+	type="http://metalx.org/Video/Graphics/Vector2"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:vector="http://metalx.org/i386/Functions/Vector2"
+	xmlns:float="http://metalx.org/i386/Functions/Float"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:fpu="http://metalx.org/Intel/80386/FpuOperators">
+
+	<cls:field name="X" type="http://metalx.org/Float" offset="0"/>
+	<cls:field name="Y" type="http://metalx.org/Float" offset="4"/>
+
+	<cls:method name="Create" type="http://metalx.org/Video/Graphics/Vector2" static="true">
+		<cls:parameter name="X" type="http://metalx.org/Float"/>
+		<cls:parameter name="Y" type="http://metalx.org/Float"/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:GetData/>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:GetData/>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<vector:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Zero" type="http://metalx.org/Video/Graphics/Vector2" static="true">
+		<fpu:ResetFpu/>
+
+		<fpu:Zero/>
+		<fpu:Zero/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<vector:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="One" type="http://metalx.org/Video/Graphics/Vector2" static="true">
+		<fpu:ResetFpu/>
+
+		<fpu:One/>
+		<fpu:One/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<vector:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="NegativeOne" type="http://metalx.org/Video/Graphics/Vector2" static="true">
+		<fpu:ResetFpu/>
+
+		<fpu:One/>
+		<fpu:ChangeSign/>
+
+		<fpu:PushST0/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<vector:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="UnitX" type="http://metalx.org/Video/Graphics/Vector2" static="true">
+		<fpu:ResetFpu/>
+
+		<fpu:Zero/>
+		<fpu:One/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<vector:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="UnitY" type="http://metalx.org/Video/Graphics/Vector2" static="true">
+		<fpu:ResetFpu/>
+
+		<fpu:One/>
+		<fpu:Zero/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<vector:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Length" type="http://metalx.org/Float">
+		<fpu:ResetFpu/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>4</byte>
+
+		<fpu:MultiplyST0ByST0/>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:MultiplyST0ByST0/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:SquareRoot/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<float:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="LengthSquared" type="http://metalx.org/Float">
+		<fpu:ResetFpu/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>4</byte>
+
+		<fpu:MultiplyST0ByST0/>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:MultiplyST0ByST0/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<float:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Normalize" type="http://metalx.org/Video/Graphics/Vector2">
+		<fpu:ResetFpu/>
+
+		<fpu:One/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>4</byte>
+
+		<fpu:MultiplyST0ByST0/>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:MultiplyST0ByST0/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:SquareRoot/>
+
+		<fpu:DivideST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>4</byte>
+
+		<fpu:MultiplyST0ByST1/>
+
+		<fpu:PullFloatAtSIAddressPlusImmediate8FromST0/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:MultiplyST0ByST1/>
+
+		<fpu:PullFloatAtSIAddressFromST0/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="DotProduct" type="http://metalx.org/Float">
+		<cls:parameter name="Value" type="http://metalx.org/Video/Graphics/Vector2"/>
+
+		<fpu:ResetFpu/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<obj:GetData/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtDIAddressPlusImmediate8ToST0/>
+		<byte>4</byte>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+		<fpu:PushFloatAtDIAddressToST0/>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<float:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="InterpolateLinear" type="http://metalx.org/Video/Graphics/Vector2" static="true">
+		<cls:parameter name="Value1" type="http://metalx.org/Video/Graphics/Vector2"/>
+		<cls:parameter name="Value2" type="http://metalx.org/Video/Graphics/Vector2"/>
+		<cls:parameter name="Amount" type="http://metalx.org/Float"/>
+
+		<fpu:ResetFpu/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:GetData/>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:GetData/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:GetData/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<!--Y-->
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtDIAddressPlusImmediate8ToST0/>
+		<byte>4</byte>
+
+		<fpu:SubtractST1FromST0/>
+
+		<fpu:MultiplyST0ByST2/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:ExchangeST1WithST0/>
+
+		<!--X-->
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>0</byte>
+
+		<fpu:PushFloatAtDIAddressPlusImmediate8ToST0/>
+		<byte>0</byte>
+
+		<fpu:SubtractST1FromST0/>
+
+		<fpu:MultiplyST0ByST2/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullST1/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<vector:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Transform" type="http://metalx.org/Video/Graphics/Vector2">
+		<cls:parameter name="Value" type="http://metalx.org/Video/Graphics/Matrix"/>
+
+		<cpu:PushDIToStack/>
+
+		<fpu:ResetFpu/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<obj:GetData/>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:PushFloatAtDIAddressToST0/>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>16</byte>
+
+		<fpu:PushFloatAtDIAddressPlusImmediate8ToST0/>
+		<byte>4</byte>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>48</byte>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtDIAddressToST0/>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>20</byte>
+
+		<fpu:PushFloatAtDIAddressPlusImmediate8ToST0/>
+		<byte>4</byte>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>52</byte>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>4</byte>
+
+		<fpu:PullFloatAtDIAddressFromST0/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<vector:ToString/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

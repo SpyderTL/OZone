@@ -1,0 +1,3552 @@
+; T. C. Andersen's graphics code starts on line 2286.
+
+~~~C_TXMAIN
+Ideal
+
+Include     "textmac.inc"           ;Include macros
+
+Public      CurSeg, W_X1, W_Y1, W_X2, W_Y2, W_Rel, Attr
+Public      MouseLimX, MouseLimY
+Public      inittext, closetext, clrscr, setcolor, getcolor
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** Data Section
+
+CurSeg      dw 0                    ;Current segment
+
+W_X1        dw 0                    ;Window values
+W_Y1        dw 0
+W_X2        dw 0
+W_Y2        dw 0
+W_Rel       dw 0
+
+Attr        dw 0                    ;Current attribute
+
+MouseLimX   dw 0                    ;Mouse limits (size * 8)
+MouseLimY   dw 0
+
+;****************** inittext() -- Init text system
+;void inittext(void);
+
+Proc        inittext
+
+            pusha                   ;Save all registers
+            push es
+
+            push 0B800h             ;ES = video memory
+            pop es
+
+            mov ax,3                ;Set 80x25 text mode
+            int 10h
+
+            mov dx,03D4h            ;CRTC port
+            mov ax,4013h            ;Fake 128 chars
+            out dx,ax               ;for efficiency
+
+            mov [W_X2],79           ;Set variables:
+            mov [W_Y2],24           ;W_X2, W_Y2...
+            mov [MouseLimX],639     ;Mouse limits...
+            mov [MouseLimY],199
+
+            xor ax,ax
+            mov [W_X1],ax           ;W_X1...
+            mov [W_Y1],ax           ;W_Y1...
+            mov [W_Rel],ax          ;W_Rel...
+            mov [Attr],07h          ;Attr...
+            mov [CurSeg],es         ;CurSeg...
+
+            xor di,di               ;Clear video memory
+            mov cx,8000h
+            mov ax,0720h
+            rep stosw
+
+            pop es                  ;Restore registers
+            popa
+            ret                     ;Return
+
+EndP        inittext
+
+;****************** closetext() -- Close text system
+;void closetext(void);
+
+Proc        closetext
+
+            push ax                 ;Save AX
+            mov ax,3                ;Set text video mode
+            int 10h
+            pop ax                  ;Restore AX
+            ret                     ;Return
+
+EndP        closetext
+
+;****************** clrscr() -- Clear entire screen
+;void clrscr(void);
+
+Proc        clrscr
+
+            pusha                   ;Save registers
+            push es
+
+            mov es,[CurSeg]         ;ES = video memory
+
+            xor di,di               ;Clear video page
+            mov cx,1000h
+            mov ax,0720h
+            rep stosw
+
+            pop es                  ;Restore registers
+            popa
+            ret                     ;Return
+
+EndP        clrscr
+
+;****************** setcolor() -- Set text attribute
+;void setcolor(int at);
+
+Proc        setcolor
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+
+            push [bp+4]             ;Set attribute
+            pop [Attr]
+
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        setcolor
+
+;****************** getcolor() -- Get text attribute
+;int getcolor(void);
+
+Proc        getcolor
+
+            mov ax,[Attr]           ;Get attribute
+            ret                     ;Return
+
+EndP        getcolor
+
+End
+
+~~~C_TXHI
+Ideal
+
+Include     "textmac.inc"           ;Include macros
+
+Extrn       CurSeg:word, W_X1:word, W_Y1:word, W_X2:word, W_Y2:word
+Extrn       W_Rel:word, Attr:word, MouseLimX:word, MouseLimY:word
+Public      inittexthi
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** inittexthi() -- Init hi-res text system
+;void inittexthi(void);
+
+Proc        inittexthi
+
+            pusha                   ;Save all registers
+            push es
+
+            push 0B800h             ;ES = video memory
+            pop es
+
+            mov ax,3                ;Set 80x25 text mode
+            int 10h
+
+            mov ax,1114h            ;Load standard 8x16 font
+            xor bl,bl
+            int 10h
+
+            call SetSize            ;Set resolution
+
+            mov dx,03D4h            ;CRTC port
+            mov ax,4013h            ;Fake 128 chars
+            out dx,ax               ;for efficiency
+
+            mov [W_X2],89           ;Set variables:
+            mov [W_Y2],33           ;W_X2, W_Y2...
+            mov [MouseLimX],719     ;Mouse limits...
+            mov [MouseLimY],271
+
+            xor ax,ax
+            mov [W_X1],ax           ;W_X1...
+            mov [W_Y1],ax           ;W_Y1...
+            mov [W_Rel],ax          ;W_Rel...
+            mov [Attr],07h          ;Attr...
+            mov [CurSeg],es         ;CurSeg...
+
+            xor di,di               ;Clear video memory
+            mov cx,8000h
+            mov ax,0720h
+            rep stosw
+
+            pop es                  ;Restore registers
+            popa
+            ret                     ;Return
+
+EndP        inittexthi
+
+;****************** SetSize -- Set 90x34 resolution
+
+Proc        SetSize
+
+            pusha                   ;Save all registers
+            mov dx,03C4h            ;Sequencer Port
+            mov ax,0100h            ;Synchronous reset
+            out dx,ax               ;Send command
+            inc ax                  ;8 pixels/char
+            out dx,ax               ;Send command
+
+            mov dx,03CCh            ;Misc Output Read Port
+            in al,dx                ;Read value
+            and al,0F3h             ;Bits 2-3: 01 = 28MHz
+            or al,0C4h              ;Bits 6-7: 11 = 480 scanlines
+            mov dx,03C2h            ;Misc Output Write Port
+            out dx,al               ;Send command
+
+            mov dx,03DAh            ;Read this port to reset
+            in al,dx                ;the Attribute Controller
+            mov dx,03C0h            ;Attribute Controller Port
+            mov al,33h              ;Horizontal Panning
+            out dx,al               ;Select register
+            xor al,al               ;Set Shift = 0
+            out dx,al               ;Send command
+
+            mov dx,03D4h            ;CRT Controller Port
+            mov si,offset Data90x34 ;Offset of CRTC data
+            mov cx,17               ;17 words
+            rep outsw               ;Send data
+
+            mov dx,03C4h            ;Sequencer Port
+            mov ax,0300h            ;Restart Sequencer
+            out dx,ax               ;Send command
+
+            mov si,offset DataOE    ;Turning off Odd/Even...
+            mov dx,03C4h            ;SC port
+            outsw                   ;Send 2 words to SC port
+            outsw
+            mov dx,03CEh            ;GC port
+            outsw                   ;Send 3 words to GC port
+            outsw
+            outsw
+            push si                 ;Save SI
+
+            mov si,1                ;Setting a 14-line Font.
+            xor di,di               ;Shifting up by 1
+            mov dx,256              ;All 256 chars
+            xor al,al               ;Zero AL
+
+SS_sfont:   mov cx,14               ;14 bytes
+            seges rep movsb         ;Shift memory
+            mov cx,18               ;18 bytes
+            add si,cx               ;Next char slot
+            rep stosb               ;Clear excess
+            dec dx                  ;Loop back
+            jnz SS_sfont
+
+            pop si                  ;Restoring Odd/Even...
+            mov dx,03C4h            ;SC port
+            outsw                   ;Send 2 words to SC port
+            outsw
+            mov dx,03CEh            ;GC port
+            outsw                   ;Send 3 words to GC port
+            outsw
+            outsw
+
+            popa                    ;Restore registers
+            ret                     ;Return
+
+Data90x34   dw 00011h               ;De-protect value
+            dw 06B00h,05901h,05A02h ;Horizontal CRTC data
+            dw 08E03h,06004h,08D05h
+            dw 00B06h,03E07h,04D09h ;Vertical CRTC data
+            dw 0EA10h,08C11h,0DF12h
+            dw 0E715h,00416h
+            dw 00C0Ah,00D0Bh        ;Initial cursor type
+
+DataOE      dw 0402h,0704h,0204h    ;Odd/Even release data
+            dw 0005h,0C06h
+            dw 0302h,0304h,0004h    ;Odd/Even restore data
+            dw 1005h,0E06h
+
+EndP        SetSize
+
+End
+
+~~~C_TXWIN
+Ideal
+
+Include     "textmac.inc"           ;Include macros
+Include     "textdat.inc"           ;Include data
+
+Public      setwin, clrwin, fbox
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** setwin() -- Set text window position, type
+;void setwin(int x1, int y1, int x2, int y2, int rel);
+
+Proc        setwin
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+
+            push [bp+12]            ;Set W_X1
+            pop [W_X1]
+            push [bp+10]            ;Set W_Y1
+            pop [W_Y1]
+            push [bp+8]             ;Set W_X2
+            pop [W_X2]
+            push [bp+6]             ;Set W_Y2
+            pop [W_Y2]
+            push [bp+4]             ;Set W_Rel
+            pop [W_Rel]
+
+            pop bp                  ;Delete stack frame
+            ret 10                  ;Return
+
+EndP        setwin
+
+;****************** clrwin() -- Clear window
+;void clrwin(void);
+
+Proc        clrwin
+
+            pusha                   ;Save all registers
+
+            mov ax,[W_X1]           ;Get values
+            mov bx,[W_Y1]
+            mov cx,[W_X2]
+            mov dx,[W_Y2]
+
+            cmp [W_Rel],0           ;Relativity check
+            je clw_norel
+
+            xor ax,ax               ;Adjust to window
+            xor bx,bx
+            sub cx,ax
+            sub dx,bx
+
+clw_norel:  push ax bx cx dx ' '    ;fbox(W_X1, W_Y1,
+            call fbox               ;     W_X2, W_Y2, ' ');
+
+            popa                    ;Restore registers
+            ret                     ;Return
+
+EndP        clrwin
+
+;****************** fbox() -- Draw filled box
+;void fbox(int x1, int y1, int x2, int y2, int ch);
+
+Proc        fbox
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+            push es
+
+            mov es,[CurSeg]         ;ES = video memory
+
+            mov ax,[bp+12]          ;Get values
+            mov bx,[bp+10]
+            mov cx,[bp+8]
+            mov dx,[bp+6]
+
+            cmp [W_Rel],0           ;Relativity check
+            je fbx_norel
+
+            add ax,[W_X1]           ;Adjust to window
+            add bx,[W_Y1]
+            add cx,[W_X1]
+            add dx,[W_Y1]
+
+fbx_norel:  cmp ax,cx               ;X1 > X2?
+            jle fbx_xok
+            xchg ax,cx              ;Switch them
+
+fbx_xok:    cmp bx,dx               ;Y1 > Y2?
+            jle fbx_yok
+            xchg bx,dx              ;Switch them
+
+fbx_yok:    cmp ax,[W_X2]           ;X1 > W_X2?
+            jg fbx_bad
+            cmp cx,[W_X1]           ;X2 < W_X1?
+            jl fbx_bad
+            cmp bx,[W_Y2]           ;Y1 > W_Y2?
+            jg fbx_bad
+            cmp dx,[W_Y1]           ;Y2 < W_Y1?
+            jnl fbx_cx1
+
+fbx_bad:    jmp fbx_done
+
+fbx_cx1:    cmp ax,[W_X1]           ;X1 < W_X1?
+            jnl fbx_cx2
+            mov ax,[W_X1]           ;Fix X1
+
+fbx_cx2:    cmp cx,[W_X2]           ;X2 > W_X2?
+            jng fbx_cy1
+            mov cx,[W_X2]           ;Fix X2
+
+fbx_cy1:    cmp bx,[W_Y1]           ;Y1 < W_Y1?
+            jnl fbx_cy2
+            mov bx,[W_Y1]           ;Fix Y1
+
+fbx_cy2:    cmp dx,[W_Y2]           ;Y2 > W_Y2?
+            jng fbx_cont
+            mov dx,[W_Y2]           ;Fix Y2
+
+fbx_cont:   mov si,dx               ;SI = Y distance
+            sub si,bx
+            inc si
+            mov dx,cx               ;DX = X distance
+            sub dx,ax
+            inc dx
+
+            mov cx,bx               ;BX, CX = X1, Y1
+            xchg bx,ax
+            mov al,[bp+4]           ;AL = char
+            mov ah,[byte Attr]      ;AH = attr
+
+fbx_loop:   SET_ROW_CHA             ;Draw row
+            inc cx                  ;Next line
+            dec si                  ;Loop back
+            jnz fbx_loop
+
+fbx_done:   pop es                  ;Restore registers
+            popa
+            pop bp                  ;Delete stack frame
+            ret 10                  ;Return
+
+EndP        fbox
+
+End
+
+~~~C_TXPAGE
+Ideal
+
+Include     "textmac.inc"           ;Include macros
+Include     "textdat.inc"           ;Include data
+
+Public      setpage, getpage
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** setpage() -- Set video page
+;void setpage(int page);
+
+Proc        setpage
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov ax,[bp+4]           ;AX = page number
+            and ax,3                ;Between 0 and 3
+
+            shl ax,9                ;AX = segment
+            add ax,0B800h
+            mov [CurSeg],ax         ;Store segment
+
+            mov dx,03D4h            ;CRTC port
+            sub ax,0B800h           ;AH = high byte value
+            shl ah,3
+            mov al,0Ch              ;Start Address High
+            out dx,ax               ;Send command
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        setpage
+
+;****************** getpage() -- Get video page
+;int getpage(void);
+
+Proc        getpage
+
+            mov ax,[CurSeg]         ;Get segment pointer
+            sub ax,0B800h           ;Subtract video segment
+            shr ax,9                ;Divide by 512
+            ret                     ;Return
+
+EndP        getpage
+
+End
+
+~~~C_THLINE
+Ideal
+
+Include     "textmac.inc"           ;Include macros
+Include     "textdat.inc"           ;Include data
+
+Public      hline
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** hline() -- Draw horizontal line
+;void hline(int x1, int x2, int y, int ch);
+
+Proc        hline
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push es                 ;Save registers
+            pusha
+            mov es,[CurSeg]         ;ES = video memory
+
+            mov ax,[bp+10]          ;Get values
+            mov bx,[bp+6]
+            mov cx,[bp+8]
+
+            cmp [W_Rel],0           ;Relativity check
+            je hl_norel
+
+            add ax,[W_X1]           ;Adjust to window
+            add bx,[W_Y1]
+            add cx,[W_X1]
+
+hl_norel:   cmp ax,cx               ;X1 > X2?
+            jle hl_xok
+            xchg ax,cx              ;Switch them
+
+hl_xok:     cmp bx,[W_Y2]           ;Y > W_Y2?
+            jg hl_done
+            cmp bx,[W_Y1]           ;Y < W_Y1?
+            jl hl_done
+            cmp ax,[W_X2]           ;X1 > W_X2?
+            jg hl_done
+            cmp cx,[W_X1]           ;X2 < W_X1?
+            jl hl_done
+
+hl_cx1:     cmp ax,[W_X1]           ;X1 < W_X1?
+            jnl hl_cx2
+            mov ax,[W_X1]           ;Fix X1
+
+hl_cx2:     cmp cx,[W_X2]           ;X2 > W_X2?
+            jng hl_cont
+            mov cx,[W_X2]           ;Fix X2
+
+hl_cont:    mov [bp+10],ax          ;Store end-points
+            mov [bp+6],bx
+            mov [bp+8],cx
+
+            mov bx,[bp+10]          ;BX = X
+            mov cx,[bp+6]           ;CX = Y
+            mov dx,[bp+8]           ;DX = count
+            sub dx,bx
+            inc dx
+            mov al,[bp+4]           ;AL = char
+            mov ah,[byte Attr]      ;AH = attr
+
+            SET_ROW_CHA             ;Draw row
+
+hl_done:    popa                    ;Restore registers
+            pop es
+            pop bp                  ;Delete stack frame
+            ret 8                   ;Return
+
+EndP        hline
+
+End
+
+~~~C_TVLINE
+Ideal
+
+Include     "textmac.inc"           ;Include macros
+Include     "textdat.inc"           ;Include data
+
+Public      vline
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** vline() -- Draw vertical line
+;void vline(int y1, int y2, int x, int ch);
+
+Proc        vline
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push es                 ;Save registers
+            pusha
+            mov es,[CurSeg]         ;ES = video memory
+
+            mov ax,[bp+10]          ;Get values
+            mov bx,[bp+6]
+            mov cx,[bp+8]
+
+            cmp [W_Rel],0           ;Relativity check
+            je vl_norel
+
+            add ax,[W_Y1]           ;Adjust to window
+            add bx,[W_X1]
+            add cx,[W_Y1]
+
+vl_norel:   cmp ax,cx               ;Y1 > Y2?
+            jle vl_yok
+            xchg ax,cx              ;Switch them
+
+vl_yok:     cmp bx,[W_X2]           ;X > W_X2?
+            jg vl_done
+            cmp bx,[W_X1]           ;X < W_X1?
+            jl vl_done
+            cmp ax,[W_Y2]           ;Y1 > W_Y2?
+            jg vl_done
+            cmp cx,[W_Y1]           ;Y2 < W_Y1?
+            jl vl_done
+
+vl_cy1:     cmp ax,[W_Y1]           ;Y1 < W_Y1?
+            jnl vl_cy2
+            mov ax,[W_Y1]           ;Fix Y1
+
+vl_cy2:     cmp cx,[W_Y2]           ;Y2 > W_Y2?
+            jng vl_cont
+            mov cx,[W_Y2]           ;Fix Y2
+
+vl_cont:    mov [bp+10],ax          ;Store end-points
+            mov [bp+6],bx
+            mov [bp+8],cx
+
+            mov bx,[bp+6]           ;BX = X
+            mov cx,[bp+10]          ;CX = Y
+            mov dx,[bp+8]           ;DX = count
+            sub dx,cx
+            inc dx
+            mov al,[bp+4]           ;AL = char
+            mov ah,[byte Attr]      ;AH = attr
+
+            SET_VROW_CHA            ;Draw row
+
+vl_done:    popa                    ;Restore registers
+            pop es
+            pop bp                  ;Delete stack frame
+            ret 8                   ;Return
+
+EndP        vline
+
+End
+
+~~~C_TXBOX
+Ideal
+
+Include     "textmac.inc"           ;Include macros
+Include     "textdat.inc"           ;Include data
+
+Extrn       hline:near, vline:near
+Public      box
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** box() -- Draw box, single character
+;void box(int x1, int y1, int x2, int y2, int ch);
+
+Proc        box
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+
+            mov ax,[bp+12]          ;Get values
+            mov bx,[bp+10]
+            mov cx,[bp+8]
+            mov dx,[bp+6]
+
+            cmp [W_Rel],0           ;Relativity check
+            je bx_norel
+
+            add ax,[W_X1]           ;Adjust to window
+            add bx,[W_Y1]
+            add cx,[W_X1]
+            add dx,[W_Y1]
+
+bx_norel:   mov [bp+12],ax          ;Store values
+            mov [bp+10],bx
+            mov [bp+8],cx
+            mov [bp+6],dx
+
+            mov si,[bp+4]           ;SI = char
+
+            push ax bx cx si        ;Draw top line
+            call hline
+            push ax cx dx si        ;Draw bottom line
+            call hline
+            push bx dx ax si        ;Draw left line
+            call vline
+            push bx dx cx si        ;Draw right line
+            call vline
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 10                  ;Return
+
+EndP        box
+
+End
+
+~~~C_STYBOX
+Ideal
+
+Include     "textmac.inc"           ;Include macros
+Include     "textdat.inc"           ;Include data
+
+Extrn       hline:near, vline:near
+Public      hsline, vsline, sbox
+
+Model Tiny
+P186
+CodeSeg
+
+STYLEdata   db '      '             ;Box style data: (0 = blank)
+            db 'Ä³Ú¿ÀÙ'             ;ÚÄÂÄ¿ ÉÍËÍ» ÕÍÑÍ¸ ÖÄÒÄ·
+            db 'ÍºÉ»È¼'             ;ÃÄÅÄ´ ÌÍÎÍ¹ ÆÍØÍµ ÇÄ×Ä¶
+            db 'Í³Õ¸Ô¾'             ;ÀÄÁÄÙ ÈÍÊÍ¼ ÔÍÏÍ¾ ÓÄÐÄ½
+            db 'ÄºÖ·Ó½'             ;  1     2     3     4
+
+;****************** sbox() -- Draw box, with style
+;void sbox(int x1, int y1, int x2, int y2, int style);
+
+Proc        sbox
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+            push es
+
+            mov es,[CurSeg]         ;ES = video memory
+
+            mov ax,[bp+12]          ;Get values
+            mov bx,[bp+10]
+            mov cx,[bp+8]
+            mov dx,[bp+6]
+
+            cmp [W_Rel],0           ;Relativity check
+            je sbx_norel
+
+            add ax,[W_X1]           ;Adjust to window
+            add bx,[W_Y1]
+            add cx,[W_X1]
+            add dx,[W_Y1]
+
+sbx_norel:  mov [bp+12],ax          ;Store values
+            mov [bp+10],bx
+            mov [bp+8],cx
+            mov [bp+6],dx
+
+            mov si,[bp+4]           ;SI = style
+
+            inc ax                  ;Set up for hsline
+            dec cx
+
+            push ax cx bx si        ;Draw top line
+            call hsline
+            push ax cx dx si        ;Draw bottom line
+            call hsline
+
+            dec ax                  ;Set up for vsline
+            inc cx
+            inc bx
+            dec dx
+
+            push bx dx ax si        ;Draw left line
+            call vsline
+            push bx dx cx si        ;Draw right line
+            call vsline
+
+            mov bx,[bp+4]           ;AL = TLC char
+            imul bx,6
+            mov al,[STYLEdata+bx+2]
+
+            mov bx,[bp+12]          ;Draw TLC . . .
+            mov cx,[bp+10]
+
+            cmp cx,[W_Y1]           ;Clip character
+            jl sbx_skip2
+            cmp cx,[W_Y2]
+            jg sbx_skip2
+            cmp bx,[W_X1]
+            jl sbx_skip1
+            cmp bx,[W_X2]
+            jg sbx_skip1
+
+            mov ah,[byte Attr]      ;AH = attr
+            SET_CHA                 ;Draw character
+
+sbx_skip1:  mov bx,[bp+4]           ;AL = TRC char
+            imul bx,6
+            mov al,[STYLEdata+bx+3]
+
+            mov bx,[bp+8]           ;Draw TRC . . .
+            mov cx,[bp+10]
+
+            cmp bx,[W_X1]           ;Clip character
+            jl sbx_skip2
+            cmp bx,[W_X2]
+            jg sbx_skip2
+
+            mov ah,[byte Attr]      ;AH = attr
+            SET_CHA                 ;Draw character
+
+sbx_skip2:  mov bx,[bp+4]           ;AL = LLC char
+            imul bx,6
+            mov al,[STYLEdata+bx+4]
+
+            mov bx,[bp+12]          ;Draw LLC . . .
+            mov cx,[bp+6]
+
+            cmp cx,[W_Y1]           ;Clip character
+            jl sbx_done
+            cmp cx,[W_Y2]
+            jg sbx_done
+            cmp bx,[W_X1]
+            jl sbx_skip3
+            cmp bx,[W_X2]
+            jg sbx_skip3
+
+            mov ah,[byte Attr]      ;AH = attr
+            SET_CHA                 ;Draw character
+
+sbx_skip3:  mov bx,[bp+4]           ;AL = LRC char
+            imul bx,6
+            mov al,[STYLEdata+bx+5]
+
+            mov bx,[bp+8]           ;Draw LRC . . .
+            mov cx,[bp+6]
+
+            cmp bx,[W_X1]           ;Clip character
+            jl sbx_done
+            cmp bx,[W_X2]
+            jg sbx_done
+
+            mov ah,[byte Attr]      ;AH = attr
+            SET_CHA                 ;Draw character
+
+sbx_done:   pop es                  ;Restore registers
+            popa
+            pop bp                  ;Delete stack frame
+            ret 10                  ;Return
+
+EndP        sbox
+
+;****************** hsline() -- Draw horizontal style line
+;void hsline(int x1, int x2, int y, int style);
+
+Proc        hsline
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov bx,[bp+4]           ;AL = HL char
+            imul bx,6
+            mov al,[STYLEdata+bx]
+            xor ah,ah
+
+            push [bp+10] [bp+8]     ;Push args
+            push [bp+6] ax
+            call hline              ;Draw line
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 8                   ;Return
+
+EndP        hsline
+
+;****************** vsline() -- Draw vertical style line
+;void vsline(int y1, int y2, int x, int style);
+
+Proc        vsline
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov bx,[bp+4]           ;AL = VL char
+            imul bx,6
+            mov al,[STYLEdata+bx+1]
+            xor ah,ah
+
+            push [bp+10] [bp+8]     ;Push args
+            push [bp+6] ax
+            call vline              ;Draw line
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 8                   ;Return
+
+EndP        vsline
+
+End
+
+~~~C_TEXCUR
+Ideal
+
+Include     "textmac.inc"           ;Include macros
+Include     "textdat.inc"           ;Include data
+
+Public      gotoxy, getx, gety, setctype, getctype
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** gotoxy() -- Set cursor position
+;void gotoxy(int x, int y);
+
+Proc        gotoxy
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov ax,[bp+6]           ;Get values
+            mov bx,[bp+4]
+
+            cmp [W_Rel],0           ;Relativity check
+            je xy_norel
+
+            add ax,[W_X1]           ;Adjust to window
+            add bx,[W_Y1]
+
+xy_norel:   cmp ax,[W_X1]           ;Clip to window
+            jl xy_done
+            cmp ax,[W_X2]
+            jg xy_done
+            cmp bx,[W_Y1]
+            jl xy_done
+            cmp bx,[W_Y2]
+            jg xy_done
+
+            shl bx,7                ;Get CRTC address
+            add bx,ax
+
+            mov dx,03D4h            ;CRTC port
+            mov al,0Eh              ;Cursor Loc High
+            mov ah,bh               ;Set value
+            out dx,ax
+            inc ax                  ;Cursor Loc Low
+            mov ah,bl               ;Set value
+            out dx,ax
+
+xy_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        gotoxy
+
+;****************** getx() -- Get cursor X position
+;int getx(void);
+
+Proc        getx
+
+            push dx                 ;Save DX
+
+            mov dx,03D4h            ;CRTC port
+            mov al,0Fh              ;Cursor Loc Low
+            out dx,al               ;Set register
+            inc dx                  ;Data port
+            in al,dx                ;Read value
+
+            and ax,127              ;Get X position
+
+            cmp [W_Rel],0           ;Relativity check
+            je gx_done
+            sub ax,[W_X1]           ;Adjust to window
+
+gx_done:    pop dx                  ;Restore DX
+            ret                     ;Return
+
+EndP        getx
+
+;****************** gety() -- Get cursor Y position
+;int gety(void);
+
+Proc        gety
+
+            push dx                 ;Save DX
+
+            mov dx,03D4h            ;CRTC port
+            mov al,0Eh              ;Cursor Loc High
+            out dx,al               ;Set register
+            inc dx                  ;Data port
+            in al,dx                ;Read value
+            mov ah,al
+            dec dx                  ;Index port
+            mov al,0Fh              ;Cursor Loc Low
+            out dx,al               ;Set register
+            inc dx                  ;Data port
+            in al,dx                ;Read value
+
+            shr ax,7                ;Get Y position
+            and ax,127
+
+            cmp [W_Rel],0           ;Relativity check
+            je gy_done
+            sub ax,[W_Y1]           ;Adjust to window
+
+gy_done:    pop dx                  ;Restore DX
+            ret                     ;Return
+
+EndP        gety
+
+;****************** setctype() -- Set cursor type
+;void setctype(int type);
+
+Proc        setctype
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov bx,[bp+4]           ;Get type
+
+            mov dx,03D4h            ;CRTC port
+            mov al,0Ah              ;Cursor Start
+            mov ah,bh               ;Set value
+            out dx,ax
+            inc ax                  ;Cursor End
+            mov ah,bl               ;Set value
+            out dx,ax
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        setctype
+
+;****************** getctype() -- Get cursor type
+;int getctype(void);
+
+Proc        getctype
+
+            push dx                 ;Save DX
+
+            mov dx,03D4h            ;CRTC port
+            mov al,0Ah              ;Cursor Start
+            out dx,al               ;Set register
+            inc dx                  ;Data port
+            in al,dx                ;Read value
+            mov ah,al
+            dec dx                  ;Index port
+            mov al,0Bh              ;Cursor End
+            out dx,al               ;Set register
+            inc dx                  ;Data port
+            in al,dx                ;Read value
+
+            pop dx                  ;Restore DX
+            ret                     ;Return
+
+EndP        getctype
+
+End
+
+~~~C_TPUTS
+Ideal
+
+Include     "textmac.inc"           ;Include macros
+Include     "textdat.inc"           ;Include data
+
+Public      tputs
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** tputs() -- Put string
+;void tputs(int x, int y, char *str);
+
+Proc        tputs
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push es                 ;Save registers
+            pusha
+            mov es,[CurSeg]         ;ES = video memory
+
+            mov ax,[bp+8]           ;Get values
+            mov bx,[bp+6]
+
+            cmp [W_Rel],0           ;Relativity check
+            je ps_norel
+
+            add ax,[W_X1]           ;Adjust to window
+            add bx,[W_Y1]
+            mov [bp+8],ax
+            mov [bp+6],bx
+
+ps_norel:   cmp bx,[W_Y1]           ;Y < W_Y1?
+            jl ps_done
+            cmp bx,[W_Y2]           ;Y > W_Y2?
+            jg ps_done
+            cmp ax,[W_X2]           ;X > W_X2?
+            jg ps_done
+
+            shl bx,8                ;DI = offset
+            add bx,ax
+            add bx,ax
+            mov di,bx
+
+            mov si,[bp+4]           ;SI = string
+            mov bx,[bp+8]           ;BX = X
+            mov cx,[W_X1]           ;CX = W_X1
+            mov dx,[W_X2]           ;DX = W_X2
+            mov ah,[byte Attr]      ;AH = color
+
+ps_loop:    lodsb                   ;Load char
+            test al,al              ;Null, done
+            je ps_done
+            cmp bx,cx               ;Off left, loop
+            jl ps_lb
+            cmp bx,dx
+            jg ps_done              ;Off right, quit
+
+            mov [es:di],ax          ;Write char
+
+ps_lb:      inc di                  ;Advance pointer
+            inc di
+            inc bx                  ;Advance X
+            jmp ps_loop             ;Loop back
+
+ps_done:    popa                    ;Restore registers
+            pop es bp               ;Delete stack frame
+            ret 6                   ;Return
+
+EndP        tputs
+
+End
+
+~~~C_TPRINT
+Ideal
+
+Extrn       sprintf:near,tputs:near,allocmem:near,freemem:near
+Public      tprintf
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** tprintf() -- Print formatted string
+;void tprintf(int x, int y, char *fmt, void *args);
+
+x           equ bp+10
+y           equ bp+8
+fmt         equ bp+6
+args        equ bp+4
+
+Proc        tprintf
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            push 400                ;Allocate a 400 byte buffer
+            call allocmem
+            jc tp_done              ;Out of memory?
+
+            xchg bx,ax              ;BX = buffer
+            push bx [fmt] [args]    ;sprintf() into buffer
+            call sprintf
+
+            push [x] [y] bx         ;Print string to screen
+            call tputs
+
+            push bx
+            call freemem            ;Free memory
+
+tp_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 8                   ;Return
+
+EndP        tprintf
+
+End
+
+~~~C_TXCHAR
+Ideal
+
+Include     "textmac.inc"           ;Include macros
+Include     "textdat.inc"           ;Include data
+
+Public      setch, setat, setcha, readcha
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** setch() -- Write character
+;void setch(int x, int y, int ch);
+
+Proc        setch
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+            push es
+            mov es,[CurSeg]         ;ES = video memory
+
+            mov bx,[bp+8]           ;Get values
+            mov cx,[bp+6]
+
+            cmp [W_Rel],0           ;Relativity check
+            je sch_norel
+
+            add bx,[W_X1]           ;Adjust to window
+            add cx,[W_Y1]
+
+sch_norel:  cmp bx,[W_X1]           ;X < W_X1?
+            jl sch_done
+            cmp bx,[W_X2]           ;X > W_X2?
+            jg sch_done
+            cmp cx,[W_Y1]           ;Y < W_Y1?
+            jl sch_done
+            cmp cx,[W_Y2]           ;Y > W_Y2?
+            jg sch_done
+
+            mov al,[bp+4]           ;AL = char
+            SET_CH                  ;Write char
+
+sch_done:   pop es                  ;Restore registers
+            popa
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+EndP        setch
+
+;****************** setat() -- Write attribute
+;void setat(int x, int y, int at);
+
+Proc        setat
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+            push es
+            mov es,[CurSeg]         ;ES = video memory
+
+            mov bx,[bp+8]           ;Get values
+            mov cx,[bp+6]
+
+            cmp [W_Rel],0           ;Relativity check
+            je sa_norel
+
+            add bx,[W_X1]           ;Adjust to window
+            add cx,[W_Y1]
+
+sa_norel:   cmp bx,[W_X1]           ;X < W_X1?
+            jl sa_done
+            cmp bx,[W_X2]           ;X > W_X2?
+            jg sa_done
+            cmp cx,[W_Y1]           ;Y < W_Y1?
+            jl sa_done
+            cmp cx,[W_Y2]           ;Y > W_Y2?
+            jg sa_done
+
+            mov al,[bp+4]           ;AL = attr.
+            SET_AT                  ;Write attr.
+
+sa_done:    pop es                  ;Restore registers
+            popa
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+EndP        setat
+
+;****************** setcha() -- Write char, attr.
+;void setcha(int x, int y, int ch, int at);
+
+Proc        setcha
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+            push es
+            mov es,[CurSeg]         ;ES = video memory
+
+            mov bx,[bp+10]          ;Get values
+            mov cx,[bp+8]
+
+            cmp [W_Rel],0           ;Relativity check
+            je sb_norel
+
+            add bx,[W_X1]           ;Adjust to window
+            add cx,[W_Y1]
+
+sb_norel:   cmp bx,[W_X1]           ;X < W_X1?
+            jl sb_done
+            cmp bx,[W_X2]           ;X > W_X2?
+            jg sb_done
+            cmp cx,[W_Y1]           ;Y < W_Y1?
+            jl sb_done
+            cmp cx,[W_Y2]           ;Y > W_Y2?
+            jg sb_done
+
+            mov al,[bp+6]           ;AL = char
+            mov ah,[bp+4]           ;AH = attr.
+            SET_CHA                 ;Write char, attr.
+
+sb_done:    pop es                  ;Restore registers
+            popa
+            pop bp                  ;Delete stack frame
+            ret 8                   ;Return
+
+EndP        setcha
+
+;****************** readcha() -- Read character and attribute
+;int readcha(int x, int y);
+
+Proc        readcha
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push es bx              ;Save registers
+            mov es,[CurSeg]         ;ES = video memory
+
+            mov ax,[bp+6]           ;Get values
+            mov bx,[bp+4]
+
+            cmp [W_Rel],0           ;Relativity check
+            je rc_norel
+
+            add ax,[W_X1]           ;Adjust to window
+            add bx,[W_Y1]
+
+rc_norel:   shl bx,8                ;Get offset
+            add bx,ax
+            add bx,ax
+            mov ax,[es:bx]          ;Read char/attr
+
+            pop bx es               ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        readcha
+
+End
+
+~~~C_GPTEXT
+Ideal
+
+Include     "textmac.inc"           ;Include macros
+Include     "textdat.inc"           ;Include data
+
+Public      gettext, puttext
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** gettext() -- Get text image
+;void gettext(void *buf, int x1, int y1, int x2, int y2);
+
+Proc        gettext
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ds es              ;Save registers
+            pusha
+
+            mov ds,[CurSeg]         ;DS = video memory
+
+            push cs                 ;ES:DI = text buffer
+            pop es
+            mov di,[bp+12]
+
+            mov ax,[bp+10]          ;Get values
+            mov bx,[bp+8]
+            mov cx,[bp+6]
+            mov dx,[bp+4]
+
+            cmp [cs:W_Rel],0        ;Relativity check
+            je gt_norel
+
+            add ax,[cs:W_X1]        ;Adjust to window
+            add bx,[cs:W_Y1]
+            add cx,[cs:W_X1]
+            add dx,[cs:W_Y1]
+
+gt_norel:   cmp ax,cx               ;Put them in order
+            jle $+3
+            xchg ax,cx
+            cmp bx,dx
+            jle $+4
+            xchg bx,dx
+
+            mov [bp+10],ax          ;Save values
+            mov [bp+8],bx
+            mov [bp+6],cx
+            mov [bp+4],dx
+
+            mov si,[bp+8]           ;SI = source offset
+            mov ax,[bp+10]
+            shl si,8
+            add si,ax
+            add si,ax
+
+            mov dx,[bp+6]           ;DX = X distance
+            sub dx,[bp+10]
+            inc dx
+            mov bx,[bp+4]           ;BX = Y distance
+            sub bx,[bp+8]
+            inc bx
+
+            mov ax,dx               ;Store size
+            stosw
+            mov ax,bx
+            stosw
+
+            mov ax,256              ;AX = offset adjust
+            sub ax,dx
+            sub ax,dx
+
+gt_loop:    mov cx,dx               ;Move line
+            rep movsw
+            add si,ax               ;Advance pointers
+            dec bx                  ;Loop back
+            jnz gt_loop
+
+gt_done:    popa                    ;Restore registers
+            pop es ds
+            pop bp                  ;Delete stack frame
+            ret 10                  ;Return
+
+EndP        gettext
+
+;****************** puttext() -- Put text image
+;void puttext(void *buf, int x, int y);
+
+Proc        puttext
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push es                 ;Save registers
+            pusha
+
+            mov es,[CurSeg]         ;ES = video memory
+
+            mov si,[bp+8]           ;SI = text buffer
+
+            mov ax,[bp+6]           ;Get values
+            mov bx,[bp+4]
+
+            cmp [W_Rel],0           ;Relativity check
+            je pt_norel
+
+            add ax,[W_X1]           ;Adjust to window
+            add bx,[W_Y1]
+
+pt_norel:   mov [bp+6],ax           ;Save values
+            mov [bp+4],bx
+
+            lodsw                   ;CX = X distance
+            xchg cx,ax
+            lodsw                   ;DX = Y distance
+            xchg dx,ax
+
+            mov ax,[bp+6]           ;Restore AX
+
+            add cx,ax               ;CX, DX = X2, Y2
+            add dx,bx
+            dec cx
+            dec dx
+
+            cmp ax,[W_X1]           ;Clip to window
+            jl pt_done
+            cmp bx,[W_Y1]
+            jl pt_done
+            cmp cx,[W_X2]
+            jg pt_done
+            cmp dx,[W_Y2]
+            jg pt_done
+
+            inc cx                  ;Restore distances
+            sub cx,ax
+            inc dx
+            sub dx,bx
+            mov bx,dx               ;DX = X distance
+            mov dx,cx               ;BX = Y distance
+
+            mov di,[bp+4]           ;DI = dest. offset
+            mov ax,[bp+6]
+            shl di,8
+            add di,ax
+            add di,ax
+
+            mov ax,256              ;AX = offset adjust
+            sub ax,dx
+            sub ax,dx
+
+pt_loop:    mov cx,dx               ;Move line
+            rep movsw
+            add di,ax               ;Advance pointers
+            dec bx                  ;Loop back
+            jnz pt_loop
+
+pt_done:    popa                    ;Restore registers
+            pop es
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+EndP        puttext
+
+End
+
+~~~C_MTEXT
+Ideal
+
+Include     "textmac.inc"           ;Include macros
+Include     "textdat.inc"           ;Include data
+
+Public      movetext
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** movetext() -- Move window of text
+;void movetext(int x1, int y1, int x2, int y2, int x, int y);
+
+Proc        movetext
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+            push ds es
+
+            mov ax,[CurSeg]         ;DS, ES = video memory
+            mov ds,ax
+            mov es,ax
+
+            mov ax,[bp+14]          ;Get values
+            mov bx,[bp+12]
+            mov cx,[bp+10]
+            mov dx,[bp+8]
+            mov si,[bp+6]
+            mov di,[bp+4]
+
+            cmp ax,cx               ;Put them in order
+            jle $+3
+            xchg ax,cx
+            cmp bx,dx
+            jle $+4
+            xchg bx,dx
+
+            mov [bp+14],ax          ;Save values
+            mov [bp+12],bx
+            mov [bp+10],cx
+            mov [bp+8],dx
+            mov [bp+6],si
+            mov [bp+4],di
+
+            mov ax,[bp+12]          ;Greater offset, move from end
+            cmp ax,[bp+4]           ;Lesser offset, move from start
+            jl mw_rev               ;Same offset, do nothing
+            jg mw_for
+            mov ax,[bp+14]
+            cmp ax,[bp+6]
+            jl mw_rev
+            jg mw_for
+            jmp mw_done
+
+mw_for:     mov si,[bp+12]          ;SI = source offset
+            mov ax,[bp+14]
+            shl si,8
+            add si,ax
+            add si,ax
+
+            mov di,[bp+4]           ;DI = dest. offset
+            mov ax,[bp+6]
+            shl di,8
+            add di,ax
+            add di,ax
+
+            mov dx,[bp+10]          ;DX = X distance
+            sub dx,[bp+14]
+            inc dx
+            mov bx,[bp+8]           ;BX = Y distance
+            sub bx,[bp+12]
+            inc bx
+
+            mov ax,256              ;AX = offset adjust
+            sub ax,dx
+            sub ax,dx
+
+mw_floop:   mov cx,dx               ;Move line
+            rep movsw
+            add si,ax               ;Advance pointers
+            add di,ax
+            dec bx                  ;Loop back
+            jnz mw_floop
+            jmp mw_done
+
+mw_rev:     mov si,[bp+12]          ;SI = source offset
+            mov ax,[bp+14]
+            shl si,8
+            add si,ax
+            add si,ax
+
+            mov di,[bp+4]           ;DI = dest. offset
+            mov ax,[bp+6]
+            shl di,8
+            add di,ax
+            add di,ax
+
+            mov dx,[bp+10]          ;DX = X distance
+            sub dx,[bp+14]
+            mov bx,[bp+8]           ;BX = Y distance
+            sub bx,[bp+12]
+
+            mov ax,bx               ;Move offsets to end
+            shl ax,8
+            add ax,dx
+            add ax,dx
+            add si,ax
+            add di,ax
+
+            inc dx                  ;Fix distances
+            inc bx
+
+            mov ax,256              ;AX = offset adjust
+            sub ax,dx
+            sub ax,dx
+            std                     ;Direction is reverse
+
+mw_rloop:   mov cx,dx               ;Move line
+            rep movsw
+            sub si,ax               ;Advance pointers
+            sub di,ax
+            dec bx                  ;Loop back
+            jnz mw_rloop
+
+mw_done:    cld                     ;Clear direction flag
+            pop es ds               ;Restore registers
+            popa
+            pop bp                  ;Delete stack frame
+            ret 12                  ;Return
+
+EndP        movetext
+
+End
+
+~~~C_SCROLL
+Ideal
+
+Include     "textmac.inc"           ;Include macros
+Include     "textdat.inc"           ;Include data
+
+Extrn       movetext:near, hline:near
+Extrn       vline:near, clrwin:near
+Public      scroll
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** scroll() -- Scroll window
+;void scroll(int dir);
+
+Proc        scroll
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+
+            mov bx,[bp+4]           ;Get direction
+            and bx,3                ;Jump to routine
+            add bx,bx
+            jmp [ScTable+bx]
+
+sc_up:      mov ax,[W_Y1]           ;Window one line?
+            cmp ax,[W_Y2]
+            jne sc_cont1
+            jmp sc_tiny
+
+sc_cont1:   inc ax
+            push [W_X1] ax          ;Push args
+            push [W_X2] [W_Y2]
+            push [W_X1] [W_Y1]
+            call movetext           ;Scroll up
+
+            push [W_X1] [W_X2]      ;Clear bottom line
+            push [W_Y2] ' '
+            call hline
+            jmp sc_done
+
+sc_down:    mov ax,[W_Y1]           ;Window one line?
+            mov bx,[W_Y2]
+            cmp ax,bx
+            jne sc_cont2
+            jmp sc_tiny
+
+sc_cont2:   inc ax
+            dec bx
+            push [W_X1] [W_Y1] [W_X2]
+            push bx [W_X1] ax       ;Push args
+            call movetext           ;Scroll down
+
+            push [W_X1] [W_X2]      ;Clear top line
+            push [W_Y1] ' '
+            call hline
+            jmp sc_done
+
+sc_left:    mov ax,[W_X1]           ;Window one column?
+            cmp ax,[W_X2]
+            je sc_tiny
+
+            inc ax
+            push ax [W_Y1]          ;Push args
+            push [W_X2] [W_Y2]
+            push [W_X1] [W_Y1]
+            call movetext           ;Scroll left
+
+            push [W_Y1] [W_Y2]      ;Clear right column
+            push [W_X2] ' '
+            call vline
+            jmp sc_done
+
+sc_right:   mov ax,[W_X1]           ;Window one column?
+            mov bx,[W_X2]
+            cmp ax,bx
+            je sc_tiny
+
+            inc ax
+            dec bx
+            push [W_X1] [W_Y1] bx   ;Push args
+            push [W_Y2] ax [W_Y1]
+            call movetext           ;Scroll right
+
+            push [W_Y1] [W_Y2]      ;Clear left column
+            push [W_X1] ' '
+            call vline
+            jmp sc_done
+
+sc_tiny:    call clrwin             ;Clear window
+
+sc_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+ScTable     dw offset sc_up
+            dw offset sc_down
+            dw offset sc_left
+            dw offset sc_right
+
+EndP        scroll
+
+End
+
+~~~C_DILINE
+Ideal
+
+Include     "textmac.inc"           ;Include macros
+Include     "textdat.inc"           ;Include data
+
+Extrn       movetext:near, hline:near, vline:near
+Public      delline, insline
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** delline() -- Delete line from window
+;void delline(int y);
+
+Proc        delline
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+
+            mov ax,[bp+4]
+
+            cmp [W_Rel],0           ;Relativity check
+            je dl_norel
+
+            add ax,[W_Y1]           ;Adjust to window
+
+dl_norel:   cmp ax,[W_Y1]           ;Clip to window
+            jl dl_done
+            cmp ax,[W_Y2]
+            jg dl_done
+            je dl_clear
+
+            inc ax
+            push [W_X1] ax [W_X2]   ;Push args
+            dec ax
+            push [W_Y2] [W_X1] ax
+            call movetext           ;Scroll up
+
+dl_clear:   push [W_X1] [W_X2]      ;Clear bottom line
+            push [W_Y2] ' '
+            call hline
+
+dl_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        delline
+
+;****************** insline() -- Insert line in window
+;void insline(int y);
+
+Proc        insline
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+
+            mov ax,[bp+4]
+
+            cmp [W_Rel],0           ;Relativity check
+            je il_norel
+
+            add ax,[W_Y1]           ;Adjust to window
+
+il_norel:   cmp ax,[W_Y1]           ;Clip to window
+            jl il_done
+            cmp ax,[W_Y2]
+            jg il_done
+            je il_clear
+
+            mov bx,ax               ;BX = y - 1,
+            mov cx,[W_Y2]           ;CX = W_Y2 - 1
+            inc bx
+            dec cx
+            push [W_X1] ax [W_X2]   ;Push args
+            push cx [W_X1] bx
+            call movetext           ;Scroll down
+
+il_clear:   push [W_X1] [W_X2]      ;Clear inserted line
+            push ax ' '
+            call hline
+
+il_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        insline
+
+End
+
+~~~C_TGETLN
+Ideal
+
+Include     "textmac.inc"           ;Include macros
+Include     "textdat.inc"           ;Include data
+
+Extrn       tputs:near,setctype:near,gety:near
+Extrn       gotoxy:near,getx:near,getctype:near
+Extrn       memset:near,hline:near
+Public      getline,setglchar
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** setglchar() -- Set field fill char for getline()
+;void setglchar(int chr);
+
+chr         equ bp+4
+
+Proc        setglchar
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+
+            push [chr]              ;Set gl_fillchar
+            pop [gl_fillchar]
+
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        setglchar
+
+;****************** getline() -- Get line of text, with edit
+;void getline(int x, int y, char *strp, int min, int max);
+
+x           equ bp+12
+y           equ bp+10
+strp        equ bp+8
+min         equ bp+6
+max         equ bp+4
+
+Proc        getline
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+
+            call getctype           ;Save cursor type
+            mov [gl_buf],ax
+            call getx               ;Save cursor position
+            mov [gl_buf+2],ax
+            call gety
+            mov [gl_buf+4],ax
+
+            mov [gl_iflag],1        ;Insert initially on
+
+            mov bx,[strp]           ;Clear the string buffer
+            mov si,[max]
+            push bx si 0
+            call memset
+
+            mov di,si               ;DI = maximum length
+            xor si,si               ;String pos = 0
+            dec di
+            dec di
+            mov cx,1                ;Set modify flag
+
+gl_loop:    call gl_redraw          ;Redraw entry field
+
+gl_kloop:   xor ax,ax               ;Get a key
+            int 16h
+            cmp al,0Dh              ;Enter?
+            je gl_enter
+            cmp al,1Bh              ;Escape?
+            je gl_esc
+            cmp al,08h              ;Backspace?
+            je gl_bksp
+            test al,al              ;Alphanumeric char?
+            jne gl_char
+            cmp ah,4Bh              ;Left?
+            je gl_left
+            cmp ah,4Dh              ;Right?
+            je gl_right
+            cmp ah,47h              ;Home?
+            je gl_home
+            cmp ah,4Fh              ;End?
+            je gl_end
+            cmp ah,52h              ;Insert?
+            jne gl_skip0
+            jmp gl_insert
+gl_skip0:   cmp ah,53h              ;Delete?
+            jne gl_kloop            ;Invalid, loop
+            jmp gl_delete
+
+;****************** Key Processing Loops
+
+gl_char:    mov dl,al               ;DL = char
+            mov ax,[gl_iflag]       ;Check insert flag
+            test ax,ax
+            jz gl_skip1
+
+            push di                 ;Save DI
+gl_sloop1:  mov al,[bx+di-1]        ;Shift string right
+            mov [bx+di],al
+            dec di
+            cmp di,si
+            ja gl_sloop1
+            pop di                  ;Restore DI
+
+gl_skip1:   inc cx                  ;Set modify flag
+            mov [bx+si],dl          ;Store char
+            cmp si,di               ;Already at right?
+            je gl_loop
+            inc si                  ;Move right
+            jmp gl_loop             ;Loop back
+
+gl_enter:   push si
+            mov si,di               ;SI = maximum+1
+            inc si
+
+gl_sloop0:  test si,si              ;Hit the left?
+            jz gl_cont
+            cmp [byte bx+si-1],0    ;End of string?
+            jne gl_cont
+            dec si                  ;Move left
+            jmp gl_sloop0           ;Loop back
+gl_cont:    mov dx,si               ;DX = end point
+            pop si                  ;Restore SI
+
+            cmp dx,[min]            ;Below minimum, ignore
+            jae gl_finish           ;Otherwise, quit
+gl_jmpk:    jmp gl_kloop
+
+gl_esc:     push bx di 0            ;Clear buffer...
+            call memset
+            xor si,si
+            call gl_redraw
+            jmp gl_done
+
+gl_bksp:    test si,si              ;Can't backspace from
+            jz gl_jmpk              ;the first char
+            dec si                  ;Delete at SI-1
+            jmp gl_delete
+
+gl_left:    test si,si              ;Already at left?
+            jz gl_jmpk
+            dec si                  ;Move left
+            jmp gl_loop             ;Loop back
+
+gl_right:   cmp si,di               ;Already at right?
+            jae gl_jmpk
+            inc si                  ;Move right
+            jmp gl_loop             ;Loop back
+
+gl_home:    xor si,si               ;Move to left
+gl_jmp:     jmp gl_loop             ;Loop back
+
+gl_end:     mov si,di               ;SI = maximum
+            cmp [byte bx+si],0      ;Buffer full, move to end
+            jne gl_jmp
+
+gl_sloop2:  test si,si              ;Hit the left?
+            jz gl_jmp
+            cmp [byte bx+si-1],0    ;End of string?
+            jne gl_jmp
+            dec si                  ;Move left
+            jmp gl_sloop2           ;Loop back
+
+gl_insert:  mov ax,1                ;Toggle insert flag
+            sub ax,[gl_iflag]
+            mov [gl_iflag],ax
+            jmp gl_loop             ;Loop back
+
+gl_delete:  push si                 ;Save SI
+            inc si
+gl_sloop3:  mov ax,[bx+si]          ;Shift string left
+            mov [bx+si-1],al
+            inc si
+            cmp si,di
+            jbe gl_sloop3
+            pop si                  ;Restore SI
+            mov [byte bx+di],0      ;End with space
+            inc cx                  ;Set modify flag
+            jmp gl_loop             ;Loop back
+
+;****************** End of Key Processing
+
+gl_finish:  mov si,dx               ;SI = length
+            mov [byte bx+si],0      ;Terminate with a null
+
+gl_done:    push [gl_buf+2]         ;Restore cursor position
+            push [gl_buf+4]
+            call gotoxy
+            push [gl_buf]           ;Restore cursor type
+            call setctype
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 10                  ;Return
+
+gl_redraw:  pusha                   ;Save all registers
+            test cx,cx              ;Check modify flag
+            jz gl_setcur
+            mov cx,[x]              ;Set up to clear the field
+            push cx
+            add cx,di               ;Clear the field
+            push cx [y] [gl_fillchar]
+            call hline
+            push [x] [y] bx         ;Show the string
+            call tputs
+
+gl_setcur:  mov ax,[x]              ;Set the cursor position
+            add ax,si
+            push ax [y]
+            call gotoxy
+
+            mov bx,[gl_iflag]       ;AX = cursor to use
+            add bx,bx
+            mov ax,[gl_curs+bx]
+            push ax                 ;Set cursor type
+            call setctype
+
+            popa                    ;Restore registers
+            xor cx,cx               ;Reset modify flag
+            ret                     ;Return
+
+gl_buf      dw 3 dup(0)             ;Scratch buffer
+gl_iflag    dw 0                    ;Insert flag
+
+gl_curs     dw 000Dh,0C0Dh          ;Cursors
+gl_fillchar dw 0020h                ;Fill char (space)
+
+EndP        getline
+
+End
+
+~~~C_AMOUSE
+Ideal
+
+Extrn       CurSeg:word, MouseLimX:word, MouseLimY:word
+Public      minit, mclose, mshow, mhide
+Public      mget, mgetdn, mgetup
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** Mouse Data
+
+M_X         dw 0                    ;Mouse X
+M_Y         dw 0                    ;Mouse Y
+
+ScrnBuf     dw 0                    ;Screen buffer
+
+MouseFound  dw 0                    ;Existence flag
+MouseOn     dw 0                    ;Display flag
+
+;****************** INTERNAL PROC MouseHandler
+
+Proc        MouseHandler
+
+            cmp [cs:MouseOn],0      ;Cursor off, skip
+            je MH_Skip
+            call PutCursor          ;Toggle cursor off
+            mov [cs:M_X],cx         ;Set X, Y
+            mov [cs:M_Y],dx
+            call PutCursor          ;Toggle cursor on
+MH_Skip:    retf                    ;Return
+
+EndP        MouseHandler
+
+;****************** INTERNAL PROC PutCursor
+
+Proc        PutCursor
+
+            pusha                   ;Save all registers
+            push ds
+
+            mov ds,[cs:CurSeg]      ;DS = video memory
+
+            mov bx,[cs:M_Y]         ;AX, BX = X, Y
+            mov ax,[cs:M_X]
+            shl bx,5                ;BX = offset
+            shr ax,2
+            add bx,ax
+
+            xor [byte bx+1],77h     ;Toggle cursor
+
+            pop ds                  ;Restore registers
+            popa
+            ret                     ;Return
+
+EndP        PutCursor
+
+;****************** minit() -- Initialize mouse system
+;int minit(void);
+
+Proc        minit
+
+            pusha                   ;Save all registers
+
+            mov ax,21h              ;Initialize mouse driver
+            int 33h
+            cmp ax,1
+            jb im_done
+
+            mov ax,7                ;Set X limits
+            xor cx,cx
+            mov dx,[MouseLimX]
+            int 33h
+
+            mov ax,8                ;Set Y limits
+            xor cx,cx
+            mov dx,[MouseLimY]
+            int 33h
+
+            mov ax,4                ;Set position to (0, 0)
+            xor cx,cx
+            xor dx,dx
+            int 33h
+
+            mov [M_X],cx            ;Save position
+            mov [M_Y],dx
+
+            push es                 ;Save ES
+
+            push cs                 ;ES:DX = mouse handler
+            pop es
+            mov dx,offset MouseHandler
+            mov ax,0Ch              ;Set handler
+            mov cx,1                ;for motion
+            int 33h
+
+            mov [MouseOn],0         ;Mouse is off
+
+            pop es                  ;Restore ES
+            clc                     ;Clear carry flag
+
+im_done:    popa                    ;Restore registers
+            ret                     ;Return
+
+EndP        minit
+
+;****************** mclose() -- End mouse system
+;void mclose(void);
+
+Proc        mclose
+
+            cmp [MouseOn],0         ;Mouse off, skip
+            je em_Off
+            mov [MouseOn],0         ;Reset cursor flag
+            call PutCursor          ;Hide mouse cursor
+
+em_Off:     push ax                 ;Save AX
+            mov ax,21h              ;Reinitialize mouse driver
+            int 33h
+            pop ax                  ;Restore AX
+            ret                     ;Return
+
+EndP        mclose
+
+;****************** mshow() -- Show mouse cursor
+;void mshow(void);
+
+Proc        mshow
+
+            cmp [MouseOn],1         ;Already on, do nothing
+            je sm_done
+            call PutCursor          ;Show mouse cursor
+            mov [MouseOn],1         ;Set cursor flag
+sm_done:    ret                     ;Return
+
+EndP        mshow
+
+;****************** mhide() -- Hide mouse cursor
+;void mhide(void);
+
+Proc        mhide
+
+            cmp [MouseOn],0         ;Already off, do nothing
+            je hm_done
+            mov [MouseOn],0         ;Reset cursor flag
+            call PutCursor          ;Hide mouse cursor
+hm_done:    ret                     ;Return
+
+EndP        mhide
+
+;****************** mget() -- Get mouse position - returns AX,BX,CX
+;(int, int, int) mget(void);
+
+Proc        mget
+
+            push dx                 ;Save registers
+
+            mov ax,3                ;Get mouse position
+            int 33h
+
+            shr cx,3                ;Fix values
+            shr dx,3
+
+            xchg ax,dx              ;Return AX = press count,
+            xchg ax,cx              ;       BX = X value, and
+            xchg ax,bx              ;       CX = Y value
+
+            pop dx                  ;Restore registers
+            ret                     ;Return
+
+EndP        mget
+
+;****************** mgetdn() -- Get mouse press info - returns AX,BX,CX
+;(int, int, int) mgetdn(int btn);
+
+Proc        mgetdn
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push dx                 ;Save registers
+
+            mov ax,5                ;Get mouse press info
+mgetup_0:   mov bx,[bp+4]
+            int 33h
+
+            shr cx,3                ;Fix values
+            shr dx,3
+
+            xchg ax,dx              ;Return AX = press count,
+            xchg ax,cx              ;       BX = X value, and
+            xchg ax,bx              ;       CX = Y value
+
+            pop dx                  ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        mgetdn
+
+;****************** mgetup() -- Get mouse release info - returns AX,BX,CX
+;(int, int, int) mgetup(int btn);
+
+Proc        mgetup
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push dx                 ;Save registers
+
+            mov ax,6                ;Get mouse release info
+            jmp mgetup_0            ;Jump to last half
+
+EndP        mgetup
+
+End
+
+; Graphics code by Tylisha C. Andersen.  I don't know how it
+; works, that's why I haven't added better comments.
+
+~~~C_GRAPH1
+Ideal
+Jumps
+
+Public      initgraph, closegraph, putpix, getpix
+Public      setgcolor, getgcolor, putrow
+Public      cls, setgwin, GMode, GColor
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** Data Section
+
+GW_X1       dw    0                 ; window parameters
+GW_Y1       dw    0
+GW_X2       dw    0
+GW_Y2       dw    0
+
+GMode       db    0                 ; video mode
+GColor      db    0                 ; drawing color
+
+;****************** Code Section
+
+;****************** initgraph() -- Initialize graphics system
+;void initgraph(int mode);         0 = 320x200x256
+;                                  1 = 640x480x16
+;                                  2 = 320x400x256
+
+Proc        initgraph
+
+            push  bp                ; pascal stack frame
+            mov   bp, sp
+            pusha
+
+            mov   ax, 13h           ; set video mode
+            mov   bl, [bp+4]
+            and   bl, 3
+            mov   [GMode], bl
+            mov   dh, bl
+            and   dh, 1
+            sub   al, dh
+            int   10h
+
+            mov   cx, 319           ; assume lo-res
+            mov   dx, 199
+
+            test  bl, 2             ; check video mode
+            jnz   a_1
+            test  bl, bl
+            jz    a_2
+
+            mov   dx, 03CEh         ; set write mode
+            mov   ax, 0305h
+            out   dx, ax
+            mov   cx, 639           ; set screen size
+            mov   dx, 479
+            jmp   a_2
+
+a_1:        mov   dx, 03C4h         ; set dechain mode
+            mov   ax, 0604h         ; for 320x400x256
+            out   dx, ax
+            mov   dx, 03D4h
+            mov   ax, 0E317h
+            out   dx, ax
+            mov   ax, 0014h
+            out   dx, ax
+            mov   ax, 4009h
+            out   dx, ax
+            mov   dx, 399           ; set screen size
+
+a_2:        xor   ax, ax            ; initialize variables
+            mov   [GColor], 0Fh
+            mov   [GW_X1], ax
+            mov   [GW_Y1], ax
+            mov   [GW_X2], cx
+            mov   [GW_Y2], dx
+
+            call  cls               ; set color white
+
+            popa                    ; return code
+            pop   bp
+            ret   2
+
+EndP        initgraph
+
+;****************** closegraph() -- Close graphics system
+;void closegraph(void);
+
+Proc        closegraph
+
+            push  ax                ; set normal video mode
+            mov   ax, 03h
+            int   10h
+            pop   ax
+            ret
+
+EndP        closegraph
+
+;****************** putpix() -- Put a pixel
+;void putpix(int x, int y);
+
+Proc        putpix
+
+            push  bp                ; pascal stack frame
+            mov   bp, sp
+            push  es
+            pusha
+
+            mov   ax, [bp+6]        ; get position
+            mov   bx, [bp+4]
+
+            cmp   ax, [GW_X1]       ; clip pixel
+            jl    b_3
+            cmp   ax, [GW_X2]
+            jg    b_3
+            cmp   bx, [GW_Y1]
+            jl    b_3
+            cmp   bx, [GW_Y2]
+            jg    b_3
+
+            push  0A000h            ; set video memory
+            pop   es
+
+            cmp   [GMode], 1        ; check video mode
+            ja    b_2
+            je    b_1
+
+            add   ah, bl            ; put pixel: lo-res
+            shl   bx, 6
+            add   bx, ax
+            mov   al, [GColor]
+            mov   [es:bx], al
+            jmp   b_3
+
+b_1:        mov   cx, bx            ; put pixel: hi-res
+            shl   bx, 2
+            add   bx, cx
+            shl   bx, 4
+            mov   cx, ax
+            shr   ax, 3
+            add   bx, ax
+            mov   al, 80h
+            ror   al, cl
+            xchg  [es:bx], al
+            jmp   b_3
+
+b_2:        mov   cx, ax            ; put pixel: med-res
+            shl   bx, 4
+            mov   ax, bx
+            shl   bx, 2
+            add   bx, ax
+            mov   ax, cx
+            shr   ax, 2
+            add   bx, ax
+            and   cl, 3
+            mov   dx, 03C4h         ; set plane
+            mov   ax, 0102h
+            shl   ah, cl
+            out   dx, ax
+            mov   al, [GColor]
+            mov   [es:bx], al
+
+b_3:        popa                    ; return code
+            pop   es bp
+            ret   4
+
+EndP        putpix
+
+;****************** getpix() -- Read a pixel
+;int getpix(int x, int y);
+
+Proc        getpix
+
+            push  bp                ; pascal stack frame
+            mov   bp, sp
+            push  es
+            pusha
+
+            mov   ax, [bp+6]        ; get position
+            mov   bx, [bp+4]
+
+            push  0A000h            ; set video memory
+            pop   es
+
+            cmp   [GMode], 1        ; check video mode
+            ja    c_3
+            je    c_1
+
+            add   ah, bl            ; get pixel: lo-res
+            shl   bx, 6
+            add   bx, ax
+            mov   al, [es:bx]
+            jmp   c_4
+
+c_1:        mov   cx, bx            ; get pixel: hi-res
+            shl   bx, 2             ; figure out the offset
+            add   bx, cx
+            shl   bx, 4
+            mov   cx, ax
+            shr   ax, 3
+            add   bx, ax
+            mov   si, bx
+            xor   bh, bh
+
+            mov   dx, 03CEh         ; set up port
+            mov   ax, 0304h
+
+c_2:        out   dx, ax            ; set plane
+            mov   bl, [es:si]       ; read bit
+            or    bl, [es:si]
+            rol   bl, cl
+            shl   bx, 1
+            dec   ah                ; loop
+            jnl   c_2
+
+            mov   al, bh            ; al = color
+            jmp   c_4
+
+c_3:        mov   cx, ax            ; get pixel: med-res
+            shl   bx, 4
+            mov   ax, bx
+            shl   bx, 2
+            add   bx, ax
+            mov   ax, cx
+            shr   ax, 2
+            add   bx, ax
+            and   cl, 3
+            mov   dx, 03CEh         ; set plane
+            mov   al, 4
+            mov   ah, cl
+            out   dx, ax
+            mov   al, [es:bx]
+
+c_4:        xor   ah, ah
+            mov   es, ax            ; ax = result
+            popa
+            mov   ax, es
+            pop   es bp             ; return code
+            ret   4
+
+EndP        getpix
+
+;****************** setgwin() -- Set graphics window
+;void setgwin(int x1, int y1, int x2, int y2);
+
+Proc        setgwin
+
+            push  bp                ; pascal stack frame
+            mov   bp, sp
+            push  ax
+
+            mov   ax, [bp+10]       ; set window variables
+            mov   [GW_X1], ax
+            mov   ax, [bp+8]
+            mov   [GW_Y1], ax
+            mov   ax, [bp+6]
+            mov   [GW_X2], ax
+            mov   ax, [bp+4]
+            mov   [GW_Y2], ax
+
+            pop   ax bp             ; return code
+            ret   8
+
+EndP        setgwin
+
+;****************** putrow() -- Put a row of pixels
+;void putrow(int x1, int x2, int y);
+
+Proc        putrow
+
+            push  bp                ; pascal stack frame
+            mov   bp, sp
+            push  es
+            pusha
+
+            mov   ax, [bp+8]        ; get position
+            mov   bx, [bp+4]
+            mov   cx, [bp+6]
+
+            cmp   ax, cx            ; left to right
+            jng   $+3
+            xchg  ax, cx
+
+            cmp   ax, [GW_X2]       ; clip the line
+            jg    d_7
+            cmp   cx, [GW_X1]
+            jl    d_7
+            cmp   bx, [GW_Y2]
+            jg    d_7
+            cmp   bx, [GW_Y1]
+            jl    d_7
+            cmp   ax, [GW_X1]
+            jnl   d_1
+            mov   ax, [GW_X1]
+d_1:        cmp   cx, [GW_X2]
+            jng   d_2
+            mov   cx, [GW_X2]
+
+d_2:        mov   [bp+8], ax        ; save position
+            mov   [bp+4], bx
+            mov   [bp+6], cx
+
+            push  0A000h            ; set video memory
+            pop   es
+
+            cmp   [GMode], 1        ; check video mode
+            ja    d_8
+            je    d_3
+
+            sub   cx, ax            ; put row: lo-res
+            add   ah, bl
+            shl   bx, 6
+            add   bx, ax
+            mov   di, bx
+            inc   cx
+            mov   al, [GColor]
+            rep   stosb
+            jmp   d_7
+
+d_3:        mov   dx, cx            ; put row: hi-res
+            sub   dx, ax            ; figure out offset
+            imul  bx, 80
+            mov   cx, ax
+            shr   ax, 3
+            add   bx, ax
+            mov   al, 80h
+            ror   al, cl
+            mov   ah, al
+            mov   cx, dx
+            jcxz  d_6
+
+d_4:        shr   ah, 1             ; shift right
+            jnz   d_5
+            mov   ah, [es:bx]       ; put pixels
+            mov   [es:bx], al
+            inc   bx                ; next byte
+            mov   ah, 80h           ; reset
+            xor   al, al
+
+d_5:        or    al, ah            ; add in pixel
+            loop  d_4               ; loop
+
+d_6:        mov   ah, [es:bx]       ; put last pixels
+            mov   [es:bx], al
+
+d_7:        popa                    ; return code
+            pop   es bp
+            ret   6
+
+d_8:        test  ax, 3             ; put row: med-res
+            jz    d_9               ; put first pixels
+            push  ax bx
+            call  putpix
+            inc   ax
+            cmp   ax, cx
+            jle   d_8
+
+d_9:        push  cx bx             ; put last pixels
+            call  putpix
+            cmp   cx, ax
+            jle   d_7
+            test  cx, 3
+            loopnz  d_9
+
+d_10:       imul  di, bx, 80        ; figure out offset, length
+            shr   ax, 2
+            add   di, ax
+            shr   cx, 2
+            sub   cx, ax
+            jl    d_7
+            inc   cx
+
+            mov   dx, 03C4h         ; set all planes
+            mov   ax, 0F02h
+            out   dx, ax
+            mov   al, [GColor]      ; draw middle
+            rep   stosb
+            jmp   d_7
+
+EndP        putrow
+
+;****************** setgcolor() -- Set graphics color
+;void setgcolor(int color);
+
+Proc        setgcolor
+
+            push  bp                ; pascal stack frame
+            mov   bp, sp
+            pusha
+
+            mov   ah, [bp+4]        ; set color variable
+            mov   [GColor], ah
+            cmp   [GMode], 1        ; check video mode
+            jne    e_1
+
+            xor   al, al            ; set hardware color
+            mov   dx, 03CEh
+            out   dx, ax
+
+e_1:        popa                    ; return code
+            pop   bp
+            ret   2
+
+EndP        setgcolor
+
+;****************** getgcolor() -- Return graphics color
+;int getgcolor(void);
+
+Proc        getgcolor
+
+            mov   al, [GColor]      ; get color
+            xor   ah, ah
+            ret                     ; return
+
+EndP        getgcolor
+
+;****************** cls() -- Clear screen
+;void cls(void);
+
+Proc        cls
+
+            push  es                ; save regs
+            pusha
+
+            mov   bl, [GColor]      ; save color
+
+            push  0A000h            ; set video memory
+            pop   es
+
+            cmp   [GMode], 1        ; check video mode
+            ja    f_3
+            je    f_1
+
+            xor   ax, ax            ; cls setup: lo-res
+            mov   cx, 32000
+            jmp   f_2
+
+f_1:        mov   ax, -1            ; cls setup: hi-res
+            mov   cx, 19200
+            push  0
+            call  setgcolor
+
+f_2:        xor   di, di            ; clear the screen
+            rep   stosw
+
+            push  bx                ; restore color
+            call  setgcolor
+
+            popa                    ; return code
+            pop   es
+            ret
+
+f_3:        mov   dx, 03C4h         ; cls setup: med-res
+            mov   ax, 0F02h
+            out   dx, ax
+            mov   cx, 16000
+            xor   ax, ax
+            jmp   f_2
+
+EndP        cls
+
+End
+
+~~~C_GRAPH2
+Ideal
+Jumps
+
+Extrn       putpix:near, getpix:near
+Extrn       putrow:near, setgcolor:near
+Extrn       getgcolor:near, GMode:byte
+Public      line, rect, frect, clrgwin
+Public      outstr, getimage, putimage
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** line() -- Draw a straight line
+;void line(int x1, int y1, int x2, int y2);
+
+Proc        line
+
+            enter 4, 0              ; pascal stack frame
+            pusha                   ; with local vars
+
+            mov   ax, [bp+10]       ; get coordinates
+            mov   bx, [bp+8]
+            mov   cx, [bp+6]
+            mov   dx, [bp+4]
+
+            mov   si, cx            ; get x, y distance
+            sub   si, ax
+            jge   $+4
+            neg   si
+            mov   di, dx
+            sub   di, bx
+            jge   $+4
+            neg   di
+
+            mov   [bp-2], si        ; jump to x or y loop
+            mov   [bp-4], di
+            cmp   si, di
+            jle   a_4
+
+            cmp   ax, cx            ; go in the x direction
+            jle   a_1
+            xchg  ax, cx
+            xchg  bx, dx
+
+a_1:        xchg  ax, dx            ; get distance (cx)
+            sub   cx, dx
+            inc   cx
+            sub   ax, bx            ; get y increment (ax)
+            sar   ax, 16
+            add   ax, ax
+            inc   ax
+            shr   si, 1             ; setup error term (si)
+            sub   di, si
+            mov   si, di
+
+a_2:        push  dx bx             ; put pixel
+            call  putpix
+            test  si, si            ; check for y move
+            jl    a_3
+
+            add   bx, ax            ; move in y direction
+            sub   si, [bp-2]
+
+a_3:        inc   dx                ; move in x direction
+            add   si, [bp-4]
+            loop  a_2               ; loop
+            jmp   a_8
+
+a_4:        cmp   bx, dx            ; go in the y direction
+            jle   a_5
+            xchg  ax, cx
+            xchg  bx, dx
+
+a_5:        xchg  ax, cx            ; get distance (cx)
+            sub   dx, bx
+            xchg  cx, dx
+            inc   cx
+            sub   ax, dx            ; get x increment (ax)
+            sar   ax, 16
+            add   ax, ax
+            inc   ax
+            shr   di, 1             ; setup error term (si)
+            sub   si, di
+
+a_6:        push  dx bx             ; put pixel
+            call  putpix
+            test  si, si            ; check for x move
+            jl    a_7
+
+            add   dx, ax            ; move in x direction
+            sub   si, [bp-4]
+
+a_7:        inc   bx                ; move in y direction
+            add   si, [bp-2]
+            loop  a_6               ; loop
+
+a_8:        popa                    ; return code
+            leave
+            ret   8
+
+EndP        line
+
+;****************** rect() -- Draw a rectangle
+;void rect(int x1, int y1, int x2, int y2);
+
+Proc        rect
+
+            push  bp                ; pascal stack frame
+            mov   bp, sp
+            pusha
+
+            mov   ax, [bp+10]       ; get coordinates
+            mov   bx, [bp+8]
+            mov   cx, [bp+6]
+            mov   dx, [bp+4]
+
+            push  ax cx bx          ; draw top edge
+            call  putrow
+            push  ax cx dx          ; draw bottom edge
+            call  putrow
+            push  ax bx ax dx       ; draw left edge
+            call  line
+            push  cx bx cx dx       ; draw right edge
+            call  line
+
+            popa                    ; return code
+            pop   bp
+            ret   8
+
+EndP        rect
+
+;****************** frect() -- Draw a filled rectangle
+;void frect(int x1, int y1, int x2, int y2);
+
+Proc        frect
+
+            push  bp                ; pascal stack frame
+            mov   bp, sp
+            pusha
+
+            mov   ax, [bp+10]       ; get coordinates
+            mov   bx, [bp+8]
+            mov   cx, [bp+6]
+            mov   dx, [bp+4]
+
+            cmp   bx, dx            ; top to bottom
+            jle   $+4
+            xchg  bx, dx
+
+b_1:        push  ax cx bx          ; draw one row
+            call  putrow
+            inc   bx
+            cmp   bx, dx            ; loop
+            jle   b_1
+
+            popa                    ; return code
+            pop   bp
+            ret   8
+
+EndP        frect
+
+;****************** clrgwin() -- Clear the graphics window
+;void clrgwin(void);
+
+Proc        clrgwin
+
+            push  ax
+            mov   ax, 199           ; get screen height (ax)
+            cmp   [GMode], 0
+            je    c_1
+            mov   ax, 479
+
+c_1:        push  0 639 ax          ; clear one line
+            call  putrow
+            dec   ax                ; loop
+            jns   c_1
+            pop   ax                ; return
+            ret
+
+EndP        clrgwin
+
+;****************** outstr() -- Output string
+;void outstr(int x, int y, char *str);
+
+Proc        outstr
+
+            push  bp                ; pascal stack frame
+            mov   bp, sp
+            push  es
+            pusha
+
+            push  bp                ; get 8-line font
+            mov   ax, 1130h
+            mov   bh, 3
+            int   10h
+            mov   di, bp
+            pop   bp
+
+            mov   si, [bp+4]        ; get parameters
+            mov   cx, [bp+8]
+            mov   dx, [bp+6]
+
+d_1:        lodsb                   ; get char (al)
+            test  al, al
+            jz    d_5
+            mov   bl, al            ; get offset (bx)
+            xor   bh, bh
+            shl   bx, 3
+
+d_2:        mov   al, [es:bx+di]    ; get font byte
+            mov   ah, 8
+
+d_3:        add   al, al            ; check the bit
+            jnc   d_4
+            push  cx dx             ; set the pixel
+            call  putpix
+d_4:        inc   cx                ; next pixel
+            dec   ah                ; loop
+            jnz   d_3
+
+            sub   cx, 8             ; fix the position
+            inc   dx                ; next line
+            inc   bx                ; loop
+            test  bx, 7
+            jnz   d_2
+
+            sub   dx, 8             ; fix the position
+            add   cx, 8
+            jmp   d_1               ; loop
+
+d_5:        popa                    ; return code
+            pop   es bp
+            ret   6
+
+EndP        outstr
+
+;****************** getimage() -- Save a rectangular image
+;void getimage(void *buf, int x1, int y1, int x2, int y2);
+
+Proc        getimage
+
+            push  bp                ; pascal stack frame
+            mov   bp, sp
+            pusha
+
+            mov   si, [bp+12]       ; get coordinates
+            mov   ax, [bp+10]
+            mov   bx, [bp+8]
+            mov   cx, [bp+6]
+            mov   dx, [bp+4]
+
+            cmp   ax, cx            ; left to right, etc.
+            jng   $+3
+            xchg  ax, cx
+            cmp   bx, dx
+            jng   $+4
+            xchg  bx, dx
+
+            sub   cx, ax            ; figure out distances
+            inc   cx
+            sub   dx, bx
+            inc   dx
+            mov   [si], cx          ; store the distances
+            mov   [si+2], dx
+            add   si, 4
+            mov   di, ax
+
+e_1:        push  di cx             ; save pixel data
+e_2:        push  di bx             ; read the pixel
+            call  getpix
+            mov   [si], al          ; store the value
+            inc   si
+            inc   di                ; next pixel
+            loop  e_2               ; loop
+
+            pop   cx di             ; restore data
+            inc   bx                ; next line
+            dec   dx                ; loop
+            jnz   e_1
+
+            popa                    ; return code
+            pop   bp
+            ret   10
+
+EndP        getimage
+
+;****************** putimage() -- Restore a rectangular image
+;void putimage(void *buf, int x1, int y1);
+
+Proc        putimage
+
+            push  bp                ; pascal stack frame
+            mov   bp, sp
+            pusha
+            call  getgcolor         ; save old color
+            push  ax
+
+            mov   si, [bp+8]        ; get coordinates
+            mov   di, [bp+6]
+            mov   bx, [bp+4]
+
+            lodsw                   ; load the distances
+            mov   cx, ax
+            lodsw
+            mov   dx, ax
+
+f_1:        push  di cx             ; save pixel data
+f_2:        lodsb                   ; load a byte
+            push  ax                ; set the color
+            call  setgcolor
+            push  di bx             ; write the pixel
+            call  putpix
+            inc   di                ; next pixel
+            loop  f_2               ; loop
+
+            pop   cx di             ; restore data
+            inc   bx                ; next line
+            dec   dx                ; loop
+            jnz   f_1
+
+            call  setgcolor         ; restore old color
+            popa                    ; return code
+            pop   bp
+            ret   6
+
+EndP        putimage
+
+End
+
+~~~C_GRAPH3
+Ideal
+Jumps
+
+Extrn       putpix:near, putrow:near, GMode:byte
+Public      circle, ellipse
+Public      fcircle, fellipse
+
+Model Tiny
+P186
+CodeSeg
+
+;**************************** circle() -- Draw a circle
+;void circle(int x, int y, int r);
+
+Proc        circle
+
+            push  bp                ; pascal stack frame
+            mov   bp, sp
+            pusha
+
+            mov   ax, [bp+4]        ; height
+
+            cmp   [GMode], 1        ; check graphics mode
+            je    c_1
+            test  [GMode], 2
+            jz    $+4
+            shr   ax, 1
+
+            mov   bx, 6             ; fix 6/5 aspect
+            imul  bx
+            dec   bx
+            idiv  bx
+
+c_1:        push  [bp+8] [bp+6]     ; ellipse with same radii
+            push  ax [bp+4]
+            call  ellipse
+
+            popa                    ; return code
+            pop   bp
+            ret   6
+
+EndP        circle
+
+;**************************** ellipse() -- Draw an ellipse
+;void ellipse(int x, int y, int xr, int yr);
+
+Proc        ellipse
+
+            push  bp                ; pascal stack frame
+            mov   bp, sp
+            pusha
+
+            cmp   [word bp+6], 0    ; can't do radius 0
+            jle   a_4
+            cmp   [word bp+4], 0
+            jle   a_4
+
+            mov   ax, [bp+6]        ; jump to x or y loop
+            cmp   ax, [bp+4]
+            jl    a_2
+
+            xor   si, si            ; x-major loop
+            mov   di, [bp+6]
+            shl   di, 5
+
+a_1:        mov   ax, di            ; figure out y-position
+            imul  [word bp+4]
+            idiv  [word bp+6]
+            mov   bx, ax
+            add   bx, 16
+            sar   bx, 5
+            add   bx, [bp+8]
+
+            mov   cx, si            ; set up for first pixel
+            add   cx, 16
+            sar   cx, 5
+            push  cx
+            add   cx, [bp+10]
+
+            push  cx bx             ; draw first pixel
+            call  putpix
+
+            pop   cx                ; set up for second pixel
+            neg   cx
+            add   cx, [bp+10]
+
+            push  cx bx             ; draw second pixel
+            call  putpix
+
+            mov   ax, di            ; linear shear algorithm
+            cwd                     ; move by one pixel-width
+            idiv  [word bp+6]
+            add   si, ax
+            mov   ax, si
+            cwd
+            idiv  [word bp+6]
+            sub   di, ax
+
+            test  ax, ax            ; loop
+            jnl   a_1
+            jmp   a_4
+
+a_2:        xor   si, si            ; y-major loop
+            mov   di, [bp+4]
+            shl   di, 5
+
+a_3:        mov   bx, di            ; figure out y-position
+            add   bx, 16
+            sar   bx, 5
+            add   bx, [bp+8]
+
+            mov   ax, si            ; set up for first pixel
+            imul  [word bp+6]
+            idiv  [word bp+4]
+            mov   cx, ax
+            add   cx, 16
+            sar   cx, 5
+            push  cx
+            add   cx, [bp+10]
+
+            push  cx bx             ; draw first pixel
+            call  putpix
+
+            pop   cx                ; set up for second pixel
+            neg   cx
+            add   cx, [bp+10]
+
+            push  cx bx             ; draw second pixel
+            call  putpix
+
+            mov   ax, di            ; linear shear algorithm
+            cwd                     ; move by one pixel-width
+            idiv  [word bp+4]
+            add   si, ax
+            mov   ax, si
+            cwd
+            idiv  [word bp+4]
+            sub   di, ax
+
+            test  ax, ax            ; loop
+            jnl   a_3
+
+a_4:        popa                    ; return code
+            pop   bp
+            ret   8
+
+EndP        ellipse
+
+;**************************** fcircle() -- Draw a filled circle
+;void fcircle(int x, int y, int r);
+
+Proc        fcircle
+
+            push  bp                ; pascal stack frame
+            mov   bp, sp
+            pusha
+
+            mov   ax, [bp+4]        ; height
+
+            cmp   [GMode], 1        ; check graphics mode
+            je    d_1
+            test  [GMode], 2
+            jz    $+4
+            shr   ax, 1
+
+            mov   bx, 6             ; fix 6/5 aspect
+            imul  bx
+            dec   bx
+            idiv  bx
+
+d_1:        push  [bp+8] [bp+6]     ; ellipse with same radii
+            push  ax [bp+4]
+            call  fellipse
+
+            popa                    ; return code
+            pop   bp
+            ret   6
+
+EndP        fcircle
+
+;**************************** fellipse() -- Draw a filled ellipse
+;void fellipse(int x, int y, int xr, int yr);
+
+Proc        fellipse
+
+            push  bp                ; pascal stack frame
+            mov   bp, sp
+            pusha
+
+            cmp   [word bp+6], 0    ; can't do radius 0
+            jle   b_4
+            cmp   [word bp+4], 0
+            jle   b_4
+
+            mov   ax, [bp+6]        ; jump to x or y loop
+            cmp   ax, [bp+4]
+            jl    b_2
+
+            xor   si, si            ; x-major loop
+            mov   di, [bp+6]
+            shl   di, 5
+
+b_1:        mov   ax, di            ; figure out y-position
+            imul  [word bp+4]
+            idiv  [word bp+6]
+            mov   bx, ax
+            add   bx, 16
+            sar   bx, 5
+            add   bx, [bp+8]
+
+            mov   cx, si            ; set up left end of line
+            add   cx, 16
+            sar   cx, 5
+            mov   ax, [bp+10]
+            add   cx, ax
+            push  cx
+            neg   cx                ; set up right end of line
+            add   cx, ax
+            add   cx, ax
+            push  cx bx             ; draw line
+            call  putrow
+
+            mov   ax, di            ; linear shear algorithm
+            cwd                     ; move by one pixel-width
+            idiv  [word bp+6]
+            add   si, ax
+            mov   ax, si
+            cwd
+            idiv  [word bp+6]
+            sub   di, ax
+
+            test  ax, ax            ; loop
+            jnl   b_1
+            jmp   b_4
+
+b_2:        xor   si, si            ; y-major loop
+            mov   di, [bp+4]
+            shl   di, 5
+
+b_3:        mov   bx, di            ; figure out y-position
+            add   bx, 16
+            sar   bx, 5
+            add   bx, [bp+8]
+
+            mov   ax, si            ; set up left end of line
+            imul  [word bp+6]
+            idiv  [word bp+4]
+            mov   cx, ax
+            add   cx, 16
+            sar   cx, 5
+            mov   ax, [bp+10]
+            add   cx, ax
+            push  cx
+            neg   cx                ; set up right end of line
+            add   cx, ax
+            add   cx, ax
+            push  cx bx             ; draw line
+            call  putrow
+
+            mov   ax, di            ; linear shear algorithm
+            cwd                     ; move by one pixel-width
+            idiv  [word bp+4]
+            add   si, ax
+            mov   ax, si
+            cwd
+            idiv  [word bp+4]
+            sub   di, ax
+
+            test  ax, ax            ; loop
+            jnl   b_3
+
+b_4:        popa                    ; return code
+            pop   bp
+            ret   8
+
+EndP        fellipse
+
+End
+
+~~~C_GRAPH4
+Ideal
+Jumps
+
+Extrn       allocmem:near, freemem:near, putrow:near
+Public      triangle
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** triangle() -- Draw a filled triangle
+;void triangle(int x1, int y1, int x2, int y2, int x3, int y3);
+
+Proc        triangle
+
+            push  bp                ; pascal stack frame
+            mov   bp, sp
+            push  es
+            pusha
+
+            push  ds                ; same segment
+            pop   es
+
+            push  1920              ; allocate buffer
+            call  allocmem
+            jc    a_4
+            mov   [a_buf], ax       ; save buffer
+
+            mov   cx, 480           ; set up for loop
+            xchg  di, ax
+            mov   ax, 7FFFh
+
+a_1:        stosw                   ; write left
+            inc   ax
+            stosw                   ; write right
+            dec   ax
+            loop  a_1
+
+            push  [bp+14] [bp+12]   ; scan line 1
+            push  [bp+10] [bp+8]
+            call  a_5
+
+            push  [bp+14] [bp+12]   ; scan line 2
+            push  [bp+6] [bp+4]
+            call  a_5
+
+            push  [bp+10] [bp+8]    ; scan line 3
+            push  [bp+6] [bp+4]
+            call  a_5
+
+            mov   cx, 480           ; set up for loop
+            mov   si, [a_buf]
+            xor   dx, dx
+
+a_2:        lodsw                   ; read line
+            xchg  bx, ax
+            lodsw
+            cmp   bx, ax            ; test line
+            jg    a_3
+            push  bx ax dx          ; if ok, draw line
+            call  putrow
+a_3:        inc   dx                ; move down
+            loop  a_2
+
+            push  [a_buf]           ; free buffer
+            call  freemem
+
+a_4:        popa                    ; return code
+            pop   es
+            pop   bp
+            ret   12
+
+a_5:        enter 4, 0              ; pascal stack frame
+            pusha                   ; with local vars
+
+            mov   ax, [bp+10]       ; get coordinates
+            mov   bx, [bp+8]
+            mov   cx, [bp+6]
+            mov   dx, [bp+4]
+
+            mov   si, cx            ; get x, y distance
+            sub   si, ax
+            jge   $+4
+            neg   si
+            mov   di, dx
+            sub   di, bx
+            jge   $+4
+            neg   di
+
+            mov   [bp-2], si        ; jump to x or y loop
+            mov   [bp-4], di
+            cmp   si, di
+            jle   a_9
+
+            cmp   ax, cx            ; go in the x direction
+            jle   a_6
+            xchg  ax, cx
+            xchg  bx, dx
+
+a_6:        xchg  ax, dx            ; get distance (cx)
+            sub   cx, dx
+            inc   cx
+            sub   ax, bx            ; get y increment (ax)
+            sar   ax, 16
+            add   ax, ax
+            inc   ax
+            shr   si, 1             ; setup error term (si)
+            sub   di, si
+            mov   si, di
+
+a_7:        call  a_14              ; scan point
+            test  si, si            ; check for y move
+            jl    a_8
+
+            add   bx, ax            ; move in y direction
+            sub   si, [bp-2]
+
+a_8:        inc   dx                ; move in x direction
+            add   si, [bp-4]
+            loop  a_7               ; loop
+            jmp   a_13
+
+a_9:        cmp   bx, dx            ; go in the y direction
+            jle   a_10
+            xchg  ax, cx
+            xchg  bx, dx
+
+a_10:       xchg  ax, cx            ; get distance (cx)
+            sub   dx, bx
+            xchg  cx, dx
+            inc   cx
+            sub   ax, dx            ; get x increment (ax)
+            sar   ax, 16
+            add   ax, ax
+            inc   ax
+            shr   di, 1             ; setup error term (si)
+            sub   si, di
+
+a_11:       call  a_14              ; scan point
+            test  si, si            ; check for x move
+            jl    a_12
+
+            add   dx, ax            ; move in x direction
+            sub   si, [bp-4]
+
+a_12:       inc   bx                ; move in y direction
+            add   si, [bp-2]
+            loop  a_11              ; loop
+
+a_13:       popa                    ; return code
+            pop   es
+            leave
+            ret   8
+
+a_14:       pusha                   ; save regs
+
+            cmp   bx, 480           ; check range
+            jae   a_16
+
+            mov   si, [a_buf]       ; pointer to line
+            shl   bx, 2
+            add   si, bx
+
+            cmp   dx, [si]          ; update left side
+            jg    a_15
+            mov   [si], dx
+
+a_15:       cmp   dx, [si+2]        ; update right side
+            jl    a_16
+            mov   [si+2], dx
+
+a_16:       popa                    ; return code
+            ret
+
+a_buf       dw    0                 ; buffer
+
+EndP        triangle
+
+End

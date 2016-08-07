@@ -1,0 +1,191 @@
+		.386
+		option	segment:use16, proc:private
+		ifndef	$conv_a
+$conv_a		=	0
+		echo	conv.a
+
+		include	consts.a
+		
+ucrlib		segment	para public 'ucrlib'
+
+
+
+; Equates for those functions that do not support an alternate syntax.
+
+		xtrn	atof,,CS,Stk,X
+		xtrn	toFlt,,CS,Stk
+		xtrn	ftoa,,X,m
+		xtrn	etoa,,X,m
+
+		xtrn	HexOutLC,<>
+		xtrn	HexOutUC,<>
+
+
+
+
+		xtrn		atoh,CS,Stk,TOS,X
+atoh		macro		Operand1, Operand2
+		swCSStkTos	atoh, Operand1, Operand2
+		endm
+
+		xtrn		atolh,CS,Stk,TOS,X
+atolh		macro		Operand1, Operand2
+		sdCSStkTos	atolh, Operand1, Operand2
+		endm
+
+		xtrn		atoi,CS,Stk,TOS,X
+atoi		macro		Operand1, Operand2
+		swCSStkTos	atoi, Operand1, Operand2
+		endm
+
+		xtrn		atou,CS,Stk,TOS,X
+atou		macro		Operand1, Operand2
+		swCSStkTos	atou, Operand1, Operand2
+		endm
+
+		xtrn		atoul,CS,Stk,TOS,X
+atoul		macro		Operand1, Operand2
+		sdCSStkTos	atoul, Operand1, Operand2
+		endm
+
+		xtrn		atol,CS,Stk,TOS,X
+atol		macro		Operand1, Operand2
+		sdCSStkTos	atol, Operand1, Operand2
+		endm
+
+
+
+
+
+		xtrn		ToInt,CS,Stk,TOS
+ToInt		macro		Operand1, Operand2
+		swCSStkTos	ToInt, Operand1, Operand2
+		endm
+
+		xtrn		ToLong,CS,Stk,TOS
+ToLong		macro		Operand1, Operand2
+		sdCSStkTos	ToLong, Operand1, Operand2
+		endm
+
+		xtrn		ToUns,CS,Stk,TOS
+ToUns		macro		Operand1, Operand2
+		swCSStkTos	ToUns, Operand1, Operand2
+		endm
+
+		xtrn		ToULong,CS,Stk,TOS
+ToULong		macro		Operand1, Operand2
+		sdCSStkTos	ToULong, Operand1, Operand2
+		endm
+
+		xtrn		ToHex,CS,Stk,TOS
+ToHex		macro		Operand1, Operand2
+		swCSStkTos	ToHex, Operand1, Operand2
+		endm
+
+		xtrn		ToLHex,CS,Stk,TOS
+ToLHex		macro		Operand1, Operand2
+		sdCSStkTos	ToLHex, Operand1, Operand2
+		endm
+
+
+
+
+
+
+
+
+
+		xtrn		htoa,CS,Stk,TOS,X
+htoa		macro		Operand1, Operand2
+		sbCSStkTos	htoa, Operand1, Operand2
+		endm
+
+		xtrn		htoam,CS,Stk,TOS
+htoam		macro		Operand1
+		bCSStkTos	htoam, Operand1
+		endm
+
+
+		xtrn		wtoa,CS,Stk,TOS,X
+wtoa		macro		Operand1, Operand2
+		swCSStkTos	wtoa, Operand1, Operand2
+		endm
+
+		xtrn		wtoam,CS,Stk,TOS
+wtoam		macro		Operand1
+		wCSStkTos	wtoam, Operand1
+		endm
+
+
+		xtrn		itoa,CS,Stk,TOS,X
+itoa		macro		Operand1, Operand2
+		swCSStkTos	itoa, Operand1, Operand2
+		endm
+
+		xtrn		itoam,CS,Stk,TOS
+itoam		macro		Operand1
+		wCSStkTos	itoam, Operand1
+		endm
+
+
+		xtrn		ultoa,CS,Stk,TOS,X
+ultoa		macro		Operand1, Operand2
+		sdCSStkTos	ultoa, Operand1, Operand2
+		endm
+
+		xtrn		ultoam,CS,Stk,TOS
+ultoam		macro		Operand1
+		wCSStkTos	ultoam, Operand1
+		endm
+
+		xtrn		utoa,CS,Stk,TOS,X
+utoa		macro		Operand1, Operand2
+		swCSStkTos	utoa, Operand1, Operand2
+		endm
+
+		xtrn		utoam,CS,Stk,TOS
+utoam		macro		Operand1
+		wCSStkTos	utoam, Operand1
+		endm
+
+
+		xtrn		ltoa,CS,Stk,TOS,X
+ltoa		macro		Operand1, Operand2
+		sdCSStkTos	ltoa, Operand1, Operand2
+		endm
+
+		xtrn		ltoam,CS,Stk,TOS
+ltoam		macro		Operand1
+		wCSStkTos	ltoam, Operand1
+		endm
+
+
+
+
+
+		xtrn		LSize,CS,Stk,TOS
+LSize		macro		Operand1
+		wCSStkTos	LSize, Operand1
+		endm
+
+		xtrn		ULSize,CS,Stk,TOS
+ULSize		macro		Operand1
+		wCSStkTos	ULSize, Operand1
+		endm
+
+		xtrn		ISize,CS,Stk,TOS
+ISize		macro		Operand1
+		wCSStkTos	ISize, Operand1
+		endm
+
+		xtrn		USize,CS,Stk,TOS
+USize		macro		Operand1
+		wCSStkTos	USize, Operand1
+		endm
+
+
+
+
+
+ucrlib		ends
+		endif	;ifndef $conv_a

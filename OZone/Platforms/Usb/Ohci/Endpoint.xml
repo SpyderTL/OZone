@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<platform namespace="http://metalx.org/Usb/Ohci/Endpoint" xmlns="http://metalx.org/Platform">
+	<constants>
+		<constant name="Flags" value="00">
+			UsbFunctionAddress			6 bits
+			UsbEndpointAddress			4 bits
+			Direction							2 bits		(0:Use Transfer Descriptor, 1:Out, 2:In, 3:Use Transfer Descriptor)
+			LowSpeed							1 bit
+			Skip									1 bit
+			IsochronousFormat			1 bit
+			MaxPacketSize					11 bits
+			SoftwareDataArea				5 bits
+		</constant>
+		<constant name="TailTransferDescriptorAddress" value="04">
+			The address of the last transfer descriptor in the list.  List is empty if tail address is equal to the head address.
+			SoftwareDataArea				4 bits
+			DescriptorAddress				28 bits
+		</constant>
+		<constant name="HeadTransferDescriptorAddress" value="08">
+			The address of the first transfer descriptor in the list.  List is empty if head address is equal to the tail address.
+			Halted								1 bit
+			ToggleCarry						1 bit
+			Zero									2 bits
+			DescriptorAddress				28 bits
+		</constant>
+		<constant name="NextEndpointDescriptorAddress" value="0c">
+			The address of the next endpoint descriptor in the list, or zero if this is the last endpoint descriptor.
+			SoftwareDataArea				4 bits
+			DescriptorAddress				28 bits		(0:Last Endpoint Descriptor)
+		</constant>
+	</constants>
+</platform>

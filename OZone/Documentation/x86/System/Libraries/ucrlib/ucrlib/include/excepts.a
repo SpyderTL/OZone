@@ -1,0 +1,242 @@
+
+
+		ifndef	$Excepts_a
+$Excepts_a	=	0
+		echo	excepts.a
+		include	consts.a
+
+$ExceptData	segment	para public 'Exceptions'
+$ExceptData	ends
+
+$segExceptions	segment	para public 'Exceptions'
+
+; Named constants for exceptions we support:
+
+$DivideError	=	0
+$Overflow	=	4
+$Bounds		=	5
+$InvOpcode	=	6
+$Break		=	35
+$CritErr	=	36
+
+$Conversion	=	64		;Numeric conversion error.
+$EndOfFile	=	65		;Attempt to read past end of file.
+$FileIO		=	66		;General file I/O error.
+$InsuffMem	=	67		;Malloc error allocating memory.
+$FreeErr	=	68		;Free error returning memory to heap.
+$BadPointer	=	69		;Bad pointer passed to mem mgmt routine.
+$GetcStkErr	=	70		;Over/Underflow of the GETC address stack.
+$PutcStkErr	=	71		;Over/Underflow of the PUTC address stack.
+$RangeErr	=	72		;Value out of range error.
+$FPNotAvail	=	73		;Floating point code not available.
+$LastProcess	=	74		;Last process cannot die.
+$NoSuchProcess	=	75		;Non-existent process.
+$BadFileMode	=	76		;Bad FOPEN file mode.
+$FileNotFnd	=	77		;File not found error.
+$PathNotFnd	=	78		;Path not found error.
+$TooManyOpen	=	79		;Too many open files.
+$AccessDenied	=	80		;Access denied error.
+$InvalidAccess	=	81		;Invalid access to file.
+$InvalidHandle	=	82		;Invalid file handle.
+$InvalidDrive	=	83		;Invalid disk drive.
+$WriteProtected	=	84		;Write protect error.
+$SeekError	=	85		;Disk seek error.
+$FileExists	=	86		;File already exists (on create).
+$DiskFull	=	87
+
+
+
+
+
+
+$LastException	=	1		;Zero if in generic exception handler.
+$InException	=	0		;One if we're in an exception block.
+
+
+$TryStk		textequ	<>
+$ExceptStk	textequ	<>
+
+
+; Routines in the exceptions package:
+
+
+		xtrn	EnableExcept,<>
+		xtrn	DisableExcept,<>
+		xtrn	GetXEnabled,<>
+		xtrn	PassException,<>
+		xtrn	InitException,<>
+		xtrn	InitEx24,<>
+		xtrn	CleanUpEx,<>
+;		xtrn	CritErrRtn,<>
+
+
+
+; Shared variables between the EXCEPTS and EXCEPTS2 packages:
+
+externdef	$CurExpHndlr:dword,
+		$LastSPValue:word,
+		$LastSSValue:word,
+		$XEnabled:word
+
+externdef	$BadException:far
+		
+
+
+
+
+; The InitExcept macro.
+;
+; This macro calls the InitExcept routine, and then it calls the InitExcept24
+; routine if there is a parameter that contains the text <$CritErr>
+
+InitExcept	macro	CallCritErr
+		call	$InitException
+		ifidni	<CallCritErr>,<$CritErr>
+		call	$InitEx24
+		endif
+		endm
+
+
+
+; The RAISE macro.
+;
+; Without a parameter, this macro simply emits a call to $Raise.
+; If a parameter is present, this macro loads the value of that parameter
+; into the AX register an then calls $Raise.
+
+externdef	$Raise:far
+Raise		macro	ExceptionNum
+		ifnb	<ExceptionNum>
+		mov	ax, ExceptionNum
+		endif
+		jmp	$Raise
+		endm
+
+
+; The PassExcept macro.
+;
+; Identical to Raise above except it calls PassExcept rather than Raise.
+
+PassExcept	macro	ExceptionNum
+		ifnb	<ExceptionNum>
+		mov	ax, ExceptionNum
+		endif
+		jmp	$PassException
+		endm
+
+
+; The Try macro.
+;
+; This guy needs to create two symbols- one that will be the address of the
+; first exception handler and the other that is the address of the first
+; statement beyond the ENDTRY statement.  This code must pass the address of
+; the first exception handler on the stack to the $TRY routine.
+
+externdef	$Try:far
+Try		macro
+		if	$InException eq 1
+		echo	TRY..ENDTRY blocks not allowed inside an exception handler.
+		err
+		endif
+
+		ifndef	$TryCnt
+$TryCnt		=	0
+		else
+$TryCnt		=	$TryCnt+1
+		endif
+
+		ifndef	$ExceptCnt
+$ExceptCnt	=	0
+		else
+$ExceptCnt	=	$ExceptCnt+1
+		endif
+
+		$push	$TryStk, <%$TryCnt>
+		$push	$ExceptStk, <%$ExceptCnt>
+
+;; Okay, emit the call to $TRY passing the address of our first exception
+;; handler.
+
+		push	cs
+		push	offset @catstr(<$XH>, <%$ExceptCnt>)
+		call	$Try
+		endm
+
+
+; The EXCEPT macro.
+;
+; This guy must do two things.
+; First, it must emit a jump to the current ExceptExit label.  This properly
+; terminates a previous EXCEPT block or the TRY block itself.
+; Next, this code must compare the AX register against the value supplied as an
+; operand to the EXCEPT macro.  If there is no such parameter, then this
+; macro will not emit the cmp instruction since it will handle all exceptions itself.
+
+
+
+Except		macro	ExceptionVal
+		local	ThisTryCnt, ThisExceptCnt, ThisLbl
+$InException	=	1
+		if	$LastException eq 0
+		echo	EXCEPT w/o parameters must be last exception
+		err
+		exitm
+		endif
+
+		$peek	$TryStk, ThisTryCnt
+		$pop	$ExceptStk, ThisExceptCnt
+
+		jmp	@catstr(<$EndTry>, <%ThisTryCnt>)
+ThisLbl		textequ	@catstr(<$XH>, <%ThisExceptCnt>)
+&ThisLbl&:
+
+$ExceptCnt	=	$ExceptCnt+1
+		$push	$ExceptStk, <%$ExceptCnt>
+
+
+		ifnb	<ExceptionVal>
+		cmp	ax, ExceptionVal
+		jne	@catstr(<$XH>, <%$ExceptCnt>)
+$LastException	=	1			;;This exception had parameters.
+		else
+$LastException	=	0			;;This exception had no parameters.
+		endif
+
+		endm
+		
+
+
+
+; The ENDTRY macro cleans up a TRY..ENDTRY block.
+
+externdef	$EndTry:far
+EndTry		macro
+		local	TryCnt, ExceptCnt, Lbl1
+
+$LastException	=	1			;;Okay to have unnamed exceptions again.
+$InException	=	0			;;No longer in an exception block.
+
+		$pop	$TryStk, TryCnt
+		$pop	$ExceptStk, ExceptCnt
+
+		if	$LastException ne 0	;;We didn't have a generic handler.
+
+		jmp	@catstr(<$EndTry>, <%TryCnt>)
+Lbl1		textequ	@catstr(<$XH>, <%ExceptCnt>)
+&Lbl1&:
+		jmp	$BadException
+		else
+Lbl1		textequ	@catstr(<$XH>, <%ExceptCnt>)
+&Lbl1&:
+		PassExcept
+		endif
+Lbl1		textequ	@catstr(<$EndTry>, <%TryCnt>)
+&Lbl1&:
+		call	$EndTry
+
+		endm
+
+
+$segExceptions	ends
+
+		endif	;ifndef Excepts_a

@@ -1,0 +1,3355 @@
+~~~C_START
+Ideal
+
+Extrn       main:near
+Public      startup, exit
+Public      TopByte, AtExitCnt
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** startup() -- Start program
+
+Proc        startup
+
+            mov cx,0121h            ;Check for 186+
+            shl ch,cl
+            jz p0_badcpu
+
+            mov ax,3001h            ;Check for DOS 4.0
+            int 21h
+            cmp al,4
+            jb p0_baddos
+
+            mov ah,4Ah              ;Modify memory allocation
+            mov bx,1000h            ;Keep first 64K
+            int 21h                 ;DOS call
+
+            mov sp,0FF00h           ;Shift stack down 256 bytes
+
+            mov ax,2523h            ;Set null Ctrl-C handler
+            mov dx,offset IntRet    ;so that Ctrl-C can't
+            int 21h                 ;abort the program
+
+            mov ax,3500h            ;Get current Int 0 handler
+            int 21h                 ; (divide by zero)
+
+            mov [word OldInt0],bx   ;Save handler
+            mov [word OldInt0+2],es
+
+            push cs                 ;Restore ES
+            pop es
+
+            mov ax,2500h            ;Set the divide by zero
+            mov dx,offset DivZero   ;handler: now it just
+            int 21h                 ;ignores the error
+
+            mov ax,0FB00h           ;Initialize dynamic memory
+            sub ax,offset TopByte   ;leaving 768 bytes for the
+            mov [word TopByte],ax   ;stack (which is at 0FF00h)
+            mov [byte TopByte+2],2  ;Initial block is free, last
+
+            mov di,sp               ;Parse arguments
+            call ParseArgs
+
+            call main               ;Call main function
+
+            push ax                 ;Terminate with return code
+            call exit
+
+p0_baddos:  push offset BadDosStr   ;'Bad Dos' message
+            jmp p0_error
+
+p0_badcpu:  push offset BadCPUStr   ;'Bad CPU' message
+
+p0_error:   mov dx,offset BadStr    ;Print first part
+            mov ah,9
+            int 21h
+            pop dx                  ;Print second part
+            int 21h
+            mov ax,4CFFh            ;Return with error 255
+            int 21h
+
+EndP        startup
+
+;****************** DivZero -- Divide by zero handler
+
+Proc        DivZero
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+            push ds
+
+            xor cx,cx               ;CX = displacement
+
+            mov ds,[bp+4]           ;DS:BX = DIV instruction
+            mov bx,[bp+2]
+            mov al,[bx+1]           ;AL = AH = ModRM byte
+            mov ah,al
+
+            and al,0C0h             ;Mask off mode bits
+            cmp al,0C0h             ;Mode = 11 (no disp)?
+            je DZ_dis0
+            cmp al,040h             ;Mode = 01 (1 byte disp)?
+            je DZ_dis1
+            cmp al,080h             ;Mode = 10 (2 byte disp)?
+            je DZ_dis2
+            cmp ah,036h             ;Mode = 00.  No disp except
+            jne DZ_dis0             ;if R/M = 110 (2 byte disp).
+
+DZ_dis2:    inc cx                  ;2 byte displacement
+DZ_dis1:    inc cx                  ;1 byte displacement
+DZ_dis0:    inc cx                  ;Instruction is two bytes
+            inc cx
+            add [bp+2],cx           ;Skip past instruction
+
+DZ_done:    pop ds                  ;Restore registers
+            popa
+            pop bp                  ;Delete stack frame
+IntRet:     iret                    ;Interrupt return
+
+EndP        DivZero
+
+;****************** Internal data
+
+OldInt0:                            ;Old divide-by-zero handler
+BadStr      db 'Need at least $'    ;OK to overwrite strings
+BadCPUStr   db 'an 80186 CPU',13,10,'$'
+BadDosStr   db 'DOS 4.0',13,10,'$'
+
+AtExitCnt   dw 0                    ;Exit function count
+AtExitTblO  equ 0FF60h              ;Exit function table offset
+
+;****************** exit() -- Terminate program
+;void exit(int retval);
+
+Proc        exit
+
+            mov ax,2500h            ;Reset the default divide
+            mov dx,[word OldInt0]   ;by zero handler
+            mov ds,[word OldInt0+2]
+            int 21h
+
+            push cs                 ;Restore DS
+            pop ds
+
+            mov cx,[AtExitCnt]      ;CX = atexit count
+            jcxz p1_done            ;No exit functions?
+            mov si,AtExitTblO       ;SI = atexit table
+
+p1_loop:    lodsw                   ;Get function
+            call ax                 ;Call function
+            loop p1_loop            ;Loop back
+
+p1_done:    pop ax ax               ;Pop arg into AX
+            mov ah,4Ch              ;Terminate program
+            int 21h                 ;DOS call
+
+EndP        exit
+
+;**************************** ParseArgs() -- internal: Parse arguments
+
+Proc        ParseArgs
+            ;Supply DI = 256-byte buffer, CS = DS = ES
+            ;Returns CX = number of arguments
+            ;the buffer will contain a list of
+            ;near offsets to AsciiZ strings
+            ;(and the strings themselves)
+
+            pusha                   ;Save all registers
+
+            mov bx,di               ;BX = buffer
+            mov cl,[80h]            ;CX = length of command line
+            xor ch,ch               ;which is stored at 80h
+
+            push cx                 ;Save CX
+            mov si,81h              ;SI = command line
+            add di,80h              ;DI = second half of buffer
+            push di                 ;Save DI
+            rep movsb               ;Move command line out of DTA
+            xor al,al               ;Replace the CR at the end
+            stosb                   ;with a null
+            pop di cx               ;Restore DI, length in CX
+            inc cx                  ;Make length include last null
+            xor dx,dx               ;Zero argument counter
+            mov al,' '              ;AL = space
+
+p2_loop:    repe scasb              ;Search for a non-space
+            dec di
+            inc cx
+            cmp [byte di],0         ;Is it a null?
+            je p2_done
+            mov [bx],di             ;Store offset in list
+            inc bx                  ;Advance pointers
+            inc bx
+            inc dx
+            repne scasb             ;Search for a space
+            mov [byte di-1],0       ;Replace it by a null
+            jmp p2_loop             ;Loop back
+
+p2_done:    mov bp,sp               ;Change pushed CX
+            mov [bp+12],dx
+            popa                    ;Restore registers
+            ret                     ;Return
+
+EndP        ParseArgs
+
+UDataSeg                            ;Uninit. data seg: dummy
+
+Label       TopByte                 ;Top byte of code (start of heap)
+
+End
+
+~~~C_ATEXIT
+Ideal
+
+Extrn       AtExitCnt:word
+Public      atexit
+
+Model Tiny
+CodeSeg
+P186
+
+AtExitTblO  equ 0FF60h              ;Exit function table offset
+
+;****************** atexit() -- Add exit function
+;int atexit(void *func);
+
+func        equ bp+4
+
+Proc        atexit
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            cmp [word AtExitCnt],16 ;16 functions max
+            jae p1_error
+
+            mov bx,[AtExitCnt]      ;BX = offset
+            add bx,bx
+            mov ax,[func]           ;AX = function
+            mov [AtExitTblO+bx],ax  ;Add function to table
+            inc [word AtExitCnt]    ;Increment count
+
+p1_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+p1_error:   stc                     ;Set carry flag
+            jmp p1_done
+
+EndP        atexit
+
+End
+
+~~~C_PUTCHR
+Ideal
+
+Public      PUT_CHAR
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** PUT_CHAR -- Like Int 29h but with redirection.
+;                               Takes AL = char.
+
+Proc        PUT_CHAR
+
+            pusha                   ;Save registers
+            xchg dx,ax              ;STDOUT output, DL = char
+            mov ah,2
+            int 21h                 ;DOS call
+            popa                    ;Restore registers
+            ret                     ;Return
+
+EndP        PUT_CHAR
+
+End
+
+~~~C_FILES
+Ideal
+
+Public      fopen,fclose,fsetbuf
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** File Structure . . .
+
+;                   Offset  Size    Description
+
+;                     0     Word    File handle
+;                     2     Byte    File mode
+;                     3     Byte    Modify flag
+;                     4     Dword   Buffer position in file
+;                     8     Word    Buffer pointer position
+;                     10    Word    Number of bytes in buffer
+;                     12    Word    Size of buffer (N)
+;                     14    Word    Signature 'FI'
+;                     16    N bytes File buffer
+
+BUF_SIZ     dw 1024                 ;Buffer size (default 1K)
+
+F_MODES     db 00h,01h              ;0 = open for read
+            db 02h,11h              ;1 = open/create for read/write
+            db 02h,01h              ;2 = open for read/write
+            db 02h,12h              ;3 = create/truncate for read/write
+            db 02h,10h              ;4 = create for read/write
+            db 6 dup(0)             ;Fail for 5, 6, 7
+
+;****************** fopen() -- Open a buffered file
+;int fopen(char *fname, int mode);
+
+fname       = bp+6
+mode        = bp+4
+
+Proc        fopen
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ds                 ;Save registers
+            pusha
+
+            mov bx,[mode]           ;BX = mode
+            and bx,7                ;Mode mod 8
+            add bx,bx
+            mov dl,[F_MODES+bx+1]   ;BX:DX = DOS mode
+            mov bl,[F_MODES+bx]
+            xor dh,dh
+            xor bh,bh
+
+            mov ax,6C00h            ;Extended open file
+            xor cx,cx               ;Normal attribute
+            mov si,[fname]          ;SI = name
+            int 21h                 ;DOS call
+            jc p1_err1              ;Check for errors
+
+            xchg dx,ax              ;DX = handle
+
+            mov ah,48h              ;Allocate memory
+            mov bx,[BUF_SIZ]        ;BX = num. of paras
+            shr bx,4                ; = (BUF_SIZ / 16) + 1
+            inc bx
+            int 21h                 ;DOS call
+            jc p1_err2              ;Check for errors
+
+            mov ds,ax               ;DS = segment
+            mov [word 0],dx         ;[word 0] = handle
+            mov cx,[mode]
+            mov [word 2],cx         ;[word 2] = mode
+            xor bx,bx
+            mov [word 4],bx         ;[dword 4] = buffer position
+            mov [word 6],bx
+            mov [word 8],bx         ;[word 8] = buffer pointer
+            mov bx,[cs:BUF_SIZ]
+            mov [word 12],bx        ;[word 12] = buffer size
+            mov [word 14],'FI'      ;[word 14] = 'FI': signature
+
+            mov bx,dx               ;BX = handle
+            mov ah,3Fh              ;Read file
+            mov cx,[cs:BUF_SIZ]     ;BUF_SIZ bytes
+            mov dx,16               ;Buffer offset
+            int 21h                 ;DOS call
+
+            mov [word 10],ax        ;Set byte count
+            clc                     ;Clear carry flag
+
+p1_done:    popa                    ;Restore registers
+            mov ax,ds               ;Result in AX
+            pop ds
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+p1_err2:    mov ah,3Eh              ;Out of memory, close file
+            mov bx,dx               ;BX = handle
+            int 21h                 ;DOS call
+
+p1_err1:    push 0                  ;Error, return 0, set carry
+            pop ds
+            stc
+            jmp p1_done
+
+EndP        fopen
+
+;****************** fclose() -- Close a buffered file
+;void fclose(int fptr);
+
+fptr        = bp+4
+
+Proc        fclose
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ds es              ;Save registers
+            pusha
+
+            mov ds,[fptr]           ;DS = seg of file
+            cmp [word 14],'FI'      ;Check for signature
+            jne p2_done
+
+            mov bx,[word 0]         ;BX = handle
+
+            cmp [byte 2],0          ;Read only, can't write buffer
+            je p2_skip
+
+            mov ax,4200h            ;Move file ptr
+            mov cx,[word 6]         ;CX:DX = buffer pos
+            mov dx,[word 4]
+            int 21h                 ;DOS call
+
+            mov ah,40h              ;Write file
+            mov cx,[word 10]        ;CX = bytes
+            mov dx,16               ;Buffer offset
+            int 21h                 ;DOS call
+
+p2_skip:    mov ah,3Eh              ;Close file
+            int 21h                 ;DOS call
+
+            mov ah,49h              ;Free memory
+            push ds                 ;ES = segment
+            pop es
+            int 21h                 ;DOS call
+
+p2_done:    popa                    ;Restore registers
+            pop es ds
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        fclose
+
+;****************** fsetbuf() -- Set buffer size (for future use)
+;int fsetbuf(int bsize);
+
+bsize       = bp+4
+
+Proc        fsetbuf
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+
+            mov ax,[bsize]          ;AX = size
+            and ax,7FF0h            ;Put it in range
+            cmp ax,128
+            jb $+5
+            mov ax,128
+            mov [BUF_SIZ],ax        ;Set buffer size
+
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        fsetbuf
+
+End
+
+~~~C_FPUTC
+Ideal
+
+Public      fputc
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** fputc() -- Put char to buffered file
+;int fputc(int fptr, int chr);
+
+fptr        = bp+6
+chr         = bp+4
+
+Proc        fputc
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ds                 ;Save all registers
+            pusha
+
+            mov ds,[fptr]           ;DS = seg of file
+            cmp [word 14],'FI'      ;Check for signature
+            jne p1_error
+
+            mov bx,[word 0]         ;BX = handle
+
+            cmp [byte 2],0          ;Read only, can't put char
+            je p1_error
+
+            mov si,[word 8]         ;SI = pointer pos
+            cmp si,[word 12]        ;Filled buffer?
+            jb p1_write             ;Jump if not
+
+            mov ax,4200h            ;Move file ptr
+            mov cx,[word 6]         ;CX:DX = buffer pos
+            mov dx,[word 4]
+            int 21h                 ;DOS call
+
+            mov ah,40h              ;Write file
+            mov cx,[word 12]        ;CX = bytes
+            mov dx,16               ;Buffer offset
+            int 21h                 ;DOS call
+
+            mov ah,3Fh              ;Read file, same size
+            int 21h                 ;DOS call
+            mov [word 10],ax        ;Set byte count
+
+            xor si,si
+            add [word 4],cx         ;Advance buffer position
+            adc [word 6],si
+            mov [word 8],si         ;Pointer pos = 0
+
+p1_write:   mov al,[chr]            ;AX = char
+            xor ah,ah
+            mov [16+si],al          ;Put char in buffer
+            inc si                  ;Advance pointer
+            mov [word 8],si
+            cmp si,[word 10]        ;Hit last byte?
+            jna p1_done
+
+            inc [word 10]           ;Advance byte count
+            mov [byte 3],1          ;Set modify flag
+
+p1_done:    popa                    ;Restore registers
+            pop ds
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+p1_error:   stc                     ;Error, set carry
+            jmp p1_done
+
+EndP        fputc
+
+End
+
+~~~C_FGETC
+Ideal
+
+Public      fgetc
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** fgetc() -- Get char from buffered file
+;int fgetc(int fptr);
+
+fptr        = bp+4
+
+Proc        fgetc
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ds si bx cx dx     ;Save registers
+
+            mov ds,[fptr]           ;DS = seg of file
+            cmp [word 14],'FI'      ;Check for signature
+            jne p1_error
+
+            mov bx,[word 0]         ;BX = handle
+
+            mov si,[word 8]         ;SI = pointer pos
+            mov cx,[word 12]        ;CX = buffer size
+            cmp si,cx               ;End of buffer?
+            jb p1_read              ;Jump if not
+
+            cmp [byte 3],0          ;Modified?
+            je p1_skip1
+
+            mov [byte 3],0          ;Clear modify flag
+
+            mov ax,4200h            ;Move file ptr
+            mov cx,[word 6]         ;CX:DX = buffer pos
+            mov dx,[word 4]
+            int 21h                 ;DOS call
+
+            mov ah,40h              ;Write file
+            mov cx,[word 12]        ;CX = bytes
+            mov dx,16               ;Buffer offset
+            int 21h                 ;DOS call
+
+p1_skip1:   xor si,si
+            add [word 4],cx         ;Advance buffer position
+            adc [word 6],si
+
+            mov ah,3Fh              ;Read file
+            mov cx,[word 12]        ;CX = bytes
+            mov dx,16               ;Buffer offset
+            int 21h                 ;DOS call
+            mov [word 10],ax        ;Set byte count
+
+p1_read:    cmp si,[word 10]        ;Hit last byte?
+            jae p1_error
+
+            mov al,[16+si]          ;Get char from buffer
+            xor ah,ah
+            inc si                  ;Advance pointer
+            mov [word 8],si
+
+p1_done:    pop dx cx bx si ds      ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+p1_error:   mov ax,-1               ;Error, return EOF
+            stc
+            jmp p1_done
+
+EndP        fgetc
+
+End
+
+~~~C_FSEEK
+Ideal
+
+Public      fseek,ftell
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** fseek() -- Seek to position in buffered file
+;int fseek(int fptr, long pos, int cmd);
+
+fptr        = bp+10
+pos         = bp+6
+cmd         = bp+4
+
+Proc        fseek
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ds                 ;Save all registers
+            pusha
+
+            mov ds,[fptr]           ;DS = seg of file
+            cmp [word 14],'FI'      ;Check for signature
+            jne p1_error
+
+            mov bx,[word 0]         ;BX = handle
+
+            cmp [byte 2],0          ;Read only, can't write buffer
+            je p1_seek
+
+            mov ax,4200h            ;Move file ptr
+            mov cx,[word 6]         ;CX:DX = buffer pos
+            mov dx,[word 4]
+            int 21h                 ;DOS call
+
+            mov ah,40h              ;Write file
+            mov cx,[word 10]        ;CX = bytes
+            mov dx,16               ;Buffer offset
+            int 21h                 ;DOS call
+
+p1_seek:    mov ax,4200h            ;Move file ptr
+            mov cx,[word 6]         ;CX:DX = current pos
+            mov dx,[word 4]         ; = buffer pos + pointer
+            add dx,[word 8]
+            adc cx,0
+            int 21h                 ;DOS call
+
+            mov ah,42h              ;Move file ptr
+            mov al,[cmd]            ;AL = command
+            mov cx,[pos+2]          ;CX:DX = new pos
+            mov dx,[pos]
+            int 21h                 ;DOS call
+
+            mov [word 6],dx         ;Save position
+            mov [word 4],ax
+
+            mov ah,3Fh              ;Read file
+            mov cx,[word 12]        ;CX = bytes
+            mov dx,16               ;Buffer offset
+            int 21h                 ;DOS call
+
+            mov [word 10],ax        ;Set byte count
+            mov [word 8],0          ;Pointer = 0
+            mov ax,1                ;return 1: success
+
+p1_done:    popa                    ;Restore registers
+            pop ds 
+            pop bp                  ;Delete stack frame
+            ret 8                   ;Return
+
+p1_error:   stc                     ;Error, set carry
+            jmp p1_done
+
+EndP        fseek
+
+;****************** ftell() -- Return pointer in buffered file
+;long ftell(int fptr);
+
+fptr        = bp+4
+
+Proc        ftell
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ds                 ;Save registers
+
+            mov ds,[fptr]           ;DS = seg of file
+            cmp [word 14],'FI'      ;Check for signature
+            jne p2_error
+
+            mov dx,[word 6]         ;DX:AX = current pos
+            mov ax,[word 4]         ; = buffer pos + pointer
+            add ax,[word 8]
+            adc dx,0
+            clc                     ;Clear carry flag
+
+p2_done:    pop ds                  ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+p2_error:   xor ax,ax               ;Error, return 0, set carry
+            xor dx,dx
+            stc
+            jmp p2_done
+
+EndP        ftell
+
+End
+
+~~~C_FREAD
+Ideal
+
+Extrn       fgetc:near
+Public      fread
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** fread() -- Read block from buffered file
+;int fread(int fptr, int nbytes, void *buf);
+
+fptr        = bp+8
+nbytes      = bp+6
+buf         = bp+4
+
+Proc        fread
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push bx cx di           ;Save registers
+
+            mov bx,[fptr]           ;BX = file ptr
+            mov cx,[nbytes]         ;CX = num. of bytes
+            mov di,[buf]            ;DI = buffer ptr
+            jcxz p1_done            ;Zero bytes, do nothing
+
+p1_loop:    push bx                 ;Get char
+            call fgetc
+            jc p1_done              ;Check for errors
+            mov [di],al             ;Store byte
+            inc di
+            loop p1_loop            ;Loop back
+
+p1_done:    sub di,[buf]            ;AX = byte count
+            xchg ax,di
+            cmp ax,1                ;Zero = error
+
+            pop di cx bx            ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+EndP        fread
+
+End
+
+~~~C_FWRITE
+Ideal
+
+Extrn       fputc:near
+Public      fwrite
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** fwrite() -- Write block to buffered file
+;int fwrite(int fptr, int nbytes, void *buf);
+
+fptr        = bp+8
+nbytes      = bp+6
+buf         = bp+4
+
+Proc        fwrite
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push bx cx si           ;Save registers
+
+            mov bx,[fptr]           ;BX = file ptr
+            mov cx,[nbytes]         ;CX = num. of bytes
+            mov si,[buf]            ;SI = buffer ptr
+            jcxz p1_done            ;Zero bytes, do nothing
+
+p1_loop:    mov al,[si]             ;Load byte
+            push bx ax              ;Write char
+            call fputc
+            jc p1_done              ;Check for errors
+            inc si
+            loop p1_loop            ;Loop back
+
+p1_done:    sub si,[buf]            ;AX = byte count
+            xchg ax,si
+            cmp ax,[nbytes]         ;Set carry if error
+
+            pop si cx bx            ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+EndP        fwrite
+
+End
+
+~~~C_FTRUNC
+Ideal
+
+Public      ftrunc
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** ftrunc() -- Truncate buffered file at current position
+;int ftrunc(int fptr);
+
+fptr        = bp+4
+
+Proc        ftrunc
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ds                 ;Save registers
+            pusha
+
+            mov ds,[fptr]           ;DS = seg of file
+            cmp [word 14],'FI'      ;Check for signature
+            jne p1_error
+
+            cmp [byte 2],0          ;Read only, can't truncate
+            je p1_error
+
+            mov bx,[word 0]         ;BX = handle
+            mov [byte 3],1          ;Set modify flag
+
+            mov ax,4200h            ;Move file ptr
+            mov cx,[word 6]         ;CX:DX = current pos
+            mov dx,[word 4]         ; = buffer pos + pointer
+            add dx,[word 8]
+            adc cx,0
+            sub dx,1                ;Set pos - 1 (DOS bug)
+            sbb cx,0
+            int 21h                 ;DOS call
+
+            mov ah,40h              ;Write 0 bytes to file
+            xor cx,cx               ;this truncates the file
+            int 21h
+            jc p1_done
+
+            mov ax,[word 8]         ;Now, byte count = pointer
+            mov [word 10],ax
+
+p1_done:    popa                    ;Restore registers
+            pop ds
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+p1_error:   stc                     ;Error, set carry
+            jmp p1_done
+
+EndP        ftrunc
+
+End
+
+~~~C_DELMOV
+Ideal
+
+Public      fdel,fmove
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** fdel() -- Delete a file
+;int fdel(char *strp);
+
+strp        equ bp+4
+
+Proc        fdel
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov ah,41h              ;Delete file
+            mov dx,[strp]           ;DX = string pointer
+            int 21h                 ;DOS call
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        fdel
+
+;****************** fmove() -- Move and/or rename a file
+;int fmove(char *str1, char *str2);
+
+str1        equ bp+6
+str2        equ bp+4
+
+Proc        fmove
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push es                 ;Save all registers
+            pusha
+
+            mov ah,56h              ;Move file
+            mov dx,[str1]           ;DX = old name
+            push ds                 ;ES = DS
+            pop es
+            mov di,[str2]           ;ES:DI = new name
+            int 21h                 ;DOS call
+
+            popa                    ;Restore registers
+            pop es
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        fmove
+
+End
+
+~~~C_DIRECT
+Ideal
+
+Public      getdir,setdir,mkdir,rmdir
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** getdir() -- Get current directory
+;void getdir(char *strp);
+
+strp        equ bp+4
+
+Proc        getdir
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+
+            mov ah,19h              ;Get current drive
+            int 21h                 ;DOS call
+
+            mov dl,al               ;DL = drive
+            mov ah,47h              ;Get current directory
+            mov si,[strp]           ;SI = string pointer
+            mov [byte si],'\'       ;Add leading slash
+            inc si
+            int 21h                 ;DOS call
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        getdir
+
+;****************** setdir() -- Set current directory
+;int setdir(char *strp);
+
+strp        equ bp+4
+
+Proc        setdir
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov ah,3Bh              ;Set current directory
+            mov dx,[strp]           ;DX = string pointer
+            int 21h                 ;DOS call
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        setdir
+
+;****************** mkdir() -- Create a directory
+;int mkdir(char *strp);
+
+strp        equ bp+4
+
+Proc        mkdir
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov ah,39h              ;Create directory
+            mov dx,[strp]           ;DX = string pointer
+            int 21h                 ;DOS call
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        mkdir
+
+;****************** rmdir() -- Remove a directory
+;int rmdir(char *strp);
+
+strp        equ bp+4
+
+Proc        rmdir
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov ah,3Ah              ;Remove directory
+            mov dx,[strp]           ;DX = string pointer
+            int 21h                 ;DOS call
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        rmdir
+
+End
+
+~~~C_FPATH
+Ideal
+
+Public      fullpath
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** fullpath() -- Convert partial path to full path
+;int fullpath(char *dest, char *src);
+
+dest        equ bp+6
+src         equ bp+4
+
+Proc        fullpath
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+            push es
+
+            push ds                 ;ES = DS
+            pop es
+
+            mov si,[src]            ;SI = source
+            mov di,[dest]           ;DI = destination
+
+            mov ah,60h              ;Convert Path
+            int 21h                 ;DOS call
+
+            pop es                  ;Restore registers
+            popa
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        fullpath
+
+End
+
+~~~C_DRIVE
+Ideal
+
+Public      getdrive,setdrive
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** getdrive() -- Get current drive
+;int getdrive(void);
+
+Proc        getdrive
+
+            mov ah,19h              ;Get current drive
+            int 21h
+            xor ah,ah               ;Zero AH
+            ret                     ;Return
+
+EndP        getdrive
+
+;****************** setdrive() -- set current drive
+;void setdrive(int drnum);
+
+drnum       equ bp+4
+
+Proc        setdrive
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+
+            mov ah,0Eh              ;Set current drive
+            mov dl,[drnum]          ;DL = drive number
+            int 21h
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        setdrive
+
+End
+
+~~~C_DFREE
+Ideal
+
+Public      getdfree
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** getdfree() -- Return amount of free disk space
+;long getdfree(int drive);
+
+drive       equ bp+4
+
+Proc        getdfree
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push bx cx              ;Save registers
+
+            mov dl,[drive]          ;DL = drive
+            mov ah,36h              ;Get free disk space
+            int 21h
+
+            cwd                     ;DX:AX = AX
+            cmp ax,-1               ;Invalid, return -1
+            je p1_done
+
+            mul cx                  ;DX:AX = free disk space
+            mul bx                  ; = bytes/sector * sectors/a-unit
+                                    ; * free a-units (allocation units)
+
+p1_done:    pop cx bx               ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret                     ;Return
+
+EndP        getdfree
+
+End
+
+~~~C_EXEC
+Ideal
+
+Extrn       allocmem:near,freemem:near
+Public      exec
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** exec() -- Execute program
+;int exec(char *prog, char *cmdline);
+
+prog        equ bp+6
+cmdline     equ bp+4
+
+Proc        exec
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+            push ds es
+
+            push 128                ;Allocate memory for
+            call allocmem           ;the cmdline buffer
+            jc p1_done              ;Out of memory?
+            xchg bx,ax              ;Pointer in BX
+
+            mov si,[prog]           ;SI = program specification
+
+p1_loop1:   lodsb                   ;Skip past initial spaces
+            cmp al,' '
+            je p1_loop1
+            dec si
+            push si                 ;Save prog string offset
+
+            mov si,[cmdline]        ;SI = command line
+            mov di,bx               ;DI = string buffer
+            inc di
+            mov cx,126              ;CX = 126
+
+p1_loop3:   lodsb                   ;Copy the string and
+            test al,al              ;count the chars
+            je p1_cont
+            stosb
+            loop p1_loop3
+
+p1_cont:    neg cx                  ;CX = char count
+            add cx,126
+            mov [bx],cl             ;Store count
+            mov al,13               ;Store a CR
+            stosb
+
+            mov ax,[2Eh]            ;word 0 = environment
+            mov [ParBlock],ax
+            mov [ParBlock+2],bx     ;word 2 = command line
+            mov [ParBlock+4],cs     ;word 4 = CS
+            mov [ParBlock+6],5Ch    ;word 6 = 5Ch
+            mov [ParBlock+8],cs     ;word 8 = CS
+            mov [ParBlock+10],6Ch   ;word 10 = 6Ch
+            mov [ParBlock+12],cs    ;word 12 = CS
+
+            push bx                 ;Save memory pointer
+
+            push ds                 ;ES:BX = parameter block
+            pop es
+            mov bx,offset ParBlock
+            pop dx                  ;DX = program specification
+            mov ax,4B00h            ;DOS EXEC function
+
+            mov [StackBuf],ss       ;Save stack pointer
+            mov [StackBuf+2],sp
+
+            int 21h                 ;Execute program
+
+            mov ss,[cs:StackBuf]    ;Restore stack pointer
+            mov sp,[cs:StackBuf+2]
+
+            lahf                    ;Save flags
+            call freemem            ;Free the memory (BX is still pushed)
+            sahf                    ;Restore flags
+
+p1_done:    pop es ds               ;Restore registers
+            popa
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+StackBuf    dw 0,0                  ;Save area for SS:SP
+
+ParBlock    dw 7 dup(0)             ;EXEC parameter block
+
+EndP        exec
+
+End
+
+~~~C_BITIO
+Ideal
+
+Extrn       fopen:near,fclose:near,fgetc:near,fputc:near
+Public      bfopen, bfclose, putbit, getbit
+Public      putbits, getbits, putcode, getcode
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** Bit-File Structure . . .
+
+;                   Offset  Size    Description
+
+;                     0     Word    File handle
+;                     2     Word    File mode
+;                     4     Byte    Bit buffer
+;                     5     Byte    Bit mask
+
+;****************** bfopen() -- Open bit-file (returns bit handle)
+;                               Modes: 0 = read, 1 = write
+;int bfopen(char *fname, int mode);
+
+fname       equ bp+6
+mode        equ bp+4
+
+Proc        bfopen
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ds bx cx dx        ;Save registers
+
+            mov bx,[mode]           ;BX = mode
+            and bx,1
+            mov cx,bx               ;Save mode
+            imul bx,3               ;Mode for fopen()
+
+            push [fname] bx         ;Open the file
+            call fopen
+            jc p1_err1              ;Check for errors
+            xchg dx,ax              ;DX = file
+
+            mov ah,48h              ;Allocate memory
+            mov bx,1                ;16 bytes
+            int 21h                 ;DOS call
+            jc p1_err2              ;Check for errors
+
+            mov ds,ax               ;DS = bit-file
+            mov [0],dx              ;Set file handle...
+            mov [2],cx              ;file mode...
+            mov [word 4],8000h      ;buffer/mask...
+
+p1_done:    pop dx cx bx ds         ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+p1_err2:    push dx                 ;Out of memory, close file
+            call fclose
+
+p1_err1:    xor ax,ax               ;Error, return 0, set carry
+            stc
+            jmp p1_done
+
+EndP        bfopen
+
+;****************** bfclose() -- Close bit-file
+;void bfclose(int bfp);
+
+bfp         equ bp+4
+
+Proc        bfclose
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+            push es
+
+            mov es,[bfp]            ;ES = bit-file
+
+            cmp [word es:2],1       ;Input file?
+            jne p2_skip
+            cmp [byte es:5],80h     ;Buffer empty?
+            je p2_skip
+
+            push [es:0] [es:4]      ;Flush buffer
+            call fputc
+
+p2_skip:    push [es:0]             ;Close file
+            call fclose
+            mov ah,49h              ;Free memory
+            int 21h
+
+            pop es                  ;Restore registers
+            popa
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        bfclose
+
+;****************** getbit() -- Get bit from bit-file
+;int getbit(int bfp);
+
+bfp         equ bp+4
+
+Proc        getbit
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push es                 ;Save registers
+
+            mov es,[bfp]            ;ES = bit-file
+            cmp [word es:2],0       ;Output file, can't input
+            jne p3_done
+            cmp [byte es:5],80h     ;Buffer empty?
+            jne p3_skip1
+
+            push [es:0]             ;Get char
+            call fgetc
+            mov [es:4],al           ;Save char
+
+p3_skip1:   mov al,[es:4]           ;Get bit
+            and al,[es:5]
+            ror [byte es:5],1       ;Move to next bit
+
+            test al,al              ;AX = 1 if nonzero,
+            jz $+4                  ;or 0 if zero
+            mov al,1
+            cbw
+
+p3_done:    pop es                  ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        getbit
+
+;****************** putbit() -- Put bit to bit-file
+;void putbit(int bfp, int bit);
+
+bfp         equ bp+6
+bit         equ bp+4
+
+Proc        putbit
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+            push es
+
+            mov es,[bfp]            ;ES = bit-file
+            cmp [word es:2],1       ;Input file, can't output
+            jne p4_done
+
+            cmp [word bit],0        ;Check bit
+            jz p4_skip
+            mov al,[es:5]           ;Add bit to buffer
+            or [es:4],al
+
+p4_skip:    shr [byte es:5],1       ;Move to next bit
+            jnz p4_done             ;Finished a byte?
+
+            push [es:0] [es:4]      ;Put byte to file
+            call fputc
+            mov [word es:4],8000h   ;Buf = 0, Mask = 80h
+
+p4_done:    pop es                  ;Restore registers
+            popa
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        putbit
+
+;****************** getbits() -- Get bits from bit-file
+;int getbits(int bfp, int count);
+
+bfp         equ bp+6
+count       equ bp+4
+
+Proc        getbits
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push es cx dx           ;Save registers
+
+            mov es,[bfp]            ;ES = bit-file
+            cmp [word es:2],0       ;Output file, can't input
+            jne p5_done
+
+            mov cx,[count]          ;CX = bit count
+            xor dx,dx               ;Zero buffer
+
+p5_loop:    cmp [byte es:5],80h     ;Buffer empty?
+            jne p5_skip1
+
+            push [es:0]             ;Get char
+            call fgetc
+            mov [es:4],al           ;Save char
+
+p5_skip1:   mov al,[es:4]           ;Get bit
+            and al,[es:5]
+            ror [byte es:5],1       ;Move to next bit
+
+p5_skip2:   add dx,dx               ;Shift over
+            test al,al              ;If bit = 1,
+            jz $+3                  ;then add it in
+            inc dx
+            loop p5_loop            ;Loop back
+
+            xchg ax,dx              ;AX = result
+
+p5_done:    pop dx cx es            ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        getbits
+
+;****************** putbits() -- Put bits to bit-file
+;int putbits(int bfp, int code, int count);
+
+bfp         equ bp+8
+code        equ bp+6
+count       equ bp+4
+
+Proc        putbits
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov bx,[bfp]            ;BX = bit-file
+            mov cx,[count]          ;CX = bit count
+            mov dx,[code]           ;DX = code
+            ror dx,cl               ;Put at left
+
+p6_loop:    add dx,dx               ;Shift out bit
+            sbb ax,ax               ;AX = bit
+            push bx ax              ;Put bit
+            call putbit
+            loop p6_loop            ;Loop back
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+EndP        putbits
+
+;****************** getcode() -- Get optimal code from bit-file
+;int getcode(int bfp, int max);  'max' is number of possible codes
+
+bfp         equ bp+6
+max         equ bp+4
+
+Proc        getcode
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov ax,17               ;Set up for log
+            mov cx,[max]
+            jcxz p7_done            ;Quit on 0
+
+p7_bloop:   dec ax                  ;AX = log2(max) + 1
+            add cx,cx
+            jnc p7_bloop
+            xchg ax,cx              ;CX = AX
+
+            mov si,1                ;SI = 2^CX - max
+            shl si,cl
+            sub si,[max]
+
+            mov bx,[bfp]            ;BX = bit-file
+            dec cx                  ;CX = count (log2(max))
+
+            push bx cx              ;Get bits
+            call getbits
+            xchg ax,dx              ;Result in DX
+
+            cmp dx,si               ;DX >= SI?
+            jb p7_done
+
+            push bx                 ;Add in another bit
+            call getbit
+            add dx,dx
+            add dx,ax
+            sub dx,si               ;Subtract out SI
+
+p7_done:    mov [bp-2],dx           ;Change pushed AX
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        getcode
+
+;****************** putcode() -- Put optimal code to bit-file
+;                                'max' is number of possible codes
+;int putcode(int bfp, int code, int max);
+
+bfp         equ bp+8
+code        equ bp+6
+max         equ bp+4
+
+Proc        putcode
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov ax,17               ;AX = log2(max) + 1
+            mov cx,[max]
+            jcxz p8_done            ;Quit on 0
+p8_bloop:   dec ax
+            add cx,cx
+            jnc p8_bloop
+            xchg ax,cx              ;CX = AX
+
+            mov si,1                ;SI = 2^CX - max
+            shl si,cl
+            sub si,[max]
+
+            mov dx,[code]           ;DX = code
+            dec cx                  ;CX = bit count
+
+            cmp dx,si               ;DX >= SI?
+            jb p8_skip
+            inc cx                  ;One more bit
+            add dx,si               ;and add in SI
+
+p8_skip:    push [bfp] dx cx        ;Output bit code
+            call putbits
+
+p8_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        putcode
+
+End
+
+~~~C_MEMORY
+Ideal
+
+Extrn       TopByte:Word
+Public      allocmem,freemem,getmfree
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** allocmem() -- Allocate memory
+;void *allocmem(unsigned nbytes);
+
+nbytes      equ bp+4
+
+Proc        allocmem
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+            push es
+
+            mov dx,[bp+4]           ;DX = num. of bytes + 3
+            add dx,3
+            mov bx,offset TopByte   ;BX = first MCB
+
+p1_loop:    mov cl,[bx+2]           ;CX = flag byte
+            test cl,1               ;Not free, loop
+            jnz p1_lb
+            mov ax,[bx]             ;AX = size
+            cmp ax,dx               ;Big enough?
+            jae p1_gotit
+
+p1_lb:      test cl,2               ;Last block?
+            jnz p1_nope             ;Out of memory
+            add bx,[bx]             ;Next block
+            jmp p1_loop             ;Loop back
+
+p1_gotit:   sub ax,3                ;Check for snug fit,
+            cmp ax,dx               ;that is, too little
+            jbe p1_snug             ;excess to split it
+
+            sub ax,dx               ;AX = excess
+            add ax,3
+
+            mov si,bx               ;SI = split point
+            add si,dx
+            mov [si],ax             ;Set size of excess block
+            mov [si+2],cl           ;Set flags to original values
+
+            mov [bx],dx             ;Set size of present block
+            mov [byte bx+2],1       ;Set flags: allocated, not last
+            jmp p1_finish
+
+p1_snug:    or [byte bx+2],1        ;Set allocated flag
+
+p1_finish:  add bx,3                ;BX = offset of memory block
+
+p1_done:    mov [bp-2],bx           ;Change pushed AX
+            pop es                  ;Restore registers
+            popa
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+p1_nope:    xor bx,bx               ;Return null pointer, set carry
+            stc
+            jmp p1_done
+
+EndP        allocmem
+
+;****************** freemem() -- Free memory
+;void freemem(void *ptr);
+
+ptr         equ bp+4
+
+Proc        freemem
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+
+            mov dx,[ptr]            ;DX = pointer
+            sub dx,3                ;Point to MCB
+            mov bx,offset TopByte   ;BX = first MCB
+            xor si,si               ;Zero previous ptr.
+
+p2_loop:    cmp bx,dx               ;Found it?
+            je p2_gotit
+
+            test [byte bx+2],2      ;Last block?
+            jnz p2_done
+            mov si,bx               ;Save block
+            add bx,[bx]             ;Next block
+            jmp p2_loop             ;Loop back
+
+p2_gotit:   mov di,bx               ;DI = next block
+            add di,[bx]
+
+            test [byte bx+2],2      ;Next block allocated
+            jnz p2_cont1            ;or nonexistent, can't
+            mov cl,[di+2]           ;merge with it
+            test cl,1
+            jnz p2_done
+
+            mov ax,[di]             ;Merge blocks: sum sizes,
+            add [bx],ax             ;set flags of second one
+            mov [bx+2],cl
+
+p2_cont1:   and [byte bx+2],0FEh    ;Reset allocated flag
+
+            test si,si              ;Prev. block allocated
+            jz p2_done              ;or nonexistent, can't
+            mov cl,[si+2]           ;merge with it
+            test cl,1
+            jnz p2_done
+
+            mov ax,[bx]             ;Merge blocks: sum sizes,
+            add [si],ax             ;set flags of second one
+            mov cl,[bx+2]
+            mov [si+2],cl
+
+p2_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        freemem
+
+;****************** getmfree() -- Return largest free memory block
+;unsigned getmfree(void);
+
+ptr         equ bp+4
+
+Proc        getmfree
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push bx                 ;Save registers
+
+            mov bx,offset TopByte   ;BX = first MCB
+            xor ax,ax               ;Zero counter
+
+p3_loop:    test [byte bx+2],1      ;Not free, skip
+            jnz p3_skip
+            cmp ax,[bx]             ;Biggest so far?
+            jae p3_skip
+            mov ax,[bx]             ;Save largest block
+
+p3_skip:    test [byte bx+2],2      ;Last block?
+            jnz p3_done
+            add bx,[bx]             ;Next block
+            jmp p3_loop             ;Loop back
+
+p3_done:    sub ax,3                ;Adjust to true size
+            pop bx                  ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret                     ;Return
+
+EndP        getmfree
+
+End
+
+~~~C_FARMEM
+Ideal
+
+Public      faralloc,farfree,getfarfree
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** faralloc() -- Allocate far memory
+;int faralloc(int nparas);
+
+nparas      equ bp+4
+
+Proc        faralloc
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push bx                 ;Save BX
+
+            mov ah,48h              ;Allocate memory
+            mov bx,[nparas]         ;BX = paras
+            int 21h                 ;DOS call
+
+            jnc $+5                 ;No error, return pointer
+            xor ax,ax               ;Error, return 0, set carry
+            stc
+
+            pop bx                  ;Restore BX
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        faralloc
+
+;****************** farfree() -- Free far memory
+;void farfree(int ptr);
+
+ptr         equ bp+4
+
+Proc        farfree
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push es ax              ;Save registers
+
+            mov ah,4Ah              ;Free memory
+            mov es,[ptr]            ;ES = pointer
+            int 21h                 ;DOS call
+
+            pop ax es               ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        farfree
+
+;****************** getfarfree() -- Return largest free far memory block
+;unsigned getfarfree(void);
+
+ptr         equ bp+4
+
+Proc        getfarfree
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push bx                 ;Save registers
+
+            mov ah,48h              ;Allocate memory
+            mov bx,-1               ;-1 is invalid
+            int 21h                 ;DOS call (returns an error)
+            xchg ax,bx              ;AX = size of largest free block
+
+            pop bx                  ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret                     ;Return
+
+EndP        getfarfree
+
+End
+
+~~~C_ATOI
+Ideal
+
+Public      atoi,atol
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** atoi() -- Convert string to int
+;int atoi(char *strp);
+
+strp        equ bp+4
+
+Proc        atoi
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+
+            push dx [strp]          ;Save DX, call atol
+            call atol
+
+            pop dx                  ;Restore DX
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        atoi
+
+;****************** atol() -- Convert string to long
+;long atol(char *strp);
+
+strp        equ bp+4
+
+Proc        atol
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push bx cx si di        ;Save registers
+
+            mov si,[strp]           ;SI = string
+
+            xor ax,ax               ;DX:AX = 0
+            xor bh,bh               ;BH = 0
+            cwd
+            mov cx,10               ;CX = 10
+
+p1_ploop:   mov bl,[si]             ;Load char
+            inc si
+            cmp bl,' '              ;Loop while char is space
+            je p1_ploop             ;(20h, or 09h thru 0Dh)
+            cmp bl,9
+            jna p1_cont
+            cmp bl,13
+            jbe p1_ploop
+
+p1_cont:    xor bp,bp               ;BP = 0
+            cmp bl,'+'              ;If char = '+', ignore
+            je p1_loop
+            cmp bl,'-'              ;If char <> '-', keep it
+            jne p1_skip
+            inc bp                  ;Set negative flag
+
+p1_loop:    mov bl,[si]             ;Load char
+            inc si
+
+p1_skip:    cmp bl,'9'              ;Not a digit, finish
+            ja p1_finish
+            sub bl,'0'
+            jc p1_finish
+
+            mul cx                  ;Multiply by 10
+            add ax,bx               ;Add in digit...
+            adc dl,dh
+            jz p1_loop              ;Not a long yet, loop
+            jmp p1_lload            ;Go into long loop
+
+p1_lloop:   mov di,dx               ;DI = old hi word
+            mov cx,10               ;Multiply old lo word by 10
+            mul cx
+            xchg dx,cx              ;CX = new hi word(1)
+            xchg ax,di              ;DI = new lo word
+            mul dx                  ;Multiply old hi word by 10
+            xchg ax,dx              ;DX = new hi word(2)
+            xchg ax,di              ;AX = new lo word
+            add ax,bx               ;Add in digit
+            adc dx,cx               ;DX:AX = new value
+
+p1_lload:   mov bl,[si]             ;load char
+            inc si
+
+            cmp bl,'9'              ;Not a digit, finish
+            ja p1_finish
+            sub bl,'0'
+            jnc p1_lloop            ;Jump to loop
+
+p1_finish:  dec bp                  ;Positive, don't negate
+            jl p1_done
+
+            neg dx                  ;Negate the result
+            neg ax
+            sbb dx,0
+
+p1_done:    pop di si cx bx         ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        atol
+
+End
+
+~~~C_ITOA
+Ideal
+
+Public      itoa
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** itoa() -- Convert int to string
+;void itoa(int n, char *strp);
+
+n           equ bp+6
+strp        equ bp+4
+
+Proc        itoa
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov ax,[n]              ;AX = n
+            mov di,[strp]           ;DI = string pointer
+
+            test ax,ax              ;Negative?
+            jge p1_noneg
+            mov [byte di],'-'       ;Store minus sign
+            inc di
+            neg ax                  ;Make it positive
+
+p1_noneg:   xor cx,cx               ;Zero CX
+            test ax,ax              ;Check for zero
+            jnz p1_nozero
+
+            push '0'                ;Push a zero
+            inc cx                  ;One digit
+            jmp p1_ploop
+
+p1_nozero:  mov si,10               ;SI = 10
+
+p1_dloop:   xor dx,dx               ;Divide by 10
+            div si
+            mov bl,dl               ;Remainder in BL
+            add bl,30h              ;Convert to digit
+            push bx                 ;Push digit
+            inc cx
+            test ax,ax              ;Loop back
+            jnz p1_dloop
+
+p1_ploop:   pop ax                  ;Pop digit
+            mov [di],al             ;Store digit
+            inc di
+            loop p1_ploop           ;Loop back
+
+            mov [byte di],0         ;Add the null byte
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        itoa
+
+End
+
+~~~C_LTOA
+Ideal
+
+Extrn       itoa:near
+Public      ltoa
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** ltoa() -- Convert long to string
+;void ltoa(long n, char *strp);
+
+n           equ bp+6
+strp        equ bp+4
+
+Proc        ltoa
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov di,[strp]           ;DI = string pointer
+            mov dx,[n+2]            ;DX:AX = n
+            mov ax,[n]
+            test dx,dx              ;DX = 0, use itoa
+            jnz p1_chkn
+            cmp ax,8000h
+            jnb p1_chkn
+
+p1_itoa:    push ax di              ;Convert with itoa
+            call itoa
+            jmp p1_done             ;Return
+
+p1_chkn:    cmp dx,-1               ;DX = -1 and AX <> 0, use itoa
+            jne p1_strp
+            cmp ax,8000h
+            jae p1_itoa
+
+p1_strp:    test dx,dx              ;Negative?
+            jge p1_noneg
+            mov [byte di],'-'       ;Store minus sign
+            inc di
+            neg dx                  ;Make it positive
+            neg ax
+            sbb dx,0
+
+p1_noneg:   mov bx,50000            ;Divide by 100000
+            div bx
+            xor bx,bx               ;Zero BX
+            shr ax,1
+            adc bx,0                ;BX = rem flag
+            push bx dx              ;Save BX, DX
+
+            test ax,ax              ;Check for zero
+            jz p1_cont
+
+            xor cx,cx               ;Zero CX
+            mov si,10               ;SI = 10
+
+p1_dloop:   xor dx,dx               ;Divide by 10
+            div si
+            mov bl,dl               ;Remainder in BL
+            add bl,30h              ;Convert to digit
+            push bx                 ;Push digit
+            inc cx
+            test ax,ax              ;Loop back
+            jnz p1_dloop
+
+p1_ploop:   pop ax                  ;Pop digit
+            mov [di],al             ;Store digit
+            inc di
+            loop p1_ploop           ;Loop back
+
+p1_cont:    pop ax bx               ;Restore low data
+            xor dx,dx               ;Zero DX
+            test bx,bx              ;Check for high part
+            jz p1_nohigh
+
+            add ax,50000            ;Add in 50000
+            adc dx,0
+
+p1_nohigh:  mov si,10               ;SI = 10
+            mov cx,5                ;5 digits
+            jmp p1_skip1
+
+p1_dloopb:  xor dx,dx               ;Zero DX
+p1_skip1:   div si                  ;Divide by 10
+            mov bl,dl               ;Remainder in BL
+            add bl,30h              ;Convert to digit
+            push bx                 ;Push digit
+            loop p1_dloopb          ;Loop back
+
+            mov cx,5                ;5 digits
+
+p1_ploopb:  pop ax                  ;Pop digit
+            mov [di],al             ;Store digit
+            inc di
+            loop p1_ploopb          ;Loop back
+
+            mov [byte di],0         ;Add the null byte
+
+p1_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+EndP        ltoa
+
+End
+
+~~~C_PUTS
+Ideal
+
+Extrn       PUT_CHAR:near
+Public      puts,xputs
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** puts() -- Print string
+;void puts(char *strp);
+
+strp        equ bp+4
+
+Proc        puts
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov si,[strp]           ;SI = string pointer
+
+p1_loop:    lodsb                   ;Get char
+            test al,al              ;Check for null
+            jz p1_done
+            call PUT_CHAR           ;Output char
+            jmp p1_loop             ;Loop back
+
+p1_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        puts
+
+;****************** xputs() -- Print string, generalized
+;void xputs(void *func, int strp);
+
+func        equ bp+6
+strp        equ bp+4
+
+Proc        xputs
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov si,[strp]           ;SI = string pointer
+            mov bx,[func]           ;BX = function
+
+p2_loop:    lodsb                   ;Get char
+            test al,al              ;Check for null
+            jz p2_done
+            push ax                 ;Output char
+            call bx
+            jmp p2_loop             ;Loop back
+
+p2_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        xputs
+
+End
+
+~~~C_FPUTS
+Ideal
+
+Extrn       fputc:near
+Public      fputs
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** fputs() -- Print string to file
+;int fputs(int fp, char *strp);
+
+fp          equ bp+6
+strp        equ bp+4
+
+Proc        fputs
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+
+            mov si,[strp]           ;SI = string pointer
+            mov bx,[fp]             ;BX = file pointer
+
+p1_loop:    lodsb                   ;Get char
+            test al,al              ;Check for null
+            jz p1_done
+            push bx ax              ;Output char:
+            call fputc              ;fputc(fp, AX);
+            jnc p1_loop             ;Loop back
+
+p1_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        fputs
+
+End
+
+~~~C_GETS
+Ideal
+
+Public      gets,xgets
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** gets() -- Get string
+;void gets(char *strp, int max);
+
+strp        equ bp+6
+max         equ bp+4
+
+Proc        gets
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+            push es
+
+            mov di,[strp]           ;DI = string pointer
+            mov cx,[max]            ;CX = max string length
+            dec cx
+
+p1_loop:    xor ax,ax               ;Get key
+            int 16h
+            test al,al              ;Ignore extended keys
+            jz p1_loop
+            cmp al,8                ;Backspace?
+            je p1_bksp
+
+            int 29h                 ;Show char (on screen)
+            cmp al,13               ;<Enter> = done
+            je p1_done
+            jcxz p1_loop            ;Maxed out, don't store
+            mov [di],al             ;Store char
+            inc di
+            dec cx                  ;Decrement maximum
+            jmp p1_loop             ;Loop back
+
+p1_bksp:    cmp di,[strp]           ;At beginning, do nothing
+            je p1_loop
+            dec di                  ;Decrement string pointer
+            inc cx                  ;Increment maximum
+
+            push cx                 ;Save CX
+            mov ah,0Fh              ;Get video page
+            int 10h
+            mov ah,3                ;Get cursor position
+            int 10h                 ;in DH/DL
+            dec dx                  ;Move left one column
+            test dl,dl              ;if at zero moves up too
+            jnl p1_nowrap
+
+            push 0                  ;DL = last column
+            pop es
+            mov dl,[es:044Ah]
+            dec dx
+
+p1_nowrap:  mov ah,2                ;Set cursor position
+            int 10h
+            mov ax,0A20h            ;Clear char at current
+            mov cx,1                ;cursor position
+            int 10h
+            pop cx                  ;Restore CX
+            jmp p1_loop             ;Loop back
+
+p1_done:    mov al,10               ;Output LF
+            int 29h
+            mov [byte di],0         ;Terminate string
+            pop es                  ;Restore registers
+            popa
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+EndP        gets
+
+;****************** xgets() -- Get string, generalized
+;void xgets(void *func, char *strp, int max, int term);
+
+strp        equ bp+10
+func        equ bp+8
+max         equ bp+6
+term        equ bp+4
+
+Proc        xgets
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov di,[strp]           ;DI = string pointer
+            mov bx,[func]           ;BX = function
+            mov cx,[max]            ;CX = max string length
+            dec cx
+            mov dx,[term]           ;DX = terminator
+
+p2_loop:    call bx                 ;Get char
+            cmp al,dl               ;Check for terminator
+            je p2_done
+            jcxz p1_loop            ;Maxed out, don't store
+            mov [di],al             ;Store char
+            inc di
+            dec cx                  ;Decrement maximum
+            jmp p2_loop             ;Loop back
+
+p2_done:    mov [byte di],0         ;Terminate string
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 8                   ;Return
+
+EndP        xgets
+
+End
+
+~~~C_FGETS
+Ideal
+
+Extrn       fgetc:near
+Public      fgets
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** fgets() -- Get string from file
+;void fgets(int fp, char *strp, int max);
+
+fp          equ bp+8
+strp        equ bp+6
+max         equ bp+4
+
+Proc        fgets
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov di,[strp]           ;DI = string pointer
+            mov bx,[fp]             ;BX = file pointer
+            mov cx,[max]            ;CX = max string length
+            dec cx
+
+p1_loop:    push bx                 ;Get char
+            call fgetc
+            jc p1_quit              ;Check for EOF
+            cmp al,13               ;CR = done
+            je p1_done
+            jcxz p1_loop            ;Maxed out, don't store
+            mov [di],al             ;Store char
+            inc di
+            dec cx                  ;Decrement maximum
+            jmp p1_loop             ;Loop back
+
+p1_done:    push bx                 ;Remove LF
+            call fgetc
+
+p1_quit:    mov [byte di],0         ;Terminate string
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+EndP        fgets
+
+End
+
+~~~C_PRTBUF
+Ideal
+
+Public      PRT_BUF
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** PRT_BUF -- String buffer for printf(), etc.
+
+PRT_BUF     db 20 dup(0)
+
+End
+
+~~~C_PRINTF
+Ideal
+
+Extrn       PRT_BUF:byte,itoa:near,ltoa:near
+Extrn       PUT_CHAR:near
+Public      printf
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** printf() -- Print formatted string
+;void printf(char *fmt, void *args);
+
+fmt         equ bp+6
+args        equ bp+4
+
+Proc        printf
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov si,[fmt]            ;SI = string pointer
+            mov bx,[args]           ;BX = arg pointer
+
+p1_loop:    lodsb                   ;Get char
+            test al,al              ;Check for null
+            jz p1_done
+            cmp al,'%'              ;Check for '%'
+            je p1_proc
+p1_putc:    call PUT_CHAR           ;Output char
+            jmp p1_loop             ;Loop back
+
+p1_proc:    lodsb                   ;Get char
+            test al,al              ;Check for null
+            jz p1_done
+            cmp al,'%'              ; %% = percent
+            je p1_putc
+            cmp al,'d'              ; %d = integer
+            je p1_int
+            cmp al,'l'              ; %l = long int
+            je p1_long
+            cmp al,'x'              ; %x = hex
+            je p1_hex
+            cmp al,'c'              ; %c = char
+            je p1_char
+            cmp al,'s'              ; %s = string
+            je p1_str
+            jmp p1_loop             ;Invalid, ignore
+
+p1_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 4                   ;Return
+
+p1_long:    lodsb                   ;Get char
+            test al,al              ;Check for null
+            jz p1_done
+            cmp al,'d'              ; %ld = long integer
+            je p1_lint
+            cmp al,'x'              ; %lx = long hex
+            je p1_lhex
+            jmp p1_loop             ;Invalid, ignore
+
+p1_int:     push [word bx]          ;itoa(*bx, PRT_BUF);
+            push offset PRT_BUF
+            call itoa
+            inc bx                  ;Advance pointer
+            inc bx
+            mov di,offset PRT_BUF   ;Print alpha string
+            jmp p1_alpha
+
+p1_lint:    push [word bx+2]
+            push [word bx]          ;ltoa(*bx, PRT_BUF);
+            push offset PRT_BUF
+            call ltoa
+            add bx,4                ;Advance pointer
+            mov di,offset PRT_BUF   ;Print alpha string
+            jmp p1_alpha
+
+p1_hex:     mov ax,[bx]             ;AX = arg
+            call p1_chex            ;Convert to hex
+            inc bx                  ;Advance pointer
+            inc bx
+            jmp p1_loop             ;Loop back
+
+p1_lhex:    mov ax,[bx+2]           ;AX = high word
+            call p1_chex            ;Convert to hex
+            mov ax,[bx]             ;AX = low word
+            call p1_chex            ;Convert to hex
+            add bx,4                ;Advance pointer
+            jmp p1_loop             ;Loop back
+
+p1_char:    mov al,[bx]             ;Output char
+            int 29h
+            inc bx                  ;Advance pointer
+            jmp p1_loop             ;Loop back
+
+p1_str:     mov al,[bx]             ;Get char
+            inc bx                  ;Advance pointer
+            test al,al              ;Check for null
+            jz p1_sdone
+            call PUT_CHAR           ;Output char
+            jmp p1_str              ;Loop back
+
+p1_sdone:   jmp p1_loop             ;Return to main loop
+
+p1_alpha:   mov al,[di]             ;Get char
+            test al,al              ;Check for null
+            jz p1_sdone
+            call PUT_CHAR           ;Output char
+            inc di                  ;Advance pointer
+            jmp p1_alpha            ;Loop back
+
+p1_chex:    mov cx,4                ;4 hex digits
+            xchg al,ah              ;Reverse the order
+            ror ah,cl               ;of the hex digits
+            ror al,cl               ;in AX
+
+p1_hloop:   push ax                 ;Save AX
+            and al,0Fh              ;Keep 4 bits
+            cmp al,0Ah              ;Compute the hex digit,
+            sbb al,69h              ;using Improved Allison's Algorithm
+            das
+            call PUT_CHAR           ;Output char
+            pop ax                  ;Restore AX
+            shr ax,4                ;Shift it over
+            loop p1_hloop           ;Loop back
+            ret                     ;Return
+
+EndP        printf
+
+End
+
+~~~C_SPRINT
+Ideal
+
+Extrn       PRT_BUF:byte,itoa:near,ltoa:near
+Public      sprintf
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** sprintf() -- Print formatted string into string
+;void sprintf(char *strp, char *fmt, void *args);
+
+strp        equ bp+8
+fmt         equ bp+6
+args        equ bp+4
+
+Proc        sprintf
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov di,[strp]           ;DI = string pointer
+            mov si,[fmt]            ;SI = format pointer
+            mov bx,[args]           ;BX = arg pointer
+
+p1_loop:    lodsb                   ;Get char
+            test al,al              ;Check for null
+            jz p1_done
+            cmp al,'%'              ;Check for '%'
+            je p1_proc
+p1_putc:    stosb                   ;Output char
+            jmp p1_loop             ;Loop back
+
+p1_proc:    lodsb                   ;Get char
+            test al,al              ;Check for null
+            jz p1_done
+            cmp al,'%'              ; %% = percent
+            je p1_putc
+            cmp al,'d'              ; %d = integer
+            je p1_int
+            cmp al,'l'              ; %l = long int
+            je p1_long
+            cmp al,'x'              ; %x = hex
+            je p1_hex
+            cmp al,'c'              ; %c = char
+            je p1_char
+            cmp al,'s'              ; %s = string
+            je p1_str
+            jmp p1_loop             ;Invalid, ignore
+
+p1_done:    xor al,al               ;Store a null byte
+            stosb
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+p1_long:    lodsb                   ;Get char
+            test al,al              ;Check for null
+            jz p1_done
+            cmp al,'d'              ; %ld = long integer
+            je p1_lint
+            cmp al,'x'              ; %lx = long hex
+            je p1_lhex
+            jmp p1_loop             ;Invalid, ignore
+
+p1_int:     push [word bx]          ;itoa(*bx, PRT_BUF);
+            push offset PRT_BUF
+            call itoa
+            inc bx                  ;Advance pointer
+            inc bx
+            mov bp,offset PRT_BUF   ;Print alpha string
+            jmp p1_alpha
+
+p1_lint:    push [word bx+2]
+            push [word bx]          ;ltoa(*bx, PRT_BUF);
+            push offset PRT_BUF
+            call ltoa
+            add bx,4                ;Advance pointer
+            mov bp,offset PRT_BUF   ;Print alpha string
+            jmp p1_alpha
+
+p1_hex:     mov ax,[bx]             ;AX = arg
+            call p1_chex            ;Convert to hex
+            inc bx                  ;Advance pointer
+            inc bx
+            jmp p1_loop             ;Loop back
+
+p1_lhex:    mov ax,[bx+2]           ;AX = high word
+            call p1_chex            ;Convert to hex
+            mov ax,[bx]             ;AX = low word
+            call p1_chex            ;Convert to hex
+            add bx,4                ;Advance pointer
+            jmp p1_loop             ;Loop back
+
+p1_char:    mov al,[bx]             ;Output char
+            stosb
+            inc bx                  ;Advance pointer
+            jmp p1_loop             ;Loop back
+
+p1_str:     mov al,[bx]             ;Get char
+            inc bx                  ;Advance pointer
+            test al,al              ;Check for null
+            jz p1_sdone
+            stosb                   ;Output char
+            jmp p1_str              ;Loop back
+
+p1_sdone:   jmp p1_loop             ;Return to main loop
+
+p1_alpha:   mov al,[bp]             ;Get char
+            test al,al              ;Check for null
+            jz p1_sdone
+            stosb                   ;Output char
+            inc bp                  ;Advance pointer
+            jmp p1_alpha            ;Loop back
+
+p1_chex:    mov cx,4                ;4 hex digits
+            xchg al,ah              ;Reverse the order
+            ror ah,cl               ;of the hex digits
+            ror al,cl               ;in AX
+
+p1_hloop:   push ax                 ;Save AX
+            and al,0Fh              ;Keep 4 bits
+            cmp al,0Ah              ;Compute the hex digit,
+            sbb al,69h              ;using Improved Allison's Algorithm
+            das
+            stosb                   ;Output char
+            pop ax                  ;Restore AX
+            shr ax,4                ;Shift it over
+            loop p1_hloop           ;Loop back
+            ret                     ;Return
+
+EndP        sprintf
+
+End
+
+~~~C_FPRINT
+Ideal
+
+Extrn       PRT_BUF:byte,fputc:near,itoa:near,ltoa:near
+Public      fprintf
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** fprintf() -- Print formatted string to file
+;void fprintf(int fp, char *fmt, void *args);
+
+fp          equ bp+8
+fmt         equ bp+6
+args        equ bp+4
+
+Proc        fprintf
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov dx,[fp]             ;DX = file pointer
+            mov si,[fmt]            ;SI = string pointer
+            mov bx,[args]           ;BX = arg pointer
+
+p1_loop:    lodsb                   ;Get char
+            test al,al              ;Check for null
+            jz p1_done
+            cmp al,'%'              ;Check for '%'
+            je p1_proc
+p1_putc:    push dx ax              ;Output char
+            call fputc
+            jmp p1_loop             ;Loop back
+
+p1_proc:    lodsb                   ;Get char
+            test al,al              ;Check for null
+            jz p1_done
+            cmp al,'%'              ; %% = percent
+            je p1_putc
+            cmp al,'d'              ; %d = integer
+            je p1_int
+            cmp al,'l'              ; %l = long int
+            je p1_long
+            cmp al,'x'              ; %x = hex
+            je p1_hex
+            cmp al,'c'              ; %c = char
+            je p1_char
+            cmp al,'s'              ; %s = string
+            je p1_str
+            jmp p1_loop             ;Invalid, ignore
+
+p1_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+p1_long:    lodsb                   ;Get char
+            test al,al              ;Check for null
+            jz p1_done
+            cmp al,'d'              ; %ld = long integer
+            je p1_lint
+            cmp al,'x'              ; %lx = long hex
+            je p1_lhex
+            jmp p1_loop             ;Invalid, ignore
+
+p1_int:     push [word bx]          ;itoa(*bx, PRT_BUF);
+            push offset PRT_BUF
+            call itoa
+            inc bx                  ;Advance pointer
+            inc bx
+            mov di,offset PRT_BUF   ;Print alpha string
+            jmp p1_alpha
+
+p1_lint:    push [word bx+2]
+            push [word bx]          ;ltoa(*bx, PRT_BUF);
+            push offset PRT_BUF
+            call ltoa
+            add bx,4                ;Advance pointer
+            mov di,offset PRT_BUF   ;Print alpha string
+            jmp p1_alpha
+
+p1_hex:     mov ax,[bx]             ;AX = arg
+            call p1_chex            ;Convert to hex
+            inc bx                  ;Advance pointer
+            inc bx
+            jmp p1_loop             ;Loop back
+
+p1_lhex:    mov ax,[bx+2]           ;AX = high word
+            call p1_chex            ;Convert to hex
+            mov ax,[bx]             ;AX = low word
+            call p1_chex            ;Convert to hex
+            add bx,4                ;Advance pointer
+            jmp p1_loop             ;Loop back
+
+p1_char:    mov al,[bx]             ;Output char
+            push dx ax
+            call fputc
+            inc bx                  ;Advance pointer
+            jmp p1_loop             ;Loop back
+
+p1_str:     mov al,[bx]             ;Get char
+            inc bx                  ;Advance pointer
+            test al,al              ;Check for null
+            jz p1_sdone
+            push dx ax              ;Output char
+            call fputc
+            jmp p1_str              ;Loop back
+
+p1_sdone:   jmp p1_loop             ;Return to main loop
+
+p1_alpha:   mov al,[di]             ;Get char
+            test al,al              ;Check for null
+            jz p1_sdone
+            push dx ax              ;Output char
+            call fputc
+            inc di                  ;Advance pointer
+            jmp p1_alpha            ;Loop back
+
+p1_chex:    mov cx,4                ;4 hex digits
+            xchg al,ah              ;Reverse the order
+            ror ah,cl               ;of the hex digits
+            ror al,cl               ;in AX
+
+p1_hloop:   push ax                 ;Save AX
+            and al,0Fh              ;Keep 4 bits
+            cmp al,0Ah              ;Compute the hex digit,
+            sbb al,69h              ;using Improved Allison's Algorithm
+            das
+            push dx ax              ;Output char
+            call fputc
+            pop ax                  ;Restore AX
+            shr ax,4                ;Shift it over
+            loop p1_hloop           ;Loop back
+            ret                     ;Return
+
+EndP        fprintf
+
+End
+
+~~~C_XPRINT
+Ideal
+
+Extrn       PRT_BUF:byte,itoa:near,ltoa:near
+Public      xprintf
+
+Model Tiny
+CodeSeg
+P186
+
+;****************** xprintf() -- Print formatted string, generalized
+;void xprintf(void *func, char *fmt, void *args);
+
+func        equ bp+8
+fmt         equ bp+6
+args        equ bp+4
+
+Proc        xprintf
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save all registers
+
+            mov dx,[func]           ;DX = function pointer
+            mov si,[fmt]            ;SI = string pointer
+            mov bx,[args]           ;BX = arg pointer
+
+p1_loop:    lodsb                   ;Get char
+            test al,al              ;Check for null
+            jz p1_done
+            cmp al,'%'              ;Check for '%'
+            je p1_proc
+p1_putc:    push ax                 ;Output char
+            call dx
+            jmp p1_loop             ;Loop back
+
+p1_proc:    lodsb                   ;Get char
+            test al,al              ;Check for null
+            jz p1_done
+            cmp al,'%'              ; %% = percent
+            je p1_putc
+            cmp al,'d'              ; %d = integer
+            je p1_int
+            cmp al,'l'              ; %l = long int
+            je p1_long
+            cmp al,'x'              ; %x = hex
+            je p1_hex
+            cmp al,'c'              ; %c = char
+            je p1_char
+            cmp al,'s'              ; %s = string
+            je p1_str
+            jmp p1_loop             ;Invalid, ignore
+
+p1_done:    popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 6                   ;Return
+
+p1_long:    lodsb                   ;Get char
+            test al,al              ;Check for null
+            jz p1_done
+            cmp al,'d'              ; %ld = long integer
+            je p1_lint
+            cmp al,'x'              ; %lx = long hex
+            je p1_lhex
+            jmp p1_loop             ;Invalid, ignore
+
+p1_int:     push [word bx]          ;itoa(*bx, PRT_BUF);
+            push offset PRT_BUF
+            call itoa
+            inc bx                  ;Advance pointer
+            inc bx
+            mov di,offset PRT_BUF   ;Print alpha string
+            jmp p1_alpha
+
+p1_lint:    push [word bx+2]
+            push [word bx]          ;ltoa(*bx, PRT_BUF);
+            push offset PRT_BUF
+            call ltoa
+            add bx,4                ;Advance pointer
+            mov di,offset PRT_BUF   ;Print alpha string
+            jmp p1_alpha
+
+p1_hex:     mov ax,[bx]             ;AX = arg
+            call p1_chex            ;Convert to hex
+            inc bx                  ;Advance pointer
+            inc bx
+            jmp p1_loop             ;Loop back
+
+p1_lhex:    mov ax,[bx+2]           ;AX = high word
+            call p1_chex            ;Convert to hex
+            mov ax,[bx]             ;AX = low word
+            call p1_chex            ;Convert to hex
+            add bx,4                ;Advance pointer
+            jmp p1_loop             ;Loop back
+
+p1_char:    mov al,[bx]             ;Output char
+            push ax
+            call dx
+            inc bx                  ;Advance pointer
+            jmp p1_loop             ;Loop back
+
+p1_str:     mov al,[bx]             ;Get char
+            inc bx                  ;Advance pointer
+            test al,al              ;Check for null
+            jz p1_sdone
+            push ax                 ;Output char
+            call dx
+            jmp p1_str              ;Loop back
+
+p1_sdone:   jmp p1_loop             ;Return to main loop
+
+p1_alpha:   mov al,[di]             ;Get char
+            test al,al              ;Check for null
+            jz p1_sdone
+            push ax                 ;Output char
+            call dx
+            inc di                  ;Advance pointer
+            jmp p1_alpha            ;Loop back
+
+p1_chex:    mov cx,4                ;4 hex digits
+            xchg al,ah              ;Reverse the order
+            ror ah,cl               ;of the hex digits
+            ror al,cl               ;in AX
+
+p1_hloop:   push ax                 ;Save AX
+            and al,0Fh              ;Keep 4 bits
+            cmp al,0Ah              ;Compute the hex digit,
+            sbb al,69h              ;using Improved Allison's Algorithm
+            das
+            push ax                 ;Output char
+            call dx
+            pop ax                  ;Restore AX
+            shr ax,4                ;Shift it over
+            loop p1_hloop           ;Loop back
+            ret                     ;Return
+
+EndP        xprintf
+
+End
+
+~~~C_CPULVL
+Ideal
+
+Public      cputype
+
+Model Tiny
+P186
+CodeSeg
+
+;**************************** cputype() -- Returns CPU level
+;int cputype(void);
+
+Proc        cputype
+
+            pusha              ;Save all registers
+
+            call p1_getcpu     ;Call main procedure
+
+            shr ax,8           ;AL = AH, AH = 0
+            mov bp,sp          ;Change pushed AX
+            mov [bp+14],ax
+            popa               ;Restore registers
+            ret                ;Return
+
+p1_getcpu:  mov cx,0121h       ;If CH can be shifted by 21h,
+            shl ch,cl          ;then it's an 8086, because
+            jz p1_8086         ;a 186+ limits shift counts.
+
+            push sp            ;If SP is pushed as its
+            pop ax             ;original value, then
+            cmp ax,sp          ;it's a 286+.
+            jne p1_186
+
+            pushf              ;Save flags
+            cli                ;No interrupts
+            pushf              ;AX = flags
+            pop ax
+            or ah,0F0h         ;Toggle IOPL bit
+            push ax            ;Flags = AX
+            popf
+            pushf              ;BX = flags
+            pop ax
+            popf               ;Restore flags
+            and ah,0F0h        ;If the bit was not
+            jne p1_286         ;reset, it's a 386+
+P386
+            push bp            ;Align stack to dword
+            mov bp,sp
+            and sp,0FFFCh
+            pushfd             ;Save eflags
+            cli                ;No interrupts
+            pushfd             ;EAX = eflags
+            pop eax
+            mov ebx,eax        ;EBX = eflags
+            xor eax,40000h     ;Toggle AC bit
+            push eax           ;Eflags = EAX
+            popfd
+            pushfd             ;EAX = eflags
+            pop eax
+            popfd              ;Restore eflags
+            mov sp,bp          ;Restore stack
+            pop bp
+            cmp eax,ebx        ;If the bit was not
+            je p1_386          ;reset, it's a 486+
+
+            pushfd             ;Save eflags
+            cli                ;No interrupts
+            pushfd             ;EAX = eflags
+            pop eax
+            xor eax,200000h    ;Toggle ID bit
+            push eax           ;Eflags = EAX
+            popfd
+            pushfd             ;EBX = eflags
+            pop ebx
+            popfd              ;Restore eflags
+            cmp eax,ebx        ;If the bit was not
+            jne p1_486         ;reset, it's a 586+
+P586
+            xor eax,eax        ;EAX = 1
+            inc ax
+            cpuid              ;Get CPU type
+            ret                ;Return
+P186
+p1_486:     mov ah,4           ;486, return 4
+            ret
+
+p1_386:     mov ah,3           ;386, return 3
+            ret
+
+p1_286:     mov ah,2           ;286, return 2
+            ret
+
+p1_186:     mov ah,1           ;186, return 1
+            ret
+
+p1_8086:    mov ah,0           ;8086, return 0
+            ret
+
+EndP        cputype
+
+End
+
+~~~C_FPULVL
+Ideal
+
+Public      fputype
+
+Model Tiny
+P186
+CodeSeg
+
+;**************************** fputype() -- Returns FPU level, init FPU
+;int fputype(void);                        -1 means no FPU
+
+Proc        fputype
+
+            pusha              ;Save all registers
+
+            call p2_getfpu     ;Get FPU type
+
+            mov bp,sp          ;Change pushed AX
+            mov [bp+14],ax
+            popa               ;Restore registers
+            ret                ;Return
+P8087
+p2_getfpu:  fninit             ;Initialize FPU
+            mov [Junk],55AAh   ;Set junk value
+            fnstsw [Junk]      ;Store status word
+            cmp [byte Junk],0  ;If it's not 0, no FPU
+            jne p2_nofpu
+            fnstcw [Junk]      ;Store control word
+            mov ax,[Junk]      ;If the bits are not the way
+            and ax,103Fh       ;they should be, no FPU
+            cmp ax,3Fh
+            jne p2_nofpu
+
+            and [Junk],0FF7Fh  ;Clear interrupt bit
+            fldcw [Junk]       ;Load control word
+            fdisi              ;Disable interrupts
+            fstcw [Junk]       ;Store control word
+            test [Junk],80h    ;If it changed, it's an 8087
+            jnz p2_8087
+P286
+P287
+            finit              ;Re-initialize
+            fld1               ;Divide 1 by 0 to get
+            fldz               ;a positive infinity
+            fdiv
+            fld st             ;Get a negative infinity
+            fchs
+            fcompp             ;Compare them
+            fstsw ax           ;Store status word
+            sahf               ;If the FPU thought that they
+            je p2_287          ;were equal, it's a 287
+
+            mov ax,3           ;387, return 3
+            finit              ;Init processor
+            ret
+
+p2_287:     mov ax,2           ;287, return 2
+            finit              ;Init processor
+            ret
+P186
+P8087
+p2_8087:    xor ax,ax          ;8087, return 0
+            finit              ;Init processor
+            ret
+
+p2_nofpu:   mov ax,-1          ;No FPU, return -1
+            ret
+
+Junk        dw 0
+
+EndP        fputype
+
+End
+
+~~~C_RAND
+Ideal
+
+Public      rand,srand
+
+Model Tiny
+P186
+CodeSeg
+
+RandNum     dw 0,0                  ;Random number
+
+;****************** rand() -- Returns a random number below N
+;int rand(int max);
+
+max         equ bp+4
+
+Proc        rand
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push bx cx dx           ;Save registers
+
+            mov ax,[RandNum]        ;CX:BX = RandNum * 0019660Dh + 10DCDh
+            mov dx,660Dh            ;low * low
+            mul dx
+            mov cx,dx               ;put it in CX:BX
+            xchg bx,ax
+            imul ax,[RandNum],0019h ;low * high, high * low
+            imul dx,[RandNum+2],660Dh
+            add cx,ax               ;add them in
+            add cx,dx
+            add bx,0DCDh            ;add in the 10DCDh
+            adc cx,0001h
+
+            mov [RandNum],bx        ;Save random number
+            mov [RandNum+2],cx
+
+            xchg ax,bx              ;Divide by maximum
+            xor dx,dx
+            div [word max]
+            xchg ax,cx
+            div [word max]
+
+            xchg ax,dx              ;AX = result
+            pop dx cx bx            ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        rand
+
+;****************** srand() -- Seeds the RNG with the time
+;void srand(void);
+
+Proc        srand
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            push ax es              ;Save registers
+
+            push 40h                ;ES = BIOS segment
+            pop es
+
+            mov ax,[es:6Ch]         ;Get low word
+            mov [RandNum],ax        ;Save it
+            mov ax,[es:6Eh]         ;Get high word
+            mov [RandNum+2],ax      ;Save it
+
+            pop es ax               ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret                     ;Return
+
+EndP        srand
+
+End
+
+~~~C_TRAND
+Ideal
+
+Extrn       ldiv:near
+Public      truerand
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** truerand() -- Returns a true random number below N
+;int truerand(int max);           Extremely slow, but it works
+
+max         equ bp+4
+
+Proc        truerand
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+
+            mov cx,100              ;100 iterations
+            cli                     ;No interrupts allowed
+
+p1_loop:    mov al,06h              ;Set timer command
+            out 43h,al
+            jmp $+2
+            in al,40h               ;Read LSB of timer
+            xor dl,al               ;XOR into DX
+            jmp $+2
+            in al,40h               ;Read MSB of timer
+            xor dl,al               ;XOR into DX
+
+            mov bx,dx               ;Rotating left by 11
+            mov di,si
+            shl dx,11               ;Get top halves
+            shl si,11
+            shr bx,5                ;Get bottom halves
+            shr di,5
+            or dx,di                ;OR them together
+            or si,bx
+            loop p1_loop            ;Loop back
+
+            sti                     ;Enable interrupts
+            xchg ax,dx              ;Divide by maximum
+            xor dx,dx
+            div [word max]
+            xchg ax,si
+            div [word max]
+
+            mov [bp-2],dx           ;Change pushed AX
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        truerand
+
+End
+
+~~~C_DELAY
+Ideal
+
+Public      delay
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** delay() -- Delay in milliseconds
+;void delay(int dtime);
+
+dtime       equ bp+4
+
+Proc        delay
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+
+            mov ax,[dtime]          ;AX = time in milliseconds
+            mov dx,1000             ;Multiply by 1000
+            mul dx                  ;DX:AX = time in microseconds
+
+            xchg ax,dx              ;CX:DX = time
+            xchg ax,cx
+            mov ah,86h              ;BIOS Delay Service
+            int 15h
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        delay
+
+End
+
+~~~C_SOUND
+Ideal
+
+Public      sound,nosound
+
+Model Tiny
+P186
+CodeSeg
+
+;****************** sound() -- Turn on speaker at specific frequency
+;void sound(int freq);
+
+freq        equ bp+4
+
+Proc        sound
+
+            push bp                 ;Set up stack frame
+            mov bp,sp
+            pusha                   ;Save registers
+
+            mov dx,12h              ;BX = 1193180 / freq.
+            mov ax,34DCh
+            mov bx,[freq]
+            div bx
+            xchg bx,ax
+
+            mov al,0B6h             ;Set frequency
+            out 43h,al
+            mov al,bl
+            out 42h,al
+            mov al,bh
+            out 42h,al
+
+            in al,61h               ;Turn on speaker
+            or al,3
+            out 61h,al
+
+            popa                    ;Restore registers
+            pop bp                  ;Delete stack frame
+            ret 2                   ;Return
+
+EndP        sound
+
+;****************** nosound() -- Turn off speaker
+;void nosound(void);
+
+Proc        nosound
+
+            push ax                 ;Save AX
+
+            in al,61h               ;Turn off speaker
+            and al,0FCh
+            out 61h,al
+
+            pop ax                  ;Restore AX
+            ret                     ;Return
+
+EndP        nosound
+
+End

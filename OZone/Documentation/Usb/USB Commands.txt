@@ -1,0 +1,113 @@
+﻿USB Standard Device Requests			RequestType				Request				Value							Index					Length					Data
+	GetStatus										0x80							0x00					0x00								0x00					0x02						DeviceStatus
+	ClearFeature									0x00							0x01					Feature							0x00					0x00						None
+	SetFeature										0x00							0x03					Feature							0x00					0x00						None
+	SetAddress									0x00							0x05					Address						0x00					0x00						None
+	GetDescriptor								0x80							0x06					Descriptor/Index			LanguageID		DescriptorLength	Descriptor
+	SetDescriptor									0x00							0x06					Descriptor/Index			LanguageID		DescriptorLength	Descriptor
+	GetConfiguration							0x80							0x08					0x00								0x00					0x01						Value
+	SetConfiguration							0x00							0x09					Value							0x00					0x00						None
+
+USB Standard Interface Requests			RequestType				Request				Value				Index					Length					Data
+	GetStatus										0x81							0x00					0x00					Interface			0x02						InterfaceStatus
+	ClearFeature									0x01							0x01					Feature				Interface			0x00						None
+	SetFeature										0x01							0x03					Feature				Interface			0x00						None
+	GetInterface									0x81							0x0A					Descriptor			Interface			0x01						Alternate
+	SetInterface									0x01							0x11					Alternate			Interface			0x00						None
+
+USB Standard Endpoint Requests		RequestType				Request				Value				Index					Length					Data
+	GetStatus										0x82							0x00					0x00					Endpoint			0x02						EndpointStatus
+	ClearFeature									0x02							0x01					Feature				Endpoint			0x00						None
+	SetFeature										0x02							0x03					Feature				Endpoint			0x00						None
+	SyncFrame										0x82							0x12					0x00					Endpoint			0x02						FrameNumber
+
+USB Setup Packet
+	RequestType						byte
+	Request								byte
+	Value								short
+	Index									short
+	Length								short
+
+USB Descriptor Packet
+	RequestType						byte
+	Request								byte
+	Descriptor Index				byte
+	Descriptor	Type					byte
+	Index									short
+	Length								short
+
+USB Descriptor
+	Length								byte
+	Type									byte
+
+USB Device Descriptor
+	Length								byte				18
+	Type									byte				0x01
+	Revision							short				0x0100
+	DeviceClass						byte
+	DeviceSubclass					byte
+	DeviceProtocol					byte
+	MaximumPacketSize			byte
+	VendorID							short
+	ProductID							short
+	Release								short
+	Manufacturer						byte
+	Product								byte
+	SerialNumber					byte
+	ConfigurationCount			byte
+
+USB Configuration Descriptor
+	Length								byte				9
+	Type									byte				0x02
+	TotalLength						short				9 (plus additional descriptor lengths)
+	InterfaceCount					byte
+	ConfigurationID					byte
+	Name								byte
+	Attributes							byte
+		Reserved							5 bits
+		RemoteWakeup					1 bit
+		SelfPowered						1 bit
+		Reserved							1 bit
+	MaximumPower*				byte
+	------------------------------------------
+	InterfaceDescriptors[InterfaceCount]
+		EndpointDescriptors[]
+
+* Maximum power is measured in 2 mA increments.
+
+USB Interface Descriptor
+	Length								byte				9
+	Type									byte				0x04
+	InterfaceNumber				byte
+	AlternateSetting					byte
+	EndpointCount					byte
+	InterfaceClass					byte
+	InterfaceSubclass				byte
+	InterfaceProtocol				byte
+	Name								byte
+
+USB Endpoint Descriptor
+	Length								byte				7
+	Type									byte				0x05
+	EndpointAddress				byte
+		Direction									1 bit		(0 = To Device, 1 = To Host)
+		Reserved									3 bits
+		EndpointNumber						4 bits
+	EndpointAttributes				byte
+		Reserved									2 bits
+		UsageType								2 bits	(0 = Data, 1 = Feedback, 2 = Explicit Feedback)
+		SynchronizationType					2 bits	(0 = None, 1 = Asynchronous, 2 = Adaptive, 3 = Synchronous)
+		TransferType								2 bits	(0 = Control, 1 = Isochronous, 2 = Bulk, 3 = Interrupt)
+	MaximumPacketSize			short
+	PollingFrameInterval			byte
+
+USB String Descriptor Zero
+	Length								byte				
+	Type									byte				0x03
+	LanguageCode					short[]
+
+USB String Descriptor
+	Length								byte				
+	Type									byte				0x03
+	Value								short[]
+

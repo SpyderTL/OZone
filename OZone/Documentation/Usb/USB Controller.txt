@@ -1,0 +1,68 @@
+﻿Controller
+	Send Start Of Frame Packet
+	Handle Non Periodic Transfers
+	Handle Periodic Transfers
+	Handle Additional Non Periodic Transfers
+	Remove Transfer Descriptor from Endpoint Queue
+	Update Endpoint Transfer Queue Head
+	Add Transfer Descriptor to Done Queue
+
+Packets
+	Token Packet
+		Type
+			Control
+			Bulk
+			Interrupt
+			Stream	
+		Direction
+		Device
+		Endpoint
+	Data Packet
+	Handshake Packet
+		Transfer Successful
+
+USB Packet IDs
+	Reserved
+		Reserved								0x0F
+	Token
+		Split										0x1E
+		Ping										0x2D
+		Out										0x87
+		In											0x96
+		StartOfFrame							0xA5
+		Setup									0xB4
+	Special
+		LowBandwidthPreamble			0x3C
+		SplitTransactionError				0x3C
+		Acknowledge							0x4B
+		NotAcknowledged					0x5A
+		NotReady								0x69
+		Stall										0x78
+	Data
+		Data0									0xC3
+		Data1									0xD2
+		Data2									0xE1
+		MData									0xF0
+
+Control Transfer
+	Setup Stage
+		SETUP { Address=DeviceAddress, Endpoint=0 }
+		DATA0 { SetupPacket { Length=8 } }
+		ACK
+	Data Stage
+		IN
+			DATA0
+				ACK
+			DATA1
+				ACK
+			STALL
+			NAK
+		OUT
+			DATA0
+				ACK
+			DATA1
+				ACK
+			STALL
+			NAK
+	Status Stage
+		

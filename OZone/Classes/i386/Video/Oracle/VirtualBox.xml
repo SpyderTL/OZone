@@ -1,0 +1,657 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="VirtualBox"
+	type="http://metalx.org/Video/Oracle/VirtualBox"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
+	xmlns:pcic="http://metalx.org/Pc/Pci/Command"
+	xmlns:pcir="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:pcis="http://metalx.org/Pc/Pci/Status"
+	xmlns:pcn="http://metalx.org/Amd/PcNet/Ports"
+	xmlns:pcs="http://metalx.org/Amd/PcNet/ControlStatus"
+	xmlns:pcb="http://metalx.org/Amd/PcNet/BusConfiguration"
+	xmlns:mix="http://metalx.org/Intel/Ac97/Mixer"
+	xmlns:bus="http://metalx.org/Intel/Ac97/BusMaster"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:short="http://metalx.org/i386/Functions/Short"
+	xmlns:con="http://metalx.org/i386/Functions/Console"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands">
+
+	<cls:field name="Device" type="http://metalx.org/Pci/PciDevice" offset="0"/>
+
+	<cls:method name="SetPixel" type="http://metalx.org/Video/VideoDevice">
+		<cls:parameter name="Pixel" type="http://metalx.org/Video/Graphics/Pixel"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>10</byte>
+
+		<cpu:AddOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-AXAddressPlusImmediate/>
+		<hex>e0000000</hex>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Test" type="http://metalx.org/Hexadecimal">
+		<!--Disable Video-->
+		<cpu:CopyImmediateToDX/>
+		<hex>000001ce</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<int>4</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Color Depth-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>3</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>32</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Height-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>2</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>768</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Width-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1024</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<!--Enable Video (Linear Buffer)-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>4</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:OrAXWithImmediate/>
+		<hex>00000040</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>ffffffff</hex>
+
+		<label id="nextFrame"/>
+
+		<cpu:CopyImmediateToDI/>
+		<hex>e0000000</hex>
+
+		<cpu:CopyImmediateToCX/>
+		<int>786432</int>
+
+		<cpu:Repeat/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<!--<cpu:ExclusiveOrAXWithImmediate/>
+		<hex>ffffffff</hex>-->
+
+		<cpu:IncrementAX/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="nextFrame" type="Relative8"/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="TestMmx" type="http://metalx.org/Hexadecimal">
+		<!--Disable Video-->
+		<cpu:CopyImmediateToDX/>
+		<hex>000001ce</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<int>4</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Color Depth-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>3</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>32</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Height-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>2</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>768</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Width-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1024</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<!--Enable Video (Linear Buffer)-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>4</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:OrAXWithImmediate/>
+		<hex>00000040</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>ffffffff</hex>
+
+		<label id="nextFrame"/>
+
+		<cpu:CopyImmediateToDI/>
+		<hex>e0000000</hex>
+
+		<cpu:CopyImmediateToCX/>
+		<int>393216</int>
+		
+		<cpu:CopyAXToAbsoluteMemory/>
+		<addressOf ref="color" type="Absolute32"/>
+		
+		<cpu:CopyAXToAbsoluteMemory/>
+		<addressOf ref="color" type="Absolute32" offset="4"/>
+		
+		<cpu:ExtendedOperator/>
+		<ext:CopyOperandToMmxRegister64 xmlns:ext="http://metalx.org/Intel/80386/ExtendedOperators"/>
+		<mmx:MM0-ImmediateAddress xmlns:mmx="http://metalx.org/Intel/80386/MmxOperands"/>
+		<addressOf ref="color" type="Absolute32"/>
+		
+		<label id="nextPixel"/>
+		
+		<cpu:ExtendedOperator/>
+		<ext:CopyMmxRegisterToOperand64 xmlns:ext="http://metalx.org/Intel/80386/ExtendedOperators"/>
+		<mmx:MM0-DIAddress xmlns:mmx="http://metalx.org/Intel/80386/MmxOperands"/>
+		
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIRegister/>
+		<byte>8</byte>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextPixel" type="Relative8"/>
+
+		<!--<cpu:Repeat/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>-->
+
+		<!--<cpu:ExclusiveOrAXWithImmediate/>
+		<hex>ffffffff</hex>-->
+
+		<cpu:IncrementAX/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="nextFrame" type="Relative8"/>
+
+		<cpu:PullDIFromStack/>
+		
+		<label id="color"/>
+		<hex>ffffffffffffffff</hex>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetVersion" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyImmediateToDX/>
+		<hex>000001ce</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetScreenWidth" type="http://metalx.org/Short">
+		<cpu:CopyImmediateToDX/>
+		<hex>000001ce</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<short:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetScreenHeight" type="http://metalx.org/Short">
+		<cpu:CopyImmediateToDX/>
+		<hex>000001ce</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<int>2</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<short:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetScreenBitsPerPixel" type="http://metalx.org/Short">
+		<cpu:CopyImmediateToDX/>
+		<hex>000001ce</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<int>3</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<short:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsEnabled" type="http://metalx.org/Boolean">
+		<cpu:CopyImmediateToDX/>
+		<hex>000001ce</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<int>4</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Enable" type="http://metalx.org/Video/Oracle/VirtualBox">
+		<cpu:CopyImmediateToDX/>
+		<hex>000001ce</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<int>4</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:OrAXWithImmediate/>
+		<hex>00000040</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Disable" type="http://metalx.org/Video/Oracle/VirtualBox">
+		<cpu:CopyImmediateToDX/>
+		<hex>000001ce</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<int>4</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="SetVideoMode" type="http://metalx.org/Video/Oracle/VirtualBox">
+		<cls:parameter name="Width" type="http://metalx.org/Short"/>
+		<cls:parameter name="Height" type="http://metalx.org/Short"/>
+		<cls:parameter name="ColorBitsPerPixel" type="http://metalx.org/Short"/>
+
+		<!--Disable Video-->
+		<cpu:CopyImmediateToDX/>
+		<hex>000001ce</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<int>4</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Color Depth-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>3</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Height-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>2</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Screen Width-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<!--Enable Video-->
+		<cpu:DecrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>4</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:OrAXWithImmediate/>
+		<hex>00000040</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>12</byte>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="deviceName" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="deviceName">VirtualBox Graphics Adapter</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

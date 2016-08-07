@@ -1,0 +1,1240 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Video"
+	type="http://metalx.org/Video"
+	static="true"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/i286/Structures/Class"
+	xmlns:mm="http://metalx.org/i286/Functions/MemoryManager"
+	xmlns:str="http://metalx.org/i286/Functions/Stream"
+	xmlns:lst="http://metalx.org/i286/Functions/List"
+	xmlns:cat="http://metalx.org/i286/Functions/Catalog"
+	xmlns:sys="http://metalx.org/i286/Functions/System"
+	xmlns:hex="http://metalx.org/i286/Functions/Hexadecimal"
+	xmlns:ver="http://metalx.org/i286/Functions/Version"
+	xmlns:bool="http://metalx.org/i286/Functions/Boolean"
+	xmlns:obj="http://metalx.org/i286/Functions/Object"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:vid="http://metalx.org/Pc/Bios/Video"
+	xmlns:vesa="http://metalx.org/Pc/Vesa/SuperVga"
+	xmlns:mode="http://metalx.org/Pc/Vesa/SuperVga/Mode"
+	xmlns:info="http://metalx.org/Pc/Vesa/SuperVga/Information"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:imm="http://metalx.org/Intel/80286/Immediate"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:logic="http://metalx.org/Intel/80286/Logic"
+	xmlns:shift="http://metalx.org/Intel/80286/Shift">
+
+	<cls:method name="IsVesaInstalled" type="http://metalx.org/Boolean" static="true">
+		<scope>
+			<cpu:CopyImmediateToAX/>
+			<vesa:GetSuperVgaInformation/>
+
+			<cpu:CopyImmediateToDI/>
+			<hex>FE00</hex>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<cpu:CompareAXToImmediate/>
+			<hex>004F</hex>
+
+			<cpu:BranchToRelativeIfNotEqual8/>
+			<addressOf ref="vesaIsNotInstalled" type="Relative8"/>
+
+			<cpu:JumpToRelative16/>
+			<addressOf ref="vesaIsInstalled" type="Relative16"/>
+
+			<label id="vesaIsNotInstalled"/>
+			
+			<cpu:CopyImmediateToAL/>
+			<sbyte>0</sbyte>
+
+			<sys:GetMemoryManager/>
+
+			<bool:CreateObject/>
+
+			<cpu:CopyRegisterToOperand16/>
+			<op:DI-SIRegister/>
+
+			<cpu:ReturnToNearCaller/>
+
+			<label id="vesaIsInstalled"/>
+
+			<cpu:CopyImmediateToAL/>
+			<sbyte>-1</sbyte>
+
+			<sys:GetMemoryManager/>
+
+			<bool:CreateObject/>
+
+			<cpu:CopyRegisterToOperand16/>
+			<op:DI-SIRegister/>
+
+			<cpu:ReturnToNearCaller/>
+		</scope>
+	</cls:method>
+
+	<cls:method name="GetVesaVersion" type="http://metalx.org/Version" static="true">
+		<cpu:CopyImmediateToAX/>
+		<vesa:GetSuperVgaInformation/>
+
+		<cpu:CopyImmediateToDI/>
+		<hex>FE00</hex>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:VideoFunctions/>
+
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<hex>FE04</hex>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:AX-BXRegister/>
+
+		<sys:GetMemoryManager/>
+
+		<ver:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetVesaCopyright" type="http://metalx.org/Stream" static="true">
+		<scope>
+			<cpu:PushDSToStack/>
+
+			<sys:GetMemoryManager/>
+
+			<mm:CheckOut length="512"/>
+
+			<cpu:PushDIToStack/>
+
+			<cpu:CopyImmediateToAX/>
+			<vesa:GetSuperVgaInformation/>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<sys:GetMemoryManager/>
+
+			<str:Create length="80"/>
+
+			<cpu:PullSIFromStack/>
+
+			<cpu:MathImmediate8ToOperand16Function/>
+			<math:AddToSIRegister/>
+			<hex>08</hex>
+
+			<cpu:CopyOperandToRegister16/>
+			<op:AX-SIAddress/>
+
+			<!--Save Segment-->
+			<cpu:PushAXToStack/>
+
+			<cpu:MathImmediate8ToOperand16Function/>
+			<math:SubtractFromSIRegister/>
+			<byte>2</byte>
+
+			<cpu:CopyOperandToRegister16/>
+			<op:SI-SIAddress/>
+
+			<!--Restore Segment-->
+			<cpu:PullDSFromStack/>
+			<cpu:PushDIToStack/>
+
+			<label id="copyByte"/>
+
+			<cpu:MathImmediateToOperandFunction8/>
+			<math:CompareWithSIAddress/>
+			<byte>0</byte>
+
+			<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+			<cpu:BranchToRelativeIfNotEqual8/>
+			<addressOf ref="copyByte" type="Relative8"/>
+
+			<cpu:PullDIFromStack/>
+			<cpu:PullDSFromStack/>
+
+			<!--Create Object-->
+			<sys:GetMemoryManager/>
+
+			<str:CreateObject/>
+
+			<cpu:CopyRegisterToOperand16/>
+			<op:DI-SIRegister/>
+
+			<cpu:ReturnToNearCaller/>
+		</scope>
+	</cls:method>
+
+	<cls:method name="GetVesaVendor" type="http://metalx.org/Stream" static="true">
+		<scope>
+			<cpu:PushDSToStack/>
+
+			<sys:GetMemoryManager/>
+
+			<mm:CheckOut length="512"/>
+
+			<cpu:Operand32/>
+			<cpu:CopyImmediateToOperandFunction16/>
+			<imm:CopyImmediateToDIAddress/>
+			<string>VBE2</string>
+
+			<cpu:PushDIToStack/>
+
+			<cpu:CopyImmediateToAX/>
+			<vesa:GetSuperVgaInformation/>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<sys:GetMemoryManager/>
+
+			<str:Create length="80"/>
+
+			<cpu:PullSIFromStack/>
+
+			<cpu:MathImmediate8ToOperand16Function/>
+			<math:AddToSIRegister/>
+			<hex>18</hex>
+
+			<cpu:CopyOperandToRegister16/>
+			<op:AX-SIAddress/>
+
+			<!--Save Segment-->
+			<cpu:PushAXToStack/>
+
+			<cpu:MathImmediate8ToOperand16Function/>
+			<math:SubtractFromSIRegister/>
+			<byte>2</byte>
+
+			<cpu:CopyOperandToRegister16/>
+			<op:SI-SIAddress/>
+
+			<!--Restore Segment-->
+			<cpu:PullDSFromStack/>
+			<cpu:PushDIToStack/>
+
+			<label id="copyByte"/>
+
+			<cpu:MathImmediateToOperandFunction8/>
+			<math:CompareWithSIAddress/>
+			<byte>0</byte>
+
+			<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+			<cpu:BranchToRelativeIfNotEqual8/>
+			<addressOf ref="copyByte" type="Relative8"/>
+
+			<cpu:PullDIFromStack/>
+			<cpu:PullDSFromStack/>
+
+			<!--Create Object-->
+			<sys:GetMemoryManager/>
+
+			<str:CreateObject/>
+
+			<cpu:CopyRegisterToOperand16/>
+			<op:DI-SIRegister/>
+
+			<cpu:ReturnToNearCaller/>
+		</scope>
+	</cls:method>
+
+	<cls:method name="GetVesaProduct" type="http://metalx.org/Stream" static="true">
+		<scope>
+			<cpu:PushDSToStack/>
+
+			<sys:GetMemoryManager/>
+
+			<mm:CheckOut length="512"/>
+
+			<cpu:Operand32/>
+			<cpu:CopyImmediateToOperandFunction16/>
+			<imm:CopyImmediateToDIAddress/>
+			<string>VBE2</string>
+
+			<cpu:PushDIToStack/>
+
+			<cpu:CopyImmediateToAX/>
+			<vesa:GetSuperVgaInformation/>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<sys:GetMemoryManager/>
+
+			<str:Create length="80"/>
+
+			<cpu:PullSIFromStack/>
+
+			<cpu:MathImmediate8ToOperand16Function/>
+			<math:AddToSIRegister/>
+			<hex>1c</hex>
+
+			<cpu:CopyOperandToRegister16/>
+			<op:AX-SIAddress/>
+
+			<!--Save Segment-->
+			<cpu:PushAXToStack/>
+
+			<cpu:MathImmediate8ToOperand16Function/>
+			<math:SubtractFromSIRegister/>
+			<byte>2</byte>
+
+			<cpu:CopyOperandToRegister16/>
+			<op:SI-SIAddress/>
+
+			<!--Restore Segment-->
+			<cpu:PullDSFromStack/>
+			<cpu:PushDIToStack/>
+
+			<label id="copyByte"/>
+
+			<cpu:MathImmediateToOperandFunction8/>
+			<math:CompareWithSIAddress/>
+			<byte>0</byte>
+
+			<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+			<cpu:BranchToRelativeIfNotEqual8/>
+			<addressOf ref="copyByte" type="Relative8"/>
+
+			<cpu:PullDIFromStack/>
+			<cpu:PullDSFromStack/>
+
+			<!--Create Object-->
+			<sys:GetMemoryManager/>
+
+			<str:CreateObject/>
+
+			<cpu:CopyRegisterToOperand16/>
+			<op:DI-SIRegister/>
+
+			<cpu:ReturnToNearCaller/>
+		</scope>
+	</cls:method>
+
+	<cls:method name="GetVesaProductRevision" type="http://metalx.org/Stream" static="true">
+		<scope>
+			<cpu:PushDSToStack/>
+
+			<sys:GetMemoryManager/>
+
+			<mm:CheckOut length="512"/>
+
+			<cpu:Operand32/>
+			<cpu:CopyImmediateToOperandFunction16/>
+			<imm:CopyImmediateToDIAddress/>
+			<string>VBE2</string>
+
+			<cpu:PushDIToStack/>
+
+			<cpu:CopyImmediateToAX/>
+			<vesa:GetSuperVgaInformation/>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<sys:GetMemoryManager/>
+
+			<str:Create length="80"/>
+
+			<cpu:PullSIFromStack/>
+
+			<cpu:MathImmediate8ToOperand16Function/>
+			<math:AddToSIRegister/>
+			<hex>20</hex>
+
+			<cpu:CopyOperandToRegister16/>
+			<op:AX-SIAddress/>
+
+			<!--Save Segment-->
+			<cpu:PushAXToStack/>
+
+			<cpu:MathImmediate8ToOperand16Function/>
+			<math:SubtractFromSIRegister/>
+			<byte>2</byte>
+
+			<cpu:CopyOperandToRegister16/>
+			<op:SI-SIAddress/>
+
+			<!--Restore Segment-->
+			<cpu:PullDSFromStack/>
+			<cpu:PushDIToStack/>
+
+			<label id="copyByte"/>
+
+			<cpu:MathImmediateToOperandFunction8/>
+			<math:CompareWithSIAddress/>
+			<byte>0</byte>
+
+			<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+			<cpu:BranchToRelativeIfNotEqual8/>
+			<addressOf ref="copyByte" type="Relative8"/>
+
+			<cpu:PullDIFromStack/>
+			<cpu:PullDSFromStack/>
+
+			<!--Create Object-->
+			<sys:GetMemoryManager/>
+
+			<str:CreateObject/>
+
+			<cpu:CopyRegisterToOperand16/>
+			<op:DI-SIRegister/>
+
+			<cpu:ReturnToNearCaller/>
+		</scope>
+	</cls:method>
+
+	<cls:method name="GetCapabilities" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToAX/>
+		<vesa:GetSuperVgaInformation/>
+
+		<cpu:CopyImmediateToDI/>
+		<hex>9000</hex>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:VideoFunctions/>
+
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<hex>900a</hex>
+
+		<sys:GetMemoryManager/>
+
+		<hex:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetVideoMode" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToAH/>
+		<vid:GetVideoMode/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:VideoFunctions/>
+
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<sys:GetMemoryManager/>
+
+		<hex:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetVesaVideoMode" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToAX/>
+		<vesa:GetCurrentVideoMode/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:VideoFunctions/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:BX-AXRegister/>
+
+		<sys:GetMemoryManager/>
+
+		<hex:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetVesaVideoModes" type="http://metalx.org/List" static="true">
+		<!--Find VideoMode class-->
+		<sys:GetCatalog/>
+
+		<cpu:PushESToStack/>
+
+		<cpu:PushImmediateToStack16/>
+		<addressOf ref="videoModeType" type="Segment16"/>
+
+		<cpu:PullESFromStack/>
+		
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="videoModeType" type="Absolute16"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="videoModeClass" type="Absolute16"/>
+
+		<cpu:PullESFromStack/>
+		
+		<sys:GetMemoryManager/>
+
+		<mm:CheckOut length="512"/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-ImmediateAddress/>
+		<addressOf ref="buffer" type="Absolute16"/>
+
+		<cpu:CopyImmediateToAX/>
+		<vesa:GetSuperVgaInformation/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:VideoFunctions/>
+
+		<!--Get video mode list-->
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:AddToDIRegister/>
+		<info:SupportedVideoModeListPointer/>
+
+		<cpu:CopyOperandToRegister16/>
+		<op:SI-DIAddress/>
+
+		<cpu:IncrementDI/>
+		<cpu:IncrementDI/>
+
+		<cpu:PushDSToStack/>
+		<cpu:PullBXFromStack/>
+
+		<cpu:LogicFunction/>
+		<logic:PushDIAddress/>
+		<cpu:PullDSFromStack/>
+
+		<cpu:CopyImmediateToCX/>
+		<short>0</short>
+
+		<!--Store video modes-->
+		<label id="storeVideoModes"/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>ffff</hex>
+
+		<cpu:BranchToRelativeIfEqual8/>
+		<addressOf ref="createListStructure" type="Relative8"/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:IncrementCX/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="storeVideoModes" type="Relative8"/>
+
+		<!--Create List structure-->
+		<label id="createListStructure"/>
+
+		<cpu:PushBXToStack/>
+		<cpu:PullDSFromStack/>
+
+		<sys:GetMemoryManager/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:CX-AXRegister/>
+
+		<lst:Create/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-DXRegister/>
+
+		<!--Create VideoMode structure-->
+		<label id="createVideoModeStructure"/>
+
+		<sys:GetMemoryManager/>
+
+		<mm:CheckOut length="7"/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:AX-DIAddress/>
+
+		<cpu:PushDIToStack/>
+
+		<!--Get video mode information-->
+		<cpu:PushCXToStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:AX-CXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<vesa:GetVideoModeInformation/>
+
+		<cpu:CopyOperandToRegister16/>
+		<op:DI-ImmediateAddress/>
+		<addressOf ref="buffer" type="Absolute16"/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:VideoFunctions/>
+
+		<cpu:PullCXFromStack/>
+
+		<!--Get width-->
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:AddToDIRegister/>
+		<mode:Width/>
+
+		<cpu:CopyOperandToRegister16/>
+		<op:AX-DIAddress/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PushDIToStack/>
+
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:AddToDIRegister/>
+		<byte>2</byte>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:AX-DIAddress/>
+
+		<!--Get height-->
+		<cpu:CopyOperandToRegister16/>
+		<op:DI-ImmediateAddress/>
+		<addressOf ref="buffer" type="Absolute16"/>
+
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:AddToDIRegister/>
+		<mode:Height/>
+
+		<cpu:CopyOperandToRegister16/>
+		<op:AX-DIAddress/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PushDIToStack/>
+
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:AddToDIRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:AX-DIAddress/>
+
+		<!--Get bits per pixel-->
+		<cpu:CopyOperandToRegister16/>
+		<op:DI-ImmediateAddress/>
+		<addressOf ref="buffer" type="Absolute16"/>
+
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:AddToDIRegister/>
+		<mode:BitsPerPixel/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-DIAddress/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PushDIToStack/>
+
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:AddToDIRegister/>
+		<byte>6</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddress/>
+
+		<!--Create VideoMode object-->
+		<cpu:CopyOperandToRegister16/>
+		<op:BX-ImmediateAddress/>
+		<addressOf ref="videoModeClass" type="Absolute16"/>
+
+		<sys:GetMemoryManager/>
+
+		<cpu:CopyImmediateToAX/>
+		<short>7</short>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:PushDXToStack/>
+		<obj:Create/>
+		<cpu:PullDXFromStack/>
+
+		<!--Add VideoMode object to List structure-->
+		<cpu:CopyRegisterToOperand16/>
+		<op:CX-AXRegister/>
+
+		<cpu:DecrementAX/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DX-SIRegister/>
+
+		<lst:SetItem/>
+
+		<cpu:DecrementCX/>
+
+		<cpu:BranchToRelativeIfNegative8/>
+		<addressOf ref="createListObject" type="Relative8"/>
+		
+		<!--<cpu:LoopToRelative8/>-->
+		<cpu:JumpToRelative16/>
+		<addressOf ref="createVideoModeStructure" type="Relative16"/>
+
+		<!--Create List object-->
+		<label id="createListObject"/>
+		
+		<cpu:CopyRegisterToOperand16/>
+		<op:DX-DIRegister/>
+
+		<sys:GetMemoryManager/>
+
+		<lst:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="videoModeType"/>
+		<short>26</short>
+		<string>http://metalx.org/VideoMode</string>
+
+		<label id="videoModeClass"/>
+		<hex>0000</hex>
+
+		<label id="buffer"/>
+		<hex>0000</hex>
+	</cls:method>
+
+	<cls:method name="FillScreen" static="true">
+		<scope>
+			<cpu:CopyImmediateToAH/>
+			<vid:SetVideoMode/>
+
+			<cpu:CopyImmediateToAL/>
+			<hex>11</hex>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<cpu:PushESToStack/>
+
+			<cpu:PushImmediateToStack16/>
+			<hex>a000</hex>
+
+			<cpu:PullESFromStack/>
+
+			<cpu:Operand32/>
+			<cpu:CopyImmediateToAX/>
+			<hex>ffff</hex>
+			<hex>ffff</hex>
+
+			<label id="fillScreen"/>
+
+			<cpu:CopyImmediateToCX/>
+			<short>9600</short>
+
+			<cpu:CopyImmediateToDI/>
+			<short>0</short>
+
+			<cpu:Repeat/>
+			<cpu:Operand32/>
+			<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+			<cpu:JumpToRelative8/>
+			<addressOf ref="fillScreen" type="Relative8"/>
+
+			<cpu:PullESFromStack/>
+
+			<cpu:ReturnToNearCaller/>
+		</scope>
+	</cls:method>
+
+	<cls:method name="FillRectangle" static="true">
+		<scope>
+			<cpu:CopyImmediateToAH/>
+			<vid:SetVideoMode/>
+
+			<cpu:CopyImmediateToAL/>
+			<hex>11</hex>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<cpu:PushESToStack/>
+
+			<cpu:PushImmediateToStack16/>
+			<hex>a000</hex>
+
+			<cpu:PullESFromStack/>
+
+			<cpu:CopyImmediateToAL/>
+			<hex>ff</hex>
+
+			<label id="drawRectangle"/>
+			<cpu:CopyImmediateToDI/>
+			<short>9620</short>
+
+			<cpu:CopyImmediateToDX/>
+			<short>240</short>
+
+			<label id="drawLine"/>
+
+			<cpu:CopyImmediateToCX/>
+			<short>40</short>
+
+			<cpu:Repeat/>
+			<cpu:CopyALToDIAddressAndIncrementDI/>
+
+			<cpu:MathImmediateToOperandFunction16/>
+			<math:AddToDIRegister/>
+			<short>40</short>
+
+			<cpu:DecrementDX/>
+
+			<cpu:BranchToRelativeIfNotZero8/>
+			<addressOf ref="drawLine" type="Relative8"/>
+
+			<cpu:JumpToRelative8/>
+			<addressOf ref="drawRectangle" type="Relative8"/>
+
+			<cpu:PullESFromStack/>
+
+			<cpu:ReturnToNearCaller/>
+		</scope>
+	</cls:method>
+
+	<cls:method name="FillScreenSlow" static="true">
+		<scope>
+			<cpu:CopyImmediateToAH/>
+			<vid:SetVideoMode/>
+
+			<cpu:CopyImmediateToAL/>
+			<hex>11</hex>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<cpu:CopyImmediateToAH/>
+			<vid:WritePixel/>
+
+			<cpu:CopyImmediateToAL/>
+			<hex>ff</hex>
+
+			<cpu:CopyImmediateToBH/>
+			<byte>0</byte>
+
+			<cpu:CopyImmediateToDX/>
+			<short>0</short>
+
+			<label id="nextRow"/>
+
+			<cpu:CopyImmediateToCX/>
+			<short>0</short>
+
+			<label id="nextColumn"/>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<cpu:IncrementCX/>
+
+			<cpu:MathImmediateToOperandFunction16/>
+			<math:CompareWithCXRegister/>
+			<short>640</short>
+
+			<cpu:BranchToRelativeIfNotEqual8/>
+			<addressOf ref="nextColumn" type="Relative8"/>
+
+			<cpu:IncrementDX/>
+
+			<cpu:MathImmediateToOperandFunction16/>
+			<math:CompareWithDXRegister/>
+			<short>480</short>
+
+			<cpu:BranchToRelativeIfNotEqual8/>
+			<addressOf ref="nextRow" type="Relative8"/>
+
+			<cpu:CopyImmediateToAH/>
+			<vid:SetVideoMode/>
+
+			<cpu:CopyImmediateToAL/>
+			<hex>03</hex>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<cpu:ReturnToNearCaller/>
+		</scope>
+	</cls:method>
+
+	<cls:method name="TestText" static="true">
+		<scope>
+			<cpu:PushESToStack/>
+
+			<cpu:PushImmediateToStack16/>
+			<hex>b800</hex>
+
+			<cpu:PullESFromStack/>
+
+			<cpu:CopyImmediateToAL/>
+			<string> </string>
+
+			<cpu:CopyImmediateToAH/>
+			<hex>FF</hex>
+
+			<label id="drawScreen"/>
+
+			<cpu:CopyImmediateToDI/>
+			<hex>0000</hex>
+
+			<cpu:CopyImmediateToCX/>
+			<short>2000</short>
+
+			<cpu:Repeat/>
+			<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+			<cpu:JumpToRelative8/>
+			<addressOf ref="drawScreen" type="Relative8"/>
+
+			<cpu:PullESFromStack/>
+
+			<cpu:ReturnToNearCaller/>
+		</scope>
+	</cls:method>
+
+	<cls:method name="TestVSync" static="true">
+		<scope>
+			<cpu:CopyImmediateToAH/>
+			<vid:SetVideoMode/>
+
+			<cpu:CopyImmediateToAL/>
+			<hex>11</hex>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<cpu:PushESToStack/>
+
+			<cpu:PushImmediateToStack16/>
+			<hex>a000</hex>
+
+			<cpu:PullESFromStack/>
+
+			<cpu:Operand32/>
+			<cpu:CopyImmediateToAX/>
+			<hex>ffff</hex>
+			<hex>ffff</hex>
+
+			<label id="fillScreen"/>
+
+			<cpu:PushAXToStack/>
+
+			<cpu:CopyImmediateToAH/>
+			<byte>0</byte>
+
+			<cpu:CopyImmediateToDX/>
+			<hex>03da</hex>
+
+			<label id="waitForVSyncOff"/>
+
+			<cpu:ReadFromDXPortToAL/>
+
+			<cpu:TestALWithImmediate/>
+			<binary>00001000</binary>
+
+			<cpu:BranchToRelativeIfNotZero8/>
+			<addressOf ref="waitForVSyncOff" type="Relative8"/>
+
+			<label id="waitForVSyncOn"/>
+
+			<cpu:ReadFromDXPortToAL/>
+
+			<cpu:TestALWithImmediate/>
+			<binary>00001000</binary>
+
+			<cpu:BranchToRelativeIfZero8/>
+			<addressOf ref="waitForVSyncOn" type="Relative8"/>
+
+			<cpu:PullAXFromStack/>
+
+			<cpu:CopyImmediateToCX/>
+			<short>9600</short>
+
+			<cpu:CopyImmediateToDI/>
+			<short>0</short>
+
+			<cpu:Repeat/>
+			<cpu:Operand32/>
+			<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+			<cpu:Operand32/>
+			<cpu:MathImmediateToOperandFunction16/>
+			<math:ExclusiveOrWithAXRegister/>
+			<hex>ffff</hex>
+			<hex>ffff</hex>
+
+			<cpu:JumpToRelative8/>
+			<addressOf ref="fillScreen" type="Relative8"/>
+
+			<cpu:PullESFromStack/>
+
+			<cpu:ReturnToNearCaller/>
+		</scope>
+	</cls:method>
+
+	<cls:method name="TestHighResolution" static="true">
+		<scope>
+			<cpu:CopyImmediateToAX/>
+			<vesa:SetVideoMode/>
+
+			<cpu:CopyImmediateToBX/>
+			<hex>011B</hex>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<cpu:PushESToStack/>
+
+			<cpu:PushImmediateToStack16/>
+			<hex>a000</hex>
+
+			<cpu:PullESFromStack/>
+
+			<label id="drawScreen"/>
+
+			<cpu:CopyImmediateToDX/>
+			<short>0</short>
+
+			<label id="drawPage"/>
+
+			<cpu:CopyImmediateToAX/>
+			<vesa:VideoWindow/>
+
+			<cpu:CopyImmediateToBH/>
+			<byte>0</byte>
+
+			<cpu:CopyImmediateToBL/>
+			<byte>0</byte>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<cpu:CopyImmediateToCX/>
+			<hex>4000</hex>
+
+			<cpu:CopyImmediateToDI/>
+			<short>0</short>
+
+			<cpu:Operand32/>
+			<cpu:CopyImmediateToAX/>
+			<hex>FFFF</hex>
+			<hex>FFFF</hex>
+
+			<cpu:Repeat/>
+			<cpu:Operand32/>
+			<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+			<cpu:IncrementDX/>
+
+			<cpu:MathImmediate8ToOperand16Function/>
+			<math:CompareWithDXRegister/>
+			<byte>60</byte>
+
+			<cpu:BranchToRelativeIfNotEqual8/>
+			<addressOf ref="drawPage" type="Relative8"/>
+
+			<cpu:JumpToRelative8/>
+			<addressOf ref="drawScreen" type="Relative8"/>
+
+			<cpu:PullESFromStack/>
+
+			<cpu:CopyImmediateToAX/>
+			<vesa:SetVideoMode/>
+
+			<cpu:CopyImmediateToBX/>
+			<hex>0003</hex>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<cpu:ReturnToNearCaller/>
+		</scope>
+	</cls:method>
+
+	<cls:method name="TestColor" static="true">
+		<scope>
+			<cpu:CopyImmediateToAX/>
+			<vesa:SetVideoMode/>
+
+			<cpu:CopyImmediateToBX/>
+			<hex>010E</hex>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<cpu:PushESToStack/>
+
+			<cpu:PushImmediateToStack16/>
+			<hex>a000</hex>
+
+			<cpu:PullESFromStack/>
+
+			<label id="drawColor"/>
+
+			<!--Draw Bank 0-->
+			<cpu:CopyImmediateToAX/>
+			<vesa:VideoWindow/>
+
+			<cpu:CopyImmediateToBL/>
+			<byte>0</byte>
+
+			<cpu:CopyImmediateToBH/>
+			<byte>0</byte>
+
+			<cpu:CopyImmediateToDX/>
+			<short>0</short>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<cpu:CopyImmediateToDI/>
+			<short>0</short>
+
+			<cpu:CopyImmediateToCX/>
+			<hex>8000</hex>
+
+			<cpu:CopyImmediateToAX/>
+			<binary>00011111</binary>
+			<binary>00000000</binary>
+
+			<cpu:Repeat/>
+			<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+			<!--Draw Bank 1-->
+			<cpu:CopyImmediateToAX/>
+			<vesa:VideoWindow/>
+
+			<cpu:CopyImmediateToBL/>
+			<byte>0</byte>
+
+			<cpu:CopyImmediateToBH/>
+			<byte>0</byte>
+
+			<cpu:CopyImmediateToDX/>
+			<short>1</short>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<cpu:CopyImmediateToDI/>
+			<short>0</short>
+
+			<cpu:CopyImmediateToCX/>
+			<hex>7a00</hex>
+
+			<cpu:CopyImmediateToAX/>
+			<binary>00011111</binary>
+			<binary>00000000</binary>
+
+			<cpu:Repeat/>
+			<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+			<cpu:JumpToRelative8/>
+			<addressOf ref="drawColor" type="Relative8"/>
+
+			<cpu:PullESFromStack/>
+
+			<cpu:CopyImmediateToAX/>
+			<vesa:SetVideoMode/>
+
+			<cpu:CopyImmediateToBX/>
+			<hex>0003</hex>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<cpu:ReturnToNearCaller/>
+		</scope>
+	</cls:method>
+
+	<cls:method name="TestHighResolutionColor" static="true">
+		<scope>
+			<cpu:CopyImmediateToAX/>
+			<vesa:SetVideoMode/>
+
+			<cpu:CopyImmediateToBX/>
+			<hex>011A</hex>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<cpu:PushESToStack/>
+
+			<cpu:PushImmediateToStack16/>
+			<hex>a000</hex>
+
+			<cpu:PullESFromStack/>
+
+			<label id="drawScreen"/>
+
+			<cpu:CopyImmediateToDX/>
+			<short>0</short>
+
+			<label id="drawPage"/>
+
+			<cpu:CopyImmediateToAX/>
+			<vesa:VideoWindow/>
+
+			<cpu:CopyImmediateToBH/>
+			<byte>0</byte>
+
+			<cpu:CopyImmediateToBL/>
+			<byte>0</byte>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<cpu:CopyImmediateToCX/>
+			<hex>4000</hex>
+
+			<cpu:CopyImmediateToDI/>
+			<short>0</short>
+
+			<cpu:Operand32/>
+			<cpu:CopyImmediateToAX/>
+			<binary>00000111</binary>
+			<binary>11100000</binary>
+			<binary>00000111</binary>
+			<binary>11100000</binary>
+
+			<cpu:Repeat/>
+			<cpu:Operand32/>
+			<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+			<cpu:IncrementDX/>
+
+			<cpu:MathImmediate8ToOperand16Function/>
+			<math:CompareWithDXRegister/>
+			<byte>40</byte>
+
+			<cpu:BranchToRelativeIfNotEqual8/>
+			<addressOf ref="drawPage" type="Relative8"/>
+
+			<cpu:JumpToRelative8/>
+			<addressOf ref="drawScreen" type="Relative8"/>
+
+			<cpu:PullESFromStack/>
+
+			<cpu:CopyImmediateToAX/>
+			<vesa:SetVideoMode/>
+
+			<cpu:CopyImmediateToBX/>
+			<hex>0003</hex>
+
+			<cpu:CallImmediate8Interrupt/>
+			<bios:VideoFunctions/>
+
+			<cpu:ReturnToNearCaller/>
+		</scope>
+	</cls:method>
+</cls:class>

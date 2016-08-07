@@ -1,0 +1,330 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="FdcFloppyDrive"
+	type="http://metalx.org/Storage/Fdc/FdcFloppyDrive"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:flp="http://metalx.org/i386/Functions/FloppyDrive"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
+	xmlns:cfg="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:dsk="http://metalx.org/Pc/Floppy/Ports"
+	xmlns:fcmd="http://metalx.org/Pc/Floppy/Commands"
+	xmlns:fdr="http://metalx.org/Pc/Floppy/DataRate"
+	xmlns:fdo="http://metalx.org/Pc/Floppy/DigitalOutput"
+	xmlns:fst="http://metalx.org/Pc/Floppy/Status"
+	xmlns:kbd="http://metalx.org/Pc/Keyboard">
+
+	<var:string id="fdcFloppyDriveBlockIterator">http://metalx.org/Storage/Fdc/FdcFloppyDriveBlockIterator</var:string>
+
+	<cls:field name="Port" type="http://metalx.org/Hexadecimal" offset="0"/>
+	<cls:field name="Channel" type="http://metalx.org/Byte" offset="4"/>
+
+	<cls:method name="FirstBlock" type="http://metalx.org/Storage/Fdc/FdcFloppyDriveBlockIterator">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<mm:CheckOut length="9"/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddress/>
+		<int>0</int>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="fdcFloppyDriveBlockIterator" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cat:FindType/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>9</int>
+
+		<cpu:PullBXFromStack/>
+		<cpu:PullDIFromStack/>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="LastBlock" type="http://metalx.org/Storage/Fdc/FdcFloppyDriveBlockIterator">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<mm:CheckOut length="9"/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddress/>
+		<int>2879</int>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="fdcFloppyDriveBlockIterator" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cat:FindType/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>9</int>
+
+		<cpu:PullBXFromStack/>
+		<cpu:PullDIFromStack/>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<!--<cls:method name="WriteBlock" type="http://metalx.org/String" static="true">
+		
+
+		<mm:CheckOut length="512"/>
+
+		<cpu:CopyImmediateToAL/>
+		<string>*</string>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToCX/>
+		<int>512</int>
+
+		<cpu:Repeat/>
+		<cpu:CopyALToDIAddressAndIncrementDI/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>2877</int>
+
+		<flp:WriteBlock/>
+
+		
+
+		<mm:CheckOut length="516"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>512</int>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>2877</int>
+
+		<flp:ReadBlock/>
+
+		<cpu:PullDIFromStack/>
+
+		
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>-->
+
+	<!--<cls:method name="WriteBlocks" type="http://metalx.org/String" static="true">
+		
+
+		<mm:CheckOut length="1024"/>
+
+		<cpu:CopyImmediateToAL/>
+		<string>*</string>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToCX/>
+		<int>1024</int>
+
+		<cpu:Repeat/>
+		<cpu:CopyALToDIAddressAndIncrementDI/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>2876</int>
+
+		<cpu:CopyImmediateToCX/>
+		<int>2</int>
+
+		<flp:WriteBlocks/>
+
+		
+
+		<mm:CheckOut length="1028"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1024</int>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>2876</int>
+
+		<cpu:CopyImmediateToCX/>
+		<int>2</int>
+
+		<flp:ReadBlocks/>
+
+		<cpu:PullDIFromStack/>
+
+		
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>-->
+
+	<cls:method name="GetReader" type="http://metalx.org/Storage/Fdc/FdcFloppyDriveReader">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<mm:CheckOut length="8"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIAddress/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>0</int>
+
+		<obj:Create length="8" type="http://metalx.org/Storage/Fdc/FdcFloppyDriveReader"/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetWriter" type="http://metalx.org/Storage/Fdc/FdcFloppyDriveWriter">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<mm:CheckOut length="8"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIAddress/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>0</int>
+
+		<obj:Create length="8" type="http://metalx.org/Storage/Fdc/FdcFloppyDriveWriter"/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetRootFolder" type="http://metalx.org/Storage/Files/Fat12/Fat12Volume">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<mm:CheckOut length="8"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIAddress/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>0</int>
+
+		<obj:Create length="8" type="http://metalx.org/Storage/Fdc/FdcFloppyDriveReader"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<mm:CheckOut length="4"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIAddress/>
+
+		<obj:Create length="4" type="http://metalx.org/Storage/Files/Fat12/Fat12Volume"/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="deviceName" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="deviceName">FDC Floppy Drive</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

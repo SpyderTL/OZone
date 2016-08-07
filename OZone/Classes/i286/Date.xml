@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Date"
+	type="http://metalx.org/Date"
+	xmlns="http://metalx.org/Program"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:cls="http://metalx.org/i286/Structures/Class"
+	xmlns:date="http://metalx.org/i286/Functions/Date"
+	xmlns:hex="http://metalx.org/i286/Functions/Hexadecimal"
+	xmlns:obj="http://metalx.org/i286/Functions/Object"
+	xmlns:lst="http://metalx.org/i286/Functions/List"
+	xmlns:str="http://metalx.org/i286/Functions/String"
+	xmlns:mm="http://metalx.org/i286/Functions/MemoryManager"
+	xmlns:sys="http://metalx.org/i286/Functions/System"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:clk="http://metalx.org/Pc/Bios/Clock"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:ari="http://metalx.org/Intel/80286/Arithmetic"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:logic="http://metalx.org/Intel/80286/Logic"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands">
+
+	<cls:field name="Year" type="http://metalx.org/Hexadecimal" offset="0"/>
+	<cls:field name="Month" type="http://metalx.org/Byte" offset="2"/>
+	<cls:field name="Day" type="http://metalx.org/Byte" offset="3"/>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:PushSIToStack/>
+
+		<sys:GetMemoryManager/>
+
+		<str:Create length="10"/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:GetData/>
+
+		<!--Store Year-->
+		<cpu:CopyOperandToRegister16/>
+		<op:AX-SIAddress/>
+
+		<cpu:PushAXToStack/>
+
+		<!--Store Day-->
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>3</byte>
+
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:PushAXToStack/>
+
+		<!--Get Month-->
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>2</byte>
+
+		<!--Write Month-->
+		<cpu:PushDIToStack/>
+
+		<sys:GetMemoryManager/>
+
+		<hex:ToString/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PushDIToStack/>
+
+		<str:AppendString/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<str:AppendByte value="-"/>
+		
+		<!--Write Day-->
+		<cpu:PullAXFromStack/>
+		<cpu:PushDIToStack/>
+
+		<sys:GetMemoryManager/>
+
+		<hex:ToString digits="2"/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PushDIToStack/>
+
+		<str:AppendString/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<str:AppendByte value="-"/>
+
+		<!--Write Year-->
+		<cpu:PullAXFromStack/>
+		<cpu:PushDIToStack/>
+
+		<sys:GetMemoryManager/>
+
+		<hex:ToString/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PushDIToStack/>
+
+		<str:AppendString/>
+
+		<cpu:PullDIFromStack/>
+
+		<sys:GetMemoryManager/>
+
+		<str:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

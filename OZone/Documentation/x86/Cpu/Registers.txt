@@ -1,0 +1,226 @@
+AL/AX/EAX	C0
+CL/CX/ECX	C1
+DL/DX/EDX	C2
+BL/BX/EBX	C3
+AH/SP/ESP	C4
+CH/BP/EBP	C5
+DH/SI/ESI	C6
+BH/DI/EDI	C7
+
+EFLAGS
+	Carry Flag		1 bit
+	Reserved (1)		1 bit
+	PF			1 bit
+	Reserved		1 bit
+	AF			1 bit
+	Reserved		1 bit
+	Zero Flag		1 bit
+	SF			1 bit
+	Trap Flag		1 bit
+	Interrupt Enabled	1 bit
+	DF			1 bit
+	Overflow Flag		1 bit
+	I/O Privilege Level	2 bits
+	Nested Task Flag	1 bit
+	Reserved		1 bit
+	Resume Flag		1 bit
+	Virtual 8086 Mode	1 bit
+	Alignment Check		1 bit
+	Virtual Interrupt Flag	1 bit
+	Identification Flag	1 bit
+	
+
+Control Registers
+CR0 (System Operation Mode Flags)
+	Protection Enabled		1 bit
+	Monitor Coprocessor		1 bit
+	FPU Emulation			1 bit
+	Task Switched			1 bit
+	FPU Supported			1 bit
+	Native FPU Errors Enabled	1 bit
+	Reserved			10 bits
+	Write Protect Enabled		1 bit
+	Reserved			1 bit
+	Automatic Alignment Checking	1 bit
+	Reserved			10 bits
+	Write-Through Disabled		1 bit
+	Cache Disabled			1 bit
+	Paging Enabled			1 bit
+	
+
+CR1 (Reserved)
+
+CR2 (Page Fault Instruction Address)
+	Page Fault Instruction Address	32 bits
+
+CR3 (Page Directory Address)
+	Reserved			3 bits
+	Page Level Write-Through	1 bit
+	Page Level Cache Disabled	1 bit
+	Reserved			7 bits
+	Page Directory Address		20 bits
+		
+CR4 (Architecture Extensions)
+	Virtual 8086 Mode Extensions		1 bit
+	Protected Mode Virtual Interrupts	1 bit
+	Time Stamp Disable			1 bit
+	Debugging Extensions			1 bit
+	Page Size Extensions			1 bit
+	Physical Address Extension		1 bit
+	Machine Check Enabled			1 bit
+	Page Global Enabled			1 bit
+	Performance Monitoring Counter Enabled	1 bit
+	FXSAVE / FXRSTOR Supported		1 bit
+	Unmasked SIMD Exceptions Supported	1 bit
+	Reserved				2 bits
+	Virtual Machine Extensions Enabled	1 bit
+	Safer Machine Extensions Enabled	1 bit
+	Reserved				1 bit
+	FSGSBASE Enabled			1 bit
+	PCID Enabled				1 bit
+	XSAVE Enabled				1 bit
+	Supervisor Mode Execution Prevention	1 bit
+	
+	
+CR8 (Task Priority Register, 64-bit only)
+	Disabled Interrupts			4 bits
+
+Memory Management Registers
+GDTR
+	Global Descriptor Table Limit	16 bits
+	Global Descriptor Table Address	32 bits
+
+IDTR
+	Interrupt Descriptor Table Limit	16 bits
+	Interrupt Descriptor Table Address	32 bits
+
+TR
+	Segment Selector	16 bits
+
+LDTR
+	Segment Selector	16 bits
+
+Debug Registers
+DR0	Breakpoint 0 Address
+DR1	Breakpoint 1 Address
+DR2	Breakpoint 2 Address
+DR3	Breakpoint 3 Address
+
+DR4	Reserved (Shadow DR6)
+DR5	Reserved (Shadow DR7)
+
+DR6	Debug Status Register
+	Breakpoint 0 Detected		1 bit
+	Breakpoint 1 Detected		1 bit
+	Breakpoint 2 Detected		1 bit
+	Breakpoint 3 Detected		1 bit
+	Reserved(1)			8 bits
+	Reserved			1 bit
+	Debug Register Access Detected	1 bit
+	Single Step Detected		1 bit
+	Task Switch Detected		1 bit
+	
+DR7	Debug Control Register
+	Local Breakpoint 0 Enabled		1 bit
+	Global Breakpoint 0 Enabled		1 bit
+	Local Breakpoint 1 Enabled		1 bit
+	Global Breakpoint 1 Enabled		1 bit
+	Local Breakpoint 2 Enabled		1 bit
+	Global Breakpoint 2 Enabled		1 bit
+	Local Breakpoint 3 Enabled		1 bit
+	Global Breakpoint 3 Enabled		1 bit
+	Local Exact Breakpoint Enabled		1 bit
+	Global Exact Breakpoint Enabled		1 bit
+	Reserved(1)				1 bit
+	Reserved				2 bits
+	Debug Register Protection Enabled	1 bit
+	Reserved				2 bits
+	Breakpoint 0 Mode			2 bits
+	Breakpoint 0 Length			2 bits
+	Breakpoint 1 Mode			2 bits
+	Breakpoint 1 Length			2 bits
+	Breakpoint 2 Mode			2 bits
+	Breakpoint 2 Length			2 bits
+	Breakpoint 3 Mode			2 bits
+	Breakpoint 3 Length			2 bits
+
+Memory Type Range Registers
+
+Machine Specific Registers
+
+Machine Check Registers
+	IA32_MCG_CAP	Capabilities
+	IA32_MCG_STATUS	Status
+	IA32_MCG_CTL	Control
+	Error Reporting Bank[Capabilities.Count]
+		IA32_MCi_CTL
+		IA32_MCi_STATUS
+		IA32_MCi_ADDR
+		IA32_MCi_MISC
+		IA32_MCi_CTL2
+	
+
+Performance Monitoring Counters
+	Counters[18]	40 bits
+
+Time Stamp Counter
+	Counter		64 bits
+
+x87 Floating Point Unit Registers
+
+	Data Register Stack[8]		80 bits
+		Fraction			64 bits
+		Exponent			15 bits
+		Sign				1 bit
+	
+	Control Register		16 bits
+		Invalid Operation Disable	1 bit
+		Denormalized Operand Disable	1 bit
+		Divide By Zero Disable		1 bit
+		Overflow Disable		1 bit
+		Underflow Disable		1 bit
+		Precision Disable		1 bit
+		Reserved			2 bits
+		Precision Control		2 bits (0 = Single (24 bits), 1 = Reserved, 2 = Double (53 bits), 3 = Extended (64 bits)
+		Rounding Control		2 bits
+		Infinity Control		1 bit
+		Reserved			3 bits
+		
+		
+	Status Register			16 bits
+		Invalid Operation		1 bit
+		Denormalized Operand		1 bit
+		Divide By Zero			1 bit
+		Overflow			1 bit
+		Underflow			1 bit
+		Precision			1 bit
+		Stack Fault			1 bit
+		Error Summary Status		1 bit
+		Condition Code 0		1 bit
+		Condition Code 1		1 bit
+		Condition Code 2		1 bit
+		Top Of Stack			3 bits
+		Condition Code 3		1 bit
+		FPU Busy			1 bit 
+		
+	Tag Register			16 bits
+		Register State[8]		2 bits (0 = Valid, 1 = Zero, 2 = Invalid (Nan, unsupported, infinity, or denormal), 3 = Empty)
+	Last Instruction Pointer	48 bits
+		Offset				32 bits
+		Segment Selector		16 bits
+	Last Data Pointer		48 bits
+		Offset				32 bits
+		Segment Selector		16 bits
+	Opcode				10 bits
+		Second Instruction Byte		8 bits
+		First Instruction Byte (low)	3 bits
+		
+
+MMX Registers
+
+XMM Registers
+
+Stack Implementation and Procedure Calls
+
+Enhanced SpeedStep Technology
+

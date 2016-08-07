@@ -1,0 +1,429 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema
+    targetNamespace="http://metalx.org/CodeX/Operators"
+    elementFormDefault="qualified"
+    xmlns="http://metalx.org/CodeX/Operators"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:attributeGroup name="variable" id="variable">
+		<xsd:attribute name="id" type="xsd:ID"/>
+	</xsd:attributeGroup>
+
+	<xsd:simpleType name="boolType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="True"/>
+			<xsd:enumeration value="False"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:element name="bool" id="bool">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="boolType">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="int8" id="int8">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="xsd:byte">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="uint8" id="uint8">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="xsd:unsignedByte">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:simpleType name="hexByteType">
+		<xsd:restriction base="xsd:hexBinary">
+			<xsd:length value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:element name="int8Hex" id="int8Hex">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="hexByteType">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="uint8Hex" id="uint8Hex">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="hexByteType">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:simpleType name="binaryByteType">
+		<xsd:restriction base="xsd:string">
+			<xsd:length value="8"/>
+			<xsd:pattern value="[01]*"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:element name="int8Binary" id="int8Binary">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="binaryByteType">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="uint8Binary" id="uint8Binary">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="binaryByteType">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="int16" id="int16">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="xsd:short">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="uint16" id="uint16">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="xsd:short">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:simpleType name="hexShortType">
+		<xsd:restriction base="xsd:hexBinary">
+			<xsd:length value="2"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:element name="int16Hex" id="int16Hex">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="hexShortType">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="uint16Hex" id="uint16Hex">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="hexShortType">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:simpleType name="binaryShortType">
+		<xsd:restriction base="xsd:string">
+			<xsd:length value="16"/>
+			<xsd:pattern value="[01]*"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:element name="int16Binary" id="int16Binary">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="binaryShortType">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="uint16Binary" id="uint16Binary">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="binaryShortType">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="int32" id="int32">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="xsd:int">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="uint32" id="uint32">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="xsd:unsignedInt">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:simpleType name="hexIntType">
+		<xsd:restriction base="xsd:hexBinary">
+			<xsd:length value="4"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:element name="int32Hex" id="int32Hex">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="hexIntType">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="uint32Hex" id="uint32Hex">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="hexIntType">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:simpleType name="binaryIntType">
+		<xsd:restriction base="xsd:string">
+			<xsd:length value="32"/>
+			<xsd:pattern value="[01]*"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:element name="int32Binary" id="int32Binary">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="binaryIntType">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="uint32Binary" id="uint32Binary">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="binaryShortType">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="int64" id="int64">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="xsd:long">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="uint64" id="uint64">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="xsd:unsignedLong">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:simpleType name="hexLongType">
+		<xsd:restriction base="xsd:hexBinary">
+			<xsd:length value="8"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:element name="int64Hex" id="int64Hex">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="hexLongType">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="uint64Hex" id="uint64Hex">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="hexLongType">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:simpleType name="binaryLongType">
+		<xsd:restriction base="xsd:string">
+			<xsd:length value="64"/>
+			<xsd:pattern value="[01]*"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:element name="int64Binary" id="int64Binary">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="binaryLongType">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="uint64Binary" id="uint64Binary">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="binaryLongType">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="hex" id="hex">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="xsd:hexBinary">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="string" id="string">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="xsd:string">
+					<xsd:attributeGroup ref="variable"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="object" id="object">
+		<xsd:complexType>
+			<xsd:attributeGroup ref="variable"/>
+			<xsd:attribute name="type" type="xsd:anyURI"/>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="call" id="call">
+		<xsd:complexType>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="parameter">
+					<xsd:complexType>
+						<xsd:attribute name="name"/>
+						<xsd:attribute name="ref" type="xsd:IDREF"/>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:attribute name="method"/>
+			<xsd:attribute name="type"/>
+			<xsd:attribute name="result" type="xsd:IDREF" use="optional"/>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="if" id="if">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="then">
+					<xsd:complexType>
+						<xsd:group ref="operators" minOccurs="0" maxOccurs="unbounded"/>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="else-if" minOccurs="0" maxOccurs="unbounded">
+					<xsd:complexType>
+						<xsd:group ref="operators" minOccurs="0" maxOccurs="unbounded"/>
+						<xsd:attribute name="isTrue" type="xsd:IDREF"/>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="else" minOccurs="0">
+					<xsd:complexType>
+						<xsd:group ref="operators" minOccurs="0" maxOccurs="unbounded"/>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:attribute name="isTrue" type="xsd:IDREF"/>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="while" id="while">
+		<xsd:complexType>
+			<xsd:group ref="operators" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:attribute name="isTrue" type="xsd:IDREF"/>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:group name="operators">
+		<xsd:choice>
+			<xsd:element ref="int8"/>
+			<xsd:element ref="int8Hex"/>
+			<xsd:element ref="int8Binary"/>
+			<xsd:element ref="uint8"/>
+			<xsd:element ref="uint8Hex"/>
+			<xsd:element ref="uint8Binary"/>
+			<xsd:element ref="int16"/>
+			<xsd:element ref="int16Hex"/>
+			<xsd:element ref="int16Binary"/>
+			<xsd:element ref="uint16"/>
+			<xsd:element ref="uint16Hex"/>
+			<xsd:element ref="uint16Binary"/>
+			<xsd:element ref="int32"/>
+			<xsd:element ref="int32Hex"/>
+			<xsd:element ref="int32Binary"/>
+			<xsd:element ref="uint32"/>
+			<xsd:element ref="uint32Hex"/>
+			<xsd:element ref="uint32Binary"/>
+			<xsd:element ref="int64"/>
+			<xsd:element ref="int64Hex"/>
+			<xsd:element ref="int64Binary"/>
+			<xsd:element ref="uint64"/>
+			<xsd:element ref="uint64Hex"/>
+			<xsd:element ref="uint64Binary"/>
+			<xsd:element ref="hex"/>
+			<xsd:element ref="string"/>
+			<xsd:element ref="call"/>
+			<xsd:element ref="if"/>
+			<xsd:element ref="while"/>
+		</xsd:choice>
+	</xsd:group>
+</xsd:schema>

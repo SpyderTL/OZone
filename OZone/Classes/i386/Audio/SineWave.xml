@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="SineWave"
+	type="http://metalx.org/Audio/SineWave"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:short="http://metalx.org/i386/Functions/Short"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
+	xmlns:pcic="http://metalx.org/Pc/Pci/Command"
+	xmlns:pcir="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:pcis="http://metalx.org/Pc/Pci/Status"
+	xmlns:pcn="http://metalx.org/Amd/PcNet/Ports"
+	xmlns:pcs="http://metalx.org/Amd/PcNet/ControlStatus"
+	xmlns:pcb="http://metalx.org/Amd/PcNet/BusConfiguration"
+	xmlns:pcnet="http://metalx.org/i386/Functions/PcNet"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:con="http://metalx.org/i386/Functions/Console"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:index="http://metalx.org/Intel/80386/Index"
+	xmlns:fpu="http://metalx.org/Intel/80386/FpuOperators"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands">
+
+	<cls:field name="Channel" type="http://metalx.org/Integer" offset="0"/>
+	<cls:field name="Time" type="http://metalx.org/Float" offset="4"/>
+	<cls:field name="Delta" type="http://metalx.org/Float" offset="8"/>
+	<cls:field name="ByteObject" type="http://metalx.org/Reference" offset="12"/>
+	<cls:field name="ShortObject" type="http://metalx.org/Reference" offset="16"/>
+	<cls:field name="IntegerObject" type="http://metalx.org/Reference" offset="20"/>
+	<cls:field name="FloatObject" type="http://metalx.org/Reference" offset="24"/>
+	<cls:field name="FloatValue" type="http://metalx.org/Float" offset="28"/>
+	<cls:field name="IntegerValue" type="http://metalx.org/Integer" offset="32"/>
+	<cls:field name="ShortValue" type="http://metalx.org/Short" offset="36"/>
+	<cls:field name="ByteValue" type="http://metalx.org/Byte" offset="38"/>
+
+	<cls:method name="Create" type="http://metalx.org/Audio/SineWave" static="true">
+		<cls:parameter name="Frequency" type="http://metalx.org/Float"/>
+		<cls:parameter name="SamplesPerSecond" type="http://metalx.org/Integer"/>
+
+		<mm:CheckOut length="39"/>
+
+		<obj:Create length="39"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>0</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<float>0</float>
+		
+		<!--Calculate Delta-->
+		<cpu:PushSIToStack/>
+
+		<fpu:ResetFpu/>
+
+		<fpu:Pi/>
+
+		<fpu:AddST0ToST0/>
+
+		<cpu:WaitForFloatingPointUnit/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetData/>
+
+		<fpu:PushIntegerAtSIAddressToST0/>
+
+		<fpu:DivideST1ByST0AndIncrementST/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<obj:GetData/>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<fpu:PullFloatAtSIAddressPlusImmediate8FromST0/>
+		<byte>8</byte>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<float>0</float>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>32</byte>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>36</byte>
+		<short>0</short>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>38</byte>
+		<byte>0</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIRegister/>
+		<byte>36</byte>
+
+		<obj:Create length="2" type="http://metalx.org/Short"/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>8</byte>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ReadByte" type="http://metalx.org/Byte">
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ReadShort" type="http://metalx.org/Short">		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<fpu:ResetFpu/>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>8</byte>
+
+		<fpu:AddFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>4</byte>
+
+		<fpu:CopyST0ToFloatAtSIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<fpu:Sine/>
+
+		<fpu:PushShortAtImmediateAddressToST0/>
+		<addressOf ref="maxValue" type="Absolute32"/>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PullShortAtSIAddressPlusImmediate8FromST0/>
+		<byte>36</byte>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+		
+		<cpu:ReturnToNearCaller/>
+
+		<var:short id="maxValue">32767</var:short>
+	</cls:method>
+
+	<cls:method name="ReadInteger" type="http://metalx.org/Integer">
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ReadFloat" type="http://metalx.org/Float">
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="deviceName" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="deviceName">Audio Reader</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

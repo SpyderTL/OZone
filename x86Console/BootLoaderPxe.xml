@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:seg="http://metalx.org/Intel/80286/Segments"
+	xmlns:dsk="http://metalx.org/i286/Functions/Disk"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:flp="http://metalx.org/Pc/Bios/Disk"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:pxe="http://metalx.org/Intel/Pxe/Operators"
+	xmlns:pxs="http://metalx.org/Intel/Pxe/Structures"
+	xmlns:logic="http://metalx.org/Intel/80286/Logic">
+
+	<cpu:ClearInterruptFlag/>
+
+	<!--Shutdown Universal Network-->
+	<cpu:CopyRegisterToOperand16/>
+	<op:BX-SIRegister/>
+
+	<cpu:CopyImmediateToBX/>
+	<pxe:ShutdownUniversalNetwork/>
+
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="Status" type="Segment"/>
+
+	<cpu:PushAXToStack/>
+	<cpu:PullDSFromStack/>
+
+	<cpu:CopyImmediateToDI/>
+	<addressOf ref="Status" type="Absolute16"/>
+
+	<cpu:PushAllRegistersToStack/>
+
+	<cpu:SegmentES/>
+	<cpu:LogicFunction/>
+	<logic:CallPointerAtSIAddressPlusImmediate8/>
+	<pxs:Pxenv.EntryPointOffset/>
+
+	<cpu:PullAllRegistersFromStack/>
+
+	<!--Unload Network Stack-->
+	<cpu:CopyImmediateToBX/>
+	<pxe:UnloadStack/>
+
+	<cpu:PushAllRegistersToStack/>
+
+	<cpu:SegmentES/>
+	<cpu:LogicFunction/>
+	<logic:CallPointerAtSIAddressPlusImmediate8/>
+	<pxs:Pxenv.EntryPointOffset/>
+
+	<cpu:PullAllRegistersFromStack/>
+
+	<!--Cleanup Universal Network-->
+	<cpu:CopyImmediateToBX/>
+	<pxe:CleanupUniversalNetwork/>
+
+	<cpu:PushAllRegistersToStack/>
+
+	<cpu:SegmentES/>
+	<cpu:LogicFunction/>
+	<logic:CallPointerAtSIAddressPlusImmediate8/>
+	<pxs:Pxenv.EntryPointOffset/>
+
+	<cpu:PullAllRegistersFromStack/>
+
+	<cpu:CopyImmediateToAX/>
+	<hex>0000</hex>
+
+	<cpu:PushAXToStack/>
+	<cpu:PushAXToStack/>
+	
+	<cpu:PullDSFromStack/>
+	<cpu:PullESFromStack/>
+
+	<!--Copy catalog-->
+	<cpu:CopyImmediateToSI/>
+	<hex>f000</hex>
+
+	<cpu:CopyOperandToRegister16/>
+	<op:CX-SIAddress/>
+
+	<cpu:IncrementCX/>
+
+	<cpu:CopyImmediateToDI/>
+	<hex>0500</hex>
+
+	<cpu:Repeat/>
+	<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI16/>
+
+	<cpu:SetInterruptFlag/>
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="OperatingSystem" type="Relative8"/>
+
+	<!--Variables-->
+	<label id="Status"/>
+	<short>0</short>
+
+	<byte>0</byte>
+	<byte>0</byte>
+	<byte>0</byte>
+	<byte>0</byte>
+	<byte>0</byte>
+	<byte>0</byte>
+	<byte>0</byte>
+	<byte>0</byte>
+	<byte>0</byte>
+	<byte>0</byte>
+
+	<label id="OperatingSystem"/>
+
+</scope>

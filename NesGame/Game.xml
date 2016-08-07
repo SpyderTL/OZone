@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:nes="http://metalx.org/Nintendo/Nes/Registers"
+	xmlns:ppu="http://metalx.org/Nintendo/Nes/PictureProcessingUnit"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators">
+
+	<cpu:ClearDecimalFlag/>
+	
+	<!--Set up PPU-->
+	<cpu:CopyImmediateToAccumulator/>
+	<binary>00000000</binary>
+
+	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<nes:PpuControl0/>
+
+	<cpu:CopyImmediateToAccumulator/>
+	<binary>00011000</binary>
+	
+	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<nes:PpuControl1/>
+
+	<!--Fill Palette-->
+	<ppu:BackgroundColor label="backgroundColor"/>
+	
+	<cpu:CopyImmediateToAccumulator />
+	<addressOf ref="backgroundColor" type="Absolute16High8"/>
+
+	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<nes:PpuAddress/>
+
+	<cpu:CopyImmediateToAccumulator />
+	<addressOf ref="backgroundColor" type="Absolute16Low8"/>
+
+	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<nes:PpuAddress/>
+
+	<cpu:CopyImmediateToAccumulator/>
+	<hex>00</hex>
+
+	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<nes:PpuData/>
+	
+	<!--Wait For VBlank-->
+	<label id="waitForVBlank"/>
+	
+	<cpu:CopyAbsoluteMemoryToAccumulator/>
+	<nes:PpuStatus/>
+
+	<cpu:BranchToRelativeMemoryIfPositive/>
+	<addressOf ref="waitForVBlank" type="Relative8"/>
+	
+	<!--Update Palette-->
+	<cpu:CopyImmediateToAccumulator />
+	<addressOf ref="backgroundColor" type="Absolute16High8"/>
+
+	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<nes:PpuAddress/>
+
+	<cpu:CopyImmediateToAccumulator />
+	<addressOf ref="backgroundColor" type="Absolute16Low8"/>
+
+	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<nes:PpuAddress/>
+
+	<cpu:CopyAbsoluteMemoryToAccumulator/>
+	<hex>0000</hex>
+
+	<cpu:AddImmediateToAccumulator/>
+	<hex>10</hex>
+
+	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<hex>0000</hex>
+
+	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<nes:PpuData/>
+
+	<cpu:JumpToAbsoluteMemory/>
+	<addressOf ref="waitForVBlank" type="Absolute16"/>
+</scope>

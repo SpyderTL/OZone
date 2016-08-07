@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema id="Instructions"
+    targetNamespace="http://metalx.org/Ibm/Ppc"
+    elementFormDefault="qualified"
+    xmlns="http://metalx.org/Ibm/Ppc"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:element name="Jump">
+		<xsd:complexType>
+			<xsd:attribute name="ref" type="xsd:IDREF"/>
+			<xsd:attribute name="absolute" type="xsd:boolean"/>
+			<xsd:attribute name="link" type="xsd:boolean"/>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="Branch">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="BranchCondition"/>
+			<xsd:attribute name="ref" type="xsd:IDREF"/>
+			<xsd:attribute name="absolute" type="xsd:boolean"/>
+			<xsd:attribute name="link" type="xsd:boolean"/>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="CompareRegisterToImmediate">
+		<xsd:complexType>
+			<xsd:attribute name="register" type="RegisterNumber"/>
+			<xsd:attribute name="value" type="xsd:short"/>
+			<xsd:attribute name="target" type="ConditionField"/>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="CompareRegisters">
+		<xsd:complexType>
+			<xsd:attribute name="register1" type="RegisterNumber"/>
+			<xsd:attribute name="register2" type="RegisterNumber"/>
+			<xsd:attribute name="target" type="ConditionField"/>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:simpleType name="BranchCondition">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Negative"/>
+			<xsd:enumeration value="LessThan"/>
+			<xsd:enumeration value="Positive"/>
+			<xsd:enumeration value="GreaterThan"/>
+			<xsd:enumeration value="Zero"/>
+			<xsd:enumeration value="Equal"/>
+			<xsd:enumeration value="Overflow"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="ConditionField">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Integer"/>
+			<xsd:enumeration value="0"/>
+			<xsd:enumeration value="Float"/>
+			<xsd:enumeration value="1"/>
+			<xsd:enumeration value="2"/>
+			<xsd:enumeration value="3"/>
+			<xsd:enumeration value="4"/>
+			<xsd:enumeration value="5"/>
+			<xsd:enumeration value="Vector"/>
+			<xsd:enumeration value="6"/>
+			<xsd:enumeration value="7"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="RegisterNumber">
+		<xsd:restriction base="xsd:unsignedByte">
+			<xsd:minInclusive value ="0"/>
+			<xsd:maxInclusive value="31"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+</xsd:schema>

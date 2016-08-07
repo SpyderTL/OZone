@@ -1,0 +1,649 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Network"
+	static="true"
+	type="http://metalx.org/Network"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:col="http://metalx.org/i386/Functions/Collection"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
+	xmlns:pcir="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:pcis="http://metalx.org/Pc/Pci/Status"
+	xmlns:pcic="http://metalx.org/Pc/Pci/Classes"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:con="http://metalx.org/i386/Functions/Console"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands">
+
+	<cls:method name="GetDevices" type="http://metalx.org/Network/NetworkDeviceList" static="true">
+		<cpu:CopyImmediateToSI/>
+		<int>0</int>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>00001000</hex>
+
+		<cpu:CopyImmediateToBX/>
+		<int>0</int>
+
+		<label id="forEachSlot"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-AXRegister/>
+
+		<pcif:GetDeviceID/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>1022</hex>
+		<hex>2000</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="intelMServer" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="pcNetClass" type="Absolute32"/>
+		
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="slotEmpty" type="Relative32"/>
+
+		<label id="intelMServer"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>8086</hex>
+		<hex>1209</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="intelMDesktop" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="proMServerClass" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="slotEmpty" type="Relative32"/>
+
+		<label id="intelMDesktop"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>8086</hex>
+		<hex>1229</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="intelMTDesktop" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="proMDesktopClass" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="slotEmpty" type="Relative32"/>
+
+		<label id="intelMTDesktop"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>8086</hex>
+		<hex>100e</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="intelTServer" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="proMTDesktopClass" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="slotEmpty" type="Relative32"/>
+
+		<label id="intelTServer"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>8086</hex>
+		<hex>1004</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="intelMTServer" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="proTServerClass" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="slotEmpty" type="Relative32"/>
+
+		<label id="intelMTServer"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>8086</hex>
+		<hex>100f</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="intelPTDesktop" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="proMTServerClass" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="slotEmpty" type="Relative32"/>
+
+		<label id="intelPTDesktop"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>8086</hex>
+		<hex>10b9</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="reakTek8029" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="proPTDesktopClass" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="slotEmpty" type="Relative32"/>
+
+		<label id="reakTek8029"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>10ec</hex>
+		<hex>8029</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="reakTek8139" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="rtl8029Class" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="slotEmpty" type="Relative32"/>
+
+		<label id="reakTek8139"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>10ec</hex>
+		<hex>8139</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="kvmVirtioNet" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="rtl8139Class" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="slotEmpty" type="Relative32"/>
+
+		<label id="kvmVirtioNet"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>1af4</hex>
+		<hex>1000</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="decTulip" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="virtioNetClass" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<label id="decTulip"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>1011</hex>
+		<hex>0009</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="slotEmpty" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="decTulipClass" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<label id="slotEmpty"/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:DecrementCX/>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="createList" type="Relative8"/>
+		
+		<cpu:JumpToRelative/>
+		<addressOf ref="forEachSlot" type="Relative32"/>
+
+		<!--Create List-->
+		<label id="createList"/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<lst:Create/>
+
+		<!--Find PciDevice Classes-->
+		<cpu:PushDIToStack/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="pcNetName" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="pcNetClass" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="proMDesktopName" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="proMDesktopClass" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="proMServerName" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="proMServerClass" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="proMTDesktopName" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="proMTDesktopClass" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="proMTServerName" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="proMTServerClass" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="proPTDesktopName" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="proPTDesktopClass" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="proTServerName" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="proTServerClass" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="rtl8029Name" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="rtl8029Class" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="rtl8139Name" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="rtl8139Class" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="virtioNetName" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="virtioNetClass" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="decTulipName" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="decTulipClass" type="Absolute32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-CXRegister/>
+
+		<!--<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>-->
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:CompareAXToImmediate/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="createListObject" type="Relative8"/>
+
+		<!--Create PciDevice Object-->
+		<label id="forEachDevice"/>
+
+		<cpu:PushDIToStack/>
+
+		<mm:CheckOut length="4"/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:PullBXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddress/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>4</int>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-BXAddress/>
+
+		<obj:Create/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:DecrementAX/>
+
+		<lst:SetItem/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachDevice" type="Relative8"/>
+
+		<!--Create List Object-->
+		<label id="createListObject"/>
+
+		<!--Get Item Count-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-DIAddress/>
+
+		<cpu:IncrementAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:PushAXToStack/>
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="NetworkDeviceList" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+		<cpu:PullAXFromStack/>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<!--<cls:method name="GetConnections" type="http://metalx.org/Collection" static="true">
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="collection" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<sys:GetNetworkConnections/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>8</int>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="collection">http://metalx.org/Collection</var:string>
+	</cls:method>
+
+	<cls:method name="AddConnection" type="http://metalx.org/Network/NetworkConnection" static="true">
+		<cpu:CopyImmediateToAX/>
+		<int>17</int>
+
+		<mm:CheckOut/>
+
+		<cpu:PushDIToStack/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="connection" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:PullDIFromStack/>
+
+		<obj:Create/>
+
+		<sys:GetNetworkConnections/>
+
+		<col:AddItem/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="connection">http://metalx.org/Network/NetworkConnection</var:string>
+	</cls:method>
+	
+	<cls:method name="AddConnection2" type="http://metalx.org/Network/NetworkConnection" static="true">
+		<cpu:CopyImmediateToAX/>
+		<int>17</int>
+
+		<mm:CheckOut/>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToDIAddress xmlns:imm="http://metalx.org/Intel/80386/Immediate"/>
+		<byte>2</byte>
+
+		<cpu:PushDIToStack/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="connection" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:PullDIFromStack/>
+
+		<obj:Create/>
+
+		<sys:GetNetworkConnections/>
+
+		<col:AddItem/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="connection">http://metalx.org/Network/NetworkConnection</var:string>
+	</cls:method>
+	
+	<cls:method name="RemoveConnection" type="http://metalx.org/Network/NetworkConnection" static="true">
+		<sys:GetNetworkConnections/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CompareAXToImmediate/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="empty" type="Relative8"/>
+
+		<col:GetItem index="0"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<sys:GetNetworkConnections/>
+
+		<cpu:PushDIToStack/>
+		
+		<col:RemoveItem/>
+		
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+		
+		<label id="empty"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+		
+		<cpu:ReturnToNearCaller/>
+	</cls:method>-->
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+	
+	<var:string id="NetworkDeviceList">http://metalx.org/Network/NetworkDeviceList</var:string>
+	<var:string id="pcNetName">http://metalx.org/Network/Amd/PcNet</var:string>
+	<var:integer id="pcNetClass">0</var:integer>
+	<var:string id="proMServerName">http://metalx.org/Network/Intel/ProMServer</var:string>
+	<var:integer id="proMServerClass">0</var:integer>
+	<var:string id="proMDesktopName">http://metalx.org/Network/Intel/ProMDesktop</var:string>
+	<var:integer id="proMDesktopClass">0</var:integer>
+	<var:string id="proMTDesktopName">http://metalx.org/Network/Intel/ProMTDesktop</var:string>
+	<var:integer id="proMTDesktopClass">0</var:integer>
+	<var:string id="proMTServerName">http://metalx.org/Network/Intel/ProMTServer</var:string>
+	<var:integer id="proMTServerClass">0</var:integer>
+	<var:string id="proPTDesktopName">http://metalx.org/Network/Intel/ProPTDesktop</var:string>
+	<var:integer id="proPTDesktopClass">0</var:integer>
+	<var:string id="proTServerName">http://metalx.org/Network/Intel/ProTServer</var:string>
+	<var:integer id="proTServerClass">0</var:integer>
+	<var:string id="rtl8029Name">http://metalx.org/Network/RealTek/Rtl8029</var:string>
+	<var:integer id="rtl8029Class">0</var:integer>
+	<var:string id="rtl8139Name">http://metalx.org/Network/RealTek/Rtl8139</var:string>
+	<var:integer id="rtl8139Class">0</var:integer>
+	<var:string id="virtioNetName">http://metalx.org/Network/Kvm/VirtioNet</var:string>
+	<var:integer id="virtioNetClass">0</var:integer>
+	<var:string id="decTulipName">http://metalx.org/Network/Dec/Tulip</var:string>
+	<var:integer id="decTulipClass">0</var:integer>
+</cls:class>

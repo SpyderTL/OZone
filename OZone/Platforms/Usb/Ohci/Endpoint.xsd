@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema targetNamespace="http://metalx.org/Usb/Ohci/Endpoint" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:element name="Flags">
+		<xsd:annotation>
+			<xsd:documentation>
+				&lt;hex&gt;00&lt;/hex&gt;
+
+				UsbFunctionAddress			6 bits
+				UsbEndpointAddress			4 bits
+				Direction							2 bits		(0:Use Transfer Descriptor, 1:Out, 2:In, 3:Use Transfer Descriptor)
+				LowSpeed							1 bit
+				Skip									1 bit
+				IsochronousFormat			1 bit
+				MaxPacketSize					11 bits
+				SoftwareDataArea				5 bits
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType />
+	</xsd:element>
+	<xsd:element name="TailTransferDescriptorAddress">
+		<xsd:annotation>
+			<xsd:documentation>
+				&lt;hex&gt;04&lt;/hex&gt;
+
+				The address of the last transfer descriptor in the list.  List is empty if tail address is equal to the head address.
+				SoftwareDataArea				4 bits
+				DescriptorAddress				28 bits
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType />
+	</xsd:element>
+	<xsd:element name="HeadTransferDescriptorAddress">
+		<xsd:annotation>
+			<xsd:documentation>
+				&lt;hex&gt;08&lt;/hex&gt;
+
+				The address of the first transfer descriptor in the list.  List is empty if head address is equal to the tail address.
+				Halted								1 bit
+				ToggleCarry						1 bit
+				Zero									2 bits
+				DescriptorAddress				28 bits
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType />
+	</xsd:element>
+	<xsd:element name="NextEndpointDescriptorAddress">
+		<xsd:annotation>
+			<xsd:documentation>
+				&lt;hex&gt;0c&lt;/hex&gt;
+
+				The address of the next endpoint descriptor in the list, or zero if this is the last endpoint descriptor.
+				SoftwareDataArea				4 bits
+				DescriptorAddress				28 bits		(0:Last Endpoint Descriptor)
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType />
+	</xsd:element>
+</xsd:schema>

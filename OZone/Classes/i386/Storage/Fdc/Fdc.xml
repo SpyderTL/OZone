@@ -1,0 +1,363 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Fdc"
+	type="http://metalx.org/Storage/Fdc"
+	static="true"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:flp="http://metalx.org/i386/Functions/FloppyDrive"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
+	xmlns:cfg="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:dsk="http://metalx.org/Pc/Floppy/Ports"
+	xmlns:fcmd="http://metalx.org/Pc/Floppy/Commands"
+	xmlns:fdr="http://metalx.org/Pc/Floppy/DataRate"
+	xmlns:fdo="http://metalx.org/Pc/Floppy/DigitalOutput"
+	xmlns:fst="http://metalx.org/Pc/Floppy/Status"
+	xmlns:kbd="http://metalx.org/Pc/Keyboard">
+
+	<var:string id="fdcFloppyDrive">http://metalx.org/Storage/Fdc/FdcFloppyDrive</var:string>
+	<var:string id="fdcFloppyDriveList">http://metalx.org/Storage/Fdc/FdcFloppyDriveList</var:string>
+	
+	<cls:method name="GetControllerVersion" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToAL/>
+		<fcmd:GetVersion/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToDX/>
+		<dsk:Controller0/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<dsk:Data/>
+
+		<cpu:Operand16/>
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="InitializeController" static="true">
+		<!--Configure Controller-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToDX/>
+		<dsk:Controller0/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<dsk:Data/>
+
+		<cpu:CopyImmediateToAL/>
+		<fcmd:Configure/>
+
+		<cpu:Operand16/>
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:Operand16/>
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>01110111</binary>
+
+		<cpu:Operand16/>
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:Operand16/>
+		<cpu:WriteALToDXPort/>
+
+		<!--Specify Drive Timers-->
+		<cpu:CopyImmediateToAL/>
+		<fcmd:SpecifyDriveTimers/>
+
+		<cpu:Operand16/>
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>88</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0a</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<fcmd:LockConfiguration/>
+
+		<cpu:Operand16/>
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<!--Turn On Motor-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToDX/>
+		<dsk:Controller0/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<dsk:DigitalOutput/>
+
+		<cpu:CopyImmediateToAL/>
+		<fdo:Enabled/>
+
+		<cpu:OrALWithImmediate/>
+		<fdo:Drive0MotorEnabled/>
+
+		<cpu:OrALWithImmediate/>
+		<fdo:SelectDrive0/>
+
+		<cpu:Operand16/>
+		<cpu:WriteALToDXPort/>
+
+		<!--Recalibrate Drive-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToDX/>
+		<dsk:Controller0/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<dsk:Data/>
+
+		<cpu:CopyImmediateToAL/>
+		<fcmd:Recalibrate/>
+
+		<cpu:Operand16/>
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:Operand16/>
+		<cpu:WriteALToDXPort/>
+
+		<!--Wait for Recalibration-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToDX/>
+		<dsk:Controller0/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<dsk:MainStatus/>
+
+		<label id="waitForRecalibrate"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:TestALWithImmediate/>
+		<fst:Drive0Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="waitForRecalibrate" type="Relative8"/>
+
+		<!--Turn Off Motor-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToDX/>
+		<dsk:Controller0/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<dsk:DigitalOutput/>
+
+		<cpu:CopyImmediateToAL/>
+		<fdo:Enabled/>
+
+		<cpu:OrALWithImmediate/>
+		<fdo:SelectDrive0/>
+
+		<cpu:Operand16/>
+		<cpu:WriteALToDXPort/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetDrives" type="http://metalx.org/Storage/Fdc/FdcFloppyDriveList" static="true">
+		<cpu:CopyImmediateToCX/>
+		<int>0</int>
+		
+		<flp:GetDrives/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BXRegister/>
+
+		<cpu:AndALWithImmediate/>
+		<hex>f0</hex>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftALRegisterRight/>
+		<byte>4</byte>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="nextDrive" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<int>0</int>
+
+		<cpu:PushImmediateToStack/>
+		<hex>000003f0</hex>
+		
+		<cpu:IncrementCX/>
+
+		<label id="nextDrive"/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:AndALWithImmediate/>
+		<hex>0f</hex>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="findClass" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<int>1</int>
+
+		<cpu:PushImmediateToStack/>
+		<hex>000003f0</hex>
+
+		<cpu:IncrementCX/>
+
+		<label id="findClass"/>
+
+		<!--Create List-->
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<lst:Create/>
+
+		<!--Find FdcFloppyDrive Class-->
+		<cpu:PushDIToStack/>
+		<cpu:PushCXToStack/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="fdcFloppyDrive" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullDIFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithCXRegister/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="forEachDevice" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="createListObject" type="Relative32"/>
+
+		<!--Create FdcFloppyDrive Objects-->
+		<label id="forEachDevice"/>
+
+		<cpu:PushDIToStack/>
+
+		<mm:CheckOut length="5"/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddress/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:PushSIToStack/>
+		
+		<cpu:CopyImmediateToAX/>
+		<int>5</int>
+
+		<obj:Create/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:DecrementAX/>
+
+		<lst:SetItem/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachDevice" type="Relative8"/>
+
+		<!--Create List Object-->
+		<label id="createListObject"/>
+
+		<!--Get Item Count-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-DIAddress/>
+
+		<cpu:IncrementAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:PushAXToStack/>
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="fdcFloppyDriveList" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullAXFromStack/>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Ahci"
+	type="http://metalx.org/Ahci"
+	static="true"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:hd="http://metalx.org/i386/Functions/HardDrive"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:pcic="http://metalx.org/Pc/Pci/Classes"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:pata="http://metalx.org/Pc/Pata/Ports"
+	xmlns:drive="http://metalx.org/Pc/Pata/DriveSelect"
+	xmlns:sta="http://metalx.org/Pc/Pata/Status"
+	xmlns:cmd="http://metalx.org/Pc/Pata/Commands"
+	xmlns:id="http://metalx.org/Pc/Pata/DriveIdentity">
+
+	<cls:method name="GetControllers" type="http://metalx.org/Ahci/AhciControllerList" static="true">
+		<cpu:CopyImmediateToSI/>
+		<int>0</int>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>00001000</hex>
+
+		<cpu:CopyImmediateToBX/>
+		<int>0</int>
+
+		<label id="forEachSlot"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-AXRegister/>
+
+		<pcif:GetClassCode/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>ffffff00</hex>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>00</hex>
+		<hex>01</hex>
+		<hex>06</hex>
+		<hex>01</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="slotEmpty" type="Relative8"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<label id="slotEmpty"/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachSlot" type="Relative8"/>
+
+		<!--Create List-->
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<lst:Create/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CompareAXToImmediate/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="createListObject" type="Relative8"/>
+
+		<!--Find PciDevice Classes-->
+		<cpu:PushDIToStack/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="ahciController" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-CXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:PullDIFromStack/>
+
+		<!--Create PciDevice Object-->
+		<label id="forEachDevice"/>
+
+		<cpu:PushDIToStack/>
+
+		<mm:CheckOut length="4"/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddress/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>4</int>
+
+		<obj:Create/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:DecrementAX/>
+
+		<lst:SetItem/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachDevice" type="Relative8"/>
+
+		<!--Create List Object-->
+		<label id="createListObject"/>
+
+		<!--Get Item Count-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-DIAddress/>
+
+		<cpu:IncrementAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:PushAXToStack/>
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="ahciControllerList" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+		<cpu:PullAXFromStack/>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<var:string id="ahciController">http://metalx.org/Ahci/AhciController</var:string>
+	<var:string id="ahciControllerList">http://metalx.org/Ahci/AhciControllerList</var:string>
+</cls:class>

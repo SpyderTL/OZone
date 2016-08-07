@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Collection"
+	type="http://metalx.org/Collection"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/i286/Structures/Class"
+	xmlns:obj="http://metalx.org/i286/Functions/Object"
+	xmlns:col="http://metalx.org/i286/Functions/Collection"
+	xmlns:tbl="http://metalx.org/i286/Functions/Table"
+	xmlns:lst="http://metalx.org/i286/Functions/List"
+	xmlns:str="http://metalx.org/i286/Functions/String"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands">
+
+	<cls:field name="Count" offset="0" type="http://metalx.org/Short"/>
+	<cls:field name="List" offset="2" type="http://metalx.org/List"/>
+
+	<cls:method name="Create" type="http://metalx.org/Collection" static="true">
+		<cpu:CopyRegisterToOperand16/>
+		<op:SI-BXRegister/>
+
+		<cpu:CopyImmediateToSI />
+		<hex>b000</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<short>16</short>
+
+		<col:Create/>
+
+		<cpu:CopyImmediateToAX/>
+		<short>8</short>
+
+		<obj:Create/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<scope>
+			<cpu:PushSIToStack/>
+
+			<cpu:CopyImmediateToSI/>
+			<hex>b000</hex>
+
+			<cpu:CopyImmediateToAX/>
+			<short>8</short>
+
+			<str:Create/>
+			
+			<cpu:PullSIFromStack/>
+
+			<col:GetItems/>
+
+			<tbl:ForEach>
+				<cpu:PushSIToStack/>
+
+				<cpu:CopyRegisterToOperand16/>
+				<op:DI-SIRegister/>
+
+				<cpu:CopyImmediateToAL/>
+				<string>.</string>
+
+				<str:AppendByte/>
+
+				<cpu:PullSIFromStack/>
+			</tbl:ForEach>
+
+			<cpu:CopyImmediateToSI/>
+			<hex>0500</hex>
+
+			<cpu:PushDIToStack/>
+
+			<cpu:CopyImmediateToDI/>
+			<addressOf ref="stringClassName" type="Absolute16"/>
+
+			<lst:ForEach>
+				<cpu:PushSIToStack/>
+				<cpu:PushDIToStack/>
+				<cpu:PushCXToStack/>
+
+				<!--Dereference SI To Class Name-->
+				<cpu:CopyOperandToRegister16/>
+				<op:SI-SIAddress/>
+
+				<str:Compare/>
+
+				<cpu:PullCXFromStack/>
+				<cpu:PullDIFromStack/>
+				<cpu:PullSIFromStack/>
+
+				<cpu:BranchToRelativeIfEqual8/>
+				<addressOf ref="classFound" type="Relative8"/>
+			</lst:ForEach>
+
+			<label id="classFound"/>
+
+			<cpu:CopyRegisterToOperand16/>
+			<op:SI-BXRegister/>
+
+			<cpu:PullDIFromStack/>
+
+			<cpu:CopyImmediateToSI/>
+			<hex>b000</hex>
+
+			<cpu:CopyImmediateToAX/>
+			<short>10</short>
+
+			<obj:Create/>
+
+			<cpu:CopyRegisterToOperand16/>
+			<op:DI-SIRegister/>
+			
+			<cpu:ReturnToNearCaller/>
+
+			<label id="stringClassName"/>
+			<short>6</short>
+			<string>String</string>
+		</scope>
+	</cls:method>
+</cls:class>

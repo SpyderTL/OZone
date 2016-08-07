@@ -1,0 +1,561 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="PcNet"
+	type="http://metalx.org/Network/Amd/PcNet"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
+	xmlns:pcic="http://metalx.org/Pc/Pci/Command"
+	xmlns:pcir="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:pcis="http://metalx.org/Pc/Pci/Status"
+	xmlns:pcn="http://metalx.org/Amd/PcNet/Ports"
+	xmlns:pcs="http://metalx.org/Amd/PcNet/ControlStatus"
+	xmlns:pcb="http://metalx.org/Amd/PcNet/BusConfiguration"
+	xmlns:pcnet="http://metalx.org/i386/Functions/PcNet"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:con="http://metalx.org/i386/Functions/Console"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands">
+
+	<cls:field name="Device" type="http://metalx.org/Pci/PciDevice" offset="0"/>
+
+	<cls:method name="IsNetworkCableConnected" type="http://metalx.org/Boolean">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffffc</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<pcnet:IsConnected/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="networkCableNotConnected" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="networkCableNotConnected"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetEthernetAddress" type="http://metalx.org/Network/EthernetAddress">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffffc</hex>
+
+		<cpu:PushAXToStack/>
+		
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="ethernetAddress" type="Absolute32"/>
+		
+		<cat:FindType/>
+
+		<cpu:PullDXFromStack/>
+		<cpu:PushSIToStack/>
+		
+		<pcnet:GetEthernetAddress/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>6</int>
+
+		<cpu:PullBXFromStack/>
+		
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="ethernetAddress">http://metalx.org/Network/EthernetAddress</var:string>
+	</cls:method>
+
+	<cls:method name="Enable" type="http://metalx.org/Network/Amd/PcNet">
+		<cpu:PushDIToStack/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffffc</hex>
+
+		<cpu:PushAXToStack/>
+
+		<!--Setup Receive Buffer Descriptor Ring-->
+
+		<!--Descriptor Address-->
+		<cpu:CopyImmediateToDI/>
+		<hex>00008000</hex>
+
+		<!--Buffer Address-->
+		<cpu:CopyImmediateToAX/>
+		<hex>0000a000</hex>
+
+		<cpu:Operand16/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<!--Flags-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<binary>1000000000000000</binary>
+
+		<cpu:Operand16/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<!--Buffer Size-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<short>1536</short>
+
+		<cpu:Operand16/>
+		<cpu:OrAXWithImmediate/>
+		<binary>1111000000000000</binary>
+
+		<cpu:Operand16/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<!--Message Size-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<short>0</short>
+
+		<cpu:Operand16/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<!--Setup Transmit Buffer Descriptor Ring-->
+
+		<!--Descriptor Address-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToDI/>
+		<hex>9000</hex>
+
+		<!--Buffer Address-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>b000</hex>
+
+		<cpu:Operand16/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<!--Flags-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<binary>0010001100000000</binary>
+
+		<cpu:Operand16/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<!--Buffer Size-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<short>1536</short>
+
+		<cpu:Operand16/>
+		<cpu:OrAXWithImmediate/>
+		<binary>1111000000000000</binary>
+
+		<cpu:Operand16/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<!--Message Size-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<short>0</short>
+
+		<cpu:Operand16/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<!--Set Ring Descriptors-->
+		<cpu:PullDXFromStack/>
+		<cpu:PushDXToStack/>
+		
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:CopyImmediateToSI/>
+		<hex>00008000</hex>
+
+		<pcnet:SetReceiveDescriptorRing/>
+
+		<cpu:PullDXFromStack/>
+		<cpu:PushDXToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:CopyImmediateToSI/>
+		<hex>00009000</hex>
+
+		<pcnet:SetTransmitDescriptorRing/>
+
+		<cpu:PullDXFromStack/>
+		
+		<pcnet:Start/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Disable" type="http://metalx.org/Network/Amd/PcNet">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffffc</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<pcnet:Stop/>
+		
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetPacket" type="http://metalx.org/Network/EthernetPacket">
+		<cpu:CopyImmediateToSI/>
+		<hex>00008002</hex>
+
+		<label id="checkBuffer"/>
+
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:Operand16/>
+		<cpu:TestAXWithImmediate/>
+		<binary>1000000000000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="validatePacket" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<!--<cpu:JumpToRelative8/>
+		<addressOf ref="checkBuffer" type="Relative8"/>
+
+		--><!--Validate Packet Data-->
+		<label id="validatePacket"/>
+
+		<!--<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:BX-ImmediateAddress/>
+		<hex>0000a018</hex>
+
+		<cpu:Operand16/>
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<hex>0000a00e</hex>
+
+		<cpu:Operand16/>
+		<cpu:AndAXWithImmediate/>
+		<hex>000f</hex>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<short>0</short>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-ImmediateAddress/>
+		<hex>0000a018</hex>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToDI/>
+		<hex>a00e</hex>
+
+		<label id="calculateChecksum"/>
+
+		<cpu:Operand16/>
+		<cpu:AddOperandToRegisterWithCarry/>
+		<op:AX-DIAddress/>
+
+		<cpu:IncrementDI/>
+		<cpu:IncrementDI/>
+
+		<cpu:Operand16/>
+		<cpu:AddOperandToRegisterWithCarry/>
+		<op:AX-DIAddress/>
+
+		<cpu:IncrementDI/>
+		<cpu:IncrementDI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="calculateChecksum" type="Relative8"/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToDI/>
+		<short>0</short>
+
+		<cpu:Operand16/>
+		<cpu:AddOperandToRegisterWithCarry/>
+		<op:AX-DIRegister/>
+
+		<cpu:Operand16/>
+		<cpu:ExclusiveOrAXWithImmediate/>
+		<hex>ffff</hex>
+
+		<cpu:Operand16/>
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-BXRegister/>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="showPacket" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="resetBuffer" type="Relative32"/>-->
+
+		<!--Show Packet Data-->
+		<label id="showPacket"/>
+
+		<cpu:CopyImmediateToDI/>
+		<hex>00008006</hex>
+
+		<!--Get Packet Length-->
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:CX-DIAddress/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:PushAXToStack/>
+
+		<mm:CheckOut/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToSI/>
+		<hex>0000a000</hex>
+
+		<cpu:Repeat/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="ethernetPacketType" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullAXFromStack/>
+
+		<obj:Create/>
+
+		<cpu:CopyImmediateToSI/>
+		<hex>00008002</hex>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<binary>1000000000000000</binary>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddress/>
+		
+		<cpu:ReturnToNearCaller/>
+
+		<label id="resetBuffer"/>
+
+		<cpu:CopyImmediateToSI/>
+		<hex>00008002</hex>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<binary>1000000000000000</binary>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddress/>
+
+		<!--<cpu:JumpToRelative/>
+		<addressOf ref="checkBuffer" type="Relative32"/>-->
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="ethernetPacketType">http://metalx.org/Network/EthernetPacket</var:string>
+	</cls:method>
+
+	<cls:method name="GetMissedFrameCount" type="http://metalx.org/Integer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffffc</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<pcnet:GetMissedFrameCount/>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+	</cls:method>
+
+	<cls:method name="GetReceiveCollisionCount" type="http://metalx.org/Integer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffffc</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<pcnet:GetCollisionCount/>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsPacketAvailable" type="http://metalx.org/Boolean">
+		<cpu:Operand16/>
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<hex>00008002</hex>
+
+		<cpu:Operand16/>
+		<cpu:TestAXWithImmediate/>
+		<binary>1000000000000000</binary>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="true" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createBooleanObject" type="Relative8"/>
+
+		<label id="true"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+		
+		<label id="createBooleanObject"/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="deviceName" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="deviceName">AMD PCnet LANCE PCI Ethernet Controller</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

@@ -1,0 +1,635 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<scope xmlns="http://metalx.org/Program" xmlns:cpu="http://metalx.org/Intel/80386/Operators" xmlns:ex="http://metalx.org/Intel/80386/ExtendedOperators" xmlns:op="http://metalx.org/Intel/80386/Operands" xmlns:seg="http://metalx.org/Intel/80386/Segments" xmlns:imm="http://metalx.org/Intel/80386/Immediate" xmlns:index="http://metalx.org/Intel/80386/Index" xmlns:shift="http://metalx.org/Intel/80386/Shift" xmlns:gdt="http://metalx.org/Intel/80386/DescriptorTable" xmlns:logic="http://metalx.org/Intel/80386/Logic" xmlns:math="http://metalx.org/Intel/80386/Math" xmlns:inc="http://metalx.org/Intel/80386/Increment" xmlns:sys="http://metalx.org/Pc/Bios/System" xmlns:bios="http://metalx.org/Pc/Bios/Functions" xmlns:pic="http://metalx.org/Pc/Pic/Ports" xmlns:cmd="http://metalx.org/Pc/Pic/Commands" xmlns:mm="http://metalx.org/i386/Functions/MemoryManager" xmlns:tm="http://metalx.org/i386/Functions/TaskManager" xmlns:obj="http://metalx.org/i386/Functions/Object" xmlns:sf="http://metalx.org/i386/Functions/System" xmlns:col="http://metalx.org/i386/Functions/Collection" xmlns:lst="http://metalx.org/i386/Functions/List" xmlns:sysf="http://metalx.org/i386/Functions/System" xmlns:flp="http://metalx.org/i386/Functions/FloppyDrive">
+	<hex>56</hex>
+	<!--Reset System Lock-->
+	<hex>C7</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">05</prg:hex>
+	<hex xmlns:sys="http://metalx.org/i386/Functions/System" xmlns:kbd="http://metalx.org/Pc/Keyboard" xmlns:ari="http://metalx.org/Intel/80386/Arithmetic">01000020</hex>
+	<int xmlns:sys="http://metalx.org/i386/Functions/System" xmlns:kbd="http://metalx.org/Pc/Keyboard" xmlns:ari="http://metalx.org/Intel/80386/Arithmetic">0</int>
+	<!--Setup Memory Manager-->
+	<hex>B8</hex>
+	<hex>01100000</hex>
+	<hex>05</hex>
+	<int>4</int>
+	<hex>A3</hex>
+	<hex>01100000</hex>
+	<!--Setup Task Manager-->
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+	<hex>01100000</hex>
+	<hex>81</hex>
+	<hex>05</hex>
+	<hex>01100000</hex>
+	<int>36</int>
+	<hex>C7</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">07</prg:hex>
+	<int xmlns:var="http://metalx.org/Variable" xmlns:cat="http://metalx.org/i386/Functions/Catalog" xmlns:sys="http://metalx.org/i386/Functions/System">8</int>
+	<hex>57</hex>
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+	<hex>01100000</hex>
+	<hex>81</hex>
+	<hex>05</hex>
+	<hex>01100000</hex>
+	<int>4</int>
+	<scope xmlns:clsf="http://metalx.org/i386/Functions/Class" xmlns:sys="http://metalx.org/i386/Functions/System" xmlns:cat="http://metalx.org/i386/Functions/Catalog" xmlns:var="http://metalx.org/Variable">
+		<hex>57</hex>
+		<hex>8B</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+		<hex>01100000</hex>
+		<hex>81</hex>
+		<hex>05</hex>
+		<hex>01100000</hex>
+		<int>12</int>
+		<hex>57</hex>
+		<hex>BE</hex>
+		<hex xmlns:kbd="http://metalx.org/Pc/Keyboard" xmlns:ari="http://metalx.org/Intel/80386/Arithmetic">00005000</hex>
+		<hex>BF</hex>
+		<addressOf ref="type" type="Absolute32" />
+		<scope xmlns:cls="http://metalx.org/i386/Functions/Class">
+			<scope>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
+				<hex>83</hex>
+				<hex>F9</hex>
+				<byte>0</byte>
+				<hex>75</hex>
+				<addressOf ref="start" type="Relative8" />
+				<hex>E9</hex>
+				<addressOf ref="end" type="Relative32" />
+				<label id="start" />
+				<hex>83</hex>
+				<hex>C6</hex>
+				<byte>4</byte>
+				<hex>89</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">F2</prg:hex>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
+				<hex>56</hex>
+				<hex>57</hex>
+				<hex>51</hex>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">76</prg:hex>
+				<byte xmlns:ari="http://metalx.org/Intel/80386/Arithmetic">4</byte>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
+				<hex>83</hex>
+				<hex>C1</hex>
+				<byte>4</byte>
+				<hex>F3</hex>
+				<hex>A6</hex>
+				<hex>59</hex>
+				<hex>5F</hex>
+				<hex>5E</hex>
+				<hex>74</hex>
+				<addressOf ref="classFound" type="Relative8" />
+				<hex>89</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">D6</prg:hex>
+				<hex>E2</hex>
+				<addressOf ref="start" type="Relative8" />
+				<label id="end" />
+			</scope>
+			<label id="classFound" />
+		</scope>
+		<hex>5F</hex>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">37</prg:hex>
+		<hex>5E</hex>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">77</prg:hex>
+		<byte>4</byte>
+		<hex>C7</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">47</prg:hex>
+		<byte>8</byte>
+		<int>4</int>
+		<hex>EB</hex>
+		<addressOf ref="end" type="Relative8" />
+		<label id="type" />
+		<int>29</int>
+		<string>http://metalx.org/System/Task</string>
+		<label id="end" />
+	</scope>
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">34</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">24</prg:hex>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">BE</prg:hex>
+	<uint xmlns:var="http://metalx.org/Variable" xmlns:cat="http://metalx.org/i386/Functions/Catalog" xmlns:sys="http://metalx.org/i386/Functions/System">4</uint>
+	<hex>5F</hex>
+	<scope xmlns:var="http://metalx.org/Variable" xmlns:cat="http://metalx.org/i386/Functions/Catalog" xmlns:sys="http://metalx.org/i386/Functions/System">
+		<hex>8B</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">07</prg:hex>
+		<hex>40</hex>
+		<hex>C1</hex>
+		<hex>E0</hex>
+		<byte>2</byte>
+		<hex>50</hex>
+		<hex>56</hex>
+		<hex>57</hex>
+		<hex>BF</hex>
+		<addressOf ref="className" type="Absolute32" />
+		<hex>BE</hex>
+		<hex xmlns:kbd="http://metalx.org/Pc/Keyboard" xmlns:ari="http://metalx.org/Intel/80386/Arithmetic">00005000</hex>
+		<scope xmlns:cls="http://metalx.org/i386/Functions/Class">
+			<scope>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
+				<hex>83</hex>
+				<hex>F9</hex>
+				<byte>0</byte>
+				<hex>75</hex>
+				<addressOf ref="start" type="Relative8" />
+				<hex>E9</hex>
+				<addressOf ref="end" type="Relative32" />
+				<label id="start" />
+				<hex>83</hex>
+				<hex>C6</hex>
+				<byte>4</byte>
+				<hex>89</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">F2</prg:hex>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
+				<hex>56</hex>
+				<hex>57</hex>
+				<hex>51</hex>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">76</prg:hex>
+				<byte xmlns:ari="http://metalx.org/Intel/80386/Arithmetic">4</byte>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
+				<hex>83</hex>
+				<hex>C1</hex>
+				<byte>4</byte>
+				<hex>F3</hex>
+				<hex>A6</hex>
+				<hex>59</hex>
+				<hex>5F</hex>
+				<hex>5E</hex>
+				<hex>74</hex>
+				<addressOf ref="classFound" type="Relative8" />
+				<hex>89</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">D6</prg:hex>
+				<hex>E2</hex>
+				<addressOf ref="start" type="Relative8" />
+				<label id="end" />
+			</scope>
+			<label id="classFound" />
+		</scope>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">F3</prg:hex>
+		<hex>5F</hex>
+		<hex>5E</hex>
+		<hex>58</hex>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">FA</prg:hex>
+		<hex>8B</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+		<hex>01100000</hex>
+		<hex>81</hex>
+		<hex>05</hex>
+		<hex>01100000</hex>
+		<int>12</int>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">1F</prg:hex>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">57</prg:hex>
+		<byte xmlns:clsf="http://metalx.org/i386/Functions/Class">4</byte>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">47</prg:hex>
+		<byte xmlns:clsf="http://metalx.org/i386/Functions/Class">8</byte>
+		<hex>EB</hex>
+		<addressOf ref="end" type="Relative8" />
+		<label id="className" />
+		<int>22</int>
+		<string>http://metalx.org/List</string>
+		<label id="end" />
+	</scope>
+	<hex>BE</hex>
+	<hex xmlns:task="http://metalx.org/i386/Functions/TaskManager" xmlns:mem="http://metalx.org/i386/Functions/MemoryManager">01000000</hex>
+	<hex>C7</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
+	<int xmlns:task="http://metalx.org/i386/Functions/TaskManager" xmlns:mem="http://metalx.org/i386/Functions/MemoryManager">1</int>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">7E</prg:hex>
+	<byte xmlns:task="http://metalx.org/i386/Functions/TaskManager" xmlns:mem="http://metalx.org/i386/Functions/MemoryManager">4</byte>
+	<hex>C7</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">46</prg:hex>
+	<byte xmlns:task="http://metalx.org/i386/Functions/TaskManager" xmlns:mem="http://metalx.org/i386/Functions/MemoryManager">8</byte>
+	<int xmlns:task="http://metalx.org/i386/Functions/TaskManager" xmlns:mem="http://metalx.org/i386/Functions/MemoryManager">0</int>
+	<!--Setup Processors-->
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+	<hex>01100000</hex>
+	<hex>81</hex>
+	<hex>05</hex>
+	<hex>01100000</hex>
+	<int>132</int>
+	<hex>C7</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">07</prg:hex>
+	<int xmlns:var="http://metalx.org/Variable" xmlns:cat="http://metalx.org/i386/Functions/Catalog" xmlns:sys="http://metalx.org/i386/Functions/System">32</int>
+	<hex>57</hex>
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+	<hex>01100000</hex>
+	<hex>81</hex>
+	<hex>05</hex>
+	<hex>01100000</hex>
+	<int>32</int>
+	<!--Get Processor ID-->
+	<!--<cpuf:GetProcessorID/>-->
+	<hex>B9</hex>
+	<hex>0000001B</hex>
+	<hex>0F</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">32</prg:hex>
+	<hex>25</hex>
+	<hex>fffff000</hex>
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">40</prg:hex>
+	<hex>20</hex>
+	<hex>C1</hex>
+	<hex>E8</hex>
+	<byte>24</byte>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">07</prg:hex>
+	<!--Processor State-->
+	<!--Flags-->
+	<!--Reserved-->
+	<!--Tasks-->
+	<!--Create Processor Object-->
+	<scope xmlns:clsf="http://metalx.org/i386/Functions/Class" xmlns:sys="http://metalx.org/i386/Functions/System" xmlns:cat="http://metalx.org/i386/Functions/Catalog" xmlns:var="http://metalx.org/Variable">
+		<hex>57</hex>
+		<hex>8B</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+		<hex>01100000</hex>
+		<hex>81</hex>
+		<hex>05</hex>
+		<hex>01100000</hex>
+		<int>12</int>
+		<hex>57</hex>
+		<hex>BE</hex>
+		<hex xmlns:kbd="http://metalx.org/Pc/Keyboard" xmlns:ari="http://metalx.org/Intel/80386/Arithmetic">00005000</hex>
+		<hex>BF</hex>
+		<addressOf ref="type" type="Absolute32" />
+		<scope xmlns:cls="http://metalx.org/i386/Functions/Class">
+			<scope>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
+				<hex>83</hex>
+				<hex>F9</hex>
+				<byte>0</byte>
+				<hex>75</hex>
+				<addressOf ref="start" type="Relative8" />
+				<hex>E9</hex>
+				<addressOf ref="end" type="Relative32" />
+				<label id="start" />
+				<hex>83</hex>
+				<hex>C6</hex>
+				<byte>4</byte>
+				<hex>89</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">F2</prg:hex>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
+				<hex>56</hex>
+				<hex>57</hex>
+				<hex>51</hex>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">76</prg:hex>
+				<byte xmlns:ari="http://metalx.org/Intel/80386/Arithmetic">4</byte>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
+				<hex>83</hex>
+				<hex>C1</hex>
+				<byte>4</byte>
+				<hex>F3</hex>
+				<hex>A6</hex>
+				<hex>59</hex>
+				<hex>5F</hex>
+				<hex>5E</hex>
+				<hex>74</hex>
+				<addressOf ref="classFound" type="Relative8" />
+				<hex>89</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">D6</prg:hex>
+				<hex>E2</hex>
+				<addressOf ref="start" type="Relative8" />
+				<label id="end" />
+			</scope>
+			<label id="classFound" />
+		</scope>
+		<hex>5F</hex>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">37</prg:hex>
+		<hex>5E</hex>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">77</prg:hex>
+		<byte>4</byte>
+		<hex>C7</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">47</prg:hex>
+		<byte>8</byte>
+		<int>32</int>
+		<hex>EB</hex>
+		<addressOf ref="end" type="Relative8" />
+		<label id="type" />
+		<int>27</int>
+		<string>http://metalx.org/Processor</string>
+		<label id="end" />
+	</scope>
+	<!--Add Processor To List-->
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">34</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">24</prg:hex>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">BE</prg:hex>
+	<uint xmlns:var="http://metalx.org/Variable" xmlns:cat="http://metalx.org/i386/Functions/Catalog" xmlns:sys="http://metalx.org/i386/Functions/System">4</uint>
+	<hex>5F</hex>
+	<scope xmlns:var="http://metalx.org/Variable" xmlns:cat="http://metalx.org/i386/Functions/Catalog" xmlns:sys="http://metalx.org/i386/Functions/System">
+		<hex>8B</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">07</prg:hex>
+		<hex>40</hex>
+		<hex>C1</hex>
+		<hex>E0</hex>
+		<byte>2</byte>
+		<hex>50</hex>
+		<hex>56</hex>
+		<hex>57</hex>
+		<hex>BF</hex>
+		<addressOf ref="className" type="Absolute32" />
+		<hex>BE</hex>
+		<hex xmlns:kbd="http://metalx.org/Pc/Keyboard" xmlns:ari="http://metalx.org/Intel/80386/Arithmetic">00005000</hex>
+		<scope xmlns:cls="http://metalx.org/i386/Functions/Class">
+			<scope>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
+				<hex>83</hex>
+				<hex>F9</hex>
+				<byte>0</byte>
+				<hex>75</hex>
+				<addressOf ref="start" type="Relative8" />
+				<hex>E9</hex>
+				<addressOf ref="end" type="Relative32" />
+				<label id="start" />
+				<hex>83</hex>
+				<hex>C6</hex>
+				<byte>4</byte>
+				<hex>89</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">F2</prg:hex>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
+				<hex>56</hex>
+				<hex>57</hex>
+				<hex>51</hex>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">76</prg:hex>
+				<byte xmlns:ari="http://metalx.org/Intel/80386/Arithmetic">4</byte>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
+				<hex>83</hex>
+				<hex>C1</hex>
+				<byte>4</byte>
+				<hex>F3</hex>
+				<hex>A6</hex>
+				<hex>59</hex>
+				<hex>5F</hex>
+				<hex>5E</hex>
+				<hex>74</hex>
+				<addressOf ref="classFound" type="Relative8" />
+				<hex>89</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">D6</prg:hex>
+				<hex>E2</hex>
+				<addressOf ref="start" type="Relative8" />
+				<label id="end" />
+			</scope>
+			<label id="classFound" />
+		</scope>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">F3</prg:hex>
+		<hex>5F</hex>
+		<hex>5E</hex>
+		<hex>58</hex>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">FA</prg:hex>
+		<hex>8B</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+		<hex>01100000</hex>
+		<hex>81</hex>
+		<hex>05</hex>
+		<hex>01100000</hex>
+		<int>12</int>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">1F</prg:hex>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">57</prg:hex>
+		<byte xmlns:clsf="http://metalx.org/i386/Functions/Class">4</byte>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">47</prg:hex>
+		<byte xmlns:clsf="http://metalx.org/i386/Functions/Class">8</byte>
+		<hex>EB</hex>
+		<addressOf ref="end" type="Relative8" />
+		<label id="className" />
+		<int>22</int>
+		<string>http://metalx.org/List</string>
+		<label id="end" />
+	</scope>
+	<hex>BE</hex>
+	<hex xmlns:sys="http://metalx.org/i386/Functions/System" xmlns:kbd="http://metalx.org/Pc/Keyboard" xmlns:ari="http://metalx.org/Intel/80386/Arithmetic">01000010</hex>
+	<hex>C7</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
+	<int>1</int>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">7E</prg:hex>
+	<byte>4</byte>
+	<hex>5E</hex>
+	<!--Setup Interrupt Descriptor Table-->
+	<hex>BF</hex>
+	<hex>00000500</hex>
+	<hex>B9</hex>
+	<int>256</int>
+	<hex>BA</hex>
+	<hex>00002000</hex>
+	<label id="writeInterruptDescriptor" />
+	<!--Base (Low)-->
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">D0</prg:hex>
+	<hex>66</hex>
+	<hex>AB</hex>
+	<!--Segment-->
+	<hex>66</hex>
+	<hex>B8</hex>
+	<hex>0008</hex>
+	<hex>66</hex>
+	<hex>AB</hex>
+	<!--Attributes-->
+	<hex>66</hex>
+	<hex>B8</hex>
+	<hex>00</hex>
+	<binary>10001110</binary>
+	<hex>66</hex>
+	<hex>AB</hex>
+	<!--Base (High)-->
+	<hex>66</hex>
+	<hex>B8</hex>
+	<hex>0000</hex>
+	<hex>66</hex>
+	<hex>AB</hex>
+	<hex>83</hex>
+	<hex>C2</hex>
+	<byte>16</byte>
+	<hex>E2</hex>
+	<addressOf ref="writeInterruptDescriptor" type="Relative8" />
+	<!--Setup Interrupt Handlers-->
+	<hex>BF</hex>
+	<hex>00002000</hex>
+	<hex>BA</hex>
+	<hex>00001000</hex>
+	<hex>B9</hex>
+	<int>32</int>
+	<!--Default Interrupt Handler-->
+	<label id="writeDefaultInterruptHandler" />
+	<hex>B0</hex>
+	<hex>FE</hex>
+	<hex>AA</hex>
+	<hex>B0</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">05</prg:hex>
+	<hex>AA</hex>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">D0</prg:hex>
+	<hex>AB</hex>
+	<hex>B0</hex>
+	<hex>EA</hex>
+	<hex>AA</hex>
+	<hex>B8</hex>
+	<hex>00000d00</hex>
+	<hex>AB</hex>
+	<hex>B8</hex>
+	<hex>00000008</hex>
+	<hex>AB</hex>
+	<hex>47</hex>
+	<hex>42</hex>
+	<hex>E2</hex>
+	<addressOf ref="writeDefaultInterruptHandler" type="Relative8" />
+	<!--Timer Interrupt Handler-->
+	<hex>B0</hex>
+	<hex>FE</hex>
+	<hex>AA</hex>
+	<hex>B0</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">05</prg:hex>
+	<hex>AA</hex>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">D0</prg:hex>
+	<hex>AB</hex>
+	<hex>B0</hex>
+	<hex>EA</hex>
+	<hex>AA</hex>
+	<hex>B8</hex>
+	<hex>0000d000</hex>
+	<hex>AB</hex>
+	<hex>B8</hex>
+	<hex>00000008</hex>
+	<hex>AB</hex>
+	<hex>47</hex>
+	<hex>42</hex>
+	<!--Master Interrupt Handler-->
+	<hex>B9</hex>
+	<int>7</int>
+	<label id="writeMasterInterruptHandler" />
+	<hex>B0</hex>
+	<hex>FE</hex>
+	<hex>AA</hex>
+	<hex>B0</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">05</prg:hex>
+	<hex>AA</hex>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">D0</prg:hex>
+	<hex>AB</hex>
+	<hex>B0</hex>
+	<hex>EA</hex>
+	<hex>AA</hex>
+	<hex>B8</hex>
+	<hex>00000e00</hex>
+	<hex>AB</hex>
+	<hex>B8</hex>
+	<hex>00000008</hex>
+	<hex>AB</hex>
+	<hex>47</hex>
+	<hex>42</hex>
+	<hex>E2</hex>
+	<addressOf ref="writeMasterInterruptHandler" type="Relative8" />
+	<!--Slave Interrupt Handler-->
+	<hex>B9</hex>
+	<int>8</int>
+	<label id="writeSlaveInterruptHandler" />
+	<hex>B0</hex>
+	<hex>FE</hex>
+	<hex>AA</hex>
+	<hex>B0</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">05</prg:hex>
+	<hex>AA</hex>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">D0</prg:hex>
+	<hex>AB</hex>
+	<hex>B0</hex>
+	<hex>EA</hex>
+	<hex>AA</hex>
+	<hex>B8</hex>
+	<hex>00000f00</hex>
+	<hex>AB</hex>
+	<hex>B8</hex>
+	<hex>00000008</hex>
+	<hex>AB</hex>
+	<hex>47</hex>
+	<hex>42</hex>
+	<hex>E2</hex>
+	<addressOf ref="writeSlaveInterruptHandler" type="Relative8" />
+	<!--Default Interrupt Handler-->
+	<hex>B9</hex>
+	<int>208</int>
+	<label id="writeDefaultInterruptHandler2" />
+	<hex>B0</hex>
+	<hex>FE</hex>
+	<hex>AA</hex>
+	<hex>B0</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">05</prg:hex>
+	<hex>AA</hex>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">D0</prg:hex>
+	<hex>AB</hex>
+	<hex>B0</hex>
+	<hex>EA</hex>
+	<hex>AA</hex>
+	<hex>B8</hex>
+	<hex>00000d00</hex>
+	<hex>AB</hex>
+	<hex>B8</hex>
+	<hex>00000008</hex>
+	<hex>AB</hex>
+	<hex>47</hex>
+	<hex>42</hex>
+	<hex>E2</hex>
+	<addressOf ref="writeDefaultInterruptHandler2" type="Relative8" />
+	<!--Load Interrupt Descriptor Table-->
+	<hex>0F</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">01</prg:hex>
+	<hex>1d</hex>
+	<addressOf ref="interruptDescriptorTablePointer" type="Absolute32" />
+	<!--Set Timer Frequency to ~100 Hz-->
+	<hex>B0</hex>
+	<binary>00110100</binary>
+	<!--<binary>00110110</binary>-->
+	<hex>E6</hex>
+	<hex>43</hex>
+	<hex>B0</hex>
+	<hex>00</hex>
+	<hex>E6</hex>
+	<hex>40</hex>
+	<hex>B0</hex>
+	<hex>20</hex>
+	<hex>E6</hex>
+	<hex>40</hex>
+	<!--Enable Interrupts-->
+	<hex>FB</hex>
+	<hex>FF</hex>
+	<hex>E6</hex>
+	<!--Interrupt Descriptor Table Pointer-->
+	<label id="interruptDescriptorTablePointer" />
+	<short>2048</short>
+	<hex>00000500</hex>
+</scope>

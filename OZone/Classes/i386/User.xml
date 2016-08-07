@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="User"
+	type="http://metalx.org/User"
+	static="true"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:dict="http://metalx.org/i386/Functions/Dictionary"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:cmos="http://metalx.org/Pc/Cmos/Ports"
+	xmlns:cmr="http://metalx.org/Pc/Cmos/Registers">
+
+	<cls:method name="Objects" type="http://metalx.org/Collection" static="true">
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<addressOf ref="objects" type="Absolute32"/>
+
+		<cpu:CompareAXToImmediate/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="null" type="Relative8"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="null"/>
+
+		<lst:Create length="8"/>
+
+		<lst:CreateObject/>
+
+		<cpu:PushDIToStack/>
+
+		<mm:CheckOut length="8"/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddress/>
+		<int>0</int>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<obj:Create length="8" type="http://metalx.org/Collection"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-ImmediateAddress/>
+		<addressOf ref="objects" type="Absolute32"/>
+
+		<cpu:ReturnToNearCaller/>
+		
+		<var:integer id="objects">0</var:integer>
+		<var:string id="className"></var:string>
+	</cls:method>
+	
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

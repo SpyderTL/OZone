@@ -1,0 +1,801 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="VirtioFileSystem"
+	type="http://metalx.org/Storage/Kvm/VirtioFileSystem"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:date="http://metalx.org/i386/Functions/Date"
+	xmlns:time="http://metalx.org/i386/Functions/Time"
+	xmlns:clk="http://metalx.org/i386/Functions/Clock"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:usb="http://metalx.org/Usb/Ohci/Registers"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
+	xmlns:cfg="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:pata="http://metalx.org/Pc/Pata/Ports"
+	xmlns:drive="http://metalx.org/Pc/Pata/DriveSelect"
+	xmlns:sta="http://metalx.org/Pc/Pata/Status"
+	xmlns:cmd="http://metalx.org/Pc/Pata/Commands"
+	xmlns:id="http://metalx.org/Pc/Pata/DriveIdentity">
+
+	<cls:field name="Device" type="http://metalx.org/Pci/PciDevice" offset="0"/>
+
+	<cls:method name="Enable" type="http://metalx.org/Storage/Kvm/VirtioFileSystem">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>11111100</binary>
+
+		<!--Set Device Status (Acknowledge)-->
+		<cpu:AddImmediateToAX/>
+		<int>18</int>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000001</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<!--Set Device Status (Driver)-->
+		<cpu:CopyImmediateToAL/>
+		<binary>00000011</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<!--Set Queue Select to 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Queue 0 Address (0x100000)-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<byte>6</byte>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>00000100</hex>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Setup Queue-->
+		<cpu:CopyImmediateToSI/>
+		<hex>00100000</hex>
+
+		<!--Buffer 0 Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<hex>00110000</hex>
+
+		<!--Buffer 0 Address (64-bit)-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<hex>00000000</hex>
+
+		<!--Buffer 0 Length-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<hex>00000100</hex>
+
+		<!--Buffer 0 Flags (Read Only)-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<short>0</short>
+
+		<!--Buffer 0 Next (Not Used)-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>14</byte>
+		<short>0</short>
+
+		<!--Buffer 1 Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<hex>00110100</hex>
+
+		<!--Buffer 1 Address (64-bit)-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<hex>00000000</hex>
+
+		<!--Buffer 1 Length-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<hex>00001000</hex>
+
+		<!--Buffer 1 Flags (Write Only)-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<short>2</short>
+
+		<!--Buffer 1 Next (Not Used)-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>30</byte>
+		<short>0</short>
+
+		<!--Add Available Buffer (0)-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate/>
+		<hex>00000204</hex>
+		<short>0</short>
+
+		<!--Set Available Flags (No Interrupt)-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate/>
+		<hex>00000200</hex>
+		<short>0</short>
+
+		<!--Set Next Index (0)-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate/>
+		<hex>00000202</hex>
+		<short>0</short>
+
+		<!--Set Used Flags (None)-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate/>
+		<hex>00001000</hex>
+		<short>0</short>
+
+		<!--Set Used Index (0)-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate/>
+		<hex>00001002</hex>
+		<short>0</short>
+
+		<!--Set Guest Features (Unknown)-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>00000000</hex>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Device Status (Driver Ready)-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<byte>14</byte>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000111</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<!--Notify Device-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<byte>2</byte>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Disable" type="http://metalx.org/Storage/Kvm/VirtioFileSystem">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>11111100</binary>
+
+		<cpu:AddImmediateToAX/>
+		<int>18</int>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetVersion" type="http://metalx.org/String">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>11111100</binary>
+
+		<cpu:AddImmediateToAX/>
+		<hex>00000010</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+		
+		<!--9P2000.L-->
+		
+		<!--Fill Buffer-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00110000</hex>
+		<int>21</int>
+
+		<cpu:CopyImmediateToOperandFunction8/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00110004</hex>
+		<byte>100</byte>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00110005</hex>
+		<short>99</short>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00110007</hex>
+		<int>10</int>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0011000b</hex>
+		<short>8</short>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0011000d</hex>
+		<string>9P20</string>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00110011</hex>
+		<string>00.L</string>
+		
+		<!--Add Buffer To Available Queue-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00100204</hex>
+		<short>0</short>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00100206</hex>
+		<short>1</short>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00100202</hex>
+		<short>2</short>
+
+		<!--Notify Device-->
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetAvailableFlags" type="http://metalx.org/Integer">
+		<cpu:CopyImmediateToSI/>
+		<hex>0010000c</hex>
+
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetUsedFlags" type="http://metalx.org/Integer">
+		<cpu:CopyImmediateToSI/>
+		<hex>00102000</hex>
+
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetUsedIndex" type="http://metalx.org/Integer">
+		<cpu:CopyImmediateToSI/>
+		<hex>00101002</hex>
+
+		<cpu:Operand16/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetUsedBufferIndex" type="http://metalx.org/Integer">
+		<cpu:CopyImmediateToSI/>
+		<hex>00102002</hex>
+
+		<cpu:Operand16/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<cpu:DecrementAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>3</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetUsedBufferLength" type="http://metalx.org/Integer">
+		<cpu:CopyImmediateToSI/>
+		<hex>00102002</hex>
+
+		<cpu:Operand16/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+		<!--<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>-->
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<cpu:DecrementAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>3</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetAvailableIndex" type="http://metalx.org/Integer">
+		<cpu:CopyImmediateToSI/>
+		<hex>00100202</hex>
+
+		<cpu:Operand16/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetAvailableBufferIndex" type="http://metalx.org/Integer">
+		<cpu:CopyImmediateToSI/>
+		<hex>00101002</hex>
+
+		<cpu:Operand16/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+		<!--<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>-->
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<cpu:DecrementAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>1</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:Operand16/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetAvailableBufferAddress" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyImmediateToSI/>
+		<hex>00101002</hex>
+
+		<cpu:Operand16/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+		<!--<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>-->
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<cpu:DecrementAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>1</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:Operand16/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<cpu:CopyImmediateToSI/>
+		<hex>00100000</hex>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetAvailableBufferLength" type="http://metalx.org/Integer">
+		<cpu:CopyImmediateToSI/>
+		<hex>00101002</hex>
+
+		<cpu:Operand16/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+		<!--<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>-->
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<cpu:DecrementAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>1</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:Operand16/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<cpu:CopyImmediateToSI/>
+		<hex>00100000</hex>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetQueueSize" type="http://metalx.org/Integer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>11111100</binary>
+
+		<cpu:AddImmediateToAX/>
+		<int>14</int>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<byte>2</byte>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetQueueAddress" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>11111100</binary>
+
+		<cpu:AddImmediateToAX/>
+		<int>14</int>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<byte>6</byte>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetDeviceFeatures" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>11111100</binary>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetGuestFeatures" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>11111100</binary>
+
+		<cpu:AddImmediateToAX/>
+		<int>4</int>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetDeviceStatus" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>11111100</binary>
+
+		<cpu:AddImmediateToAX/>
+		<int>18</int>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetInterruptStatus" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>11111100</binary>
+
+		<cpu:AddImmediateToAX/>
+		<int>19</int>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="deviceName" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="deviceName">KVM VirtIO-9p File System</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

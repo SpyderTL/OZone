@@ -1,0 +1,6858 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="IdeCdDrive"
+	type="http://metalx.org/Storage/Ide/IdeCdDrive"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:cd="http://metalx.org/i386/Functions/CdDrive"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:pata="http://metalx.org/Pc/Pata/Ports"
+	xmlns:status="http://metalx.org/Pc/Pata/Status"
+	xmlns:drive="http://metalx.org/Pc/Pata/DriveSelect"
+	xmlns:cmd="http://metalx.org/Pc/Pata/Commands"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:index="http://metalx.org/Intel/80386/Index"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:port="http://metalx.org/Pc/Ports"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
+	xmlns:cfg="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:dsk="http://metalx.org/Pc/Floppy/Ports"
+	xmlns:fcmd="http://metalx.org/Pc/Floppy/Commands"
+	xmlns:fdr="http://metalx.org/Pc/Floppy/DataRate"
+	xmlns:fdo="http://metalx.org/Pc/Floppy/DigitalOutput"
+	xmlns:fst="http://metalx.org/Pc/Floppy/Status"
+	xmlns:kbd="http://metalx.org/Pc/Keyboard">
+
+	<cls:field name="Port" type="http://metalx.org/Hexadecimal" offset="0"/>
+	<cls:field name="ControlPort" type="http://metalx.org/Hexadecimal" offset="4"/>
+	<cls:field name="Channel" type="http://metalx.org/Byte" offset="8"/>
+
+	<cls:method name="GetDiscType" type="http://metalx.org/Integer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>34</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>51</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<byte>34</byte>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Read Data Length-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Response-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<int:CreateObject/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<!--Functions-->
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsDiscErasable" type="http://metalx.org/Boolean">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>34</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>51</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<byte>34</byte>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Read Data Length-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Response-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>00000010</hex>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>4</byte>
+
+		<bool:CreateObject/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<!--Functions-->
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetDiscStatus" type="http://metalx.org/Integer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>34</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>51</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<byte>34</byte>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Read Data Length-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Response-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>00000003</hex>
+
+		<int:CreateObject/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<!--Functions-->
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetDiscFirstTrackNumber" type="http://metalx.org/Integer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>34</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>51</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<byte>34</byte>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Read Data Length-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Response-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ff00</hex>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>8</byte>
+
+		<int:CreateObject/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<!--Functions-->
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetDiscIdentifier" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>34</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>51</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<byte>34</byte>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Read Data Length-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Response-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>16</byte>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<hex:CreateObject/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<!--Functions-->
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetError" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Error/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetStatus" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetSenseKey" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0 (18)-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>4</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>03</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<byte>4</byte>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Read Data-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Data-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<hex:CreateObject/>
+
+		<!--<cpu:CallRelative/>
+		<addressOf ref="flush" type="Relative32"/>-->
+
+		<cpu:ReturnToNearCaller/>
+
+		<!--Functions-->
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="done" type="Relative8"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Error/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="error" type="Relative8"/>
+
+		<label id="done"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="error"/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="flush"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:TestALWithImmediate/>
+		<status:Ready/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="readWord" type="Relative8"/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="readWord"/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="flush" type="Relative8"/>
+
+	</cls:method>
+
+	<cls:method name="GetSenseCode" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0 (18)-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>18</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>03</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<byte>18</byte>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Read Data-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Data-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Data-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Data-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Data-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Data-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Data-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<hex:CreateObject/>
+
+		<!--Read Data-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Data-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<!--Functions-->
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="done" type="Relative8"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Error/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="error" type="Relative8"/>
+
+		<label id="done"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="error"/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetTracks" type="http://metalx.org/Storage/Ide/IdeCdDriveTrackList">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>132</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>43</hex>
+		<hex>02</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>03</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>24</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Read Data Length-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<cpu:SubtractImmediateFromAX/>
+		<int>2</int>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>3</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:DecrementCX/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-BXRegister/>
+
+		<cpu:BranchToRelative8IfCXIsZero/>
+		<addressOf ref="createList" type="Relative8"/>
+
+		<!--Read First/Last Track-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Tracks-->
+		<label id="nextTrack"/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>16</byte>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AH-ALRegister/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextTrack" type="Relative8"/>
+		
+		<!--Read Lead Out Track-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<label id="createList"/>
+
+		<!--Find Type-->
+		<cpu:PushDIToStack/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="ideCdDriveTrack" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:PullDXFromStack/>
+
+		<!--Create List-->
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<lst:Create/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-CXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<label id="forEachTrack"/>
+
+		<!--BX = Class-->
+		<!--DI = List-->
+		<!--DX = IdeCdDrive-->
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:PushDIToStack/>
+
+		<mm:CheckOut length="8"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-DIAddress/>
+		
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>7</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>6</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>5</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:PushDXToStack/>
+
+		<obj:Create length="8"/>
+
+		<cpu:PullDXFromStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:DecrementAX/>
+
+		<lst:SetItem/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachTrack" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-DIAddress/>
+
+		<cpu:IncrementAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<obj:Create type="http://metalx.org/Storage/Ide/IdeCdDriveTrackList"/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="ideCdDriveTrack">http://metalx.org/Storage/Ide/IdeCdDriveTrack</var:string>
+
+		<!--Functions-->
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:TestALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="done" type="Relative8"/>
+
+		<cpu:TestALWithImmediate/>
+		<status:Error/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="error" type="Relative8"/>
+
+		<cpu:TestALWithImmediate/>
+		<status:DriveFault/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="error" type="Relative8"/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<label id="done"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="error"/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="readError" type="Absolute32"/>
+
+		<ex:CreateObject xmlns:ex="http://metalx.org/i386/Functions/Exception"/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="readError">Error reading from drive.</var:string>
+	</cls:method>
+
+	<cls:method name="GetBlockCount" type="http://metalx.org/Integer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>08</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0025</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<!--Read Block Count-->
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>16</byte>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:IncrementAX/>
+
+		<cpu:PushAXToStack/>
+
+		<!--Read Block Size-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>16</byte>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:PullAXFromStack/>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetBlockLength" type="http://metalx.org/Integer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>08</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0025</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<!--Read Block Count-->
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>16</byte>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:IncrementAX/>
+
+		<!--Read Block Size-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>16</byte>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:RollAXRegisterLeft/>
+		<byte>8</byte>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetDeviceType" type="http://metalx.org/Integer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>36</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0012</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0024</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<!--Read Device Type / Removable Flag-->
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<cpu:PushAXToStack/>
+
+		<!--Read Version Fields / Response Format-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Additional Length-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:PullAXFromStack/>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetAnsiVersion" type="http://metalx.org/Integer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>36</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0012</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0024</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<!--Read Device Type / Removable Flag-->
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Version Fields / Response Format-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>00000007</hex>
+
+		<cpu:PushAXToStack/>
+
+		<!--Read Additional Length-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:PullAXFromStack/>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetEcmaVersion" type="http://metalx.org/Integer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>36</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0012</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0024</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<!--Read Device Type / Removable Flag-->
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Version Fields / Response Format-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>3</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>00000007</hex>
+
+		<cpu:PushAXToStack/>
+
+		<!--Read Additional Length-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:PullAXFromStack/>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetIsoVersion" type="http://metalx.org/Integer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>36</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0012</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0024</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<!--Read Device Type / Removable Flag-->
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Version Fields / Response Format-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>6</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>00000003</hex>
+
+		<cpu:PushAXToStack/>
+
+		<!--Read Additional Length-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:PullAXFromStack/>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetResponseDataFormat" type="http://metalx.org/Integer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>36</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0012</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0024</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<!--Read Device Type / Removable Flag-->
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Version Fields / Response Format-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>8</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000000f</hex>
+
+		<cpu:PushAXToStack/>
+
+		<!--Read Additional Length-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:PullAXFromStack/>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetAtapiVersion" type="http://metalx.org/Integer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>36</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0012</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0024</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<!--Read Device Type / Removable Flag-->
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Version Fields / Response Format-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>12</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>00000003</hex>
+
+		<cpu:PushAXToStack/>
+
+		<!--Read Additional Length-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:PullAXFromStack/>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetVendorID" type="http://metalx.org/String">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>36</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0012</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0024</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<!--Read Device Type / Removable Flag-->
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Version Fields / Response Format-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Additional Length-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Reserved-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Vendor ID-->
+		<mm:CheckOut length="12"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>8</int>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyImmediateToCX/>
+		<int>4</int>
+
+		<label id="readCharacter"/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="readCharacter" type="Relative8"/>
+
+		<cpu:PullDIFromStack/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetProductID" type="http://metalx.org/String">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>36</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0012</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0024</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<!--Read Device Type / Removable Flag-->
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Version Fields / Response Format-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Additional Length-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Reserved-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Vendor ID-->
+		<cpu:CopyImmediateToCX/>
+		<int>4</int>
+
+		<label id="readVendorID"/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="readVendorID" type="Relative8"/>
+
+		<!--Read Product ID-->
+		<mm:CheckOut length="20"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>16</int>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyImmediateToCX/>
+		<int>10</int>
+
+		<label id="readProductID"/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="readProductID" type="Relative8"/>
+
+		<cpu:PullDIFromStack/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetRevision" type="http://metalx.org/String">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>36</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0012</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0024</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<!--Read Device Type / Removable Flag-->
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Version Fields / Response Format-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Additional Length-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Reserved-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Vendor ID-->
+		<cpu:CopyImmediateToCX/>
+		<int>4</int>
+
+		<label id="readVendorID"/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="readVendorID" type="Relative8"/>
+
+		<!--Read Product ID-->
+		<cpu:CopyImmediateToCX/>
+		<int>8</int>
+
+		<label id="readProductID"/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="readProductID" type="Relative8"/>
+
+		<!--Read Revision-->
+		<mm:CheckOut length="8"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>4</int>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyImmediateToCX/>
+		<int>2</int>
+
+		<label id="readRevision"/>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:Operand16/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="readRevision" type="Relative8"/>
+
+		<cpu:PullDIFromStack/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsRemovable" type="http://metalx.org/Boolean">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>36</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0012</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0024</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<!--Read Device Type / Removable Flag-->
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>15</byte>
+
+		<cpu:PushAXToStack/>
+
+		<!--Read Version Fields / Response Format-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<!--Read Additional Length-->
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:PullAXFromStack/>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Open" type="http://metalx.org/Storage/Ide/IdeCdDrive">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>001B</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0002</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<!--Read Error-->
+		<!--<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Error/>
+
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+		
+		<cpu:ReadFromDXPortToAL/>
+
+		<int:CreateObject/>-->
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Close" type="http://metalx.org/Storage/Ide/IdeCdDrive">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<!--Select Drive-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:DriveAndHead/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrALWithImmediate/>
+		<binary>11100000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:DriveAndHead/>
+
+		<!--Wait For Drive Select-->
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<!--Disable DMA-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Features/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Features/>
+
+		<!--Enable IRQs-->
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<!--Set Byte Count 0-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount0/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount0/>
+
+		<!--Set Byte Count 1-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:ByteCount1/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:ByteCount1/>
+
+		<!--Send ATAPI Packet Command-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Command/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Packet/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Command/>
+
+		<!--Wait While Busy-->
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="poll" type="Relative32"/>
+
+		<!--Send ATAPI Packet-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Data/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>001B</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0003</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Data/>
+
+		<!--Wait While Busy-->
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+		<cpu:WaitForInterrupt/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sleep" type="Relative32"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="wait" type="Relative32"/>
+
+		<!--Read Error-->
+		<!--<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Error/>
+
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<int:CreateObject/>-->
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="sleep"/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:Operand16/>
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<hex>0206</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="wait"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileBusy"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="whileBusy" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="poll"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<pata:Status/>
+
+		<label id="whileEmpty"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<status:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="whileEmpty" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<pata:Status/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetModel" type="http://metalx.org/String">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cd:GetModelNumber/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetSerialNumber" type="http://metalx.org/String">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cd:GetSerialNumber/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="FirstBlock" type="http://metalx.org/Storage/Ide/IdeCdDriveBlockIterator">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:LogicFunction/>
+		<logic:PushSIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:LogicFunction/>
+		<logic:PushSIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:LogicFunction/>
+		<logic:PushSIAddress/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="className" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<mm:CheckOut length="13"/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddress/>
+		<int>0</int>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="className">http://metalx.org/Storage/Ide/IdeCdDriveBlockIterator</var:string>
+	</cls:method>
+
+	<cls:method name="GetReader" type="http://metalx.org/Storage/Ide/IdeCdDriveReader">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<mm:CheckOut length="8"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIAddress/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>0</int>
+
+		<obj:Create length="8" type="http://metalx.org/Storage/Ide/IdeCdDriveReader"/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetAudioReader" type="http://metalx.org/Storage/Ide/IdeCdDriveAudioReader">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<mm:CheckOut length="8"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIAddress/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>352800</int>
+
+		<obj:Create length="8" type="http://metalx.org/Storage/Ide/IdeCdDriveAudioReader"/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cd:GetModelNumber/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

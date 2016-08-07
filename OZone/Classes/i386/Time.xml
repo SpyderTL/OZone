@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Time"
+	type="http://metalx.org/Time"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:cmos="http://metalx.org/Pc/Cmos/Ports"
+	xmlns:cmr="http://metalx.org/Pc/Cmos/Registers">
+
+	<cls:field name="Hours" type="http://metalx.org/Hexadecimal" offset="0"/>
+	<cls:field name="Minutes" type="http://metalx.org/Hexadecimal" offset="4"/>
+	<cls:field name="Seconds" type="http://metalx.org/Hexadecimal" offset="8"/>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:PushDIToStack/>
+
+		<str:Create length="10"/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:GetData/>
+
+		<!--Store Seconds-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:PushAXToStack/>
+
+		<!--Store Minutes-->
+		<cpu:CopyOperandToRegister8/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:PushAXToStack/>
+
+		<!--Get Hours-->
+		<cpu:CopyOperandToRegister8/>
+		<op:AX-SIAddress/>
+
+		<!--Write Hours-->
+		<cpu:PushDIToStack/>
+
+		<hex:ToString/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PushDIToStack/>
+
+		<str:AppendString/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<str:AppendCharacter value=":"/>
+
+		<!--Write Minutes-->
+		<cpu:PullAXFromStack/>
+		<cpu:PushDIToStack/>
+
+		<hex:ToString digits="2"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PushDIToStack/>
+
+		<str:AppendString/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<str:AppendCharacter value=":"/>
+
+		<!--Write Seconds-->
+		<cpu:PullAXFromStack/>
+		<cpu:PushDIToStack/>
+
+		<hex:ToString digits="2"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PushDIToStack/>
+
+		<str:AppendString/>
+
+		<cpu:PullDIFromStack/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+		
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

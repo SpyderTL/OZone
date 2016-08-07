@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:pia="http://metalx.org/Atari/2600/PeripheralInterfaceAdapter"
+	xmlns:tia="http://metalx.org/Atari/2600/TelevisionInterfaceAdapter">
+
+	<cpu:SetInterruptDisableFlag/>
+
+	<cpu:ClearDecimalFlag/>
+
+	<!--Setup Stack Pointer-->
+	<cpu:CopyImmediateToXIndex/>
+	<hex>ff</hex>
+
+	<cpu:CopyXIndexToStackPointer/>
+
+	<!--Clear Memory-->
+	<cpu:CopyImmediateToAccumulator/>
+	<byte>0</byte>
+
+	<label id="clearMemory"/>
+
+	<cpu:CopyAccumulatorToZeroPageXIndexMemory/>
+
+	<cpu:DecrementXIndex/>
+
+	<cpu:BranchToRelativeMemoryIfNotZero/>
+	<addressOf ref="clearMemory" type="Relative8"/>
+
+	<!--Setup Player-->
+	<cpu:CopyImmediateToAccumulator/>
+	<hex>88</hex>
+
+	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<tia:Player0Color/>
+
+	<!--Render Screen-->
+	<label id="renderScreen"/>
+
+	<!--Wait For VSync-->
+	<cpu:CopyImmediateToAccumulator/>
+	<binary>00000010</binary>
+
+	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<tia:VerticalSync/>
+
+	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<tia:WaitForHorizontalSync/>
+
+	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<tia:WaitForHorizontalSync/>
+
+	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<tia:WaitForHorizontalSync/>
+
+	<cpu:CopyImmediateToAccumulator/>
+	<binary>00000000</binary>
+
+	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<tia:VerticalSync/>
+
+	<!--Set Timer-->
+	<cpu:CopyImmediateToAccumulator/>
+	<byte>43</byte>
+
+	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<pia:SetTimer64/>
+
+	<!--Update Screen-->
+	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<tia:WaitForHorizontalSync/>
+
+	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<tia:MoveAllObjects/>
+
+	<!--Wait For Timer-->
+	<label id="waitForTimer"/>
+
+	<cpu:CopyAbsoluteMemoryToAccumulator/>
+	<pia:TimerValue/>
+
+	<cpu:BranchToRelativeMemoryIfNotZero/>
+	<addressOf ref="waitForTimer" type="Relative8"/>
+
+	<!--Turn Off Vertical Blank-->
+	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<tia:WaitForHorizontalSync/>
+
+	<cpu:CopyImmediateToAccumulator/>
+	<binary>00000000</binary>
+
+	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<tia:VerticalBlank/>
+
+	<!--Reset Current Scan Line-->
+	<cpu:CopyImmediateToYIndex/>
+	<byte>191</byte>
+
+	<cpu:CopyImmediateToXIndex/>
+	<byte>0</byte>
+
+	<!--Render Scan Line-->
+	<label id="renderScanLine"/>
+
+	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<tia:WaitForHorizontalSync/>
+
+	<cpu:CopyAbsoluteXIndexMemoryToAccumulator/>
+	<addressOf ref="player.image" type="Absolute16"/>
+
+	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<tia:Player0Graphics/>
+
+	<cpu:IncrementXIndex/>
+
+	<!--Decrement Scan Line Counter-->
+	<cpu:DecrementYIndex/>
+
+	<cpu:BranchToRelativeMemoryIfNotZero/>
+	<addressOf ref="renderScanLine" type="Relative8"/>
+
+	<!--Turn On VBlank-->
+	<cpu:CopyImmediateToAccumulator/>
+	<binary>00000010</binary>
+
+	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<tia:VerticalBlank/>
+
+	<!--Wait For Overscan Period-->
+	<cpu:CopyImmediateToXIndex/>
+	<byte>30</byte>
+
+	<label id="waitForOverscan"/>
+
+	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<tia:WaitForHorizontalSync/>
+
+	<cpu:DecrementXIndex/>
+
+	<cpu:BranchToRelativeMemoryIfNotZero/>
+	<addressOf ref="waitForOverscan" type="Relative8"/>
+
+	<cpu:JumpToAbsoluteMemory/>
+	<addressOf ref="renderScreen" type="Absolute16"/>
+
+	<!--Data-->
+	<label id="player.image"/>
+	<binary>10101010</binary>
+	<binary>01010101</binary>
+	<binary>10101010</binary>
+	<binary>01010101</binary>
+	<binary>10101010</binary>
+	<binary>01010101</binary>
+	<binary>10101010</binary>
+	<binary>01010101</binary>
+</scope>

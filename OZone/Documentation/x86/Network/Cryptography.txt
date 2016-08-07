@@ -1,0 +1,39 @@
+﻿Single Key Encryption
+	Key
+		byte Value
+	Algorithm
+		Add
+		{
+			Lock(byte[] data, Key key)
+			{
+				for(int index = 0; index < data.Length; index++)
+					data[index] += key.Value
+			};
+
+			Unlock(byte[] data, Key key)
+			{
+				for(int index = 0; index < data.Length; index++)
+					data[index] -= key.Value
+			};
+		}
+
+Dual Key Encryption
+	PublicKey
+		byte Value
+	PrivateKey
+		byte Value
+	Algorithm
+		Add
+		{
+			Lock(byte[] data, Key publicKey, Key privateKey)
+			{
+				for(int index = 0; index < data.Length; index++)
+					data[index] += publicKey.Value + privateKey.Value;
+			};
+
+			Unlock(byte[] data, Key key)
+			{
+				for(int index = 0; index < data.Length; index++)
+					data[index] -= publicKey.Value + privateKey.Value
+			};
+		}

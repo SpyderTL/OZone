@@ -1,0 +1,62 @@
+all:
+	nmake -f consts.mak
+	cd char
+	nmake
+	cd ..
+	cd conv
+	nmake
+	cd ..
+	cd memory
+	nmake
+	cd ..
+	cd misc
+	nmake
+	cd ..
+	cd stdin
+	nmake
+	cd ..
+	cd stdout
+	nmake
+	cd ..
+	cd string
+	nmake
+	cd ..
+	cd process
+	nmake
+	cd ..
+	cd file
+	nmake
+	cd ..
+        del ..\lib\ucrlib.lib
+        lib @libres.txt
+
+clean:
+	cd char
+	nmake clean
+	cd ..
+	cd conv
+	nmake clean
+	cd ..
+	cd file
+	nmake clean
+	cd ..
+	cd memory
+	nmake clean
+	cd ..
+	cd misc
+	nmake clean
+	cd ..
+	cd stdin
+	nmake clean
+	cd ..
+	cd stdout
+	nmake clean
+	cd ..
+	cd string
+	nmake clean
+	cd ..
+	cd process
+	nmake clean
+	cd ..
+        del ..\lib\ucrlib.lib
+	del ..\include\*.bak

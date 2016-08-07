@@ -1,0 +1,678 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="OhciUsbEndpoint"
+	type="http://metalx.org/Usb/Ohci/OhciUsbEndpoint"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:date="http://metalx.org/i386/Functions/Date"
+	xmlns:time="http://metalx.org/i386/Functions/Time"
+	xmlns:clk="http://metalx.org/i386/Functions/Clock"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:ex="http://metalx.org/i386/Functions/Exception"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:index="http://metalx.org/Intel/80386/Index"
+	xmlns:usb="http://metalx.org/Usb/Ohci/Registers"
+	xmlns:comm="http://metalx.org/Usb/Ohci/Communication"
+	xmlns:ed="http://metalx.org/Usb/Ohci/Endpoint"
+	xmlns:td="http://metalx.org/Usb/Ohci/Transfer"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
+	xmlns:cfg="http://metalx.org/Pc/Pci/Configuration">
+
+	<cls:field name="Interface" type="http://metalx.org/Usb/Ohci/OhciUsbInterface" offset="0"/>
+	<cls:field name="MaximumPacketSize" type="http://metalx.org/Short" offset="16"/>
+	<cls:field name="Index" type="http://metalx.org/Byte" offset="18"/>
+	<cls:field name="Type" type="http://metalx.org/Byte" offset="19"/>
+	<cls:field name="Direction" type="http://metalx.org/Byte" offset="20"/>
+
+	<cls:method name="IsDataAvailable" type="http://metalx.org/Boolean">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000000f</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-DIAddressPlusImmediate8/>
+		<usb:HeadDoneTransferDescriptorAddress/>
+		
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:CompareWithSIRegister/>
+		<byte>0</byte>
+		
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="endpointNotFound" type="Relative8"/>
+
+		<label id="nextDescriptor"/>
+
+		<!--Compare Device Address-->
+		<cpu:CopyOperandToRegister/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<hex>20</hex>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000007f</hex>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-BXRegister/>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wrongDescriptor" type="Relative8"/>
+
+		<!--Compare Endpoint Index-->
+		<cpu:CopyOperandToRegister/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<hex>21</hex>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000000f</hex>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wrongDescriptor" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="descriptorFound" type="Relative32"/>
+
+		<label id="wrongDescriptor"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<ed:NextEndpointDescriptorAddress/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:CompareWithSIRegister/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="nextDescriptor" type="Relative8"/>
+
+		<!--No Endpoint Found-->
+		<label id="endpointNotFound"/>
+		
+		<cpu:PullSIFromStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="descriptorFound"/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>1</byte>
+
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="SendData" type="http://metalx.org/Usb/Ohci/OhciUsbEndpoint">
+		<cls:parameter name="Data" type="http://metalx.org/Object"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<!--<cpu:PushSIToStack/>-->
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>18</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000000f</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-DIAddressPlusImmediate8/>
+		<usb:HeadBulkEndpointDescriptorAddress/>
+
+		<label id="nextEndpoint"/>
+
+		<!--Compare Device Address-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000007f</hex>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-BXRegister/>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wrongEndpoint" type="Relative8"/>
+
+		<!--Compare Endpoint Index-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>7</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000000f</hex>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wrongEndpoint" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="endpointFound" type="Relative32"/>
+
+		<label id="wrongEndpoint"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<ed:NextEndpointDescriptorAddress/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:CompareWithSIRegister/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="nextEndpoint" type="Relative8"/>
+
+		<!--No Endpoint Found-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSPRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="endpointNotFoundException" type="Absolute32"/>
+
+		<ex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="endpointFound"/>
+
+		<cpu:PushSIToStack/>
+
+		<!--Create Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00260000</hex>
+		<hex>e0e80000</hex>
+
+		<!--First Byte-->
+		<!--<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00260004</hex>
+		<hex>00200010</hex>-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<hex>00260004</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00260008</hex>
+		<hex>00260010</hex>
+
+		<!--Last Byte-->
+		<!--<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0026000c</hex>
+		<hex>00200017</hex>-->
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetDataLength/>
+
+		<obj:GetData/>
+
+		<cpu:AddRegisterToOperand/>
+		<op:SI-AXRegister/>
+
+		<cpu:DecrementAX/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-ImmediateAddress/>
+		<hex>0026000c</hex>
+
+		<!--Create Terminator Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00260010</hex>
+		<hex>e2000000</hex>
+
+		<!--First Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00260014</hex>
+		<hex>00000000</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00260018</hex>
+		<hex>00000000</hex>
+
+		<!--Last Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0026001c</hex>
+		<hex>00000000</hex>
+
+		<!--Queue Transfer Descriptors-->
+		<cpu:PullSIFromStack/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<ed:TailTransferDescriptorAddress/>
+		<hex>00260010</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<ed:HeadTransferDescriptorAddress/>
+		<hex>00260000</hex>
+
+		<!--Enable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AndWithSIAddress/>
+		<hex>ffffbfff</hex>
+
+		<!--Notify Controller-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<usb:CommandStatus/>
+		<hex>00000004</hex>
+
+		<!--Wait For Data-->
+		<!--<cpu:CopyImmediateToCX/>
+		<hex>00100000</hex>-->
+
+		<label id="wait"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddressPlusImmediate8/>
+		<ed:HeadTransferDescriptorAddress/>
+		<hex>00260010</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wait" type="Relative8"/>
+
+		<!--<cpu:LoopToRelative8WhileNotEqual/>
+		<addressOf ref="wait" type="Relative8"/>-->
+
+		<!--Disable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:OrWithSIAddress/>
+		<hex>00004000</hex>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="endpointNotFoundException">Endpoint Not Found!</var:string>
+	</cls:method>
+
+	<cls:method name="ReadData" type="http://metalx.org/Usb/Ohci/OhciUsbEndpoint">
+		<cls:parameter name="Data" type="http://metalx.org/Object"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<!--<cpu:PushSIToStack/>-->
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>18</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000000f</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-DIAddressPlusImmediate8/>
+		<usb:HeadBulkEndpointDescriptorAddress/>
+
+		<label id="nextEndpoint"/>
+
+		<!--Compare Device Address-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000007f</hex>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-BXRegister/>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wrongEndpoint" type="Relative8"/>
+
+		<!--Compare Endpoint Index-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>7</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000000f</hex>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wrongEndpoint" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="endpointFound" type="Relative32"/>
+
+		<label id="wrongEndpoint"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<ed:NextEndpointDescriptorAddress/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:CompareWithSIRegister/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="nextEndpoint" type="Relative8"/>
+
+		<!--No Endpoint Found-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSPRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="endpointNotFoundException" type="Absolute32"/>
+
+		<ex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="endpointFound"/>
+
+		<cpu:PushSIToStack/>
+
+		<!--Create Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00280000</hex>
+		<hex>e0f00000</hex>
+
+		<!--First Byte-->
+		<!--<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00280004</hex>
+		<hex>00200010</hex>-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<hex>00280004</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00280008</hex>
+		<hex>00280010</hex>
+
+		<!--Last Byte-->
+		<!--<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0028000c</hex>
+		<hex>00200017</hex>-->
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetDataLength/>
+
+		<obj:GetData/>
+
+		<cpu:AddRegisterToOperand/>
+		<op:SI-AXRegister/>
+
+		<cpu:DecrementAX/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-ImmediateAddress/>
+		<hex>0028000c</hex>
+
+		<!--Create Terminator Transfer Descriptor-->
+		<!--Flags-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00280010</hex>
+		<hex>e2000000</hex>
+
+		<!--First Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00280014</hex>
+		<hex>00000000</hex>
+
+		<!--Next Descriptor Address-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00280018</hex>
+		<hex>00000000</hex>
+
+		<!--Last Byte-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0028001c</hex>
+		<hex>00000000</hex>
+
+		<!--Queue Transfer Descriptors-->
+		<cpu:PullSIFromStack/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<ed:TailTransferDescriptorAddress/>
+		<hex>00280010</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<ed:HeadTransferDescriptorAddress/>
+		<hex>00280000</hex>
+
+		<!--Enable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AndWithSIAddress/>
+		<hex>ffffbfff</hex>
+
+		<!--Notify Controller-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<usb:CommandStatus/>
+		<hex>00000004</hex>
+
+		<!--Wait For Data-->
+		<!--<cpu:CopyImmediateToCX/>
+		<hex>00100000</hex>-->
+
+		<label id="wait"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddressPlusImmediate8/>
+		<ed:HeadTransferDescriptorAddress/>
+		<hex>00280010</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="wait" type="Relative8"/>
+
+		<!--<cpu:LoopToRelative8WhileNotEqual/>
+		<addressOf ref="wait" type="Relative8"/>-->
+
+		<!--Disable Endpoint-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:OrWithSIAddress/>
+		<hex>00004000</hex>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="endpointNotFoundException">Endpoint Not Found!</var:string>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="deviceName" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="deviceName">Universal Serial Bus 1.0 Device Endpoint (OHCI)</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema 
+    targetNamespace="http://metalx.org/i386/Functions/Object"
+    elementFormDefault="qualified"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:element name="Create">
+		<xsd:annotation>
+			<xsd:documentation>
+				Creates a new object.
+
+				Input:
+				DI=Data
+				AX=Length
+				BX=Type
+
+				Output:
+				DI=Object
+
+				Modifies: DX
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="type" type="xsd:anyURI"/>
+			<xsd:attribute name="length" type="xsd:int"/>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="GetType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Returns the class for an object.
+
+				Input:
+				SI=Object
+
+				Output:
+				SI=Class
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="GetData">
+		<xsd:annotation>
+			<xsd:documentation>
+				Returns the data for an object.
+
+				Input:
+				SI=Object
+
+				Output:
+				SI=Data
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="GetDataLength">
+		<xsd:annotation>
+			<xsd:documentation>
+				Returns the length of the data for an object.
+
+				Input:
+				SI=Object
+
+				Output:
+				AX=Length
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="ExecuteMethod">
+		<xsd:annotation>
+			<xsd:documentation>
+				Executes a method on an object.
+
+				Input:
+				BP=Arguments
+				SI=Object
+
+				Output:
+				DI=ReturnValue
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="name" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="GetFieldValue">
+		<xsd:annotation>
+			<xsd:documentation>
+				Returns the value of a field in the specified object.
+
+				Input:
+				SI=Object
+
+				Output:
+				DI=ReturnValue
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="name" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+
+</xsd:schema>

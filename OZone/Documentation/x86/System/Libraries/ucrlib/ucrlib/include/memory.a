@@ -1,0 +1,66 @@
+		ifndef	$Memory_a
+$Memory_a	=	0
+		echo	Memory.a
+
+		include	consts.a
+
+; Dummy segment definition that gives me a variable that is
+; at offset zero within a segment:
+
+dummy		segment	at 0
+Loc0		word	?
+dummy		ends
+
+
+
+; Memory manager data structure:
+
+mmstruct	struc
+blksize		dw	?
+bwdptr		dw	?
+fwdptr		dw	?
+refcnt		dw	?
+freebwdptr	dw	?		;Only if in the free list.
+freefwdptr	dw	?		;Only if in the free list.
+mmstruct	ends
+
+; When using es and ds as pointers into the heap, the following equates
+; come in handy.
+
+
+esptr		textequ	<word ptr es:[Loc0].mmstruct>
+dsptr		textequ	<word ptr ds:[Loc0].mmstruct>
+
+
+NIL		equ	0
+
+
+ucrlib		segment	para public 'ucrlib'
+
+		xtrn	MemInit
+		xtrn	MemInit2
+		xtrn	Malloc
+		xtrn	Free
+		xtrn	Realloc
+		xtrn	DupPtr
+		xtrn	IsInHeap
+		xtrn	IsPtr
+		xtrn	HeapStart
+		xtrn	BlockSize
+		xtrn	MemAvail
+		xtrn	MemFree
+		xtrn	BasePtr
+
+
+externdef	$StartOfHeap:word,
+		$SizeOfHeap:word,
+		$FreeSpace:word,
+		$EndOfHeap:word,
+		$PSP:word
+
+
+
+ucrlib		ends
+
+
+		endif	;ifndef $Memory_a

@@ -1,0 +1,41 @@
+﻿PCM Format
+
+Channel
+	Low Byte
+	[High Byte] (16-bit)
+
+Transfer Rate (Time Constant)
+	Hi(0xFF - ((256,000,000) / (channels * sample rate)))
+
+Direct Mode
+	8-bit Mono Unsigned PCM Only
+	Timer Interrupt Based
+	
+Single-Cycle DMA Mode
+	64K DMA Block Limit
+	Can not cross over 64K boundary
+	Calls interrupt after block transfer complete
+	
+Auto-Initialize DMA Mode
+	64K DMA Block Limit
+	Can not cross over 64K boundary
+	Calls interrupt after block transfer, and continues with next block
+	
+High-Speed DMA Mode (No Longer Supported in DSP 4.00+)
+	Improves speed by ignoring commands during data transfer
+	Supports Single-Cycle and Auto-Initialize DMA Modes
+	Requires reset to stop transfer in Auto-Initialize mode
+	Reset exits High-Speed DMA mode and restores state
+	8-bit and 16-bit PCM data only
+
+Play 16-bit Stereo Audio (DSP 4.00+)
+	Allocate DMA Buffer (8K)
+	Program DMA Controller (16-bit, Auto-Initialize)
+	Send Set DSP Sample Rate Command (41h, ACh, 44h)
+	Send Play Audio Command With Sample Count - 1 (B6h, 30h, C9h, 07h)
+	While Audio Data Available
+		Wait For Interrupt
+		Fill DMA Buffer With Audio Data
+
+	Send Exit Auto-Initialize DMA Mode Command (D9h)
+	Release DMA Buffer

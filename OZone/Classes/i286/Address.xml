@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Address"
+	type="http://metalx.org/Address"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/i286/Structures/Class"
+	xmlns:hex="http://metalx.org/i286/Functions/Hexadecimal"
+	xmlns:obj="http://metalx.org/i286/Functions/Object"
+	xmlns:lst="http://metalx.org/i286/Functions/List"
+	xmlns:str="http://metalx.org/i286/Functions/String"
+	xmlns:mm="http://metalx.org/i286/Functions/MemoryManager"
+	xmlns:sys="http://metalx.org/i286/Functions/System"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:ari="http://metalx.org/Intel/80286/Arithmetic"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands">
+
+	<cls:field name="Offset" type="http://metalx.org/Hexadecimal" offset="0"/>
+	<cls:field name="Segment" type="http://metalx.org/Hexadecimal" offset="2"/>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:PushSIToStack/>
+
+		<sys:GetMemoryManager/>
+
+		<str:Create length="9"/>
+
+		<cpu:PullSIFromStack/>
+
+		<obj:GetData/>
+
+		<!--Store Offset-->
+		<cpu:CopyOperandToRegister16/>
+		<op:AX-SIAddress/>
+		
+		<cpu:PushAXToStack/>
+
+		<!--Get Segment-->
+		<cpu:IncrementSI/>
+		<cpu:IncrementSI/>
+
+		<cpu:CopyOperandToRegister16/>
+		<op:AX-SIAddress/>
+
+		<!--Write Segment-->
+		<cpu:PushDIToStack/>
+
+		<sys:GetMemoryManager/>
+
+		<hex:ToString digits="4"/>
+		
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PushDIToStack/>
+
+		<str:AppendString/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<str:AppendByte value=":"/>
+		
+		<!--Write Offset-->
+		<cpu:PullAXFromStack/>
+		<cpu:PushDIToStack/>
+
+		<sys:GetMemoryManager/>
+
+		<hex:ToString digits="4"/>
+		
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PushDIToStack/>
+
+		<str:AppendString/>
+
+		<cpu:PullDIFromStack/>
+		
+		<sys:GetMemoryManager/>
+
+		<str:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

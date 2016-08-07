@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema id="Project"
+    targetNamespace="http://metalx.org/Project"
+    elementFormDefault="qualified"
+    xmlns="http://metalx.org/Project"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	
+	<xsd:element name="project" type="Project"/>
+
+	<xsd:complexType name="Project">
+		<xsd:sequence>
+			<xsd:element name="paths" type="Paths"/>
+			<xsd:element name="transforms" type="Transforms"/>
+			<xsd:element name="programs" type="Programs"/>
+			<xsd:element name="resources" type="Resources"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="Paths">
+		<xsd:sequence minOccurs="0" maxOccurs="unbounded">
+			<xsd:element name="path"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="Transforms">
+		<xsd:sequence minOccurs="0" maxOccurs="unbounded">
+			<xsd:element name="transform" type="Transform"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="Programs">
+		<xsd:sequence minOccurs="0" maxOccurs="unbounded">
+			<xsd:element name="program" type="Program"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="Resources">
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:element name="image" type="Image"/>
+		</xsd:choice>
+	</xsd:complexType>
+
+	<xsd:complexType name="Transform">
+		<xsd:attribute name="namespace"/>
+		<xsd:attribute name="path"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="Program">
+		<xsd:attribute name="path"/>
+		<xsd:attribute name="address" type="xsd:hexBinary"/>
+		<xsd:attribute name="block" type="xsd:integer"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="Image">
+		<xsd:attribute name="path"/>
+		<xsd:attribute name="address" type="xsd:hexBinary"/>
+	</xsd:complexType>
+
+</xsd:schema>

@@ -1,0 +1,20 @@
+SetMode( AH=00h, AL=Mode )
+SetCursorSize( AH=01h, CH=StartScanLine, CL=EndScanLine )
+SetCursorPosition( AH=02h, BH=Page, DH=Row, DL=Column)
+GetCursor( AH=03h, BH=Page ) { CH=StartScanLine, CL=EndScanLine, DH=Row, DL=Column }
+GetPenPosition( AH=04h ) { AH=PenTriggerType, BX=PixelColumn, CX=PixelRow, DH=TextRow, DL=TextColumn }
+SelectPage( AH=05h, AL=Page )
+ScrollUp( AH=06h, AL=LineCount, BH=BlankLineAttribute, CH=TopRow, CL=LeftColumn, DH=BottomRow, DL=RightColumn )
+ScrollDown( AH=07h, AL=LineCount, BH=BlankLineAttribute, CH=TopRow, CL=LeftColumn, DH=BottomRow, DL=RightColumn )
+ReadCharacter( AH=08h, BH=Page ) { AH=Attribute, AL=Character }
+WriteCharacter( AH=09h, AL=Character, BH=Page, BL=Colors, CX=Count )
+WriteCharacterAtCursor( AH=0Ah, AL=Character, BH=Page, CX=Count )
+SetBorderOrPalette( AH=0Bh, BH=Mode, BL=Palette/Color )
+SetPixel( AH=0Ch, AL=Pixel, BH=Page, CX=Column, DX=Row )
+GetPixel( AH=0Dh, BH=Page, CX=Column, DX=Row ) { AL=Pixel }
+WriteText( AH=0Eh, AL=Character )
+GetVideoState( AH=0Fh )
+PaletteRegisters( AH=10h )
+CharacterGeneratorRoutine( AH=11h )
+VideoSubsystemConfiguration( AH=12h )
+WriteString( AH=13h, AL=Mode { 1: UpdateCursor 2: IncludesColors }, BH=Page, BL=Colors, CX=Length, DH=Row, DL=Column, ES:BP=Address )

@@ -1,0 +1,292 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Double"
+	static="true"
+	type="http://metalx.org/Double"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:dbl="http://metalx.org/i386/Functions/Double"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:fpu="http://metalx.org/Intel/80386/FpuOperators">
+
+	<cls:field name="Value" type="http://metalx.org/Double" offset="0"/>
+
+	<cls:method name="Zero" type="http://metalx.org/Double" static="true">
+		<fpu:ResetFpu/>
+
+		<fpu:Zero/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<dbl:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="One" type="http://metalx.org/Double" static="true">
+		<fpu:ResetFpu/>
+
+		<fpu:One/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<dbl:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="OnePointOne" type="http://metalx.org/Double" static="true">
+		<fpu:ResetFpu/>
+
+		<fpu:PushDoubleAtImmediateAddressToST0/>
+		<addressOf ref="onePointOne" type="Absolute32"/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<dbl:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="onePointOne"/>
+		<double>1.1</double>
+	</cls:method>
+
+	<cls:method name="OnePointFive" type="http://metalx.org/Double" static="true">
+		<fpu:ResetFpu/>
+
+		<fpu:PushDoubleAtImmediateAddressToST0/>
+		<addressOf ref="onePointFive" type="Absolute32"/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<dbl:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="onePointFive"/>
+		<double>1.5</double>
+	</cls:method>
+
+	<cls:method name="OnePointZeroZeroOne" type="http://metalx.org/Double" static="true">
+		<fpu:ResetFpu/>
+
+		<fpu:PushDoubleAtImmediateAddressToST0/>
+		<addressOf ref="onePointZeroZeroOne" type="Absolute32"/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<dbl:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="onePointZeroZeroOne"/>
+		<double>1.001</double>
+	</cls:method>
+
+	<cls:method name="OneHundredThousand" type="http://metalx.org/Double" static="true">
+		<fpu:ResetFpu/>
+
+		<fpu:PushDoubleAtImmediateAddressToST0/>
+		<addressOf ref="oneHundredThousand" type="Absolute32"/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<dbl:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="oneHundredThousand"/>
+		<double>100000</double>
+	</cls:method>
+
+	<cls:method name="Pi" type="http://metalx.org/Double" static="true">
+		<fpu:ResetFpu/>
+
+		<fpu:Pi/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<dbl:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<scope>
+			<fpu:ResetFpu/>
+
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToImmediateAddress/>
+			<addressOf ref="value" type="Absolute32"/>
+			<hex>00000f7f</hex>
+
+			<fpu:SetControlToShortAtImmediateAddress/>
+			<addressOf ref="value" type="Absolute32"/>
+
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToImmediateAddress/>
+			<addressOf ref="value" type="Absolute32"/>
+			<int>10</int>
+
+			<fpu:PushIntegerAtImmediateAddressToST0/>
+			<addressOf ref="value" type="Absolute32"/>
+
+			<cpu:CopyRegisterToOperand/>
+			<op:DI-SIRegister/>
+
+			<obj:GetData/>
+
+			<fpu:PushDoubleAtSIAddressToST0/>
+
+			<str:Create length="25"/>
+
+			<cpu:PushDIToStack/>
+
+			<!--Calculate Whole Number-->
+			<fpu:CopyST0ToIntegerAtImmediateAddress/>
+			<addressOf ref="value" type="Absolute32"/>
+
+			<cpu:WaitForFloatingPointUnit/>
+
+			<fpu:PushIntegerAtImmediateAddressToST0/>
+			<addressOf ref="value" type="Absolute32"/>
+
+			<fpu:SubtractST0FromST1AndIncrementST/>
+
+			<fpu:MultiplyST0ByST1/>
+
+			<!--Get Whole Number-->
+			<cpu:CopyAbsoluteMemoryToAX/>
+			<addressOf ref="value" type="Absolute32"/>
+
+			<int:ToString/>
+
+			<cpu:PullSIFromStack/>
+			<cpu:PushSIToStack/>
+
+			<cpu:ExchangeOperandWithRegister/>
+			<op:SI-DIRegister/>
+
+			<str:AppendString/>
+
+			<cpu:PullSIFromStack/>
+			<cpu:PushSIToStack/>
+
+			<str:AppendCharacter value="."/>
+
+			<!--Get Fractional Numbers-->
+			<cpu:CopyImmediateToCX/>
+			<int>14</int>
+
+			<label id="nextDigit"/>
+
+			<fpu:CopyST0ToIntegerAtImmediateAddress/>
+			<addressOf ref="value" type="Absolute32"/>
+
+			<cpu:WaitForFloatingPointUnit/>
+
+			<fpu:PushIntegerAtImmediateAddressToST0/>
+			<addressOf ref="value" type="Absolute32"/>
+
+			<fpu:SubtractST0FromST1AndIncrementST/>
+
+			<fpu:MultiplyST0ByST1/>
+
+			<!--Get Decimal Number-->
+			<cpu:CopyAbsoluteMemoryToAX/>
+			<addressOf ref="value" type="Absolute32"/>
+
+			<cpu:AddImmediateToAL/>
+			<asc:Zero/>
+
+			<cpu:PullSIFromStack/>
+			<cpu:PushSIToStack/>
+
+			<str:AppendCharacter/>
+
+			<cpu:DecrementCX/>
+
+			<cpu:BranchToRelative8IfZero/>
+			<addressOf ref="lastDigit" type="Relative8"/>
+
+			<cpu:JumpToRelative/>
+			<addressOf ref="nextDigit" type="Relative32"/>
+			
+			<!--Last Digit-->
+			<label id="lastDigit"/>
+			
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToImmediateAddress/>
+			<addressOf ref="value" type="Absolute32"/>
+			<hex>0000037f</hex>
+
+			<fpu:SetControlToShortAtImmediateAddress/>
+			<addressOf ref="value" type="Absolute32"/>
+
+			<fpu:CopyST0ToIntegerAtImmediateAddress/>
+			<addressOf ref="value" type="Absolute32"/>
+
+			<!--Get Decimal Number-->
+			<cpu:CopyAbsoluteMemoryToAX/>
+			<addressOf ref="value" type="Absolute32"/>
+
+			<cpu:AddImmediateToAL/>
+			<asc:Zero/>
+
+			<cpu:PullSIFromStack/>
+			<cpu:PushSIToStack/>
+
+			<str:AppendCharacter/>
+
+			<!--Create Object-->
+			<label id="createObject"/>
+
+			<cpu:PullDIFromStack/>
+
+			<str:CreateObject/>
+
+			<cpu:ReturnToNearCaller/>
+
+			<var:integer id="value">0</var:integer>
+		</scope>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

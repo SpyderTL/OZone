@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema
+    targetNamespace="http://metalx.org/i386/Functions/HardDrive"
+    elementFormDefault="qualified"
+    xmlns="http://metalx.org/i386/Functions/HardDrive"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:element name="ResetController">
+		<xsd:annotation>
+			<xsd:documentation>
+				Resets the hard drive controller.
+
+				Input:
+				DX=ControlPort
+
+				Modifies: AL
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+	
+	<xsd:element name="GetBlockCount">
+		<xsd:annotation>
+			<xsd:documentation>
+				Gets the block count of a hard drive.
+
+				Input:
+				AL=Channel
+				DX=Port
+
+				Output:
+				AX=BlockCount
+
+				Modifies: CX DX SI DI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+	
+	<xsd:element name="GetBlockSize">
+		<xsd:annotation>
+			<xsd:documentation>
+				Gets the block size of a hard drive.
+
+				Input:
+				AL=Channel
+				DX=Port
+
+				Output:
+				AX=BlockSize
+
+				Modifies: CX DX SI DI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="GetModelNumber">
+		<xsd:annotation>
+			<xsd:documentation>
+				Gets the model number of a hard drive.
+
+				Input:
+				AL=Channel
+				DX=Port
+
+				Output:
+				DI=String
+
+				Modifies: AX CX DX SI DI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="GetSerialNumber">
+		<xsd:annotation>
+			<xsd:documentation>
+				Gets the serial number of a hard drive.
+
+				Input:
+				AL=Channel
+				DX=Port
+
+				Output:
+				DI=String
+
+				Modifies: AX CX DX SI DI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="ReadBlock">
+		<xsd:annotation>
+			<xsd:documentation>
+				Reads a single block from a hard drive.
+
+				Input:
+				DI=Address
+				AX=Block
+				BX=Channel
+				DX=Port
+
+				Modifies: AX BX DI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="ReadBlocks">
+		<xsd:annotation>
+			<xsd:documentation>
+				Reads multiple blocks from a hard drive.
+
+				Input:
+				DI=Address
+				AX=FirstBlock
+				BX=Channel
+				CX=BlockCount
+				DX=Port
+				
+				Modifies: AX BX CX DI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="WriteBlock">
+		<xsd:annotation>
+			<xsd:documentation>
+				Writes a single block to a hard drive.
+
+				Input:
+				SI=Address
+				BX=Channel
+				AX=Block
+				DX=Port
+
+				Modifies: SI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="WriteBlocks">
+		<xsd:annotation>
+			<xsd:documentation>
+				Writes multiple blocks to a hard drive.
+
+				Input:
+				SI=Address
+				AX=FirstBlock
+				BX=Channel
+				CX=BlockCount
+				DX=Port
+
+				Modifies: SI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+</xsd:schema>

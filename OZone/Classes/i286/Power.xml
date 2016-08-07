@@ -1,0 +1,277 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Power"
+	type="http://metalx.org/Power"
+	static="true"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/i286/Structures/Class"
+	xmlns:ver="http://metalx.org/i286/Functions/Version"
+	xmlns:sys="http://metalx.org/i286/Functions/System"
+	xmlns:bool="http://metalx.org/i286/Functions/Boolean"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:vid="http://metalx.org/Pc/Bios/Video"
+	xmlns:vesa="http://metalx.org/Pc/Vesa/SuperVga"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:int="http://metalx.org/i286/Functions/Short"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:pwr="http://metalx.org/Pc/Vesa/Power"
+	xmlns:pd="http://metalx.org/Pc/Vesa/Power/Devices"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands">
+
+	<cls:method name="IsApmInstalled" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>5300</hex>
+
+		<cpu:CopyImmediateToBX/>
+		<hex>0000</hex>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:SystemFunctions/>
+
+		<cpu:MathImmediateToOperandFunction16/>
+		<math:CompareWithBXRegister/>
+		<hex>504D</hex>
+
+		<cpu:BranchToRelativeIfNotEqual8/>
+		<addressOf ref="apmIsNotInstalled" type="Relative8"/>
+
+		<cpu:JumpToRelative16/>
+		<addressOf ref="apmIsInstalled" type="Relative16"/>
+
+		<label id="apmIsNotInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<sys:GetMemoryManager/>
+
+		<bool:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="apmIsInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<sys:GetMemoryManager/>
+
+		<bool:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetApmVersion" type="http://metalx.org/Version" static="true">
+		<cpu:CopyImmediateToAX/>
+		<hex>5300</hex>
+
+		<cpu:CopyImmediateToBX/>
+		<hex>0000</hex>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:SystemFunctions/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:AX-BXRegister/>
+
+		<sys:GetMemoryManager/>
+
+		<ver:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsPluggedIn" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<pwr:GetStatus/>
+
+		<cpu:CopyImmediateToBX/>
+		<pd:AllBiosDevices/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:SystemFunctions/>
+
+		<cpu:MathImmediateToOperandFunction8/>
+		<math:CompareWithBHRegister/>
+		<hex>01</hex>
+
+		<cpu:BranchToRelativeIfNotEqual8/>
+		<addressOf ref="isNotPluggedIn" type="Relative8"/>
+
+		<cpu:JumpToRelative16/>
+		<addressOf ref="isPluggedIn" type="Relative16"/>
+
+		<label id="isNotPluggedIn"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<sys:GetMemoryManager/>
+
+		<bool:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="isPluggedIn"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<sys:GetMemoryManager/>
+
+		<bool:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetBatteryStatus" type="http://metalx.org/Short" static="true">
+		<cpu:CopyImmediateToAX/>
+		<pwr:GetStatus/>
+
+		<cpu:CopyImmediateToBX/>
+		<pd:AllBiosDevices/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:SystemFunctions/>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:CL-ALRegister/>
+
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+		
+		<cpu:CompareALToImmediate/>
+		<hex>FF</hex>
+
+		<cpu:BranchToRelativeIfNotEqual8/>
+		<addressOf ref="returnPercentage" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<label id="returnPercentage"/>
+
+		<sys:GetMemoryManager/>
+
+		<int:CreateObject/>
+
+		<cpu:PushESToStack/>
+		<cpu:PullDSFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsAcpiInstalled" type="http://metalx.org/Boolean" static="true">
+		<cpu:PushESToStack/>
+
+		<cpu:PushImmediateToStack16/>
+		<hex>E000</hex>
+
+		<cpu:PullESFromStack/>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>4000</hex>
+
+		<cpu:CopyImmediateToDI/>
+		<short>0</short>
+
+		<cpu:Operand32/>
+		<cpu:CopyImmediateToAX/>
+		<string xml:space="preserve">RSD </string>
+
+		<cpu:RepeatWhileNotEqual/>
+		<cpu:Operand32/>
+		<cpu:CompareAXToDIAddressAndIncrementDI/>
+
+		<cpu:BranchToRelativeIfNotEqual8/>
+		<addressOf ref="rsdpNotFound" type="Relative8"/>
+
+		<cpu:JumpToRelative16/>
+		<addressOf ref="rsdpFound" type="Relative16"/>
+
+		<label id="rsdpNotFound"/>
+
+		<cpu:PullESFromStack/>
+		
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<sys:GetMemoryManager/>
+
+		<bool:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="rsdpFound"/>
+
+		<cpu:DecrementDI/>
+		<cpu:DecrementDI/>
+		<cpu:DecrementDI/>
+		<cpu:DecrementDI/>
+
+		<cpu:CopyImmediateToAX/>
+		<short>0</short>
+
+		<cpu:CopyImmediateToCX/>
+		<short>20</short>
+
+		<label id="rsdpCalculateChecksum"/>
+
+		<cpu:SegmentES/>
+		<cpu:AddOperandToRegister8/>
+		<op:AL-DIAddress/>
+
+		<cpu:IncrementDI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="rsdpCalculateChecksum" type="Relative8"/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelativeIfEqual8/>
+		<addressOf ref="returnTrue" type="Relative8"/>
+
+		<cpu:JumpToRelative16/>
+		<addressOf ref="rsdpNotFound" type="Relative16"/>
+
+		<label id="returnTrue"/>
+
+		<cpu:PullESFromStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<sys:GetMemoryManager/>
+
+		<bool:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

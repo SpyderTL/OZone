@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema
+    targetNamespace="http://metalx.org/Class"
+    elementFormDefault="qualified"
+    xmlns="http://metalx.org/Class"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:element name="class">
+		<xsd:complexType>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="field">
+					<xsd:complexType>
+						<xsd:attribute name="name" type="xsd:NCName" use="required"/>
+						<xsd:attribute name="type" type="xsd:anyURI" use="required"/>
+						<xsd:attribute name="static" type="xsd:boolean" default="false"/>
+						<xsd:attribute name="offset" type="xsd:int" use="required"/>
+						<xsd:attribute name="ref" type="xsd:IDREF"/>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="method">
+					<xsd:complexType>
+						<xsd:choice minOccurs="0" maxOccurs="unbounded">
+							<xsd:element name="parameter">
+								<xsd:complexType>
+									<xsd:attribute name="name"/>
+									<xsd:attribute name="type" type="xsd:anyURI"/>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:any namespace="##other"/>
+						</xsd:choice>
+						<xsd:attribute name="name" type="xsd:NCName" use="required"/>
+						<xsd:attribute name="type" type="xsd:anyURI" use="required"/>
+						<xsd:attribute name="static" type="xsd:boolean" default="false"/>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:any namespace="##other"/>
+			</xsd:choice>
+			<xsd:attribute name="name" type="xsd:string" use="required"/>
+			<xsd:attribute name="type" type="xsd:anyURI" use="required"/>
+			<xsd:attribute name="base" type="xsd:anyURI" default="http://metalx.org/Object"/>
+			<xsd:attribute name="static" type="xsd:boolean" default="false"/>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

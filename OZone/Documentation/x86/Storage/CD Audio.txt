@@ -1,0 +1,337 @@
+﻿Sessions
+	Lead In
+		Table Of Contents
+	Program Area
+		Tracks
+			Pregap (Index 0)
+			Track (Index 1-99)
+	Lead Out
+
+Sector					3234			(2352 bytes of user data)
+	Frame[98]
+		User Data					24
+			Samples[6]
+				Left							2
+				Right							2
+		C2 Error Correction	4
+		C1 Error Correction	4
+		Subchannels				1		(0 = P, 1 = Q, 2 = R, 3 = S, 4 = T, 5 = U, 6 = V, 7 = W)
+
+Subchannel (logical)	98
+	Sync							2
+	Subchannels[8]
+		Data							96 bits
+
+Subchannel P							(0)
+	Transition[12]					8 bits	(0 = None, 1 = Track)
+
+Subchannel Q						(1)
+	Control							4 bits	(0 = StereoCopyProtected, 1 = StereoCopyProtectedWithEmphasis, 2 = Stereo, 3 = StereoWithEmphasis)
+	Mode							4 bits
+	Data								72 bits
+	Error Correction				16 bits
+
+Subchannel Q Data (Mode 1, Lead In, Point 01-99 BCD)
+	Track Number				1 byte	(0)
+	Point								1 byte	(Track 01-99 BCD)
+	LengthMinutes				1 byte	(BCD)
+	LengthSeconds				1 byte	(BCD)
+	LengthFrames				1 byte	(BCD)
+	Zero								1 byte	(0)
+	StartMinutes					1 byte	(BCD)
+	StartSeconds					1 byte	(BCD)
+	StartFrames					1 byte	(BCD)
+
+Subchannel Q Data (Mode 1, Lead In, Point A0)
+	Track Number				1 byte	(0)
+	Point								1 byte	(A0 First Track)
+	LeadInLengthMinutes		1 byte	(BCD)
+	LeadInLengthSeconds		1 byte	(BCD)
+	LeadInLengthFrames		1 byte	(BCD)
+	Zero								1 byte	(0)
+	FirstTrackNumber			1 byte	(BCD)
+	ProgramAreaFormat		1 byte	(00h = CD-DA/CD-ROM, 10h = CD-I, 20h = CD-ROM-XA)
+	Zero								1 byte	(0)
+
+Subchannel Q Data (Mode 1, Lead In, Point A1)
+	Track Number				1 byte	(0)
+	Point								1 byte	(A1 Last Track)
+	LeadInLengthMinutes		1 byte	(BCD)
+	LeadInLengthSeconds		1 byte	(BCD)
+	LeadInLengthFrames		1 byte	(BCD)
+	Zero								1 byte	(0)
+	LastTrackNumber			1 byte	(BCD)
+	Zero								1 byte	(0)
+	Zero								1 byte	(0)
+
+Subchannel Q Data (Mode 1, Lead In, Point A2)
+	Track Number				1 byte	(0)
+	Point								1 byte	(A2 Lead Out)
+	LeadInLengthMinutes		1 byte	(BCD)
+	LeadInLengthSeconds		1 byte	(BCD)
+	LeadInLengthFrames		1 byte	(BCD)
+	Zero								1 byte	(0)
+	LeadOutStartMinutes		1 byte	(BCD)
+	LeadOutStartSeconds		1 byte	(BCD)
+	LeadOutStartFrame		1 byte	(BCD)
+
+
+Subchannel Q Data (Mode 1, Program Area)
+	Track Number				1 byte	(BCD)
+	Index								1 byte	(BCD)
+	TrackMinutes					1 byte	(BCD)
+	TrackSeconds				1 byte	(BCD)
+	TrackFrames					1 byte	(BCD)
+	Zero								1 byte	(0)
+	AbsoluteMinutes			1 byte	(BCD)
+	AbsoluteSeconds			1 byte	(BCD)
+	AbsoluteFrame				1 byte	(BCD)
+
+Subchannel Q Data (Mode 2, Program Area/Lead Out)
+	Media Catalog Number[13]
+		Digit								4 bits	(BCD)
+	Zero									12 bits	(0)
+	AbsoluteFrame				1 byte	(BCD)
+
+Subchannel Q Data (Mode 3, Program Area)
+	Country Code[2]			12 bits
+		Character					6 bits	(ISRC)
+	Owner Code[3]			18 bits
+		Character					6 bits	(ISRC)
+	Year							2 bytes		(BCD)
+	Serial Number			5 bytes		(BCD)
+	Zero							12 bits		(0)
+	AbsoluteFrame			1 byte		BCD)
+
+
+Subchannel Q Data (Mode 1, Lead Out)
+	Track Number				1 byte	(0xAA)
+	Index								1 byte	(01 BCD)
+	TrackMinutes					1 byte	(BCD)
+	TrackSeconds				1 byte	(BCD)
+	TrackFrames					1 byte	(BCD)
+	Zero								1 byte	(0)
+	AbsoluteMinutes			1 byte	(BCD)
+	AbsoluteSeconds			1 byte	(BCD)
+	AbsoluteFrame				1 byte	(BCD)
+
+
+
+SCSI Read CD Command (12)
+	Operation Code			1			(0xBE)
+	Request						1
+		Reserved					3 bits
+		Sector Type				3 bits	(0 = All, 1 = CD-DA, 2 = Mode 1, 3 = Mode 2, 4 = Mode 2 Form 1, 5 = Mode 2 Form 2)
+		Digital Audio Play		1 bit		(0 = None, 1 = Error Correction)
+		Reserved					1 bit		(0)
+	First Block					4
+	Length						3
+	Channel Select			1
+		Sync							1 bit
+		Header Codes			2 bits
+		User Data					1 bit	
+		EDC/ECC					1 bit
+		C2 Error Information	2 bits	(0 = None, 1 = PerByte, 2 = PerBlock)
+		Reserved					1 bit
+	Subchannel Select		1
+		Reserved					5 bits
+		Subchannels				3 bits	(0 = None, 2 = Q subchannel, 4 = R-W subchannel)
+	Control						1				(0)
+
+SCSI Read CD MSF Command (12)
+	Operation Code			1			(0xB9)
+	Request						1
+		Reserved					3 bits
+		Sector Type				3 bits	(0 = All, 1 = CD-DA, 2 = Mode 1, 3 = Mode 2, 4 = Mode 2 Form 1, 5 = Mode 2 Form 2)
+		Digital Audio Play		1 bit		(0 = None, 1 = Error Correction)
+		Reserved					1 bit		(0)
+	Reserved					1
+	First Minute				1
+	First Second				1
+	First Frame				1
+	Last Minute				1
+	Last Second				1
+	Last Frame					1
+	Channel Select			1
+		Sync							1 bit
+		Header Codes			2 bits
+		User Data					1 bit
+		EDC/ECC					1 bit
+		C2 Error Information	2 bits	(0 = None, 1 = PerByte, 2 = PerBlock)
+		Reserved					1 bit
+	Subchannel Select		1
+		Reserved					5 bits
+		Subchannels				3 bits	(0 = None, 2 = Q subchannel, 4 = R-W subchannel)
+	Control						1				(0)
+
+SCSI Get Configuration (10)
+	Operation Code			1			(0x46)
+	Request						1
+		Reserved					6 bits
+		Request Type				2 bits	(0 = All Features, 1 = Current Features, 2 = Single Feature)
+	Starting Feature			2
+	Reserved					3
+	Allocation Length		2
+	Control						1				(0)
+
+SCSI Get Configuration Response
+	Header						8
+		Data Length				4
+		Reserved					2
+		Current Profile			2
+	Features[]
+		
+
+SCSI Read Disc Information (10)
+	Operation Code			1			(0x51)
+	Request						1
+		Reserved					5 bits
+		Data Type					3 bits	(0 = Standard, 1 = Track Resources, 2 = POW Resources)
+	Reserved					5
+	Allocation Length		2
+	Control						1
+
+SCSI Read Disc Information Response (Standard)
+	Data Length										2
+	Options												1
+		Data Type											3 bits	(0 = Standard)
+		Erasable											1 bit
+		State Of Last Session							2 bits	(0 = Empty, 1 = Incomplete, 2 = Damaged, 3 = Complete)
+		Disc Status											2 bits	(0 = Empty, 1 = Incomplete, 2 = Finalized, 3 = Other)
+	First Track											1
+	Session Count (Low)							1
+	First Track Last Session (Low)				1
+	Last Track Last Session (Low)				1
+	Valid Fields										1
+		Disc Identification								1 bit
+		Disc Barcode										1 bit
+		Unrestricted Use								1 bit
+		Disc Application Code						1 bit
+		Reserved											1 bit
+		Dirty													1 bit
+		Background Format Status					2 bits	(0 = None, 1 = Started, 2 = In Progress, 3 = Complete)
+	Disc Type											1				(0 = CD-DA/CD-ROM)
+	Session Count (High)							1
+	First Track Last Session (High)				1
+	Last Track Last Session (High)				1
+	Disc Identification								4
+	Last Session Lead In Start Address		4
+	Last Possible Lead Out Start Address	4
+	Disc Barcode										8
+	Disc Application Code						1
+	Number of OPC Tables						1
+	OPC Tables[]
+		Speed											2
+		Values[]											6
+
+SCSI Read Track Information (10)
+	Operation Code			1			(0x52)
+	Request
+		Reserved					5 bits
+		Open						1 bit		(1 = Find Next Available Track)
+		Address Type			2 bits	(0 = Logical Block Address, 1 = Logical Track Number, 2 = Session Number)
+		Address				4
+		Reserved				1
+		Allocation Length	2
+		Control					1
+
+SCSI Read Track Information Response
+	Data Length							2
+	Logical Track Number (Low)	1			(0 = Lead In)
+	Session Number (Low)			1
+	Reserved								1
+	Options									3
+		Layered Jump Mode				2 bits
+		Damage								1 bit
+		Copy										1 bit
+		Track Mode							4 bits	(0 = Stereo)
+
+		Reserved Track						1 bit
+		Blank										1 bit
+		Packet									1 bit
+		Fixed Packet							1 bit
+		Data Mode							4 bits	(1 = Mode 1, 2 = Mode 2, 0xF = Unknown)
+
+		Reserved								6 bits
+		LastRecordedAddressValid		1 bit
+		NextWritableAddressValid		1 bit
+	Logical Track Start Address		4
+	Next Writable Address			4
+	Free Blocks							4
+	Fixed Packet Size					4
+	Logical Track Size					4
+	Last Recorded Address			4
+	Logical Track Number (High)	1
+	Session Number (High)			1
+	Reserved								2
+	Read Compatibility Address	4
+	Next Layer Address				4
+	Last Layer Address					4
+
+SCSI Read Table Of Contents (10)
+	Operation Code			1			(0x43)
+	Request						2
+		Reserved					6 bits
+		MinuteSecondFrame	1 bit
+		Reserved					5 bits
+		Format						4 bits	(0 = Track Number, 1 = Session Number, 2 = Lead In Q Subdata)
+	Reserved					3
+	Start Track/Session		1
+	Allocation Length		2
+	Control						1
+		Format						2 bits	(0 = Track Number, 1 = Session Number, 2 = Lead In Q Subdata)
+		Control						6
+
+SCSI Read Table Of Contents Response (Format 0)
+	Data Length				2
+	First Track/Session		1
+	Last Track/Session		1
+	Contents[]
+		Reserved				1
+		Control					1
+			Control					4 bits
+			ADR						4 bits
+		Track Number		1
+		Reserved				1
+		Address				4
+
+SCSI Read Table Of Contents Response (Format 2)
+	Data Length				2
+	First Track/Session		1
+	Last Track/Session		1
+	Contents[]
+		Session					1
+		Control					1
+			Control					4 bits
+			ADR						4 bits
+		Track Number		1
+		Point						1
+		Minutes					1
+		Seconds				1
+		Frames					1
+		Reserved				1
+		PMinutes				1
+		PSeconds				1
+		PFrames				1
+
+Windows CDA File Format
+	RiffIdentifier				4	("RIFF")
+	FileLength					4	(0x24)
+	FileIdentifier				4	("CDDA")
+	Blocks
+		BlockIdentifier			4	("fmt ")
+		Version						2	(1)
+		TrackNumber				2	(1 = First Track)
+		SerialNumber			4
+		StartFrame					4
+		FrameCount				4
+		StartTime					4
+			Reserved					8 bits
+			Minute						8 bits
+			Second						8 bits
+			Frame						8 bits
+		TrackLength				4
+			Reserved					8 bits
+			Minute						8 bits
+			Second						8 bits
+			Frame						8 bits

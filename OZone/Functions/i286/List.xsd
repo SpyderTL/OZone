@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema
+    targetNamespace="http://metalx.org/i286/Functions/List"
+    elementFormDefault="qualified"
+    xmlns="http://metalx.org/i286/Functions/List"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:element name="Create">
+		<xsd:annotation>
+			<xsd:documentation>
+				Creates a new list.
+
+				Input:
+				SI=MemoryManager
+				AX=Length
+
+				Output:
+				DI=List
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="length" type="xsd:short"/>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="CreateObject">
+		<xsd:annotation>
+			<xsd:documentation>
+				Creates a new list object from a list structure.
+
+				Input:
+				SI=MemoryManager
+				DI=List
+
+				Output:
+				DI=Object
+				
+				Modifies: AX DX
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="GetLength">
+		<xsd:annotation>
+			<xsd:documentation>
+				Gets the length of a list.
+				
+				Input:
+				SI=List
+				
+				Output:
+				AX=Length
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="GetItem">
+		<xsd:annotation>
+			<xsd:documentation>
+				Gets an item from a list by index.
+				
+				Input:
+				AX=Index
+				SI=List
+				
+				Output:
+				SI=Item
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+	
+	<xsd:element name="SetItem">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sets an item in a list by index.
+				
+				Input:
+				AX=Index
+				SI=List
+				DI=Item
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="ForEach">
+		<xsd:annotation>
+			<xsd:documentation>
+				Executes code for each item in the list.
+
+				Input:
+				SI=List
+				
+				Modifies: CX DX SI				
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:any/>
+			</xsd:choice>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

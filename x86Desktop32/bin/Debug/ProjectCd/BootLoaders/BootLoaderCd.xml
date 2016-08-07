@@ -1,0 +1,410 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<scope xmlns="http://metalx.org/Program" xmlns:cpu16="http://metalx.org/Intel/80286/Operators" xmlns:op16="http://metalx.org/Intel/80286/Operands" xmlns:ex16="http://metalx.org/Intel/80286/ExtendedOperators" xmlns:gdt16="http://metalx.org/Intel/80286/DescriptorTable" xmlns:ctrl16="http://metalx.org/Intel/80286/Control" xmlns:seg16="http://metalx.org/Intel/80286/Segments" xmlns:imm16="http://metalx.org/Intel/80286/Immediate" xmlns:math16="http://metalx.org/Intel/80286/Math" xmlns:logic16="http://metalx.org/Intel/80286/Logic" xmlns:shift16="http://metalx.org/Intel/80286/Shift" xmlns:cpu32="http://metalx.org/Intel/80386/Operators" xmlns:op32="http://metalx.org/Intel/80386/Operands" xmlns:ex32="http://metalx.org/Intel/80386/ExtendedOperators" xmlns:gdt32="http://metalx.org/Intel/80386/DescriptorTable" xmlns:seg32="http://metalx.org/Intel/80386/Segments" xmlns:inc32="http://metalx.org/Intel/80386/Increment" xmlns:logic32="http://metalx.org/Intel/80386/Logic" xmlns:math32="http://metalx.org/Intel/80386/Math" xmlns:con="http://metalx.org/i286/Functions/Console" xmlns:cmd="http://metalx.org/Pc/Pic/Commands" xmlns:pic="http://metalx.org/Pc/Pic/Ports" xmlns:dsk="http://metalx.org/Pc/Bios/DiskExtensions" xmlns:bios="http://metalx.org/Pc/Bios/Functions" xmlns:sys="http://metalx.org/Pc/Bios/System" xmlns:mode="http://metalx.org/Pc/Vesa/SuperVga/Mode" xmlns:info="http://metalx.org/Pc/Vesa/SuperVga/Information" xmlns:vesa="http://metalx.org/Pc/Vesa/SuperVga">
+	<prg:hex xmlns:prg="http://metalx.org/Program">B8</prg:hex>
+	<hex>0000</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">8E</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">D0</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">8E</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">D8</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">8E</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">C0</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">8E</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">E0</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">8E</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">E8</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">89</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">C4</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">EA</prg:hex>
+	<addressOf ref="start" type="Pointer16" />
+	<label id="start" />
+	<!--Enable A20 Gate-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">B8</prg:hex>
+	<hex>2401</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">CD</prg:hex>
+	<hex>15</hex>
+	<!--Set Video Mode to 1280x1024x32-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">B8</prg:hex>
+	<hex>4F00</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">BF</prg:hex>
+	<hex>5000</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">CD</prg:hex>
+	<hex>10</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">BF</prg:hex>
+	<hex>5000</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">83</prg:hex>
+	<hex>C7</hex>
+	<hex>0e</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">8B</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">35</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">47</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">47</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">1E</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">5B</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">FF</prg:hex>
+	<hex>35</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">1F</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">B9</prg:hex>
+	<short>0</short>
+	<!--Store Video Modes-->
+	<label id="storeVideoModes" />
+	<prg:hex xmlns:prg="http://metalx.org/Program">AD</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+	<hex>ffff</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">74</prg:hex>
+	<addressOf ref="findVideoMode" type="Relative8" />
+	<prg:hex xmlns:prg="http://metalx.org/Program">50</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">41</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">EB</prg:hex>
+	<addressOf ref="storeVideoModes" type="Relative8" />
+	<!--Find Video Mode-->
+	<label id="findVideoMode" />
+	<prg:hex xmlns:prg="http://metalx.org/Program">53</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">1F</prg:hex>
+	<label id="forEachVideoMode" />
+	<prg:hex xmlns:prg="http://metalx.org/Program">58</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">51</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">89</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">C1</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">B8</prg:hex>
+	<hex>4F01</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">BF</prg:hex>
+	<hex>5000</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">CD</prg:hex>
+	<hex>10</hex>
+	<!--Check Width-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">BE</prg:hex>
+	<hex>5000</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">8B</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">44</prg:hex>
+	<hex>12</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+	<!--<short>1280</short>-->
+	<short>1024</short>
+	<!--<short>800</short>-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">75</prg:hex>
+	<addressOf ref="nextMode" type="Relative8" />
+	<!--Check Height-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">8B</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">44</prg:hex>
+	<hex>14</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+	<!--<short>1024</short>-->
+	<short>768</short>
+	<!--<short>600</short>-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">75</prg:hex>
+	<addressOf ref="nextMode" type="Relative8" />
+	<!--Check Bits Per Pixel-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">8A</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">44</prg:hex>
+	<hex>19</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">3C</prg:hex>
+	<byte>32</byte>
+	<!--<byte>16</byte>-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">75</prg:hex>
+	<addressOf ref="nextMode" type="Relative8" />
+	<prg:hex xmlns:prg="http://metalx.org/Program">89</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">CB</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">66</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">8B</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">44</prg:hex>
+	<hex>28</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">66</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">89</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
+	<addressOf ref="linearFrameBuffer" type="Absolute16" />
+	<label id="nextMode" />
+	<prg:hex xmlns:prg="http://metalx.org/Program">59</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">E2</prg:hex>
+	<addressOf ref="forEachVideoMode" type="Relative8" />
+	<!--Set Video Mode-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">B8</prg:hex>
+	<hex>4F02</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">81</prg:hex>
+	<hex>CB</hex>
+	<hex>4000</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">CD</prg:hex>
+	<hex>10</hex>
+	<label id="skip" />
+	<!--Load Disk Info Block-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">B4</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">42</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">BE</prg:hex>
+	<addressOf ref="packet" type="Absolute16" />
+	<prg:hex xmlns:prg="http://metalx.org/Program">CD</prg:hex>
+	<hex>13</hex>
+	<!--Load Program List-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">BE</prg:hex>
+	<hex>5000</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">66</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">8B</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">44</prg:hex>
+	<byte>16</byte>
+	<prg:hex xmlns:prg="http://metalx.org/Program">89</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
+	<addressOf ref="block" type="Absolute16" />
+	<prg:hex xmlns:prg="http://metalx.org/Program">66</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">8B</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">4C</prg:hex>
+	<byte>20</byte>
+	<prg:hex xmlns:prg="http://metalx.org/Program">89</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
+	<addressOf ref="blockCount" type="Absolute16" />
+	<!--<cpu16:Operand32/>
+	<cpu16:LogicFunction/>
+	<logic:PushSIAddressPlusImmediate8/>
+	<byte>52</byte>-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">66</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">8B</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">44</prg:hex>
+	<byte>52</byte>
+	<prg:hex xmlns:prg="http://metalx.org/Program">66</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">89</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
+	<addressOf ref="startupAddress" type="Absolute16" />
+	<prg:hex xmlns:prg="http://metalx.org/Program">B4</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">42</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">BE</prg:hex>
+	<addressOf ref="packet" type="Absolute16" />
+	<prg:hex xmlns:prg="http://metalx.org/Program">CD</prg:hex>
+	<hex>13</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">BE</prg:hex>
+	<hex>5000</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">66</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">AD</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">89</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">C1</prg:hex>
+	<!--Load Programs-->
+	<label id="loadProgram" />
+	<prg:hex xmlns:prg="http://metalx.org/Program">51</prg:hex>
+	<!--Read Block-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">66</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">AD</prg:hex>
+	<!--<cpu16:PushAllRegistersToStack/>
+	<con:WriteShort endLine="true"/>
+	<cpu16:PullAllRegistersFromStack/>-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">89</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
+	<addressOf ref="block" type="Absolute16" />
+	<!--Read Block Count-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">66</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">AD</prg:hex>
+	<!--<cpu16:PushAllRegistersToStack/>
+	<con:WriteShort endLine="true"/>
+	<cpu16:PullAllRegistersFromStack/>-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">89</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
+	<addressOf ref="blockCount" type="Absolute16" />
+	<!--Read Address-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">AD</prg:hex>
+	<!--<cpu16:PushAllRegistersToStack/>
+	<con:WriteShortHex endLine="true"/>
+	<cpu16:PullAllRegistersFromStack/>-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">89</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
+	<addressOf ref="address" type="Absolute16" />
+	<prg:hex xmlns:prg="http://metalx.org/Program">AD</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">C1</prg:hex>
+	<hex>E0</hex>
+	<byte>12</byte>
+	<!--<cpu16:PushAllRegistersToStack/>
+	<con:WriteShortHex endLine="true"/>
+	<cpu16:PullAllRegistersFromStack/>-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">89</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
+	<addressOf ref="segment" type="Absolute16" />
+	<prg:hex xmlns:prg="http://metalx.org/Program">56</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">B4</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">42</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">BE</prg:hex>
+	<addressOf ref="packet" type="Absolute16" />
+	<prg:hex xmlns:prg="http://metalx.org/Program">CD</prg:hex>
+	<hex>13</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">5E</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">59</prg:hex>
+	<!--<cpu16:BranchToRelativeIfCarry8/>
+	<addressOf ref="error" type="Relative8"/>-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">E2</prg:hex>
+	<addressOf ref="loadProgram" type="Relative8" />
+	<!--<cpu16:PushSIToStack/>-->
+	<!--Get Memory Map-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">66</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">BF</prg:hex>
+	<hex>00003000</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">66</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">BB</prg:hex>
+	<int>0</int>
+	<label id="nextEntry" />
+	<prg:hex xmlns:prg="http://metalx.org/Program">66</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">B8</prg:hex>
+	<hex>0000e820</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">66</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">BA</prg:hex>
+	<string>PAMS</string>
+	<prg:hex xmlns:prg="http://metalx.org/Program">66</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">B9</prg:hex>
+	<int>24</int>
+	<prg:hex xmlns:prg="http://metalx.org/Program">CD</prg:hex>
+	<hex>15</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">83</prg:hex>
+	<hex>C7</hex>
+	<byte>24</byte>
+	<prg:hex xmlns:prg="http://metalx.org/Program">72</prg:hex>
+	<addressOf ref="done" type="Relative8" />
+	<prg:hex xmlns:prg="http://metalx.org/Program">81</prg:hex>
+	<hex>FB</hex>
+	<hex>0000</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">74</prg:hex>
+	<addressOf ref="done" type="Relative8" />
+	<prg:hex xmlns:prg="http://metalx.org/Program">EB</prg:hex>
+	<addressOf ref="nextEntry" type="Relative8" />
+	<label id="done" />
+	<prg:hex xmlns:prg="http://metalx.org/Program">66</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">C7</prg:hex>
+	<hex>05</hex>
+	<hex>ffffffff</hex>
+	<!--Disable NMI-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">E4</prg:hex>
+	<hex>70</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">0C</prg:hex>
+	<binary>10000000</binary>
+	<prg:hex xmlns:prg="http://metalx.org/Program">E6</prg:hex>
+	<hex>70</hex>
+	<!--Load Global Descriptor Table-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">FA</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">66</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">0F</prg:hex>
+	<hex>01</hex>
+	<hex>16</hex>
+	<addressOf ref="globalDescriptorTablePointer" type="Absolute16" />
+	<!--Send Linear Video Address-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">66</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">8B</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">3E</prg:hex>
+	<addressOf ref="linearFrameBuffer" type="Absolute16" />
+	<prg:hex xmlns:prg="http://metalx.org/Program">66</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">8B</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
+	<addressOf ref="startupAddress" type="Absolute16" />
+	<!--Switch To 32-Bit Protected Mode-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">0F</prg:hex>
+	<hex>20</hex>
+	<hex>c0</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">0C</prg:hex>
+	<binary>00000001</binary>
+	<prg:hex xmlns:prg="http://metalx.org/Program">0F</prg:hex>
+	<hex>22</hex>
+	<hex>c0</hex>
+	<!--Jump to segment-->
+	<prg:hex xmlns:prg="http://metalx.org/Program">EA</prg:hex>
+	<hex>8400</hex>
+	<hex>0008</hex>
+	<!--Functions-->
+	<label id="error" />
+	<scope xmlns:asc="http://metalx.org/Ansi/Ascii" xmlns:cpu="http://metalx.org/Intel/80286/Operators" xmlns:op="http://metalx.org/Intel/80286/Operands" xmlns:vid="http://metalx.org/Pc/Bios/Video" xmlns:int="http://metalx.org/Pc/Bios/Functions" xmlns:ari="http://metalx.org/Intel/80286/Arithmetic" xmlns:math="http://metalx.org/Intel/80286/Math">
+		<prg:hex xmlns:prg="http://metalx.org/Program">BA</prg:hex>
+		<short>0</short>
+		<prg:hex xmlns:prg="http://metalx.org/Program">BB</prg:hex>
+		<hex>0010</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">B9</prg:hex>
+		<short>0</short>
+		<label id="nextCharacter" />
+		<prg:hex xmlns:prg="http://metalx.org/Program">F7</prg:hex>
+		<hex>F3</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">52</prg:hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">41</prg:hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">BA</prg:hex>
+		<short>0</short>
+		<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+		<short>0</short>
+		<prg:hex xmlns:prg="http://metalx.org/Program">75</prg:hex>
+		<addressOf ref="nextCharacter" type="Relative8" />
+		<label id="drawCharacters" />
+		<prg:hex xmlns:prg="http://metalx.org/Program">58</prg:hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">3C</prg:hex>
+		<hex>0a</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">7D</prg:hex>
+		<addressOf ref="letter" type="Relative8" />
+		<prg:hex xmlns:prg="http://metalx.org/Program">04</prg:hex>
+		<hex>30</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">EB</prg:hex>
+		<addressOf ref="print" type="Relative8" />
+		<label id="letter" />
+		<prg:hex xmlns:prg="http://metalx.org/Program">04</prg:hex>
+		<hex>37</hex>
+		<label id="print" />
+		<prg:hex xmlns:prg="http://metalx.org/Program">B4</prg:hex>
+		<hex>0E</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">CD</prg:hex>
+		<hex>10</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">E2</prg:hex>
+		<addressOf ref="drawCharacters" type="Relative8" />
+	</scope>
+	<prg:hex xmlns:prg="http://metalx.org/Program">FA</prg:hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">F4</prg:hex>
+	<label id="packet" />
+	<!--Record Size-->
+	<byte>16</byte>
+	<!--Reserved-->
+	<byte>0</byte>
+	<!--Block Count-->
+	<label id="blockCount" />
+	<short>1</short>
+	<!--Address-->
+	<label id="address" />
+	<hex>5000</hex>
+	<label id="segment" />
+	<hex>0000</hex>
+	<!--First Block-->
+	<label id="block" />
+	<long>1</long>
+	<!--Global Descriptor Table-->
+	<label id="globalDescriptorTable" />
+	<!--Null Descriptor (0000)-->
+	<!--Size-->
+	<hex>0000</hex>
+	<!--Base (Low)-->
+	<hex>0000</hex>
+	<!--Base (Mid)-->
+	<hex>00</hex>
+	<!--Access-->
+	<binary>00000000</binary>
+	<!--Flags / Size (High)-->
+	<binary>00000000</binary>
+	<!--Base (High)-->
+	<hex>00</hex>
+	<!--Code Descriptor (0008)-->
+	<!--Size-->
+	<hex>ffff</hex>
+	<!--Base (Low)-->
+	<hex>0000</hex>
+	<!--Base (Mid)-->
+	<hex>00</hex>
+	<!--Access-->
+	<binary>10011010</binary>
+	<!--Flags / Size (High)-->
+	<binary>11001111</binary>
+	<!--Base (High)-->
+	<hex>00</hex>
+	<!--Data Descriptor (0010)-->
+	<!--Size-->
+	<hex>ffff</hex>
+	<!--Base (Low)-->
+	<hex>0000</hex>
+	<!--Base (Mid)-->
+	<hex>00</hex>
+	<!--Access-->
+	<binary>10010010</binary>
+	<!--Flags / Size (High)-->
+	<binary>11001111</binary>
+	<!--Base (High)-->
+	<hex>00</hex>
+	<!--Global Descriptor Table Pointer-->
+	<label id="globalDescriptorTablePointer" />
+	<short>23</short>
+	<addressOf ref="globalDescriptorTable" type="Absolute16" />
+	<!--Variables-->
+	<label id="linearFrameBuffer" />
+	<int>0</int>
+	<label id="startupAddress" />
+	<int>0</int>
+</scope>

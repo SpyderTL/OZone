@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="String"
+	type="http://metalx.org/String"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands">
+
+	<cls:field name="Length" offset="0" type="http://metalx.org/Integer"/>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Split" type="http://metalx.org/List">
+		<cls:parameter name="Delimiter" type="http://metalx.org/String"/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:BP-SPRegister/>
+
+		<obj:GetData/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SI-DIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:CopyImmediateToDX/>
+		<int>0</int>
+
+		<label id="forEachCharacter"/>
+
+		<cpu:PushCXToStack/>
+		<cpu:PushDIToStack/>
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-DIAddress/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIRegister/>
+		<byte>4</byte>
+		
+		<cpu:RepeatWhileEqual/>
+		<cpu:CompareSIAddressToDIAddressAndIncrementSIAndDI8/>
+
+		<cpu:PullSIFromStack/>
+		<cpu:PullDIFromStack/>
+		<cpu:PullCXFromStack/>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notEqual" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="addString" type="Relative32"/>
+
+		<label id="notEqual"/>
+		
+		<cpu:IncrementSI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachCharacter" type="Relative8"/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-AXRegister/>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="addString"/>
+		
+		<cpu:IncrementDX/>
+		
+		<cpu:JumpToRelative/>
+		<addressOf ref="notEqual" type="Relative32"/>
+	</cls:method>
+
+	<cls:method name="Append" type="http://metalx.org/String">
+		<cls:parameter name="Value" type="http://metalx.org/String"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetData/>
+
+		<cpu:AddOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:PushAXToStack/>
+
+		<str:Create/>
+
+		<cpu:PullAXFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:BranchToRelative8IfCXIsZero/>
+		<addressOf ref="stringEmpty" type="Relative8"/>
+		
+		<cpu:Repeat/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+		<label id="stringEmpty"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:BranchToRelative8IfCXIsZero/>
+		<addressOf ref="stringEmpty2" type="Relative8"/>
+
+		<cpu:Repeat/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+		<label id="stringEmpty2"/>
+
+		<cpu:PullDIFromStack/>
+
+		<str:CreateObject/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+	
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

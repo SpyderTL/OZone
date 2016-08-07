@@ -1,0 +1,285 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:ex="http://metalx.org/Intel/80286/ExtendedOperators"
+	xmlns:gdt="http://metalx.org/Intel/80286/DescriptorTable"
+	xmlns:seg="http://metalx.org/Intel/80286/Segments"
+	xmlns:ctrl="http://metalx.org/Intel/80286/Control"
+	xmlns:imm="http://metalx.org/Intel/80286/Immediate"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:str="http://metalx.org/i286/Functions/String"
+	xmlns:sys="http://metalx.org/Pc/Bios/System"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:pic="http://metalx.org/Pc/Pic/Ports"
+	xmlns:cmd="http://metalx.org/Pc/Pic/Commands"
+	xmlns:con="http://metalx.org/i286/Functions/Console">
+
+	<!--Enable A20 Gate-->
+	<cpu:CopyImmediateToAX/>
+	<sys:EnableA20Gate/>
+
+	<cpu:CallImmediate8Interrupt/>
+	<bios:SystemFunctions/>
+
+	<cpu:CopyImmediateToAX/>
+	<hex>0000</hex>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:ES-AXRegister/>
+
+	<!--Get Memory Map-->
+	<cpu:Operand32/>
+	<cpu:CopyImmediateToDI/>
+	<hex>00000500</hex>
+
+	<cpu:Operand32/>
+	<cpu:CopyImmediateToBX/>
+	<int>0</int>
+
+	<label id="nextEntry"/>
+
+	<cpu:Operand32/>
+	<cpu:CopyImmediateToAX/>
+	<hex>0000e820</hex>
+
+	<cpu:Operand32/>
+	<cpu:CopyImmediateToDX/>
+	<string>PAMS</string>
+
+	<cpu:Operand32/>
+	<cpu:CopyImmediateToCX/>
+	<int>24</int>
+
+	<cpu:CallImmediate8Interrupt/>
+	<bios:SystemFunctions/>
+
+	<cpu:MathImmediate8ToOperand16Function/>
+	<math:AddToDIRegister/>
+	<byte>24</byte>
+
+	<cpu:BranchToRelativeIfCarry8/>
+	<addressOf ref="done" type="Relative8"/>
+
+	<cpu:MathImmediateToOperandFunction16/>
+	<math:CompareWithBXRegister/>
+	<hex>0000</hex>
+
+	<cpu:BranchToRelativeIfEqual8/>
+	<addressOf ref="done" type="Relative8"/>
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="nextEntry" type="Relative8"/>
+
+	<label id="done"/>
+
+	<cpu:Operand32/>
+	<cpu:CopyImmediateToOperandFunction16/>
+	<imm:CopyImmediateToDIAddress/>
+	<hex>ffffffff</hex>
+
+	<!--Disable NMI-->
+	<cpu:ReadFromImmediate8PortToAL/>
+	<hex>70</hex>
+
+	<cpu:OrALWithImmediate/>
+	<binary>10000000</binary>
+
+	<cpu:WriteALToImmediate8Port/>
+	<hex>70</hex>
+
+	<!--Clear Page Map-->
+	<cpu:CopyImmediateToAL/>
+	<hex>00</hex>
+
+	<cpu:CopyImmediateToDI/>
+	<hex>1000</hex>
+
+	<cpu:CopyImmediateToCX/>
+	<hex>4000</hex>
+
+	<cpu:Repeat/>
+	<cpu:CopyALToDIAddressAndIncrementDI/>
+
+	<!--Create Page Map-->
+	<cpu:Operand32/>
+	<cpu:CopyImmediateToOperandFunction16/>
+	<imm:CopyImmediateToImmediate16Address/>
+	<hex>1000</hex>
+	<hex>00002003</hex>
+
+	<!--Create Page Directory Pointer-->
+	<cpu:Operand32/>
+	<cpu:CopyImmediateToOperandFunction16/>
+	<imm:CopyImmediateToImmediate16Address/>
+	<hex>2000</hex>
+	<hex>00003003</hex>
+
+	<!--Create Page Directory-->
+	<cpu:Operand32/>
+	<cpu:CopyImmediateToOperandFunction16/>
+	<imm:CopyImmediateToImmediate16Address/>
+	<hex>3000</hex>
+	<hex>00004003</hex>
+
+	<!--Create Page Table-->
+	<cpu:Operand32/>
+	<cpu:CopyImmediateToAX/>
+	<hex>00000003</hex>
+
+	<cpu:Operand32/>
+	<cpu:CopyImmediateToDI/>
+	<hex>00004000</hex>
+
+	<cpu:Operand32/>
+	<cpu:CopyImmediateToCX/>
+	<hex>00000200</hex>
+
+	<label id="nextPage"/>
+
+	<cpu:Operand32/>
+	<cpu:CopyRegisterToOperand16/>
+	<op:AX-DIAddress/>
+
+	<cpu:Operand32/>
+	<cpu:AddImmediateToAX/>
+	<hex>00001000</hex>
+
+	<cpu:MathImmediateToOperandFunction16/>
+	<math:AddToDIRegister/>
+	<hex>0008</hex>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="nextPage" type="Relative8"/>
+
+	<cpu:ClearInterruptFlag/>
+
+	<!--Load Interrupt Descriptor Table-->
+	<cpu:ExtendedOperator/>
+	<ex:DescriptorTableFunction/>
+	<gdt:CopyImmediate16AddressToInterruptDescriptorTableRegister/>
+	<addressOf ref="interruptDescriptorTable" type="Absolute16"/>
+
+	<!--Enable Physical Address Extensions-->
+	<cpu:Operand32/>
+	<cpu:CopyImmediateToAX/>
+	<hex>000000a0</hex>
+
+	<cpu:ExtendedOperator/>
+	<ex:CopyRegisterToControlRegister/>
+	<ctrl:AX-ControlRegister4/>
+
+	<!--Load Page Map-->
+	<cpu:Operand32/>
+	<cpu:CopyImmediateToAX/>
+	<hex>00001000</hex>
+
+	<cpu:ExtendedOperator/>
+	<ex:CopyRegisterToControlRegister/>
+	<ctrl:AX-ControlRegister3/>
+
+	<!--Enable LME-->
+	<cpu:Operand32/>
+	<cpu:CopyImmediateToCX/>
+	<hex>c0000080</hex>
+
+	<cpu:ExtendedOperator/>
+	<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+	<cpu:Operand32/>
+	<cpu:OrAXWithImmediate/>
+	<hex>00000100</hex>
+
+	<cpu:ExtendedOperator/>
+	<ex:CopyAXDXToCXModelSpecificRegister/>
+
+	<!--Set CPU To Long Mode-->
+	<cpu:ExtendedOperator/>
+	<ex:CopyControlRegisterToRegister/>
+	<ctrl:AX-ControlRegister0/>
+
+	<cpu:Operand32/>
+	<cpu:OrAXWithImmediate/>
+	<hex>80000001</hex>
+
+	<cpu:ExtendedOperator/>
+	<ex:CopyRegisterToControlRegister/>
+	<ctrl:AX-ControlRegister0/>
+
+	<!--Load Global Descriptor Table-->
+	<cpu:ExtendedOperator/>
+	<ex:DescriptorTableFunction/>
+	<gdt:CopyImmediate16AddressToGlobalDescriptorTableRegister/>
+	<addressOf ref="globalDescriptorTablePointer" type="Absolute16"/>
+
+	<!--Jump to 64-Bit Boot Loader-->
+	<cpu:JumpToImmediatePointer16/>
+	<hex>8c00</hex>
+	<hex>0008</hex>
+
+	<!--Global Descriptor Table-->
+	<label id="globalDescriptorTable"/>
+
+	<!--Null Descriptor (0000)-->
+
+	<!--Size-->
+	<hex>0000</hex>
+	<!--Base (Low)-->
+	<hex>0000</hex>
+	<!--Base (Mid)-->
+	<hex>00</hex>
+	<!--Access-->
+	<binary>00000000</binary>
+	<!--Flags / Size (High)-->
+	<binary>00000000</binary>
+	<!--Base (High)-->
+	<hex>00</hex>
+
+
+	<!--Code Descriptor (0008)-->
+	<!--<hex>0020980000000000</hex>-->
+	<!--Size-->
+	<hex>0000</hex>
+	<!--Base (Low)-->
+	<hex>0000</hex>
+	<!--Base (Mid)-->
+	<hex>00</hex>
+	<!--Access-->
+	<binary>10011000</binary>
+	<!--Flags / Size (High)-->
+	<binary>00100000</binary>
+	<!--Base (High)-->
+	<hex>00</hex>
+
+
+	<!--Data Descriptor (0010)-->
+	<!--<hex>0000900000000000</hex>-->
+	<!--Size-->
+	<hex>0000</hex>
+	<!--Base (Low)-->
+	<hex>0000</hex>
+	<!--Base (Mid)-->
+	<hex>00</hex>
+	<!--Access-->
+	<binary>10010000</binary>
+	<!--Flags / Size (High)-->
+	<binary>00000000</binary>
+	<!--Base (High)-->
+	<hex>00</hex>
+
+	<!--Global Descriptor Table Pointer-->
+	<label id="globalDescriptorTablePointer"/>
+	<short>23</short>
+	<addressOf ref="globalDescriptorTable" type="Absolute16"/>
+
+	<short>0</short>
+	<int>0</int>
+
+	<!--Interrupt Descriptor Table-->
+	<label id="interruptDescriptorTable"/>
+</scope>

@@ -1,0 +1,59 @@
+﻿Common I/O Registers
+
+Offset	Length	Description
+00			4			Device Features
+04			4			Guest Features
+08			4			Queue Address
+0c			2			Queue Size
+0e			2			Queue Select
+10			2			Queue Notify
+12			1			Device Status
+13			1			Interrupt Status
+
+
+int16 QueueSize
+
+Virtqueue
+{
+	Descriptors[QueueSize]		16 bytes
+	{
+		long Address;
+		int Length;
+		short Flags;														// 1 = Next, 2 = Write-Only
+		short Next;
+	}
+	Available
+	{
+		short Flags;														// 1 = No Interrupt
+		short Index;
+		short[QueueSize] Ring;
+		short InterruptIndex;
+	}
+	byte[] Padding;
+	Used									4096 byte alignment
+	{
+		short Flags;														// 1 = No Interrupt
+		short Index;
+		Ring[QueueSize]				8 bytes
+		{
+			int Index;
+			int Length;
+		}
+		short InterruptIndex;
+	};
+}
+
+
+Network Virtqueues
+	Receive Queue[256]					10250 bytes
+	Transmit Queue[256]					10250 bytes
+	Control Queue[16] (optional)		4230 bytes
+
+VirtIO Network Packet Header
+	byte Flags;							1=Needs Checksum
+	byte GsoType;					1=TCPv4 3=UDP 4=TCPv6 0x80=ECN
+	short HeaderLength;
+	short GsoSize;
+	short ChecksumStart;
+	short ChecksumOffset;
+	short BufferCount;

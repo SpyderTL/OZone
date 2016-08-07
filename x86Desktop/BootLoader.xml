@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:dsk="http://metalx.org/i286/Functions/Disk"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:flp="http://metalx.org/Pc/Bios/Disk"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:logic="http://metalx.org/Intel/80286/Logic">
+
+	<label id="diskInfo" segment="0000" offset="8000"/>
+
+	<cpu:CopyImmediateToBX/>
+	<addressOf ref="diskInfo" type="Absolute16"/>
+	
+	<dsk:ReadSectors count="1" track="79" drive="00" head="1" sector="17"/>
+
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="diskInfo" type="Absolute16"/>
+
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu:CopyRegisterToOperand16/>
+	<op:AX-CXRegister/>
+
+	<!--Load Programs-->
+	<label id="loadProgram"/>
+
+	<cpu:PushCXToStack/>
+	
+	<!--Read Block-->
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<dsk:ConvertBlockToTrackHeadSector/>
+
+	<!--Read Block Count-->
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu:PushAXToStack/>
+
+	<!--Read Address-->
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+	
+	<cpu:CopyRegisterToOperand16/>
+	<op:AX-BXRegister/>
+
+	<cpu:PullAXFromStack/>
+
+	<cpu:CopyImmediateToDL/>
+	<byte>0</byte>
+
+	<cpu:CopyImmediateToAH/>
+	<flp:ReadSectorsFromDrive/>
+
+	<cpu:CallImmediate8Interrupt/>
+	<bios:DiskFunctions/>
+
+	<cpu:PullCXFromStack/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="loadProgram" type="Relative8"/>
+	
+	<!--Read Startup Address-->
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+	
+	<!--Jump To Startup Address-->
+	<cpu:LogicFunction/>
+	<logic:JumpToAXRegister/>
+</scope>

@@ -1,0 +1,508 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Audio"
+	type="http://metalx.org/Audio"
+	static="true"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/i286/Structures/Class"
+	xmlns:clsf="http://metalx.org/i286/Functions/Class"
+	xmlns:sys="http://metalx.org/i286/Functions/System"
+	xmlns:hex="http://metalx.org/i286/Functions/Hexadecimal"
+	xmlns:bool="http://metalx.org/i286/Functions/Boolean"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:obj="http://metalx.org/i286/Functions/Object"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:io="http://metalx.org/Pc/Ports"
+	xmlns:pci="http://metalx.org/Pc/Pci/Functions"
+	xmlns:pcic="http://metalx.org/Pc/Pci/Command"
+	xmlns:pcir="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:pcis="http://metalx.org/Pc/Pci/Status"
+	xmlns:sbp="http://metalx.org/Creative/SoundBlaster/Ports"
+	xmlns:sbc="http://metalx.org/Creative/SoundBlaster/Commands"
+	xmlns:acn="http://metalx.org/Intel/Ac97/Configuration"
+	xmlns:act="http://metalx.org/Intel/Ac97/BusMaster/Control"
+	xmlns:amx="http://metalx.org/Intel/Ac97/Mixer"
+	xmlns:abm="http://metalx.org/Intel/Ac97/BusMaster"
+	xmlns:agc="http://metalx.org/Intel/Ac97/BusMaster/GlobalControl"
+	xmlns:ags="http://metalx.org/Intel/Ac97/BusMaster/GlobalStatus"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands">
+
+	<cls:method name="IsSoundBlasterInstalled" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToDX/>
+		<io:SoundCard1/>
+
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:AddToDXRegister/>
+		<sbp:Reset/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>1</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<label id="waitForData"/>
+
+		<cpu:CopyImmediateToDX/>
+		<io:SoundCard1/>
+
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:AddToDXRegister/>
+		<sbp:GetReadBufferStatus/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<sbc:ReadyFlag/>
+
+		<cpu:BranchToRelativeIfZero8/>
+		<addressOf ref="waitForData" type="Relative8"/>
+
+		<cpu:CopyImmediateToDX/>
+		<io:SoundCard1/>
+
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:AddToDXRegister/>
+		<sbp:ReadByte/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:CompareALToImmediate/>
+		<hex>AA</hex>
+
+		<cpu:BranchToRelativeIfNotEqual8/>
+		<addressOf ref="soundBlasterNotInstalled" type="Relative8"/>
+
+		<cpu:JumpToRelative16/>
+		<addressOf ref="soundBlasterIsInstalled" type="Relative16"/>
+
+		<label id="soundBlasterNotInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="soundBlasterIsInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<label id="createObject"/>
+		
+		<sys:GetMemoryManager/>
+
+		<bool:CreateObject/>
+
+		<cpu:PushESToStack/>
+		<cpu:PullDSFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="PlayNoise" static="true">
+		<cpu:CopyImmediateToDX/>
+		<io:SoundCard1/>
+
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:AddToDXRegister/>
+		<sbp:Reset/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>1</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<label id="waitForData2"/>
+
+		<cpu:CopyImmediateToDX/>
+		<io:SoundCard1/>
+
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:AddToDXRegister/>
+		<sbp:GetWriteBufferStatus/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<sbc:ReadyFlag/>
+
+		<cpu:BranchToRelativeIfNotZero8/>
+		<addressOf ref="waitForData2" type="Relative8"/>
+
+		<cpu:CopyImmediateToDX/>
+		<io:SoundCard1/>
+
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:AddToDXRegister/>
+		<sbp:WriteByte/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbc:SpeakerOn/>
+
+		<cpu:WriteALToDXPort/>
+
+		<label id="next"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbc:OutputPcm8/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>FF</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="next" type="Relative8"/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="IsAC97Installed" type="http://metalx.org/Boolean" static="true">
+		<cpu:CopyImmediateToAX/>
+		<pci:FindPciDevice/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>8086</hex>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>2415</hex>
+
+		<cpu:CopyImmediateToSI/>
+		<short>0</short>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:PciFunctions/>
+
+		<cpu:MathImmediateToOperandFunction8/>
+		<math:CompareWithAHRegister/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelativeIfEqual8/>
+		<addressOf ref="ac97IsInstalled" type="Relative8"/>
+
+		<cpu:JumpToRelative16/>
+		<addressOf ref="ac97NotInstalled" type="Relative16"/>
+
+		<label id="ac97IsInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>-1</sbyte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="ac97NotInstalled"/>
+
+		<cpu:CopyImmediateToAL/>
+		<sbyte>0</sbyte>
+
+		<label id="createObject"/>
+
+		<sys:GetMemoryManager/>
+
+		<bool:CreateObject/>
+
+		<cpu:PushESToStack/>
+		<cpu:PullDSFromStack/>
+		
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="FindAC97" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToAX/>
+		<pci:FindPciDevice/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>8086</hex>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>2415</hex>
+
+		<cpu:CopyImmediateToSI/>
+		<short>0</short>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:PciFunctions/>
+
+		<cpu:CopyImmediateToAX/>
+		<pci:ReadConfigurationInteger/>
+
+		<cpu:CopyImmediateToDI/>
+		<pcir:BaseAddress0/>
+		<hex>00</hex>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:PciFunctions/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:CX-AXRegister/>
+
+		<sys:GetMemoryManager/>
+
+		<hex:CreateObject/>
+
+		<cpu:PushESToStack/>
+		<cpu:PullDSFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="TestAC97" static="true">
+		<cpu:CopyImmediateToDH/>
+		<hex>d2</hex>
+
+		<cpu:CopyImmediateToDL/>
+		<abm:GlobalControl/>
+
+		<cpu:Operand32/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:OrALWithImmediate/>
+		<agc:Ac97ColdReset/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>11100011</binary>
+
+		<cpu:Operand32/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDH/>
+		<hex>d1</hex>
+
+		<cpu:CopyImmediateToDL/>
+		<amx:Reset/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDL/>
+		<amx:PowerDown/>
+
+		<cpu:CopyImmediateToAX/>
+		<short>0</short>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDL/>
+		<amx:MasterVolume/>
+
+		<cpu:CopyImmediateToAX/>
+		<short>0</short>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDL/>
+		<amx:PcmOutVolumeLeftRight/>
+
+		<cpu:CopyImmediateToAX/>
+		<short>0</short>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDL/>
+		<amx:PcmOutRateLeftRight/>
+
+		<cpu:CopyImmediateToAX/>
+		<ushort>44100</ushort>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDL/>
+		<amx:MicrophoneVolume/>
+
+		<cpu:CopyImmediateToAX/>
+		<short>0</short>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDL/>
+		<amx:ExtendedAudio/>
+
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:OrALWithImmediate/>
+		<byte>1</byte>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDH/>
+		<hex>d2</hex>
+
+		<cpu:CopyImmediateToDL/>
+		<abm:PcmOutControl/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<act:ResetRegisters/>
+
+		<cpu:WriteALToDXPort/>
+
+		<!--Set up audio buffers-->
+		<cpu:CopyImmediateToDL/>
+		<abm:PcmOutBufferListAddress/>
+
+		<cpu:Operand32/>
+		<cpu:CopyImmediateToAX/>
+		<hex>8000</hex>
+		<hex>0000</hex>
+
+		<cpu:Operand32/>
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:CopyImmediateToDI/>
+		<hex>8000</hex>
+
+		<cpu:CopyImmediateToCX/>
+		<short>16</short>
+
+		<label id="setupBuffer"/>
+
+		<!--Address (Low)-->
+		<cpu:CopyImmediateToAX/>
+		<hex>9000</hex>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<!--Address (High)-->
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<!--Samples-->
+		<cpu:CopyImmediateToAX/>
+		<hex>0100</hex>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<!--Flags-->
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<!--Address (Low)-->
+		<cpu:CopyImmediateToAX/>
+		<hex>9200</hex>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<!--Address (High)-->
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<!--Samples-->
+		<cpu:CopyImmediateToAX/>
+		<hex>0100</hex>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<!--Flags-->
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="setupBuffer" type="Relative8"/>
+
+		<!--<cpu:CopyImmediateToDL/>
+		<abm:PcmOutLastValidIndex/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>31</byte>
+
+		<cpu:WriteALToDXPort/>-->
+
+		<!--Fill Buffers-->
+		<cpu:CopyImmediateToDI/>
+		<hex>9000</hex>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>0100</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>2222</hex>
+
+		<cpu:Repeat/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>0100</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>dddd</hex>
+
+		<cpu:Repeat/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyImmediateToDL/>
+		<abm:PcmOutControl/>
+
+		<cpu:CopyImmediateToAL/>
+		<act:BusMasterActive/>
+
+		<cpu:WriteALToDXPort/>
+
+		<label id="updateBuffers"/>
+
+		<cpu:CopyImmediateToDL/>
+		<abm:PcmOutCurrentIndex/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:SubtractImmediateFromAL/>
+		<byte>1</byte>
+
+		<cpu:BranchToRelativeIfPositive8/>
+		<addressOf ref="updateLastValidBuffer" type="Relative8"/>
+
+		<cpu:AddImmediateToAL/>
+		<byte>32</byte>
+
+		<label id="updateLastValidBuffer"/>
+
+		<cpu:CopyImmediateToDL/>
+		<abm:PcmOutLastValidIndex/>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="updateBuffers" type="Relative8"/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

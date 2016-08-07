@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:ex="http://metalx.org/Intel/80286/ExtendedOperators"
+	xmlns:gdt="http://metalx.org/Intel/80286/DescriptorTable"
+	xmlns:ctrl="http://metalx.org/Intel/80286/Control"
+	xmlns:seg="http://metalx.org/Intel/80286/Segments"
+	xmlns:imm="http://metalx.org/Intel/80286/Immediate"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:logic="http://metalx.org/Intel/80286/Logic"
+	xmlns:shift="http://metalx.org/Intel/80286/Shift"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:cmd="http://metalx.org/Pc/Pic/Commands"
+	xmlns:pic="http://metalx.org/Pc/Pic/Ports"
+	xmlns:dsk="http://metalx.org/Pc/Bios/DiskExtensions"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:sys="http://metalx.org/Pc/Bios/System">
+
+	<cpu:JumpToImmediatePointer16/>
+	<addressOf ref="start" type="Pointer16"/>
+
+	<label id="start"/>
+
+	<cpu:CopyImmediateToAX/>
+	<hex>0000</hex>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:SS-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:ES-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:FS-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:GS-AXRegister/>
+
+	<cpu:CopyRegisterToOperand16/>
+	<op:AX-SPRegister/>
+
+	<!--Load Boot Loaders-->
+	<cpu:CopyImmediateToAH/>
+	<dsk:ReadSectorsFromDrive/>
+
+	<cpu:CopyImmediateToSI/>
+	<addressOf ref="packet" type="Absolute16"/>
+
+	<cpu:CallImmediate8Interrupt/>
+	<bios:DiskFunctions/>
+
+	<cpu:BranchToRelativeIfCarry8/>
+	<addressOf ref="error" type="Relative8"/>
+
+	<!--Jump To 16-Bit Boot Loader-->
+	<cpu:JumpToImmediatePointer16/>
+	<hex>8400</hex>
+	<hex>0000</hex>
+
+	<label id="error"/>
+
+	<!--Display Error Number-->
+	<con:WriteShortHex/>
+
+	<cpu:ClearInterruptFlag/>
+	<cpu:HaltProcessing/>
+
+	<label id="packet"/>
+	<!--Record Size-->
+	<byte>16</byte>
+	<!--Reserved-->
+	<byte>0</byte>
+	<!--Block Count-->
+	<label id="blockCount"/>
+	<short>2</short>
+	<!--Address-->
+	<label id="address"/>
+	<hex>8400</hex>
+	<label id="segment"/>
+	<hex>0000</hex>
+	<!--First Block-->
+	<label id="block"/>
+	<long>1</long>
+</scope>

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope xmlns="http://metalx.org/Program" xmlns:cpu="http://metalx.org/Arm/Arm7/Operators">
+	<cpu:ImmediateData Operation="CopyOperand" Operand="1" Rotate="3" Destination="0"/>
+	<cpu:ImmediateData Operation="CopyOperand" Operand="1" Rotate="11" Destination="1"/>
+	<cpu:ImmediateData Operation="AddRegisterAndOperand" Register="1" Operand="3" Destination="1"/>
+	<cpu:ImmediateOffsetMemory Register="1" AddressRegister="0" ReadFromMemory="false"/>
+
+	<cpu:ImmediateData Operation="CopyOperand" Operand="6" Rotate="4" Destination="0"/>
+	<cpu:ImmediateData Operation="CopyOperand" Operand="62" Rotate="14" Destination="1"/>
+	<cpu:ImmediateData Operation="CopyOperand" Operand="150" Rotate="12" Destination="2"/>
+
+	<label id="loop"/>
+	<cpu:ImmediateOffsetShortMemory Register="1" AddressRegister="0" ReadFromMemory="false" OffsetHigh="0" OffsetLow="2" AddOffset="true" ApplyOffsetBeforeTransfer="false" TransferShort="true"/>
+	<cpu:ImmediateData Operation="SubtractOperandFromRegister" Operand="1" Register="2" Destination="2" SetFlags="true"/>
+	<cpu:BranchToRelative ref="loop" Condition="NotEqual"/>
+	
+	<label id="halt"/>
+	<cpu:BranchToRelative ref="halt"/>
+</scope>

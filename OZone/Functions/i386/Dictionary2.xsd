@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema
+    targetNamespace="http://metalx.org/i386/Functions/Dictionary"
+    elementFormDefault="qualified"
+    xmlns="http://metalx.org/i386/Functions/Dictionary"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:element name="Create">
+		<xsd:annotation>
+			<xsd:documentation>
+				Creates a new dictionary.
+
+				Input:
+				AX=Capacity
+
+				Output:
+				DI=Dictionary
+
+				Modifies: AX
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="CreateObject">
+		<xsd:annotation>
+			<xsd:documentation>
+				Creates a new dictionary object from a dictionary structure.
+
+				Input:
+				DI=Dictionary
+
+				Output:
+				DI=Object
+
+				Modifies: AX DX
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="CreateIteratorObject">
+		<xsd:annotation>
+			<xsd:documentation>
+				Creates a new dictionary iterator object from a dictionary.
+
+				Input:
+				DI=Dictionary
+
+				Output:
+				DI=Object
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="GetCount">
+		<xsd:annotation>
+			<xsd:documentation>
+				Gets the number of items in a dictionary.
+
+				Input:
+				SI=Dictionary
+
+				Output:
+				AX=Count
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="GetCapacity">
+		<xsd:annotation>
+			<xsd:documentation>
+				Gets the current capacity of a dictionary.
+
+				Input:
+				SI=Dictionary
+
+				Output:
+				AX=Capacity
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="GetItem">
+		<xsd:annotation>
+			<xsd:documentation>
+				Gets an item from a dictionary by index.
+
+				Input:
+				AX=Index
+				SI=Dictionary
+
+				Output:
+				SI=Item
+
+				Modifies: AX
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="index" type="xsd:unsignedInt"/>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="AddItem">
+		<xsd:annotation>
+			<xsd:documentation>
+				Adds an item to the end of a dictionary.
+
+				Input:
+				SI=Dictionary
+				DI=Item
+
+				Modifies: AX SI DI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+	
+	<xsd:element name="RemoveItem">
+		<xsd:annotation>
+			<xsd:documentation>
+				Removes an item from a dictionary.
+
+				Input:
+				SI=Dictionary
+				DI=Item
+
+				Modifies: AX SI DI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="ForEach">
+		<xsd:annotation>
+			<xsd:documentation>
+				Executes code for each item in the dictionary.
+
+				Input:
+				SI=Dictionary
+
+				Modifies: CX DX SI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:any/>
+			</xsd:choice>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

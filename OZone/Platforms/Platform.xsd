@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema targetNamespace="http://metalx.org/Platform" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:element name="platform">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="processor" minOccurs="0" maxOccurs="1">
+					<xsd:complexType>
+						<xsd:sequence minOccurs="0" maxOccurs="unbounded">
+							<xsd:element name="operation">
+								<xsd:complexType>
+									<xsd:simpleContent>
+										<xsd:extension base="xsd:string">
+											<xsd:attribute name="name" type="xsd:string"/>
+											<xsd:attribute name="value" type="xsd:hexBinary"/>
+										</xsd:extension>
+									</xsd:simpleContent>
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="memory" minOccurs="0" maxOccurs="1">
+					<xsd:complexType>
+						<xsd:sequence minOccurs="0" maxOccurs="unbounded">
+							<xsd:element name="address">
+								<xsd:complexType>
+									<xsd:simpleContent>
+										<xsd:extension base="xsd:string">
+											<xsd:attribute name="name" type="xsd:string"/>
+											<xsd:attribute name="page" type="xsd:hexBinary"/>
+											<xsd:attribute name="offset" type="xsd:hexBinary"/>
+										</xsd:extension>
+									</xsd:simpleContent>
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="constants" minOccurs="0" maxOccurs="1">
+					<xsd:complexType>
+						<xsd:sequence minOccurs="0" maxOccurs="unbounded">
+							<xsd:element name="constant">
+								<xsd:complexType>
+									<xsd:simpleContent>
+										<xsd:extension base="xsd:string">
+											<xsd:attribute name="name" type="xsd:string"/>
+											<xsd:attribute name="value" type="xsd:hexBinary"/>
+										</xsd:extension>
+									</xsd:simpleContent>
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="structures" minOccurs="0" maxOccurs="1">
+					<xsd:complexType>
+						<xsd:sequence minOccurs="0" maxOccurs="unbounded">
+							<xsd:element name="structure">
+								<xsd:complexType>
+									<xsd:choice maxOccurs="unbounded">
+										<xsd:element name="string">
+											<xsd:complexType>
+												<xsd:simpleContent>
+													<xsd:extension base="xsd:string">
+														<xsd:attribute name="name" use="required"/>
+														<xsd:attribute name="offset" use="required" type="xsd:hexBinary"/>
+														<xsd:attribute name="length" type="xsd:unsignedInt"/>
+													</xsd:extension>
+												</xsd:simpleContent>
+											</xsd:complexType>
+										</xsd:element>
+										<xsd:element name="address32">
+											<xsd:complexType>
+												<xsd:simpleContent>
+													<xsd:extension base="xsd:hexBinary">
+														<xsd:attribute name="name" use="required"/>
+														<xsd:attribute name="offset" use="required" type="xsd:hexBinary"/>
+													</xsd:extension>
+												</xsd:simpleContent>
+											</xsd:complexType>
+										</xsd:element>
+										<xsd:element name="address64">
+											<xsd:complexType>
+												<xsd:simpleContent>
+													<xsd:extension base="xsd:hexBinary">
+														<xsd:attribute name="name" use="required"/>
+														<xsd:attribute name="offset" use="required" type="xsd:hexBinary"/>
+													</xsd:extension>
+												</xsd:simpleContent>
+											</xsd:complexType>
+										</xsd:element>
+										<xsd:element name="byte">
+											<xsd:complexType>
+												<xsd:simpleContent>
+													<xsd:extension base="xsd:byte">
+														<xsd:attribute name="name" use="required"/>
+														<xsd:attribute name="offset" use="required" type="xsd:hexBinary"/>
+													</xsd:extension>
+												</xsd:simpleContent>
+											</xsd:complexType>
+										</xsd:element>
+										<xsd:element name="byteHex">
+											<xsd:complexType>
+												<xsd:simpleContent>
+													<xsd:extension base="xsd:hexBinary">
+														<xsd:attribute name="name" use="required"/>
+														<xsd:attribute name="offset" use="required" type="xsd:hexBinary"/>
+													</xsd:extension>
+												</xsd:simpleContent>
+											</xsd:complexType>
+										</xsd:element>
+										<xsd:element name="short">
+											<xsd:complexType>
+												<xsd:simpleContent>
+													<xsd:extension base="xsd:short">
+														<xsd:attribute name="name" use="required"/>
+														<xsd:attribute name="offset" use="required" type="xsd:hexBinary"/>
+													</xsd:extension>
+												</xsd:simpleContent>
+											</xsd:complexType>
+										</xsd:element>
+										<xsd:element name="shortHex">
+											<xsd:complexType>
+												<xsd:simpleContent>
+													<xsd:extension base="xsd:hexBinary">
+														<xsd:attribute name="name" use="required"/>
+														<xsd:attribute name="offset" use="required" type="xsd:hexBinary"/>
+													</xsd:extension>
+												</xsd:simpleContent>
+											</xsd:complexType>
+										</xsd:element>
+										<xsd:element name="int">
+											<xsd:complexType>
+												<xsd:simpleContent>
+													<xsd:extension base="xsd:integer">
+														<xsd:attribute name="name" use="required"/>
+														<xsd:attribute name="offset" use="required" type="xsd:hexBinary"/>
+													</xsd:extension>
+												</xsd:simpleContent>
+											</xsd:complexType>
+										</xsd:element>
+										<xsd:element name="intHex">
+											<xsd:complexType>
+												<xsd:simpleContent>
+													<xsd:extension base="xsd:hexBinary">
+														<xsd:attribute name="name" use="required"/>
+														<xsd:attribute name="offset" use="required" type="xsd:hexBinary"/>
+													</xsd:extension>
+												</xsd:simpleContent>
+											</xsd:complexType>
+										</xsd:element>
+										<xsd:element name="long">
+											<xsd:complexType>
+												<xsd:simpleContent>
+													<xsd:extension base="xsd:integer">
+														<xsd:attribute name="name" use="required"/>
+														<xsd:attribute name="offset" use="required" type="xsd:hexBinary"/>
+													</xsd:extension>
+												</xsd:simpleContent>
+											</xsd:complexType>
+										</xsd:element>
+										<xsd:element name="longHex">
+											<xsd:complexType>
+												<xsd:simpleContent>
+													<xsd:extension base="xsd:hexBinary">
+														<xsd:attribute name="name" use="required"/>
+														<xsd:attribute name="offset" use="required" type="xsd:hexBinary"/>
+													</xsd:extension>
+												</xsd:simpleContent>
+											</xsd:complexType>
+										</xsd:element>
+									</xsd:choice>
+									<xsd:attribute name="length" type="xsd:unsignedInt" use="required"/>
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:attribute name="namespace" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

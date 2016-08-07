@@ -1,0 +1,241 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Video"
+	static="true"
+	type="http://metalx.org/Video"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
+	xmlns:pcir="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:pcis="http://metalx.org/Pc/Pci/Status"
+	xmlns:pcic="http://metalx.org/Pc/Pci/Classes"
+	xmlns:sbc="http://metalx.org/Creative/SoundBlaster/Commands"
+	xmlns:pcnet="http://metalx.org/i386/Functions/PcNet"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:con="http://metalx.org/i386/Functions/Console"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands">
+
+	<cls:method name="GetDevices" type="http://metalx.org/Video/VideoDeviceList" static="true">
+		<!--Find PCI Devices-->
+		<cpu:CopyImmediateToSI/>
+		<int>0</int>
+
+		<cpu:CopyImmediateToCX/>
+		<hex>00001000</hex>
+
+		<cpu:CopyImmediateToBX/>
+		<int>0</int>
+
+		<label id="forEachSlot"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-AXRegister/>
+
+		<pcif:GetDeviceID/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>80EE</hex>
+		<hex>BEEF</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notVirtualBox" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="vboxClass" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="slotEmpty" type="Relative32"/>
+
+		<label id="notVirtualBox"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>15AD</hex>
+		<hex>0405</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notVMWare" type="Relative8"/>
+
+		<cpu:PushImmediateToStack/>
+		<addressOf ref="vmwareClass" type="Absolute32"/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="slotEmpty" type="Relative32"/>
+
+		<label id="notVMWare"/>
+		
+		<label id="slotEmpty"/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:DecrementCX/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="createList" type="Relative8"/>
+		
+		<cpu:JumpToRelative/>
+		<addressOf ref="forEachSlot" type="Relative32"/>
+		
+		<!--Create List-->
+		<label id="createList"/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<lst:Create/>
+
+		<!--Find Classes-->
+		<cpu:PushDIToStack/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="vboxName" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="vboxClass" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="vmwareName" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="vmwareClass" type="Absolute32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-CXRegister/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:CompareAXToImmediate/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="createListObject" type="Relative8"/>
+
+		<!--Create PciDevice Object-->
+		<label id="forEachDevice"/>
+
+		<cpu:PushDIToStack/>
+
+		<mm:CheckOut length="4"/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:PullBXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddress/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>4</int>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-BXAddress/>
+
+		<obj:Create/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:DecrementAX/>
+
+		<lst:SetItem/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachDevice" type="Relative8"/>
+
+		<!--Create List Object-->
+		<label id="createListObject"/>
+
+		<!--Get Item Count-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-DIAddress/>
+
+		<cpu:IncrementAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:PushAXToStack/>
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="videoDeviceList" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+		<cpu:PullAXFromStack/>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<var:string id="videoDeviceList">http://metalx.org/Video/VideoDeviceList</var:string>
+	<var:string id="vboxName">http://metalx.org/Video/Oracle/VirtualBox</var:string>
+	<var:integer id="vboxClass">0</var:integer>
+	<var:string id="vmwareName">http://metalx.org/Video/VMWare/VMWare</var:string>
+	<var:integer id="vmwareClass">0</var:integer>
+</cls:class>

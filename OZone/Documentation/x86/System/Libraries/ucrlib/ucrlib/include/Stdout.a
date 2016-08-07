@@ -1,0 +1,483 @@
+		.386
+		option	segment:use16, proc:private
+
+
+		ifndef	$stdout_a
+$stdout_a	=	0
+		echo	stdout.a
+
+		include	consts.a
+
+$segSTDIO	segment	para public 'STDIO'
+
+
+; Character output routines.
+
+		xtrn		putc,CS,Stk,TOS
+putc		macro		Operand
+		bCSStkTOS 	putc,Operand
+		endm
+
+
+		xtrn		puth,CS,Stk,TOS
+puth		macro		Operand
+		bCSStkTOS 	puth,Operand
+		endm
+
+
+
+
+		xtrn		putw,CS,Stk,TOS
+putw		macro		Operand
+		wCSStkTOS 	putw,Operand
+		endm
+
+
+
+
+; PS2-	Processes the width (second) operand for putisize, putusize,
+;	putulsize, and putlsize.
+
+ps2		macro	which, width
+
+		ifnb	IsVar( width )
+
+
+		 if	IsWord( width )
+		  push	width
+		  exitm
+		 endif
+
+
+%		 echo	&which&'s second operand must be a word operand.
+		 err
+
+		endif	;IsVar 
+
+		if	IsNumConst( width )
+		 pushw	width
+		 exitm
+		endif
+
+%		echo	Illegal width operand for &which&.
+		err
+		endm
+
+
+
+; Handle those xxxSize functions that deal with words.
+
+psw		macro	which,value,width
+
+		ifb	<value>
+		 call	$&which&
+		 exitm
+		endif
+
+		ifb	<width>
+%		 echo	&which& requires two operands: a value and
+		 echo	a minimum field width (constant).
+		 err
+		 exitm
+		endif
+
+;; See if it's a 16-bit register
+
+		ifnb	IsReg16( <Operand> )
+		 push	IsReg16( <Operand> )
+		 ps2	which, width
+		 call	$&which&TOS
+		 exitm
+		endif
+
+;; See if its a pointer variable.
+
+		ifnb	IsWordPtr( value )
+
+		 push	ds
+		 push	IsWordPtr( value )
+		 ps2	which, width
+		 call	$&which&Stk
+
+		else
+		 ifnb	IsDWordPtr( value )
+
+		  pushd	IsDWordPtr( value )
+		  ps2	which, width
+		  call	$&which&Stk
+		
+
+;; Process the first operand (the value to print).  At this point
+;; it must be a word variable, constant, or memory addressing mode.
+
+		 else
+
+		  ifnb	IsVar( value )
+
+		   if	  IsWord( Value )
+		    pushw value
+		   else
+%		    echo &which&'s first operand must be a word operand.
+		    err
+		    exitm
+		   endif
+
+		  elseif IsNumConst( Value )
+
+		   pushw Value
+
+		  else
+%		   echo &which&'s first operand must be a word value.
+		   err
+		   exitm		  
+		  endif	;IsVar
+
+		  ps2	which, width
+		  call	$&which&TOS
+		
+		 endif	;IsDwordPtr
+
+		endif	;IsWordPtr
+
+		endm
+
+
+		xtrn	PutiSize,CS,Stk,TOS
+PutiSize	macro	Value, Width
+		psw	PutiSize, Value, Width
+		endm		
+
+		xtrn		puti,CS,Stk,TOS
+puti		macro		Operand, Width
+		ifb		<Width>
+		 wCSStkTOS 	puti,Operand
+		else
+		 PutiSize	Operand, Width
+		endif
+		endm
+
+
+
+
+		xtrn	PutuSize,CS,Stk,TOS
+PutuSize	macro	Value, Width
+		psw	PutuSize, Value, Width
+		endm		
+
+
+		xtrn		putu,CS,Stk,TOS
+putu		macro		Operand, width
+		ifb		<Width>
+		 wCSStkTOS 	putu,Operand
+		else
+		 PutuSize	Operand, Width
+		endif
+		endm
+
+
+
+
+
+
+psl		macro	which,value,width
+
+		ifb	<value>
+		 call	$&which&
+		 exitm
+		endif
+
+		ifb	<width>
+%		 echo	&which& requires two operands: a value and
+		 echo	a minimum field width.
+		 err
+		 exitm
+		endif
+
+;; Handle the first operand if it's [word] or [dword]:
+
+		ifnb	IsWordPtr( value )
+
+		 push	ds
+		 push	IsWordPtr( value )
+		 ps2	which, width
+		 call	$&which&Stk
+
+		else
+		 ifnb	IsDWordPtr( value )
+
+		  pushd	IsDWordPtr( value )
+		  ps2	which, width
+		  call	$&which&Stk
+		
+
+;; Process the first operand (the value to print).  At this point
+;; it must be a word variable, constant, or memory addressing mode.
+
+		 else
+		  ifnb	IsVar( value )
+
+		   if	IsDWord( value )
+		    push  dword ptr value
+		   else
+%		    echo  &which&'s first operand must be a dword.
+		    err
+		    exitm
+		   endif 
+		   
+		  elseif  IsNumConst( value )
+		    pushd value
+		  endif	;IsVar
+
+		  ps2	which, width
+		  call	$&which&TOS
+		
+		 endif	;IsDwordPtr
+
+		endif	;IsWordPtr
+
+		endm
+
+
+
+		xtrn	PutlSize,CS,Stk,TOS
+PutlSize	macro	Value, Width
+		psl	PutlSize, Value, Width
+		endm		
+
+		xtrn		putl,CS,Stk,TOS
+putl		macro		Operand, width
+		ifb		<width>
+		 lCSStkTOS 	putl,Operand
+		else
+		 PutlSize 	Operand,width
+		endif
+		endm
+
+		xtrn	PutulSize,CS,Stk,TOS
+PutulSize	macro	Value, Width
+		psl	PutulSize, Value, Width
+		endm		
+
+		xtrn		putul,CS,Stk,TOS
+putul		macro		Operand,width
+		ifb		<width>
+		 lCSStkTOS 	putul,Operand
+		else
+		 PutulSize	Operand, Width
+		endif
+		endm
+
+
+
+
+
+
+
+
+PutsErr		macro	Operand
+		ifnb	<Operand>
+		echo	If Puts has two or more operands, they must
+		echo	be literal operands.
+		err
+		endif	;Operand
+		endm
+
+
+
+		xtrn	puts,CS,Stk
+puts		macro	Operand,MoreOps
+
+		ifb	<Operand>
+		 call	$Puts
+		 exitm
+		endif
+
+		ifidn	<Operand>,<nl>
+		 byte	Operand
+		 ifnb	<MoreOps>
+		  byte	MoreOps
+		 endif
+		 byte   0
+		 exitm
+		endif
+
+		if	IsConst( Operand )
+		 call	$print
+		 byte	Operand
+		 ifnb	<MoreOps>
+		  byte	MoreOps
+		 endif
+		 byte	0
+		 exitm
+
+		endif	;IsConst
+
+
+		ifnb	 IsWordPtr( Operand )
+		 push	 ds
+		 push	 IsWordPtr( Operand )
+		 call	 $Puts
+		 PutsErr MoreOps
+		 exitm
+		endif	;IsWordPtr
+
+		ifnb	 IsDWordPtr( Operand )
+		 push	 IsDWordPtr( Operand )
+		 call	 $PutsSTK
+	       	 PutsErr MoreOps
+		 exitm
+		endif	;IsWordPtr
+
+		ifnb	 IsByte( Operand )
+		 call	 $PutsCS
+		 dword	 Operand
+		 PutsErr MoreOps
+		 exitm
+		endif	;IsWordPtr
+
+		echo	Illegal Puts operand(s)
+		err
+		endm
+
+
+
+
+		externdef $print:far
+
+print		macro	Operand1, MoreOps:vararg
+
+		call	$Print
+		
+		ifnb	<Operand1>
+
+		 byte	Operand1
+		 
+		 ifnb	<MoreOps>
+		  byte	MoreOps
+		 endif
+
+		 byte	0
+		endif	;Operand1 is blank.
+
+
+		endm
+
+
+
+
+
+
+xprintf		macro	which, fmtStr, OtherParms:vararg
+		local	DoingBytes
+DoingBytes	=	1
+
+		call	$&which&
+
+		ifidn	<fmtStr>,<nl>
+		 byte	nl
+		else
+		 if	IsStrConst( fmtStr )
+
+		  byte	fmtStr
+
+		 else	;Is not str const
+
+%		  echo	Illegal &which& format string operand.
+	       	  echo	First operand must be a string constant.
+		  err
+		  exitm
+
+		 endif	;IsStrConst
+
+		endif	;fmtStr=NL
+
+		for	arg, <OtherParms>
+		
+		ifidn	<arg>,<nl>
+
+		 byte	nl
+
+		else
+		 ifnb	IsVar( arg )
+
+		  if	DoingBytes eq 1
+		   byte	0
+DoingBytes	   =	0
+		  endif
+
+
+				 
+		  dword	arg
+		
+		 else	;IsVar
+
+		  if	 IsConst( arg )
+
+		   if	 DoingBytes eq 1
+
+		    byte arg
+
+		   else	;DoingBytes
+
+		    echo A literal constant appears after the first
+%		    echo variable operand in a &which& statement.
+		    err
+		    exitm
+
+		   endif ;DoingBytes eq 0
+
+		  endif	;IsConst
+
+		 endif	;IsVar
+
+		endif	;Is NL.
+
+		endm	;for
+
+		if	DoingBytes
+		 byte	0
+		endif
+		endm	;xprintf
+
+
+
+		xtrn	printf,Stk,r
+printf		macro	fmtStr, MoreOps:vararg
+ 		ifb	 <fmtStr>
+		 call	 $printf
+		else
+		 xprintf printf, fmtStr, <MoreOps>
+		endif
+		endm
+
+
+		xtrn	printff,Stk,r
+printff		macro	fmtStr, MoreOps:vararg
+ 		 ifb	 <fmtStr>
+		 call	 $printff
+		else
+		 xprintf printff, fmtStr, <MoreOps>
+		endif
+		endm
+
+
+
+		xtrn	putcr
+		xtrn	PutcStdOut
+		xtrn	PutcBIOS
+		xtrn	GetOutAdrs
+		xtrn	SetOutAdrs
+		xtrn	PushOutAdrs
+		xtrn	PopOutAdrs
+		xtrn	ResetStdOut
+		xtrn	HexOutLC
+		xtrn	HexOutUC
+		xtrn	putf
+		xtrn	pute
+
+
+
+
+
+$segSTDIO	ends
+		endif	;ifndef $stdout_a

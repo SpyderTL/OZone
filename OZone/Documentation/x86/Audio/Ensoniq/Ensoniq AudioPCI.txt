@@ -1,0 +1,190 @@
+﻿I/O Registers (BAR0)
+Control								4			0x00
+	Reserved(1)						6 bits
+	JoystickAddress					2 bits			(0 = 0x200, 1 = 0x208, 2 = 0x210, 3 = 0x218)
+	GpioIn								4 bits
+	GpioOut							4 bits
+	MpegFormat						1 bit				(0 = Sony, 1 = i2s)
+	AC97Reset							1 bit
+	RecordStop						1 bit
+	PowerIterruptEnable			1 bit
+	RecordSource					1 bit				(0 = Codec, 1 = i2s)
+	CcbVoiceInterruptEnable		1 bit
+	PowerDownLevel				2 bits
+	DisableMemoryAccess		1 bit
+	Playback1Enable				1 bit
+	Playback2Enable				1 bit
+	RecordEnable					1 bit
+	UartEnable						1 bit
+	JoystickEnable					1 bit
+	ClockDisable						1 bit
+	PciClockDisable					1 bit
+
+Status								4			0x04
+	InterruptStatus					1 bit
+	Reserved(1)						22 bits
+	SyncError							1 bit
+	CcbVoiceCode					2 bits			(0 = Dac1, 1 = Dac2, 2 = Adc)
+	PowerInterruptStatus			1 bit
+	CcbInterruptStatus				1 bit
+	UartInterruptStatus				1 bit
+	Playback1InterruptStatus		1 bit
+	Playback2InterruptStatus		1 bit
+	RecordInterruptStatus			1 bit
+
+UART Data							1			0x08
+
+UART Status						1			0x09
+	ReceiveInterruptStatus		1 bit
+	Reserved(0)						4 bits
+	TransmitInterruptStatus		1 bit
+	TransmitReady					1 bit
+	ReceiveReady					1 bit
+
+UART Control						1			0x09
+	ReceiveInterruptEnable		1 bit
+	TransmitEnable					2 bits
+	Reserved							3 bits
+	Reset								2 bits			(3 = Reset)
+
+UART Test Mode				1			0x0a
+
+Memory Page					4			0x0c
+	Reserved							28 bits
+	Page									4 bits			(0xC = DAC1/2, 0xD = ADC, 0xE-0xF = UART FIFO)
+
+Sample Rate Converter		4			0x10
+	RamAddress										7 bits
+	WriteMode										1 bit
+	RamBusy											1 bit
+	SampleRateConverterDisable				1 bit
+	Playback1AccumulatorDisable				1 bit
+	Playback2AccumulatorDisable				1 bit
+	RecordAccumulatorDisable					1 bit
+	Reserved											3 bits
+	RamData											16 bits
+
+Codec Write						4			0x14
+	Reserved(0)						8 bits
+	ReadMode						1 bit			(0 = Write, 1 = Read)
+	Address							7 bits
+	Data									16 bits
+
+Codec Read						4			0x14
+	Ready								1 bit
+	Busy									1 bit
+	Reserved(0)						6 bits
+	ReadMode						1 bit			(0 = Write, 1 = Read)
+	Address							7 bits
+	Data									16 bits
+
+Codec Address
+	
+
+Legacy								4			0x18
+	FastJoystickTiming				1 bit
+	HostInterruptBlockEnable	1 bit
+	SoundBlasterPort				1 bit			(0 = 0x220, 1 = 0x240)
+	MpuPort							2 bits		(0 = 0x320, 1 = 0x330, 2 = 0x340, 3 = 0x350)
+	CodecPort							2 bits		(0 = 0x530, 2 = 0xE80, 3 = 0xF40)
+	ForceInterrupt					1 bit
+	SlaveDmaEnable				1 bit			(0xC0)
+	SlaveInterruptEnable			1 bit			(0xA0)
+	MasterDmaEnable				1 bit			(0x0)
+	MasterInterruptEnable		1 bit			(0x20)
+	AdlibEnable						1 bit			(0x388)
+	SoundBlasterEnable			1 bit
+	CodecEnable						1 bit
+	SoundScapeEnable				1 bit
+	Reserved							5 bits
+	EventNumber						3 bits		(0 = SoundScape, 1 = Codec, 2 = SoundBlaster, 3 = Adlib, 4 = Master Interrupt, 5 = Master Dma, 6 = Slave Interrupt, 7 = Slave Dma)
+	EventPort							5 bits
+	EventWrite							1 bit
+	Reserved(0)						1 bit
+	InterruptStatus					1 bit			(Write any value to clear)
+
+Serial Interface						4			0x20
+	Reserved(1)								9 bits
+	DacTest										1 bit
+	Playback2EndIncrement				3 bits
+	Playback2StartIncrement				3 bits
+	RecordLoopDisable					1 bit
+	Playback2LoopDisable				1 bit
+	Playback1LoopDisable				1 bit
+	Playback2Pause							1 bit
+	Playback1Pause							1 bit
+	RecordInterruptEnable				1 bit
+	Playback2InterruptEnable			1 bit
+	Playback1InterruptEnable			1 bit
+	Playback1ReloadSampleCount		1 bit
+	Playback2MuteEnable					1 bit
+	RecordFormat							2 bits		(0 = Mono8, 1 = Stereo8, 2 = Mono16, 3 = Stereo16)
+	Playback2Format						2 bits		(0 = Mono8, 1 = Stereo8, 2 = Mono16, 3 = Stereo16)
+	Playback1Format						2 bits		(0 = Mono8, 1 = Stereo8, 2 = Mono16, 3 = Stereo16)
+
+Playback 1 Sample Count			4		0x24
+	CurrentPosition							16 bits
+	SampleCount								16 bits		(minus one)
+
+Playback 2 Sample Count			4		0x28
+	CurrentPosition							16 bits
+	SampleCount								16 bits		(minus one)
+
+Record Sample Count					4		0x2c
+	CurrentPosition							16 bits
+	SampleCount								16 bits		(minus one)
+
+Playback 1 Buffer Address			4		0x30 (Page 0xC)
+
+Playback 1 Buffer Definition			4		0x34 (Page 0xC)
+	CurrentPosition							16 bits		(times four)
+	BufferSize									16 bits		(divided by four)
+
+Playback 2 Buffer Address			4		0x38 (Page 0xC)
+
+Playback 2 Buffer Definition			4		0x3c (Page 0xC)
+	CurrentPosition							16 bits		(times four)
+	BufferSize									16 bits		(divided by four)
+
+Record Buffer Address				4		0x30 (Page 0xD)
+
+Record Buffer Definition				4		0x34 (Page 0xD)
+	CurrentPosition							16 bits		(times four)
+	BufferSize									16 bits		(divided by four)
+
+UART FIFO Data							4		0x30-0x3c	(Page 0xE-0xF)
+	Reserved									23 bits
+	Valid											1 bit
+	Data											8 bits
+
+Sample Rate Converter Registers
+	RecordVolume					0x6c
+	Playback1TruncN				0x70
+	Playback1IntRegs				0x71
+	Playback1AccumFrac			0x72
+	Playback1VFreqFrac			0x73
+	Playback2TruncN				0x74
+	Playback2IntRegs				0x75
+	Playback2AccumFrac			0x76
+	Playback2VFreqFrac			0x77
+	RecordTruncN					0x78
+	RecordIntRegs					0x79
+	RecordAccumFrac				0x7a
+	RecordVFreqFrac				0x7b
+	Playback1Volume				0x7c
+	Playback2Volume				0x7e
+
+Reset
+
+PlayAudio
+	frequency = ((samples_per_second << 15) + 1500) / 3000
+	SampleRateConverter[0x71] (0x10) |= (frequency >> 5 && 0xFC00)
+	SampleRateConverter[0x73] (0x10) |= (frequency && 0x7FFF)
+	MemoryPage.Page (0x0c) = 0x0C
+	Playback1BufferAddress (0x30 Page 0xC) = address
+	Playback1BufferDefinition.BufferSize (0x34 Page 0xC bits 0-15) = (buffer_size / 4) - 1
+	Playback1SampleCount.SampleCount (0x24 bit 0-15) = sample_count - 1
+	SerialInterface.Playback1Format (0x20 bit 0-1) = 3 (16-bit stereo)
+	SampleRateConverter.Playback1Disable (0x10 bit 21) = 0
+	Control.Playback1Enable (0x00 bit 6) = 1
+

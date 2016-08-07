@@ -1,0 +1,454 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema id="Operators"
+    targetNamespace="http://metalx.org/Arm/Arm7/Operators"
+    elementFormDefault="qualified"
+    xmlns="http://metalx.org/Arm/Arm7/Operators"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:element name="RegisterDataImmediateShift">
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="Operation" use="required">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="AndRegisterWithOperand"/>
+						<xsd:enumeration value="ExclusiveOrRegisterWithOperand"/>
+						<xsd:enumeration value="SubtractOperandFromRegister"/>
+						<xsd:enumeration value="SubtractRegisterFromOperand"/>
+						<xsd:enumeration value="AddRegisterAndOperand"/>
+						<xsd:enumeration value="AddRegisterAndOperandWithCarry"/>
+						<xsd:enumeration value="SubtractOperandFromRegisterWithCarry"/>
+						<xsd:enumeration value="SubtractRegisterFromOperandWithCarry"/>
+						<xsd:enumeration value="TestAndRegisterWithOperand"/>
+						<xsd:enumeration value="TestExclusiveOrRegisterWithOperand"/>
+						<xsd:enumeration value="TestSubtractOperandFromRegister"/>
+						<xsd:enumeration value="TestAddRegisterAndOperand"/>
+						<xsd:enumeration value="OrRegisterWithOperand"/>
+						<xsd:enumeration value="CopyOperand"/>
+						<xsd:enumeration value="AndRegisterWithOperandComplement"/>
+						<xsd:enumeration value="CopyOperandComplement"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="Register" type="Int4" use="required"/>
+			<xsd:attribute name="Operand" type="Int4" use="required"/>
+			<xsd:attribute name="ShiftType">
+				<xsd:annotation>
+					<xsd:documentation>
+						Note: Rotate Right 0 positions will perform a 1 bit rotate right including the carry flag.
+					</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="ShiftLeft"/>
+						<xsd:enumeration value="ShiftRight"/>
+						<xsd:enumeration value="SignedShiftRight"/>
+						<xsd:enumeration value="RotateRight"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="Shift">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:short">
+						<xsd:minInclusive value="0"/>
+						<xsd:maxInclusive value="31"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="Destination" type="Int4" use="required"/>
+			<xsd:attribute name="SetFlags" type="xsd:boolean"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="RegisterDataRegisterShift">
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="Operation" use="required">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="AndRegisterWithOperand"/>
+						<xsd:enumeration value="ExclusiveOrRegisterWithOperand"/>
+						<xsd:enumeration value="SubtractOperandFromRegister"/>
+						<xsd:enumeration value="SubtractRegisterFromOperand"/>
+						<xsd:enumeration value="AddRegisterAndOperand"/>
+						<xsd:enumeration value="AddRegisterAndOperandWithCarry"/>
+						<xsd:enumeration value="SubtractOperandFromRegisterWithCarry"/>
+						<xsd:enumeration value="SubtractRegisterFromOperandWithCarry"/>
+						<xsd:enumeration value="TestAndRegisterWithOperand"/>
+						<xsd:enumeration value="TestExclusiveOrRegisterWithOperand"/>
+						<xsd:enumeration value="TestSubtractOperandFromRegister"/>
+						<xsd:enumeration value="TestAddRegisterAndOperand"/>
+						<xsd:enumeration value="OrRegisterWithOperand"/>
+						<xsd:enumeration value="CopyOperand"/>
+						<xsd:enumeration value="AndRegisterWithOperandComplement"/>
+						<xsd:enumeration value="CopyOperandComplement"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="Register" type="Int4" use="required"/>
+			<xsd:attribute name="Operand" type="Int4" use="required"/>
+			<xsd:attribute name="ShiftType">
+				<xsd:annotation>
+					<xsd:documentation>
+						Note: Rotate Right 0 positions will perform a 1 bit rotate right including the carry flag.
+					</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="ShiftLeft"/>
+						<xsd:enumeration value="ShiftRight"/>
+						<xsd:enumeration value="SignedShiftRight"/>
+						<xsd:enumeration value="RotateRight"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="ShiftRegister" type="Int4" use="required"/>
+			<xsd:attribute name="Destination" type="Int4" use="required"/>
+			<xsd:attribute name="SetFlags" type="xsd:boolean"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ImmediateData">
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="Operation" use="required">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="AndRegisterWithOperand"/>
+						<xsd:enumeration value="ExclusiveOrRegisterWithOperand"/>
+						<xsd:enumeration value="SubtractOperandFromRegister"/>
+						<xsd:enumeration value="SubtractRegisterFromOperand"/>
+						<xsd:enumeration value="AddRegisterAndOperand"/>
+						<xsd:enumeration value="AddRegisterAndOperandWithCarry"/>
+						<xsd:enumeration value="SubtractOperandFromRegisterWithCarry"/>
+						<xsd:enumeration value="SubtractRegisterFromOperandWithCarry"/>
+						<xsd:enumeration value="TestAndRegisterWithOperand"/>
+						<xsd:enumeration value="TestExclusiveOrRegisterWithOperand"/>
+						<xsd:enumeration value="TestSubtractOperandFromRegister"/>
+						<xsd:enumeration value="TestAddRegisterAndOperand"/>
+						<xsd:enumeration value="OrRegisterWithOperand"/>
+						<xsd:enumeration value="CopyOperand"/>
+						<xsd:enumeration value="AndRegisterWithOperandComplement"/>
+						<xsd:enumeration value="CopyOperandComplement"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="Register" type="Int4"/>
+			<xsd:attribute name="Operand" type="xsd:unsignedByte"/>
+			<xsd:attribute name="Rotate">
+				<xsd:annotation>
+					<xsd:documentation>
+						Rotates the immediate operand to the right by a factor of two.
+					</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:unsignedByte">
+						<xsd:minInclusive value="0"/>
+						<xsd:maxInclusive value="15"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="Destination" type="Int4" use="required"/>
+			<xsd:attribute name="SetFlags" type="xsd:boolean"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="CopyStatusToRegister">
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="SavedStatus" type="xsd:boolean"/>
+			<xsd:attribute name="Destination" type="Int4" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="CopyRegisterToStatus">
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="SavedStatus" type="xsd:boolean"/>
+			<xsd:attribute name="Register" type="Int4" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="CopyRegisterToFlags">
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="SavedStatus" type="xsd:boolean"/>
+			<xsd:attribute name="Register" type="Int4" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="SetFlags">
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="SavedStatus" type="xsd:boolean"/>
+			<xsd:attribute name="Value" type="xsd:unsignedByte"/>
+			<xsd:attribute name="Rotate">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:short">
+						<xsd:minInclusive value="0"/>
+						<xsd:maxInclusive value="15"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="MultiplyRegisters">
+		<xsd:annotation>
+			<xsd:documentation>Note: Do not use the same register value for the destination register and mulitply register 2.  Result will always be zero.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="Register1" type="Int4" use="required"/>
+			<xsd:attribute name="Register2" type="Int4" use="required"/>
+			<xsd:attribute name="Destination" type="Int4" use="required"/>
+			<xsd:attribute name="SetFlags" type="xsd:boolean">
+				<xsd:annotation>
+					<xsd:documentation>Note: Overflow flag is ignored.  Carry flag is set to unknown value.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="MultiplyAndAddRegisters">
+		<xsd:annotation>
+			<xsd:documentation>Note: Do not use the same register value for the destination register and mulitply register 2.  Result will be incorrect.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="Register1" type="Int4" use="required"/>
+			<xsd:attribute name="Register2" type="Int4" use="required"/>
+			<xsd:attribute name="AddRegister" type="Int4" use="required"/>
+			<xsd:attribute name="Destination" type="Int4" use="required"/>
+			<xsd:attribute name="SetFlags" type="xsd:boolean">
+				<xsd:annotation>
+					<xsd:documentation>Note: Overflow flag is ignored.  Carry flag is set to unknown value.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ImmediateOffsetMemory">
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="ApplyOffsetBeforeTransfer" type="xsd:boolean"/>
+			<xsd:attribute name="AddOffset" type="xsd:boolean"/>
+			<xsd:attribute name="TransferByte" type="xsd:boolean"/>
+			<xsd:attribute name="UpdateBaseRegister" type="xsd:boolean"/>
+			<xsd:attribute name="ReadFromMemory" type="xsd:boolean"/>
+			<xsd:attribute name="Register" type="Int4" use="required"/>
+			<xsd:attribute name="AddressRegister" type="Int4" use="required"/>
+			<xsd:attribute name="Offset">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:short">
+						<xsd:minInclusive value="0"/>
+						<xsd:maxInclusive value="4095"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="RegisterOffsetMemory">
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="ApplyOffsetBeforeTransfer" type="xsd:boolean"/>
+			<xsd:attribute name="AddOffset" type="xsd:boolean"/>
+			<xsd:attribute name="TransferByte" type="xsd:boolean"/>
+			<xsd:attribute name="UpdateBaseRegister" type="xsd:boolean"/>
+			<xsd:attribute name="ReadFromMemory" type="xsd:boolean"/>
+			<xsd:attribute name="Register" type="Int4" use="required"/>
+			<xsd:attribute name="AddressRegister" type="Int4" use="required"/>
+			<xsd:attribute name="OffsetRegister" type="Int4" use="required"/>
+			<xsd:attribute name="OffsetRegisterShiftType">
+				<xsd:annotation>
+					<xsd:documentation>
+						Note: Rotate Right 0 positions will perform a 1 bit rotate right including the carry flag.
+					</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="ShiftLeft"/>
+						<xsd:enumeration value="ShiftRight"/>
+						<xsd:enumeration value="SignedShiftRight"/>
+						<xsd:enumeration value="RotateRight"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="OffsetRegisterShift">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:short">
+						<xsd:minInclusive value="0"/>
+						<xsd:maxInclusive value="31"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ImmediateOffsetShortMemory">
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="ApplyOffsetBeforeTransfer" type="xsd:boolean"/>
+			<xsd:attribute name="AddOffset" type="xsd:boolean"/>
+			<xsd:attribute name="UpdateBaseRegister" type="xsd:boolean"/>
+			<xsd:attribute name="ReadFromMemory" type="xsd:boolean"/>
+			<xsd:attribute name="Signed" type="xsd:boolean"/>
+			<xsd:attribute name="TransferShort" type="xsd:boolean"/>
+			<xsd:attribute name="Register" type="Int4" use="required"/>
+			<xsd:attribute name="AddressRegister" type="Int4" use="required"/>
+			<xsd:attribute name="OffsetHigh">
+				<xsd:annotation>
+					<xsd:documentation>
+						Specify the offset high value, which will be shifted left 4 bits, and added to offset low value.
+					</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:unsignedByte">
+						<xsd:minInclusive value="0"/>
+						<xsd:maxInclusive value="15"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="OffsetLow">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:unsignedByte">
+						<xsd:minInclusive value="0"/>
+						<xsd:maxInclusive value="15"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="RegisterOffsetShortMemory">
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="ApplyOffsetBeforeTransfer" type="xsd:boolean"/>
+			<xsd:attribute name="AddOffset" type="xsd:boolean"/>
+			<xsd:attribute name="UpdateBaseRegister" type="xsd:boolean"/>
+			<xsd:attribute name="ReadFromMemory" type="xsd:boolean"/>
+			<xsd:attribute name="Signed" type="xsd:boolean"/>
+			<xsd:attribute name="TransferShort" type="xsd:boolean"/>
+			<xsd:attribute name="Register" type="Int4" use="required"/>
+			<xsd:attribute name="AddressRegister" type="Int4" use="required"/>
+			<xsd:attribute name="OffsetRegister" type="Int4" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="BlockMemory">
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="ApplyOffsetBeforeTransfer" type="xsd:boolean"/>
+			<xsd:attribute name="AddOffset" type="xsd:boolean"/>
+			<xsd:attribute name="IncludeStatusRegister" type="xsd:boolean"/>
+			<xsd:attribute name="UpdateBaseRegister" type="xsd:boolean"/>
+			<xsd:attribute name="ReadFromMemory" type="xsd:boolean"/>
+			<xsd:attribute name="Registers" use="required">
+				<xsd:annotation>
+					<xsd:documentation>
+						Specify the bit mask for registers 0-15 to be transferred to/from memory.
+					</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:length value="16"/>
+						<xsd:pattern value="[01]*"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="AddressRegister" type="Int4" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="SwapMemory">
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="TransferByte" type="xsd:boolean"/>
+			<xsd:attribute name="Register" type="Int4" use="required"/>
+			<xsd:attribute name="AddressRegister" type="Int4" use="required"/>
+			<xsd:attribute name="DestinationRegister" type="Int4" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="BranchToRelative">
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="SetReturnAddress" type="xsd:boolean"/>
+			<!--<xsd:attribute name="RelativeAddress">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:int">
+						<xsd:minInclusive value="-8388608"/>
+						<xsd:maxInclusive value="8388608"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>-->
+			<xsd:attribute name="ref" type="xsd:IDREF" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="SoftwareInterrupt">
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="CoprocessorOperation">
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="Coprocessor" type="Int4" use="required"/>
+			<xsd:attribute name="Information" type="Int3" use="required"/>
+			<xsd:attribute name="Operation" type="Int4" use="required"/>
+			<xsd:attribute name="Operand1" type="Int4" use="required"/>
+			<xsd:attribute name="Operand2" type="Int4" use="required"/>
+			<xsd:attribute name="Destination" type="Int4" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="CoprocessorMemory">
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="ApplyOffsetBeforeTransfer" type="xsd:boolean"/>
+			<xsd:attribute name="AddOffset" type="xsd:boolean"/>
+			<xsd:attribute name="LongTransfer" type="xsd:boolean"/>
+			<xsd:attribute name="UpdateBaseRegister" type="xsd:boolean"/>
+			<xsd:attribute name="ReadFromMemory" type="xsd:boolean"/>
+			<xsd:attribute name="Coprocessor" type="Int4" use="required"/>
+			<xsd:attribute name="CoprocessorRegister" type="Int4" use="required"/>
+			<xsd:attribute name="AddressRegister" type="Int4" use="required"/>
+			<xsd:attribute name="Offset" type="xsd:unsignedByte">
+				<xsd:annotation>
+					<xsd:documentation>
+						Specify the offet in 4 byte words.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="CoprocessorRegister">
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="Coprocessor" type="Int4" use="required"/>
+			<xsd:attribute name="Information" type="Int3" use="required"/>
+			<xsd:attribute name="OperationMode" type="Int3" use="required"/>
+			<xsd:attribute name="ReadFromCoprocessor" type="xsd:boolean"/>
+			<xsd:attribute name="CoprocessorRegister" type="Int4" use="required"/>
+			<xsd:attribute name="CoprocessorOperand" type="Int4" use="required"/>
+			<xsd:attribute name="Register" type="Int4" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:simpleType name="Condition">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Equal"/>
+			<xsd:enumeration value="NotEqual"/>
+			<xsd:enumeration value="HigherOrEqual"/>
+			<xsd:enumeration value="Lower"/>
+			<xsd:enumeration value="Negative"/>
+			<xsd:enumeration value="NotNegative"/>
+			<xsd:enumeration value="Overflow"/>
+			<xsd:enumeration value="NotOverflow"/>
+			<xsd:enumeration value="Higher"/>
+			<xsd:enumeration value="LowerOrEqual"/>
+			<xsd:enumeration value="GreaterThanOrEqual"/>
+			<xsd:enumeration value="LessThan"/>
+			<xsd:enumeration value="GreaterThan"/>
+			<xsd:enumeration value="LessThanOrEqual"/>
+			<xsd:enumeration value="Always"/>
+			<xsd:enumeration value="Never"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="Int4">
+		<xsd:restriction base="xsd:unsignedByte">
+			<xsd:minInclusive value="0"/>
+			<xsd:maxInclusive value="15"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="Int3">
+		<xsd:restriction base="xsd:unsignedByte">
+			<xsd:minInclusive value="0"/>
+			<xsd:maxInclusive value="7"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+</xsd:schema>

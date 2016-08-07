@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Stream"
+	type="http://metalx.org/Stream"
+	xmlns="http://metalx.org/Program"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:cls="http://metalx.org/i286/Structures/Class"
+	xmlns:sys="http://metalx.org/i286/Functions/System"
+	xmlns:stream="http://metalx.org/i286/Functions/Stream"
+	xmlns:string="http://metalx.org/i286/Functions/String"
+	xmlns:obj="http://metalx.org/i286/Functions/Object"
+	xmlns:imm="http://metalx.org/Intel/80286/Immediate"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands">
+	
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<obj:GetData/>
+
+		<!--Save Stream-->
+		<cpu:PushSIToStack/>
+
+		<stream:GetLength/>
+
+		<sys:GetMemoryManager/>
+
+		<cpu:PushAXToStack/>
+		<string:Create/>
+		<cpu:PullAXFromStack/>
+
+		<!--Restore Stream-->
+		<cpu:PullSIFromStack/>
+
+		<!--Save String-->
+		<cpu:PushDIToStack/>
+
+		<!--Copy stream contents to string-->
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:AX-CXRegister/>
+
+		<cpu:Repeat/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+		<!--Restore String-->
+		<cpu:PullDIFromStack/>
+
+		<sys:GetMemoryManager/>
+		
+		<string:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Hexadecimal"
+	type="http://metalx.org/Hexadecimal"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/i286/Structures/Class"
+	xmlns:obj="http://metalx.org/i286/Functions/Object"
+	xmlns:hex="http://metalx.org/i286/Functions/Hexadecimal"
+	xmlns:lst="http://metalx.org/i286/Functions/List"
+	xmlns:str="http://metalx.org/i286/Functions/String"
+	xmlns:mm="http://metalx.org/i286/Functions/MemoryManager"
+	xmlns:sys="http://metalx.org/i286/Functions/System"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:ari="http://metalx.org/Intel/80286/Arithmetic"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	>
+
+	<cls:field name="Value" type="http://metalx.org/Hexadecimal" offset="0"/>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<scope>
+			<obj:GetData/>
+
+			<cpu:CopyOperandToRegister16/>
+			<op:AX-SIAddress/>
+
+			<hex:ToString/>
+
+			<sys:GetMemoryManager/>
+			
+			<str:CreateObject/>
+
+			<cpu:PushESToStack/>
+			<cpu:PullDSFromStack/>
+			
+			<cpu:CopyRegisterToOperand16/>
+			<op:DI-SIRegister/>
+
+			<cpu:ReturnToNearCaller/>
+		</scope>
+	</cls:method>
+</cls:class>

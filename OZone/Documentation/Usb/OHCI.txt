@@ -1,0 +1,218 @@
+﻿OHCI Control Registers (BAR0+Memory Register)
+	Revision							0x00	int
+		Reserved									24 bits
+		Revision									8 bits
+	Control								0x04	int
+		Reserved									21 bits
+		RemoteWakeupEnabled				1 bit
+		RemoteWakeupSupported			1 bit
+		InterruptRouting							1 bit
+		FuctionalState							2 bits	(0 = Reset, 1 = Resume, 2 = Operational, 3 = Suspend)
+		BulkListEnable							1 bit
+		ControlListEnable						1 bit
+		IsochronousEnable						1 bit
+		PeriodicListEnable						1 bit
+		ControlToBulkRatio						2 bits
+	CommandStatus					0x08	int
+		Reserved									14 bits
+		SchedulingOverrunCount			2 bits
+		Reserved									12 bits
+		OwnershipChangeRequest			1 bit
+		BulkListFilled								1 bit
+		ControlListFilled							1 bit
+		Reset										1 bit
+	InterruptStatus					0x0c	int
+		Reserved									1 bit
+		OwnershipChange						1 bit
+		Reserved									23 bits
+		RootHubStatusChanged				1 bit
+		FrameNumberOverflow				1 bit
+		UnrecoverableError					1 bit
+		ResumeDetected						1 bit
+		StartOfFrameSent						1 bit
+		WriteDoneHead							1 bit
+		SchedulingOverrun						1 bit
+	InterruptEnable					0x10	int
+		MasterInterruptEnable				1 bit
+		OwnershipChanged					1 bit
+		Reserved									23 bits
+		RootHubStatusChanged				1 bit
+		FrameNumberOverflow				1 bit
+		UnrecoverableError					1 bit
+		ResumeDetect							1 bit
+		StartOfFrame								1 bit
+		WriteDoneHead							1 bit
+		ScheduleOverrun						1 bit
+	InterruptDisable					0x14	int
+		MasterInterruptDisable				1 bit
+		OwnershipChanged					1 bit
+		Reserved									23 bits
+		RootHubStatusChanged				1 bit
+		FrameNumberOverflow				1 bit
+		UnrecoverableError					1 bit
+		ResumeDetect							1 bit
+		StartOfFrame								1 bit
+		WriteDoneHead							1 bit
+		ScheduleOverrun						1 bit
+	CommunicationArea			0x18	int
+	PeriodicCurrentEndpoint		0x1c	int
+	ControlHeadEndpoint			0x20	int
+	ControlCurrentEndpoint		0x24	int
+	BulkHeadEndpoint				0x28	int
+	BulkCurrentEndpoint			0x2c	int
+	DoneTransferHead				0x30	int
+	FrameInterval						0x34	int
+		FrameIntervalToggle					1 bit
+		LargestDataPacket						15 bits
+		Reserved									2 bits
+		StartOfFrameInterval					14 bits
+	FrameRemaining				0x38	int
+		FrameRemainingToggle				1 bit
+		Reserved									17 bits
+		TimeRemaining							14 bits
+	FrameNumber					0x3c	int
+		Reserved									16 bits
+		FrameNumber							16 bits
+	PeriodicTransferStart			0x40	int
+		Reserved									18 bits
+		StartTime									14 bits
+	LowSpeedThreshold			0x44	int
+		Reserved									20 bits
+		StartTime									12 bits
+	RootHubDescriptorA			0x48	int
+		GoodPowerTime*						8 bits	// 2ms Intervals
+		Reserved									11 bits
+		OvercurrentNotSupported			1 bit
+		PortOverpowerProtection			1 bit
+		CompoundDevice						1 bit
+		PortSwitchingSupported				1 bit
+		PowerSwitchingSupported			1 bit
+		PortCount									8 bits
+	RootHubDescriptorB			0x4c	int
+		PortGlobalPower[1..15]				15 bits
+		Reserved									1 bit
+		PortNotRemovable[1..15]			15 bits
+		Reserved									1 bit
+	RootHubStatus					0x50	int
+		RemoteWakeupDisable				1 bit
+		GlobalOvercurrentIndicator			1 bit
+		SetGlobalPower							1 bit
+		RemoteWakeupEnabled				1 bit
+		Reserved									13 bits
+		GlobalOvercurrent						1 bit
+		ClearGlobalPower						1 bit
+	RootHubPortStatus				0x54	int[]
+		Reserved									11 bits
+		PortResetChanged						1 bit
+		PortOvercurrentChanged			1 bit
+		PortSuspendedChanged				1 bit
+		PortEnabledChanged					1 bit
+		PortEnabledChanged					1 bit
+		PortEnabledChanged					1 bit
+		DeviceConnectedChanged			1 bit
+		Reserved									6 bits
+		LowSpeedDeviceAttached			1 bit
+		PortPower									1 bit
+		Reserved									3 bits
+		PortReset									1 bit
+		PortOvercurrentIndicator			1 bit
+		PortSuspended							1 bit
+		PortEnabled								1 bit
+		DeviceConnected						1 bit
+
+OHCI Communication Area
+	InterruptListAddressTable		int[32]
+	FrameNumber						short
+	FrameNumberReset				short
+	DoneHead								int
+	Reserved								byte[120]
+
+OHCI Endpoint Descriptor
+	Control								int
+		Unused								5 bits
+		MaxPacketSize					11 bits
+		IsochronousFormat			1 bit
+		Skip									1 bit
+		Slow									1 bit
+		Direction							2 bits		// 0 - Auto, 1 - Out (To Endpoint), 2 - In (To Host), 3 - Auto
+		UsbEndpointNumber			4 bits
+		UsbFunctionAddress			7 bits
+	TailTransferDescriptor		int
+		Pointer								28 bits
+		Reserved							4 bits		// Forces 16-byte alignment
+	Head	TransferDescriptor		int
+		Pointer								28 bits
+		Reserved							2 bits		// Forces 16-byte alignment
+		Toggle								1 bit
+		Halted								1 bit
+	NextEndpointDescriptor		int
+		Pointer								28 bits
+		Reserved							4 bits		// Forces 16-byte alignment
+
+OHCI General Transfer Descriptor	16 bytes
+	Control								int
+		ConditionCode					4 bits	// 0 - Success, 1 - CRC Error, 2 - Bit Stuffing Violation, 3 - Data Toggle Mismatch, 4 - Stall, 5 - No Response, 6 - PID Check Failure, 7 - Unexpected PID, 8 - Data Overrun, 9 - Data Underrun, c - Buffer Overrun, d - Buffer Underrun, e - Pending
+		ErrorCount						2 bits
+		ToggleSource					1 bit		// 0 - Endpoint Descriptor, 1 - Transfer Descriptor
+		Toggle								1 bit	
+		InterruptDelayCount			3 bits	// 7 - No Interrupt
+		Direction							2 bits	// 0 - Setup, 1 - Out (To Endpoint), 2 - In (To Host)
+		PartialLastPacketBuffer		1 bit
+		Unused								18 bits
+	FirstByteAddress*				int				// 0 - Empty/Complete
+	NextTransferDescriptor		int
+	LastByteAddress					int
+
+* If data crosses 4096 byte boundary during a data transfer, the upper 20 bits of LastByteAddress are copied to FirstByteAddress, and the remaining bits are set to zero before the data transfer is resumed.
+
+OHCI Isochronous Transfer Descriptor
+	Control								int
+		ConditionCode					4 bits	// 0 - Success, 1 - CRC Error, 2 - Bit Stuffing Violation, 3 - Data Toggle Mismatch, 4 - Stall, 5 - No Response, 6 - PID Check Failure, 7 - Unexpected PID, 8 - Data Overrun, 9 - Data Underrun, c - Buffer Overrun, d - Buffer Underrun, e - Pending
+		Unused								1 bit
+		FrameCount						3 bits	// Number of Frames - 1
+		InterruptDelayCount			3 bits	// 7 - No Interrupt
+		Unused								5 bits
+		StartFrame							16 bits
+	BufferPage							int
+		BufferPage0						20 bits
+		Unused								12 bits
+	Next									int
+		NextDescriptor					27 bits
+		Unused								5 bits
+	LastByteAddress					int
+	Buffer								short[8]
+		Reserved							3 bits	// Must be set to 111
+		EndBuffer							1 bit
+		Offset								12 bits
+		---------------------------------
+		ConditionCode					4 bits
+		Reserved							1 bit
+		BytesTransferred				11 bits
+
+OHCI Controller
+	Bulk Head
+	Bulk Current
+	Control Head
+	Control Current
+	Communication Area
+		Interrupt List Head[32]
+			Isochronous List
+	Periodic Current
+	Done Head
+
+OHCIController.Frame()
+{
+	while(FrameRemaining > PeriodicStart)
+	{
+		ProcessControlList(Ratio);
+		ProcessBulkList();
+	}
+
+	ProcessInterruptList(FrameCount & 0x1f);
+
+	while(FrameRemaining > 0)
+	{
+		ProcessControlList(Ratio);
+		ProcessBulkList();
+	}
+}

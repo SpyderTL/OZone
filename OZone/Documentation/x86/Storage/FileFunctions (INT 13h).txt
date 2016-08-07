@@ -1,0 +1,144 @@
+﻿Physical Cylinder Head Selector Addressing
+504 MB Limit
+
+Logical Cylinder Head Selector Addressing
+8064 MB Limit
+
+???
+7.875 GB Limit
+1024 Cylindars, 256 Heads, 63 Sectors, 512 Bytes per Block
+
+Enhanced Disk Drive Servics (EDD)
+8 ZB Limit (64-bit), 2 TB Limit (32-bit), 128 PB Limit (48-bit)
+Logical Block Addressing (LBA)
+Packet Based (Pointer to structure with version, data size,	blocks)
+
+Drive Numbers
+Floppy Drive 1 = 00h;
+Floppy Drive 2 = 01h;
+Hard Drive 1 = 80h;
+Hard Drive 2 = 81h;
+
+Functions
+ResetDiskDrives( AH=00h, DL=Drive )
+CheckDriveStatus( AH=01h ) { AL=StatusCode }
+ReadSectorsFromDrive( AH=02h, AL=Count, CX=TrackSector, DH=Head, DL=Drive, ES:BX=Address ) { CF=Error, AH=ReturnCode, AL=SectorsRead }
+WriteSectorsToDrive( AH=03h )
+VerifySectors( AH=04h )
+FormatTrack( AH=05h )
+ReadDriveParameters( AH=08h, DL=Drive ) { CF=Error, AH=ReturnCode, DL=DriveCount, DH=LastHead, CX=LastCylinderSectorCount )
+InitializeHardDriveController( AH=09h )
+ReadSectorsFromHardDrive( AH=0Ah, AL=Count, CX=TrackSector, DH=Head, DL=Drive, ES:BX=Address ) { CF=Error, AH=ReturnCode, AL=SectorsRead }
+WriteSectorsToHardDrive( AH=0Bh )
+MoveHardDriveHeadToCylindar( AH=0Ch )
+ResetHardDiskDrives( AH=0Dh )
+ControllerReadTest( AH=0Eh )
+ControllerWriteTest( AH=0Fh )
+TestDriveReady( AH=10h )
+RecalibrateDrive( AH=11h )
+ControllerRamTest( AH=12h )
+DriveTest( AH=13h )
+HardDriveControllerDiagnostic( AH=14h )
+ReadDriveType( AH=15h )
+DetectFloppyDriveMediaChange( AH=16h )
+SetFloppyFormatMediaType( AH=17h )
+SetFloppyFormatMediaTypeEx( AH=18h )
+TestHardDriveExtensionsAvailable( AH=41h, DL=Drive, BX=55AAh ) { CF=Unavailable, AH=MajorVersion, CX=SupportFlags }
+ReadSectorsFromHardDriveEx( AH=42h, DL=Drive, DS:SI=Request ) { CF=Error, AH=ReturnCode }
+WriteSectorsToHardDriveEx( AH=43h )
+VerifySectorsEx( AH=44h )
+LockHardDrive( AH=45h )
+EjectHardDrive( AH=46h )
+MoveHardDriveHeadToSector( AH=47h )
+ReadDriveParametersEx( AH=48h, DL=Drive, DS:SI=Parameters )
+DetectMediaChangeEx( AH=49h )
+
+Track Sector Formula
+16-bit (10-bit cylindar, 6-bit sector)
+
+Request Structure
+{
+	byte RecordSize = 16,
+	byte Reserved = 0,
+	byte Sectors,
+	byte Reserved2 = 0,
+	int Address,
+	long Sector
+}
+
+Parameters Structure
+{
+	short RecordSize = 30,
+	short Flags,
+	int LastCylinder,
+	int LastHead,
+	int Sectors,
+	long LastSector,
+	short BytesPerSector,
+	int EnhancedParametersAddress
+}
+
+Status Codes
+00h Success 
+01h Invalid Command 
+02h Cannot Find Address Mark 
+03h Attempted Write On Write Protected Disk 
+04h Sector Not Found 
+05h Reset Failed 
+06h Disk change line 'active' 
+07h Drive parameter activity failed 
+08h DMA overrun 
+09h Attempt to DMA over 64kb boundary 
+0Ah Bad sector detected 
+0Bh Bad cylinder (track) detected 
+0Ch Media type not found 
+0Dh Invalid number of sectors 
+0Eh Control data address mark detected 
+0Fh DMA out of range 
+10h CRC/ECC data error 
+11h ECC corrected data error 
+20h Controller failure 
+40h Seek failure 
+80h Drive not ready 
+BBh Undefined error 
+CCh Write fault 
+E0h Status error 
+FFh Sense operation failed 
+
+Error Codes
+00h successful completion
+01h invalid function in AH or invalid parameter
+02h address mark not found
+03h disk write-protected
+04h sector not found/read error
+05h reset failed (hard disk)
+05h data did not verify correctly (TI Professional PC)
+06h disk changed (floppy)
+07h drive parameter activity failed (hard disk)
+08h DMA overrun
+09h data boundary error (attempted DMA across 64K boundary or >80h sectors)
+0Ah bad sector detected (hard disk)
+0Bh bad track detected (hard disk)
+0Ch unsupported track or invalid media
+0Dh invalid number of sectors on format (PS/2 hard disk)
+0Eh control data address mark detected (hard disk)
+0Fh DMA arbitration level out of range (hard disk)
+10h uncorrectable CRC or ECC error on read
+11h data ECC corrected (hard disk)
+20h controller failure
+31h no media in drive (IBM/MS INT 13 extensions)
+32h incorrect drive type stored in CMOS (Compaq)
+40h seek failed
+80h timeout (not ready)
+AAh drive not ready (hard disk)
+B0h volume not locked in drive (INT 13 extensions)
+B1h volume locked in drive (INT 13 extensions)
+B2h volume not removable (INT 13 extensions)
+B3h volume in use (INT 13 extensions)
+B4h lock count exceeded (INT 13 extensions)
+B5h valid eject request failed (INT 13 extensions)
+BBh undefined error (hard disk)
+CCh write fault (hard disk)
+E0h status register error (hard disk)
+FFh sense operation failed (hard disk)
+

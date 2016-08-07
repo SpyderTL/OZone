@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema targetNamespace="http://metalx.org/Pc/Pci/Functions" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:element name="InstallationCheck">
+	  <xsd:annotation>
+		  <xsd:documentation>
+			  Input:
+			  AX=InstallationCheck
+
+			  Output:
+			  AH=0
+			  CF=Clear
+			  EDX=20494350h ('PCI ')
+			  EDI=ProtectedModeEntryPoint
+			  AL=Characteristics
+			  BH=MajorVersion
+			  BL=MinorVersion
+			  CL=LastBusNumber
+		  </xsd:documentation>
+	  </xsd:annotation>
+    <xsd:complexType />
+  </xsd:element>
+  <xsd:element name="FindPciDevice">
+	  <xsd:annotation>
+		  <xsd:documentation>
+			  Input:
+			  AX=FindPciDevice
+			  CX=DeviceID
+			  DX=VendorID
+			  SI=Index
+			  
+			  Output:
+			  CF=Clear
+			  AH=Status
+			  BH=Bus
+			  BL=Slot
+		  </xsd:documentation>
+	  </xsd:annotation>
+    <xsd:complexType />
+  </xsd:element>
+  <xsd:element name="FindPciClassCode">
+	  <xsd:annotation>
+		  <xsd:documentation>
+			  Input:
+			  AX=FindPciClassCode
+			  ECX=Class
+			  SI=Index
+			  
+			  Output:
+			  CF=Clear
+			  AH=Status
+			  BH=Bus
+			  BL=Slot
+		  </xsd:documentation>
+	  </xsd:annotation>
+    <xsd:complexType />
+  </xsd:element>
+  <xsd:element name="PciBusOperation">
+	  <xsd:annotation>
+		  <xsd:documentation>
+			  Input:
+			  AX=PciBusOperation
+			  BL=Bus
+			  EDX=SpecialCycleData
+			  
+			  Output:
+			  CF=Clear
+			  AH=Status
+		  </xsd:documentation>
+	  </xsd:annotation>
+    <xsd:complexType />
+  </xsd:element>
+  <xsd:element name="ReadConfigurationByte">
+	  <xsd:annotation>
+		  <xsd:documentation>
+			  Input:
+			  AX=ReadConfigurationByte
+			  BH=Bus
+			  BL=Slot
+			  DI=Register
+
+			  Output:
+			  CF=Clear
+			  AH=Status
+			  CL=Value
+		  </xsd:documentation>
+	  </xsd:annotation>
+    <xsd:complexType />
+  </xsd:element>
+  <xsd:element name="ReadConfigurationShort">
+	  <xsd:annotation>
+		  <xsd:documentation>
+			  Input:
+			  AX=ReadConfigurationShort
+			  BH=Bus
+			  BL=Slot
+			  DI=Register
+
+			  Output:
+			  CF=Clear
+			  AH=Status
+			  CX=Value
+		  </xsd:documentation>
+	  </xsd:annotation>
+	  <xsd:complexType />
+  </xsd:element>
+  <xsd:element name="ReadConfigurationInteger">
+	  <xsd:annotation>
+		  <xsd:documentation>
+			  Input:
+			  AX=ReadConfigurationInteger
+			  BH=Bus
+			  BL=Slot
+			  DI=Register
+
+			  Output:
+			  CF=Clear
+			  AH=Status
+			  ECX=Value
+		  </xsd:documentation>
+	  </xsd:annotation>
+	  <xsd:complexType />
+  </xsd:element>
+  <xsd:element name="WriteConfigurationByte">
+	  <xsd:annotation>
+		  <xsd:documentation>
+			  Input:
+			  AX=WriteConfigurationByte
+			  BH=Bus
+			  BL=Slot
+			  DI=Register
+			  CL=Value
+
+			  Output:
+			  CF=Clear
+			  AH=Status
+		  </xsd:documentation>
+	  </xsd:annotation>
+	  <xsd:complexType />
+  </xsd:element>
+  <xsd:element name="WriteConfigurationShort">
+	  <xsd:annotation>
+		  <xsd:documentation>
+			  Input:
+			  AX=WriteConfigurationShort
+			  BH=Bus
+			  BL=Slot
+			  DI=Register
+			  CX=Value
+
+			  Output:
+			  CF=Clear
+			  AH=Status
+		  </xsd:documentation>
+	  </xsd:annotation>
+	  <xsd:complexType />
+  </xsd:element>
+  <xsd:element name="WriteConfigurationInteger">
+	  <xsd:annotation>
+		  <xsd:documentation>
+			  Input:
+			  AX=WriteConfigurationInteger
+			  BH=Bus
+			  BL=Slot
+			  DI=Register
+			  ECX=Value
+
+			  Output:
+			  CF=Clear
+			  AH=Status
+		  </xsd:documentation>
+	  </xsd:annotation>
+    <xsd:complexType />
+  </xsd:element>
+  <xsd:element name="GetIrqRoutingInformation">
+	  <xsd:annotation>
+		  <xsd:documentation>
+			  Input:
+			  AX=GetIrqRoutingInformation
+			  DS=BiosSegment
+			  ES=IrqRoutingTableSegment
+			  DI=IrqRoutingTableOffset
+			  
+			  Output:
+			  CF=Clear
+			  BX=IrqChannelBitMap
+			  ES=LengthSegment
+			  DI=LengthOffset
+		  </xsd:documentation>
+	  </xsd:annotation>
+    <xsd:complexType />
+  </xsd:element>
+  <xsd:element name="SetPciIrq">
+	  <xsd:annotation>
+		  <xsd:documentation>
+			  Input:
+			  AX=SetPciIrq
+			  BH=Bus
+			  BL=Slot
+			  CH=InterruptLine
+			  CL=InterruptPin
+			  DS=BiosSegment
+		  </xsd:documentation>
+	  </xsd:annotation>
+
+    <xsd:complexType />
+  </xsd:element>
+</xsd:schema>

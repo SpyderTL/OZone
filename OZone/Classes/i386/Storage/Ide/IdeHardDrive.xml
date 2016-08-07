@@ -1,0 +1,355 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="IdeHardDrive"
+	type="http://metalx.org/Storage/Ide/IdeHardDrive"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:hd="http://metalx.org/i386/Functions/HardDrive"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift">
+
+	<cls:field name="Port" type="http://metalx.org/Hexadecimal" offset="0"/>
+	<cls:field name="ControlPort" type="http://metalx.org/Hexadecimal" offset="4"/>
+	<cls:field name="Channel" type="http://metalx.org/Byte" offset="8"/>
+
+	<cls:method name="GetBlockCount" type="http://metalx.org/Integer">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<hd:GetBlockCount/>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetBlockSize" type="http://metalx.org/Integer">
+		<!--<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<hd:GetBlockSize/>-->
+
+		<cpu:CopyImmediateToAX/>
+		<int>512</int>
+
+		<int:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetModel" type="http://metalx.org/String">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<hd:GetModelNumber/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+	
+	<cls:method name="GetSerialNumber" type="http://metalx.org/String">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<hd:GetSerialNumber/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<!--<cls:method name="ReadBlocks" type="http://metalx.org/String" static="true">
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		-->
+	<!--Read Data-->
+	<!--
+		
+
+		<mm:CheckOut length="1028"/>
+
+		<cpu:PushDIToStack/>
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1024</int>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000001f0</hex>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyImmediateToCX/>
+		<int>2</int>
+		
+		<hd:ReadBlocks/>
+
+		
+
+		<cpu:PullDIFromStack/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>-->
+
+	<cls:method name="FirstBlock" type="http://metalx.org/Storage/Ide/IdeHardDriveBlockIterator">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>13</int>
+
+		<mm:CheckOut/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddress/>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIRegister/>
+		<byte>4</byte>
+
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="className" type="Absolute32"/>
+
+		<sys:GetCatalog/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:PullDIFromStack/>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="className">http://metalx.org/Storage/Ide/IdeHardDriveBlockIterator</var:string>
+	</cls:method>
+
+	<!--<cls:method name="WriteBlock" type="http://metalx.org/String" static="true">
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		-->
+	<!--Read Data-->
+	<!--
+		
+
+		<mm:CheckOut length="516"/>
+
+		<cpu:PushDIToStack/>
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>512</int>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<string>!</string>
+
+		<cpu:CopyImmediateToCX/>
+		<int>512</int>
+
+		<cpu:Repeat/>
+		<cpu:CopyALToDIAddressAndIncrementDI/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000001f0</hex>
+
+		<cpu:PullAXFromStack/>
+
+		<hd:WriteBlock/>
+
+		
+
+		<cpu:PullDIFromStack/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>-->
+
+	<!--<cls:method name="WriteBlocks" type="http://metalx.org/String" static="true">
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		-->
+	<!--Read Data-->
+	<!--
+		
+
+		<mm:CheckOut length="1028"/>
+
+		<cpu:PushDIToStack/>
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1024</int>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<string>!</string>
+
+		<cpu:CopyImmediateToCX/>
+		<int>1024</int>
+
+		<cpu:Repeat/>
+		<cpu:CopyALToDIAddressAndIncrementDI/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000001f0</hex>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyImmediateToCX/>
+		<int>2</int>
+
+		<hd:WriteBlocks/>
+
+		
+
+		<cpu:PullDIFromStack/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>-->
+
+	<cls:method name="GetReader" type="http://metalx.org/Storage/Ide/IdeHardDriveReader">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+		
+		<mm:CheckOut length="8"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIAddress/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>0</int>
+
+		<obj:Create length="8" type="http://metalx.org/Storage/Ide/IdeHardDriveReader"/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+	
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<!--<cpu:CopyImmediateToDI/>
+		<addressOf ref="deviceName" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="deviceName">IDE Hard Drive</var:string>-->
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<hd:GetModelNumber/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

@@ -1,0 +1,384 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema
+    targetNamespace="http://metalx.org/i386/Functions/PcNet"
+    elementFormDefault="qualified"
+    xmlns="http://metalx.org/i386/Functions/PcNet"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:element name="FindDevice">
+		<xsd:annotation>
+			<xsd:documentation>
+				Finds the first PcNet device on the PCI bus.
+				
+				Output:
+				DX=Port
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="CreateObject">
+		<xsd:annotation>
+			<xsd:documentation>
+				Creates a PcNetDevice object.
+				
+				Input:
+				DX=Port
+				
+				Output:
+				DI=Device
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="GetEthernetAddress">
+		<xsd:annotation>
+			<xsd:documentation>
+				Gets the unique ethernet address of the device.
+				
+				Input:
+				DX=Port
+				
+				Output:
+				DI=Address
+				
+				Modifies: DX
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="SetReceiveDescriptorRing">
+		<xsd:annotation>
+			<xsd:documentation>
+				Assigns the specifed receive descriptor ring to a PcNet device.
+				
+				Input:
+				DX=Port
+				AX=Length
+				SI=DescriptorRing
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="SetTransmitDescriptorRing">
+		<xsd:annotation>
+			<xsd:documentation>
+				Assigns the specifed transmit descriptor ring to a PcNet device.
+				
+				Input:
+				DX=Port
+				AX=Length
+				SI=DescriptorRing
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="Start">
+		<xsd:annotation>
+			<xsd:documentation>
+				Activates a PCNet device.
+				
+				Input:
+				DX=Port
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="Stop">
+		<xsd:annotation>
+			<xsd:documentation>
+				Deactivates a PCNet device.
+				
+				Input:
+				DX=Port
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="RequestTransmit">
+		<xsd:annotation>
+			<xsd:documentation>
+				Requests an immediate transmit of data in the transmit buffer.
+				
+				Input:
+				DX=Port
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="IsInterruptFlagSet">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sets the zero flag if an interrupt has been triggered by the device.
+				
+				Input:
+				DX=Port
+				
+				Output:
+				ZF=InterruptFlagSet
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="ClearInterruptFlag">
+		<xsd:annotation>
+			<xsd:documentation>
+				Clears the interrupt flag on a device.
+				
+				Input:
+				DX=Port
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="IsInitializing">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sets the zero flag if the device is initializing.
+				
+				Input:
+				DX=Port
+				
+				Output:
+				ZF=DeviceIsInitializing
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="IsPacketSent">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sets the zero flag if a packet has been sent.
+				
+				Input:
+				DX=Port
+				
+				Output:
+				ZF=PacketSent
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="ClearPacketSentFlag">
+		<xsd:annotation>
+			<xsd:documentation>
+				Clears the packet sent interrupt flag on a device.
+				
+				Input:
+				DX=Port
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="IsPacketReceived">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sets the zero flag if a packet has been received.
+				
+				Input:
+				DX=Port
+				
+				Output:
+				ZF=PacketReceived
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="ClearPacketReceivedFlag">
+		<xsd:annotation>
+			<xsd:documentation>
+				Clears the packet received interrupt flag on a device.
+				
+				Input:
+				DX=Port
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="IsMemoryErrorFlagSet">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sets the zero flag if a memory bus timeout has occurred.
+				
+				Input:
+				DX=Port
+				
+				Output:
+				ZF=MemoryErrorFlagSet
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="ClearMemoryErrorFlag">
+		<xsd:annotation>
+			<xsd:documentation>
+				Clears the memory error flag on a device.
+				
+				Input:
+				DX=Port
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="IsMissedFrameFlagSet">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sets the zero flag if a packet was dropped.
+				
+				Input:
+				DX=Port
+				
+				Output:
+				ZF=MissedFrameFlagSet
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="ClearMissedFrameFlag">
+		<xsd:annotation>
+			<xsd:documentation>
+				Clears the missed frame flag on a device.
+				
+				Input:
+				DX=Port
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="IsCollisionFlagSet">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sets the zero flag if a receive collision has occurred.
+				
+				Input:
+				DX=Port
+				
+				Output:
+				ZF=CollisionFlagSet
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="ClearCollisionFlag">
+		<xsd:annotation>
+			<xsd:documentation>
+				Clears the collision flag on a device.
+				
+				Input:
+				DX=Port
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="IsErrorFlagSet">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sets the zero flag if an error has occurred.
+				
+				Input:
+				DX=Port
+				
+				Output:
+				ZF=ErrorFlagSet
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="IsPacketAvailable">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sets the zero flag if an incoming packet is available.
+				
+				Input:
+				SI=ReceiveDescriptorRing
+				
+				Output:
+				ZF=PacketIsAvailable
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="IsBufferAvailable">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sets the zero flag if the send buffer is available.
+				
+				Input:
+				SI=TransmitDescriptorRing
+				
+				Output:
+				ZF=BufferIsAvailable
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="IsConnected">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sets the zero flag if the network cable is not connected to the device.
+				
+				Input:
+				DX=Port
+				
+				Output:
+				ZF=CableIsConnected
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="GetMissedFrameCount">
+		<xsd:annotation>
+			<xsd:documentation>
+				Returns the number of frames dropped by the device.
+				
+				Input:
+				DX=Port
+				
+				Output:
+				AX=MissedFrameCount
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="GetCollisionCount">
+		<xsd:annotation>
+			<xsd:documentation>
+				Returns the number of receive collisions detected by the device.
+				
+				Input:
+				DX=Port
+				
+				Output:
+				AX=CollisionCount
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+</xsd:schema>

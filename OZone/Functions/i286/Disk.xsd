@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema
+    targetNamespace="http://metalx.org/i286/Functions/Disk"
+    elementFormDefault="qualified"
+    xmlns="http://metalx.org/i286/Functions/Disk"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:element name="ReadSectors">
+		<xsd:annotation>
+			<xsd:documentation>
+				Reads one or more sectors into memory.
+				
+				Input:
+				AL=Count
+				CH=Track
+				CL=Sector
+				DH=Head
+				DL=Drive
+				ES=DestinationSegment
+				BX=DestinationOffset
+				
+				Output:
+				CF=Error
+				AH=Status
+				AL=Count
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="drive" type="xsd:hexBinary"/>
+			<xsd:attribute name="track" type="xsd:byte"/>
+			<xsd:attribute name="head" type="xsd:byte"/>
+			<xsd:attribute name="sector" type="xsd:byte"/>
+			<xsd:attribute name="count" type="xsd:byte"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="ConvertBlockToTrackHeadSector">
+		<xsd:annotation>
+			<xsd:documentation>
+				Calculates the track, head, and sector values for a block number.
+
+				Input:
+				AX=Block
+
+				Output:
+				CH=Track
+				DH=Head
+				CL=Sector
+				
+				Modifies: AX
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+</xsd:schema>

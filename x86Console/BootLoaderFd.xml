@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:seg="http://metalx.org/Intel/80286/Segments"
+	xmlns:dsk="http://metalx.org/i286/Functions/Disk"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:flp="http://metalx.org/Pc/Bios/Disk"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:logic="http://metalx.org/Intel/80286/Logic"
+	xmlns:sys="http://metalx.org/Pc/Bios/System">
+
+	<cpu:JumpToImmediatePointer16/>
+	<addressOf ref="start" type="Pointer16"/>
+
+	<label id="start"/>
+
+	<!--Enable A20 Gate-->
+	<cpu:CopyImmediateToAX/>
+	<sys:EnableA20Gate/>
+
+	<cpu:CallImmediate8Interrupt/>
+	<bios:SystemFunctions/>
+
+	<cpu:CopyImmediateToAX/>
+	<hex>0000</hex>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:ES-AXRegister/>
+
+	<cpu:CopyImmediateToBX/>
+	<hex>0500</hex>
+
+	<label id="readDiskInformation"/>
+	
+	<dsk:ReadSectors count="1" track="0" drive="00" head="0" sector="1"/>
+
+	<cpu:BranchToRelativeIfCarry8/>
+	<addressOf ref="readDiskInformation" type="Relative8"/>
+	<!--<addressOf ref="error" type="Relative8"/>-->
+
+	<!--<con:WriteCharacters>.</con:WriteCharacters>-->
+	
+	<cpu:CopyImmediateToSI/>
+	<hex>0500</hex>
+
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu:CopyRegisterToOperand16/>
+	<op:AX-CXRegister/>
+
+	<!--Load Programs-->
+	<label id="loadProgram"/>
+
+	<cpu:PushCXToStack/>
+	
+	<!--Read Block-->
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<!--<cpu:PushAllRegistersToStack/>
+	<con:WriteShort endLine="true"/>
+	<cpu:PullAllRegistersFromStack/>-->
+
+	<dsk:ConvertBlockToTrackHeadSector/>
+
+	<!--Read Block Count-->
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<!--<cpu:PushAllRegistersToStack/>
+	<con:WriteShort endLine="true"/>
+	<cpu:PullAllRegistersFromStack/>-->
+
+	<cpu:PushAXToStack/>
+
+	<!--Read Address-->
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<!--<cpu:PushAllRegistersToStack/>
+	<con:WriteShortHex endLine="true"/>
+	<cpu:PullAllRegistersFromStack/>-->
+	
+	<cpu:CopyRegisterToOperand16/>
+	<op:AX-BXRegister/>
+
+	<cpu:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:ES-AXRegister/>
+
+	<cpu:PullAXFromStack/>
+
+	<cpu:CopyImmediateToDL/>
+	<byte>0</byte>
+
+	<cpu:CopyImmediateToAH/>
+	<flp:ReadSectorsFromDrive/>
+
+	<label id="readProgram"/>
+	
+	<cpu:PushAXToStack/>
+	
+	<cpu:CallImmediate8Interrupt/>
+	<bios:DiskFunctions/>
+
+	<cpu:PullAXFromStack/>
+
+	<cpu:BranchToRelativeIfCarry8/>
+	<addressOf ref="readProgram" type="Relative8"/>
+	<!--<addressOf ref="error" type="Relative8"/>-->
+
+	<!--<con:WriteCharacters>.</con:WriteCharacters>-->
+
+	<cpu:PullCXFromStack/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="loadProgram" type="Relative8"/>
+
+	<!--Jump To Startup Address-->
+	<cpu:LogicFunction/>
+	<logic:JumpToPointerAtSIAddress/>
+
+	<label id="error"/>
+	<con:WriteShortHex />
+
+	<cpu:ClearInterruptFlag/>
+	<cpu:HaltProcessing/>
+</scope>

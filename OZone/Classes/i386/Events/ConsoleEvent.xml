@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="ConsoleEvent"
+	type="http://metalx.org/Events/ConsoleEvent"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
+	xmlns:pcic="http://metalx.org/Pc/Pci/Command"
+	xmlns:pcir="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:pcis="http://metalx.org/Pc/Pci/Status"
+	xmlns:pcn="http://metalx.org/Amd/PcNet/Ports"
+	xmlns:pcs="http://metalx.org/Amd/PcNet/ControlStatus"
+	xmlns:pcb="http://metalx.org/Amd/PcNet/BusConfiguration"
+	xmlns:pcnet="http://metalx.org/i386/Functions/PcNet"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:con="http://metalx.org/i386/Functions/Console"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands">
+
+	<cls:field name="Character" type="http://metalx.org/Character" offset="0"/>
+	<cls:field name="Column" type="http://metalx.org/Byte" offset="1"/>
+	<cls:field name="Row" type="http://metalx.org/Byte" offset="2"/>
+	<cls:field name="Absolute" type="http://metalx.org/Boolean" offset="3"/>
+	<cls:field name="Scroll" type="http://metalx.org/Byte" offset="4"/>
+	<cls:field name="TextColor" type="http://metalx.org/Byte" offset="5"/>
+	<cls:field name="BackgroundColor" type="http://metalx.org/Byte" offset="6"/>
+	<cls:field name="CursorVisible" type="http://metalx.org/Boolean" offset="7"/>
+	<cls:field name="EraseScreen" type="http://metalx.org/Boolean" offset="8"/>
+	<cls:field name="EraseScreenAfterCursor" type="http://metalx.org/Boolean" offset="9"/>
+	<cls:field name="EraseScreenBeforeCursor" type="http://metalx.org/Boolean" offset="10"/>
+	<cls:field name="EraseLine" type="http://metalx.org/Boolean" offset="11"/>
+	<cls:field name="EraseLineAfterCursor" type="http://metalx.org/Boolean" offset="12"/>
+	<cls:field name="EraseLineBeforeCursor" type="http://metalx.org/Boolean" offset="13"/>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="name" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="name">Console Event</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

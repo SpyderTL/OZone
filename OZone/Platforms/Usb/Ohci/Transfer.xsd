@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema targetNamespace="http://metalx.org/Usb/Ohci/Transfer" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:element name="Flags">
+		<xsd:annotation>
+			<xsd:documentation>
+				&lt;hex&gt;00&lt;/hex&gt;
+
+				ControllerDataArea			18 bits
+				PartialLastPacketBuffer		1 bit
+				Direction							2 bits	(0:Setup, 1:Out, 2:In)
+				InterruptDelayCount			3 bits	(7:No Interrupt)
+				Toggle								1 bit
+				ToggleSource					1 bit		(0:Endpoint Descriptor, 1:Transfer Descriptor)
+				ErrorCount						2 bits
+				ConditionCode					4 bits
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType />
+	</xsd:element>
+	<xsd:element name="BufferStartAddress">
+		<xsd:annotation>
+			<xsd:documentation>
+				&lt;hex&gt;04&lt;/hex&gt;
+
+				The address of the	data buffer, or zero for empty packet or transfer complete.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType />
+	</xsd:element>
+	<xsd:element name="NextTransferDescriptorAddress">
+		<xsd:annotation>
+			<xsd:documentation>
+				&lt;hex&gt;08&lt;/hex&gt;
+
+				The address of the next transfer descriptor in this list.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType />
+	</xsd:element>
+	<xsd:element name="BufferEndAddress">
+		<xsd:annotation>
+			<xsd:documentation>
+				&lt;hex&gt;0c&lt;/hex&gt;
+
+				The address of the final byte in the buffer.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType />
+	</xsd:element>
+</xsd:schema>

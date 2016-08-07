@@ -1,0 +1,35 @@
+﻿TCP/IP States
+
+Listen				(Server Only)
+SynSent				(Client Only)
+SynReceived		(Server Only)
+Established
+FinWait1
+FinWait2
+CloseWait
+Closing
+LastAck
+TimeWait
+Closed
+
+
+Machine			Activity				State					Notes
+Server				Listen				Listen				
+Client				Syn					SynSent				Seq = Random
+Server				SynAck				SynReceived		Ack = Seq + 1, Seq = Random
+Client				Ack					Established		Seq = Ack, Ack = Seq + 1
+
+
+State					Action		New State			Response
+Closed				*Open		Listen				--
+Closed				*Connect	SynSent				Syn
+Listen				Syn			SynReceived		SynAck
+SynSent				SynAck		Established		Ack
+SynReceived		Ack			Established		--
+Established		*Close		FinWait1			Fin
+Established		Fin			CloseWait			Ack
+FinWait1			Ack			FinWait2			--
+CloseWait			*Close		LastAck				Fin
+FinWait2			Fin			TimeWait			Ack
+LastAck				Ack			Closed				--
+TimeWait			*Timer		Closed				--

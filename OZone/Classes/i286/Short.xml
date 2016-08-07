@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Short"
+	type="http://metalx.org/Short"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/i286/Structures/Class"
+	xmlns:clsf="http://metalx.org/i286/Functions/Class"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:obj="http://metalx.org/i286/Functions/Object"
+	xmlns:int="http://metalx.org/i286/Functions/Short"
+	xmlns:lst="http://metalx.org/i286/Functions/List"
+	xmlns:str="http://metalx.org/i286/Functions/String"
+	xmlns:mm="http://metalx.org/i286/Functions/MemoryManager"
+	xmlns:sys="http://metalx.org/i286/Functions/System"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:ari="http://metalx.org/Intel/80286/Arithmetic"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands">
+
+	<cls:field name="Value" type="http://metalx.org/Short" offset="0"/>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<scope>
+			<obj:GetData/>
+
+			<cpu:CopyOperandToRegister16/>
+			<op:AX-SIAddress/>
+
+			<int:ToString/>
+
+			<sys:GetMemoryManager/>
+			
+			<str:CreateObject/>
+
+			<cpu:PushESToStack/>
+			<cpu:PullDSFromStack/>
+
+			<cpu:CopyRegisterToOperand16/>
+			<op:DI-SIRegister/>
+
+			<cpu:ReturnToNearCaller/>
+		</scope>
+	</cls:method>
+</cls:class>

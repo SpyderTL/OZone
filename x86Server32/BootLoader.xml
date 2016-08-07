@@ -1,0 +1,391 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:cpu32="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:op32="http://metalx.org/Intel/80386/Operands"
+	xmlns:ex="http://metalx.org/Intel/80286/ExtendedOperators"
+	xmlns:seg="http://metalx.org/Intel/80386/Segments"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:ctrl="http://metalx.org/Intel/80286/Control"
+	xmlns:gdt="http://metalx.org/Intel/80286/DescriptorTable"
+	xmlns:sys="http://metalx.org/Pc/Bios/System"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:pic="http://metalx.org/Pc/Pic/Ports"
+	xmlns:cmd="http://metalx.org/Pc/Pic/Commands"
+	xmlns:flp="http://metalx.org/i386/Functions/FloppyDrive"
+	xmlns:inc="http://metalx.org/Intel/80386/Increment">
+
+	<!--Enable A20 Gate-->
+	<cpu:CopyImmediateToAX/>
+	<sys:EnableA20Gate/>
+
+	<cpu:CallImmediate8Interrupt/>
+	<bios:SystemFunctions/>
+
+	<!--Load Global Descriptor Table-->
+	<cpu:ClearInterruptFlag/>
+
+	<cpu:ExtendedOperator/>
+	<ex:DescriptorTableFunction/>
+	<gdt:CopyImmediate16AddressToGlobalDescriptorTableRegister/>
+	<addressOf ref="globalDescriptorTablePointer" type="Absolute16"/>
+
+	<!--Switch To 32-Bit Protected Mode-->
+	<cpu:ExtendedOperator/>
+	<ex:CopyControlRegisterToRegister/>
+	<ctrl:AX-ControlRegister0/>
+
+	<cpu:OrALWithImmediate/>
+	<binary>00000001</binary>
+
+	<cpu:ExtendedOperator/>
+	<ex:CopyRegisterToControlRegister/>
+	<ctrl:AX-ControlRegister0/>
+
+	<!--Jump to segment-->
+	<cpu:JumpToImmediatePointer16/>
+	<addressOf ref="enterProtectedMode" type="Absolute16"/>
+	<hex>0008</hex>
+
+	<!--32-bit Protected Mode-->
+	<label id="enterProtectedMode"/>
+
+	<!--Setup Segment Registers-->
+	<cpu32:CopyImmediateToAX/>
+	<hex>00000010</hex>
+
+	<cpu32:CopyOperandToSegmentRegister/>
+	<seg:SS-AXRegister/>
+
+	<cpu32:CopyOperandToSegmentRegister/>
+	<seg:DS-AXRegister/>
+
+	<cpu32:CopyOperandToSegmentRegister/>
+	<seg:ES-AXRegister/>
+
+	<cpu32:CopyOperandToSegmentRegister/>
+	<seg:FS-AXRegister/>
+
+	<cpu32:CopyOperandToSegmentRegister/>
+	<seg:GS-AXRegister/>
+
+	<!--Setup Interrupt Descriptor Table-->
+	<cpu32:CopyImmediateToDI/>
+	<hex>00000500</hex>
+
+	<cpu32:CopyImmediateToCX/>
+	<int>32</int>
+
+	<label id="writeDefaultInterruptDescriptor"/>
+
+	<cpu32:CopyImmediateToSI/>
+	<addressOf ref="defaultInterruptDescriptor" type="Absolute32"/>
+
+	<cpu32:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+	<cpu32:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+
+	<cpu32:LoopToRelative8/>
+	<addressOf ref="writeDefaultInterruptDescriptor" type="Relative8"/>
+
+	<cpu32:CopyImmediateToCX/>
+	<int>8</int>
+
+	<label id="writeMasterInterruptDescriptor"/>
+
+	<cpu32:CopyImmediateToSI/>
+	<addressOf ref="masterInterruptDescriptor" type="Absolute32"/>
+
+	<cpu32:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+	<cpu32:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+
+	<cpu32:LoopToRelative8/>
+	<addressOf ref="writeMasterInterruptDescriptor" type="Relative8"/>
+
+	<cpu32:CopyImmediateToCX/>
+	<int>8</int>
+
+	<label id="writeSlaveInterruptDescriptor"/>
+
+	<cpu32:CopyImmediateToSI/>
+	<addressOf ref="slaveInterruptDescriptor" type="Absolute32"/>
+
+	<cpu32:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+	<cpu32:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+
+	<cpu32:LoopToRelative8/>
+	<addressOf ref="writeSlaveInterruptDescriptor" type="Relative8"/>
+
+	<cpu32:CopyImmediateToCX/>
+	<int>208</int>
+
+	<label id="writeDefaultInterruptDescriptor2"/>
+
+	<cpu32:CopyImmediateToSI/>
+	<addressOf ref="defaultInterruptDescriptor" type="Absolute32"/>
+
+	<cpu32:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+	<cpu32:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+
+	<cpu32:LoopToRelative8/>
+	<addressOf ref="writeDefaultInterruptDescriptor2" type="Relative8"/>
+
+	<!--Load Interrupt Descriptor Table-->
+	<cpu32:ExtendedOperator/>
+	<ex:DescriptorTableFunction/>
+	<!--<gdt32:CopyImmediateAddressToInterruptDescriptorTableRegister/>-->
+	<hex>1d</hex>
+	<addressOf ref="interruptDescriptorTablePointer" type="Absolute32"/>
+
+	<!--Reprogram Master Interrupt Controller-->
+	<cpu32:CopyImmediateToAL/>
+	<cmd:InitializeForEnvironment/>
+
+	<cpu32:WriteALToImmediate8Port/>
+	<pic:MasterCommand/>
+
+	<cpu32:CopyImmediateToAL/>
+	<hex>20</hex>
+
+	<cpu32:WriteALToImmediate8Port/>
+	<pic:MasterData/>
+
+	<cpu32:CopyImmediateToAL/>
+	<binary>00000100</binary>
+
+	<cpu32:WriteALToImmediate8Port/>
+	<pic:MasterData/>
+
+	<cpu32:CopyImmediateToAL/>
+	<cmd:Environment8086Mode/>
+
+	<cpu32:WriteALToImmediate8Port/>
+	<pic:MasterData/>
+
+	<cpu32:CopyImmediateToAL/>
+	<hex>00</hex>
+
+	<cpu32:WriteALToImmediate8Port/>
+	<pic:MasterData/>
+
+	<!--Reprogram Slave Interrupt Controller-->
+	<cpu32:CopyImmediateToAL/>
+	<cmd:InitializeForEnvironment/>
+
+	<cpu32:WriteALToImmediate8Port/>
+	<pic:SlaveCommand/>
+
+	<cpu32:CopyImmediateToAL/>
+	<hex>28</hex>
+
+	<cpu32:WriteALToImmediate8Port/>
+	<pic:SlaveData/>
+
+	<cpu32:CopyImmediateToAL/>
+	<binary>00000010</binary>
+
+	<cpu32:WriteALToImmediate8Port/>
+	<pic:SlaveData/>
+
+	<cpu32:CopyImmediateToAL/>
+	<cmd:Environment8086Mode/>
+
+	<cpu32:WriteALToImmediate8Port/>
+	<pic:SlaveData/>
+
+	<cpu32:CopyImmediateToAL/>
+	<hex>00</hex>
+
+	<cpu32:WriteALToImmediate8Port/>
+	<pic:SlaveData/>
+	
+	<!--Read Disk Information From Floppy Drive-->
+	<cpu32:CopyImmediateToDI/>
+	<hex>00007e00</hex>
+
+	<cpu32:CopyImmediateToAX/>
+	<int>2879</int>
+
+	<cpu32:CopyImmediateToCX/>
+	<int>1</int>
+
+	<cpu32:CallRelative/>
+	<addressOf ref="readBlocks" type="Relative32"/>
+
+	<cpu32:CopyOperandToRegister/>
+	<op32:AX-DIAddressPlusImmediate8/>
+	<byte>16</byte>
+
+	<cpu32:CopyOperandToRegister/>
+	<op32:CX-DIAddressPlusImmediate8/>
+	<byte>20</byte>
+
+	<cpu32:LogicFunction/>
+	<logic:PushDIAddressPlusImmediate8/>
+	<byte>52</byte>
+	
+	<cpu32:CallRelative/>
+	<addressOf ref="readBlocks" type="Relative32"/>
+
+	<!--Read Programs From Floppy Drive-->
+	<cpu32:CopyRegisterToOperand/>
+	<op32:DI-SIRegister/>
+
+	<cpu32:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu32:CopyRegisterToOperand/>
+	<op32:AX-CXRegister/>
+
+	<label id="forEachProgram"/>
+
+	<cpu32:PushCXToStack/>
+
+	<cpu32:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu32:PushAXToStack/>
+
+	<cpu32:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu32:CopyRegisterToOperand/>
+	<op32:AX-CXRegister/>
+
+	<cpu32:CopySIAddressToAXAndIncrementSI/>
+
+	<cpu32:CopyRegisterToOperand/>
+	<op32:AX-DIRegister/>
+
+	<cpu32:PullAXFromStack/>
+
+	<cpu32:CallRelative/>
+	<addressOf ref="readBlocks" type="Relative32"/>
+
+	<cpu32:PullCXFromStack/>
+
+	<cpu32:LoopToRelative8/>
+	<addressOf ref="forEachProgram" type="Relative8"/>
+
+	<!--Restore Start Address-->
+	<cpu:PullSIFromStack/>
+	
+	<!--Enable Interrupts-->
+	<cpu32:SetInterruptFlag/>
+	
+	<cpu32:LogicFunction/>
+	<logic:JumpToSIRegister/>
+
+	<!--Global Descriptor Table Pointer-->
+	<label id="globalDescriptorTablePointer"/>
+	<hex>0017</hex>
+	<addressOf ref="globalDescriptorTable" type="Absolute16"/>
+
+	<!--Global Descriptor Table-->
+	<label id="globalDescriptorTable"/>
+	<!--Null Descriptor (0000)-->
+
+	<!--Size-->
+	<hex>0000</hex>
+	<!--Base (Low)-->
+	<hex>0000</hex>
+	<!--Base (Mid)-->
+	<hex>00</hex>
+	<!--Access-->
+	<binary>00000000</binary>
+	<!--Flags / Size (High)-->
+	<binary>00000000</binary>
+	<!--Base (High)-->
+	<hex>00</hex>
+
+	<!--Code Descriptor (0008)-->
+
+	<!--Size-->
+	<hex>ffff</hex>
+	<!--Base (Low)-->
+	<hex>0000</hex>
+	<!--Base (Mid)-->
+	<hex>00</hex>
+	<!--Access-->
+	<binary>10011010</binary>
+	<!--Flags / Size (High)-->
+	<binary>11001111</binary>
+	<!--Base (High)-->
+	<hex>00</hex>
+
+	<!--Data Descriptor (0010)-->
+
+	<!--Size-->
+	<hex>ffff</hex>
+	<!--Base (Low)-->
+	<hex>0000</hex>
+	<!--Base (Mid)-->
+	<hex>00</hex>
+	<!--Access-->
+	<binary>10010010</binary>
+	<!--Flags / Size (High)-->
+	<binary>11001111</binary>
+	<!--Base (High)-->
+	<hex>00</hex>
+
+	<!--Interrupt Descriptor Table Pointer-->
+	<label id="interruptDescriptorTablePointer"/>
+	<short>2048</short>
+	<hex>00000500</hex>
+
+	<!--Default Interrupt Descriptor-->
+	<label id="defaultInterruptDescriptor"/>
+
+	<!--Base (Low)-->
+	<hex>0d00</hex>
+	<!--Segment-->
+	<hex>0008</hex>
+	<!--Reserved-->
+	<hex>00</hex>
+	<!--Attributes-->
+	<binary>10001110</binary>
+	<!--Base (High)-->
+	<hex>0000</hex>
+
+	<!--Master Interrupt Descriptor-->
+	<label id="masterInterruptDescriptor"/>
+
+	<!--Base (Low)-->
+	<hex>0e00</hex>
+	<!--Segment-->
+	<hex>0008</hex>
+	<!--Reserved-->
+	<hex>00</hex>
+	<!--Attributes-->
+	<binary>10001110</binary>
+	<!--Base (High)-->
+	<hex>0000</hex>
+
+	<!--Slave Interrupt Descriptor-->
+	<label id="slaveInterruptDescriptor"/>
+
+	<!--Base (Low)-->
+	<hex>0f00</hex>
+	<!--Segment-->
+	<hex>0008</hex>
+	<!--Reserved-->
+	<hex>00</hex>
+	<!--Attributes-->
+	<binary>10001110</binary>
+	<!--Base (High)-->
+	<hex>0000</hex>
+
+	<!--Functions-->
+	<label id="readBlocks"/>
+
+	<cpu32:PushSIToStack/>
+	<cpu32:PushDIToStack/>
+
+	<flp:ReadBlocks/>
+
+	<cpu32:PullDIFromStack/>
+	<cpu32:PullSIFromStack/>
+
+	<cpu32:ReturnToNearCaller/>
+
+</scope>

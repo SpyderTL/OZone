@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Mouse"
+	static="true"
+	type="http://metalx.org/Mouse"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/i286/Structures/Class"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:mp="http://metalx.org/Pc/Mouse/Ports"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands">
+
+	<cls:method name="Test" static="true">
+		<scope>
+			<cpu:CopyImmediateToAL/>
+			<hex>20</hex>
+
+			<cpu:WriteALToImmediate8Port/>
+			<hex>64</hex>
+
+			<cpu:ReadFromImmediate8PortToAL/>
+			<hex>60</hex>
+
+			<!--<cpu:OrALWithImmediate/>
+		<binary>00000010</binary>-->
+
+			<cpu:AndALWithImmediate/>
+			<binary>11011111</binary>
+
+			<cpu:PushAXToStack/>
+
+			<cpu:CopyImmediateToAL/>
+			<hex>60</hex>
+
+			<cpu:WriteALToImmediate8Port/>
+			<hex>64</hex>
+
+			<cpu:PullAXFromStack/>
+
+			<cpu:WriteALToImmediate8Port/>
+			<hex>60</hex>
+
+			<cpu:CopyImmediateToAL/>
+			<hex>a8</hex>
+
+			<cpu:WriteALToImmediate8Port/>
+			<hex>64</hex>
+
+			<cpu:CopyImmediateToAL/>
+			<hex>d4</hex>
+
+			<cpu:WriteALToImmediate8Port/>
+			<hex>64</hex>
+
+			<cpu:CopyImmediateToAL/>
+			<hex>f4</hex>
+
+			<cpu:WriteALToImmediate8Port/>
+			<hex>60</hex>
+
+			<!--Wait for mouse event-->
+			<cpu:CopyImmediateToAH/>
+			<byte>0</byte>
+
+			<label id="waitForMouseEvent"/>
+
+			<cpu:ReadFromImmediate8PortToAL/>
+			<hex>64</hex>
+
+			<cpu:AndALWithImmediate/>
+			<binary>00000001</binary>
+
+			<cpu:BranchToRelativeIfZero8/>
+			<addressOf ref="waitForMouseEvent" type="Relative8"/>
+
+			<cpu:ReadFromImmediate8PortToAL/>
+			<hex>60</hex>
+
+			<cpu:PushAllRegistersToStack/>
+			<con:WriteShort endLine="true"/>
+			<cpu:PullAllRegistersFromStack/>
+
+			<cpu:JumpToRelative8/>
+			<addressOf ref="waitForMouseEvent" type="Relative8"/>
+
+			<cpu:ReturnToNearCaller/>
+		</scope>
+	</cls:method>
+</cls:class>

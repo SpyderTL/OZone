@@ -1,0 +1,181 @@
+		.386
+		option	segment:use16, proc:private
+
+
+		ifndef	$process_a
+$process_a	=	0
+		echo	process.a
+
+		include	dcls.a
+
+ucrlib		segment	para public 'ucrlib'
+
+
+; Timer (sleep) related constants:
+; To create arbitrary time delays, multiply the delay you want in seconds
+; by the following text equate.  NOTE: it is very important that the number
+; of seconds you desire be the left term in the product to reduce the round
+; off error (if this is not the case, you may as well multiply your value
+; by the "TicksPerSec" constant above).
+;
+; E.g., to delay for 10 seconds, do the following:
+;
+;		mov eax, 10*Tick
+;		sleep
+
+Tick		textequ	<1193180/65535>
+
+; Note: the frequency of the timer interrupt is 1,193,180/65,535 cycles/sec.
+
+TicksPerSec	=	Tick		;18
+TicksPerMin	=	1092		;60 * Tick
+TicksPerHour	=	65544		;60 * 60 * Tick
+TicksPerDay	=	1573064		;24 * 60 * 60 * Tick	
+TicksPerWeek	=	11011448	;7 * 24 * 60 * 60 * Tick
+
+
+
+
+
+; Process data structures:
+;
+; Process control block.
+; NextProc field must be the first field in this structure since the dispatcher
+; code assumes that it is at offset zero from a pointer to this structure.
+; The regsp and regss fields appear next since they are the
+; fields most often initialized in the structure.
+; regip and regcs follow the regss entry since, for coroutines, they
+; need to be initialized as well.  Most of the remaining fields do not
+; normally need initialization.
+
+pcb		struc
+regsssp		dword	?
+regip		word	?
+regcs		word	?
+NextProc	dword	?
+
+regds		word	?
+reges		word	?
+regfs		word	?
+reggs		word	?
+
+regeax		dword	?
+regebx		dword	?
+regecx		dword	?
+regedx		dword	?
+regesi		dword	?
+regedi		dword	?
+regebp		dword	?
+
+regflags	word	?
+
+PrcsID		word	?
+StartingTime	dword	?
+StartingDate	dword	?
+CPUTime		dword	?
+pcb		ends
+
+
+sema4		struc
+SemaCnt		word	1
+smaphrLst	dword	?
+endsmaphrlst	dword	?
+sema4		ends
+
+
+
+		DclType	semaphore, sema4, <{}>
+		DclType	PCBlock, PCB, <{}>
+
+
+
+		xtrn	PrcsInit
+		xtrn	PrcsQuit
+		xtrn	Kill
+		xtrn	Die
+		xtrn	Sleep
+		xtrn	YieldCPU
+		xtrn	Fork,CS,Stk
+		xtrn	Fork
+		
+		xtrn	CoInit
+		xtrn	CoCall
+		xtrn	CoCallCS
+
+		xtrn	WaitSemaph,CS,Stk
+		xtrn	WaitSemaph
+		xtrn	RlsSemaPh,CS,Stk
+		xtrn	RlsSemaPh
+
+
+
+
+ucrlib		ends
+
+
+
+; CIN/COUT macros
+
+$$Semaphore	=	type sema4
+
+$$PV_Semaphore	macro	Sema
+		print	"Semaphore("
+		mov	ax, Sema.Sema4.SemaCnt
+		puti
+		putc	")"
+		endm
+
+
+$$PP_Semaphore	macro	Sema
+		print	"Semaphore("
+		les	di, Sema
+		mov	ax, ES:[DI].Sema4.SemaCnt
+		puti
+		putc	")"
+		endm
+
+$$GV_Semaphore	macro	Sema
+		echo	Error- Cannot input a semaphore value!
+		err
+		endm
+
+$$GP_Sempahore	macro	Sema
+		$$GV_Semaphore Sema
+		endm
+
+
+
+
+
+$$PCBLock	=	type PCB
+
+$$PV_PCBlock	macro	Process
+		print	"Process("
+		mov	ax, Process.PrcsID
+		puti
+		putc	")"
+		endm
+
+
+$$PP_PCBlock	macro	Process
+		print	"Process("
+		les	di, Process
+		mov	ax, ES:[DI].PCB.PrcsID
+		puti
+		putc	")"
+		endm
+
+$$GV_PCBlock	macro	Process
+		echo	Error- Cannot input a PCB value!
+		err
+		endm
+
+$$GP_PCBlock	macro	Process
+		$$GV_PCBlock Process
+		endm
+
+
+		endif	;process_a
+
+
+

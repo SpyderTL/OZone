@@ -1,0 +1,211 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Debug"
+	type="http://metalx.org/Debug"
+	static="true"
+	xmlns="http://metalx.org/Program"
+	xmlns:obj="http://metalx.org/i286/Functions/Object"
+	xmlns:cls="http://metalx.org/i286/Structures/Class"
+	xmlns:clsf="http://metalx.org/i286/Functions/Class"
+	xmlns:addr="http://metalx.org/i286/Functions/Address"
+	xmlns:hex="http://metalx.org/i286/Functions/Hexadecimal"
+	xmlns:str="http://metalx.org/i286/Functions/String"
+	xmlns:lst="http://metalx.org/i286/Functions/List"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:vid="http://metalx.org/Pc/Bios/Video"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:sys="http://metalx.org/i286/Functions/System"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands">
+
+	<cls:method name="GetInterruptMask" type="http://metalx.org/Hexadecimal" static="true">
+		<cpu:CopyImmediateToDX/>
+		<hex>0021</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:CopyImmediateToAH/>
+		<byte>0</byte>
+
+		<sys:GetMemoryManager/>
+
+		<hex:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetEventHandlers" type="http://metalx.org/List" static="true">
+		<cpu:CopyImmediateToCX/>
+		<short>20</short>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:CX-AXRegister/>
+
+		<sys:GetMemoryManager/>
+
+		<lst:Create/>
+
+		<cpu:PushESToStack/>
+		<cpu:PullDXFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-BXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<short>0</short>
+
+		<cpu:CopyImmediateToDI/>
+		<short>0</short>
+
+		<label id="getHandler"/>
+
+		<cpu:PushCXToStack/>
+
+		<sys:GetMemoryManager/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:PushAXToStack/>
+		<cpu:PushBXToStack/>
+		<cpu:PushDXToStack/>
+
+		<cpu:PushImmediateToStack16/>
+		<hex>0000</hex>
+		<cpu:PullESFromStack/>
+
+		<addr:CreatePointer/>
+
+		<cpu:PullDXFromStack/>
+		<cpu:PullBXFromStack/>
+		<cpu:PullAXFromStack/>
+
+		<cpu:PushDXToStack/>
+		<cpu:PullDSFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:BX-SIRegister/>
+
+		<lst:SetItem/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:IncrementDI/>
+		<cpu:IncrementDI/>
+		<cpu:IncrementDI/>
+		<cpu:IncrementDI/>
+		<cpu:IncrementAX/>
+
+		<cpu:PullCXFromStack/>
+
+		<cpu:DecrementCX/>
+
+		<cpu:BranchToRelativeIfZero8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<cpu:JumpToRelative16/>
+		<addressOf ref="getHandler" type="Relative16"/>
+
+		<label id="createObject"/>
+
+		<cpu:PushDXToStack/>
+		<cpu:PullESFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:BX-DIRegister/>
+
+		<sys:GetMemoryManager/>
+
+		<lst:CreateObject/>
+
+		<cpu:PushESToStack/>
+		<cpu:PullDSFromStack/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<!--<obj:GetType/>
+		
+		<cpu:PushImmediateToStack16/>
+		<hex>1000</hex>
+		<cpu:PullDSFromStack/>-->
+		
+		<!--<cpu:PushDSToStack/>
+		<cpu:PullAXFromStack/>
+		<con:WriteShortHex digits="4"/>-->
+		<!--<clsf:GetName/>
+		<con:WriteString/>
+
+		<cpu:ClearInterruptFlag/>
+		<cpu:HaltProcessing/>-->
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="TestEventHandler" static="true">
+		<cpu:CopyImmediateToAX/>
+		<addressOf ref="eventHandler" type="Absolute16"/>
+
+		<cpu:CopyAXToAbsoluteMemory/>
+		<hex>0020</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<addressOf ref="eventHandler" type="Segment16"/>
+
+		<cpu:CopyAXToAbsoluteMemory/>
+		<hex>0022</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="eventHandler"/>
+
+		<cpu:PushAXToStack/>
+		<con:WriteCharacters>.</con:WriteCharacters>
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>20</hex>
+
+		<cpu:WriteALToImmediate8Port/>
+		<hex>20</hex>
+
+		<cpu:ReturnFromInterrupt/>
+	</cls:method>
+
+	<cls:method name="InstallErrorHandlers" static="true">
+		<cpu:CopyImmediateToAX/>
+		<addressOf ref="errorHandler" type="Absolute16"/>
+
+		<cpu:CopyAXToAbsoluteMemory/>
+		<hex>0018</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<addressOf ref="errorHandler" type="Segment16"/>
+
+		<cpu:CopyAXToAbsoluteMemory/>
+		<hex>001a</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="errorHandler"/>
+
+		<con:WriteCharacters endLine="true">Invalid Instruction</con:WriteCharacters>
+
+		<cpu:ClearInterruptFlag/>
+		<cpu:HaltProcessing/>
+
+		<cpu:ReturnFromInterrupt/>
+	</cls:method>
+
+	<cls:method name="TestInvalidInstruction" static="true">
+		<hex>0F</hex>
+		<hex>0B</hex>
+		<hex>0F</hex>
+		<hex>B9</hex>
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

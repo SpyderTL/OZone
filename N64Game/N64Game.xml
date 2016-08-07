@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope xmlns="http://metalx.org/Program" xmlns:cpu="http://metalx.org/Mips/Mips3/Instructions">
+	<!--Setup Video Interface-->
+	<cpu:ImmediateMath Operation="CopyToHighRegister32" Value="42048" Destination="1"/>
+	
+	<cpu:ImmediateMath Operation="CopyToHighRegister32" Value="16" Destination="3"/>
+	<cpu:ImmediateMath Operation="Or32" Register="3" Value="12290" Destination="3"/>
+	<cpu:Memory Operation="CopyRegisterToMemory32" Register="3" AddressRegister="1"/>
+	
+	<cpu:ImmediateMath Operation="CopyToHighRegister32" Value="40992" Destination="3"/>
+	<cpu:Memory Operation="CopyRegisterToMemory32" Register="3" AddressRegister="1" Offset="4"/>
+	
+	<cpu:ImmediateMath Operation="Or32" Value="320" Destination="3"/>
+	<cpu:Memory Operation="CopyRegisterToMemory32" Register="3" AddressRegister="1" Offset="8"/>
+
+	<cpu:ImmediateMath Operation="CopyToHighRegister32" Value="997" Destination="3"/>
+	<cpu:ImmediateMath Operation="Or32" Register="3" Value="8761" Destination="3"/>
+	<cpu:Memory Operation="CopyRegisterToMemory32" Register="3" AddressRegister="1" Offset="20"/>
+
+	<cpu:ImmediateMath Operation="Or32" Value="525" Destination="3"/>
+	<cpu:Memory Operation="CopyRegisterToMemory32" Register="3" AddressRegister="1" Offset="24"/>
+
+	<cpu:ImmediateMath Operation="Or32" Value="3093" Destination="3"/>
+	<cpu:Memory Operation="CopyRegisterToMemory32" Register="3" AddressRegister="1" Offset="28"/>
+
+	<cpu:ImmediateMath Operation="CopyToHighRegister32" Value="3093" Destination="3"/>
+	<cpu:ImmediateMath Operation="Or32" Register="3" Value="3093" Destination="3"/>
+	<cpu:Memory Operation="CopyRegisterToMemory32" Register="3" AddressRegister="1" Offset="32"/>
+
+	<cpu:ImmediateMath Operation="CopyToHighRegister32" Value="108" Destination="3"/>
+	<cpu:ImmediateMath Operation="Or32" Register="3" Value="748" Destination="3"/>
+	<cpu:Memory Operation="CopyRegisterToMemory32" Register="3" AddressRegister="1" Offset="36"/>
+
+	<cpu:ImmediateMath Operation="CopyToHighRegister32" Value="37" Destination="3"/>
+	<cpu:ImmediateMath Operation="Or32" Register="3" Value="511" Destination="3"/>
+	<cpu:Memory Operation="CopyRegisterToMemory32" Register="3" AddressRegister="1" Offset="40"/>
+
+	<cpu:ImmediateMath Operation="CopyToHighRegister32" Value="14" Destination="3"/>
+	<cpu:ImmediateMath Operation="Or32" Register="3" Value="516" Destination="3"/>
+	<cpu:Memory Operation="CopyRegisterToMemory32" Register="3" AddressRegister="1" Offset="44"/>
+
+	<cpu:ImmediateMath Operation="Or32" Value="512" Destination="3"/>
+	<cpu:Memory Operation="CopyRegisterToMemory32" Register="3" AddressRegister="1" Offset="48"/>
+
+	<cpu:ImmediateMath Operation="Or32" Value="1028" Destination="3"/>
+	<cpu:Memory Operation="CopyRegisterToMemory32" Register="3" AddressRegister="1" Offset="52"/>
+
+	<!--Fill Screen-->
+	<cpu:ImmediateMath Operation="CopyToHighRegister32" Value="40992" Destination="1"/>
+	
+	<cpu:ImmediateMath Operation="Or32" Value="63489" Destination="3"/>
+
+	<cpu:ImmediateMath Operation="CopyToHighRegister32" Value="40994" Destination="2"/>
+	<cpu:ImmediateMath Operation="Add32" Register="2" Value="22528" Destination="2"/>
+
+	<label id="fillScreen"/>
+	
+	<cpu:Memory Operation="CopyRegisterToMemory16" Register="3" AddressRegister="1" Offset="0"/>
+
+	<cpu:ImmediateMath Operation="Add32" Register="1" Value="2" Destination="1"/>
+	
+	<cpu:CompareBranch Operation="NotEqualNoDelay" Register1="1" Register2="2" ref="fillScreen"/>
+	<cpu:NoOperation/>
+	
+	<label id="wait"/>
+
+	<cpu:CompareBranch Operation="EqualNoDelay" Register1="0" Register2="0" ref="wait"/>
+	<cpu:NoOperation/>
+</scope>

@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema
+    targetNamespace="http://metalx.org/i386/Functions/FloppyDrive"
+    elementFormDefault="qualified"
+    xmlns="http://metalx.org/i386/Functions/FloppyDrive"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:element name="GetDrives">
+		<xsd:annotation>
+			<xsd:documentation>
+				Reads the installed drive types from CMOS.
+
+				Output:
+				AL=DriveTypes
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="ResetController">
+		<xsd:annotation>
+			<xsd:documentation>
+				Resets the specified floppy drive controller.
+
+				Input:
+				DX=Port
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="ReadBlock">
+		<xsd:annotation>
+			<xsd:documentation>
+				Reads a single block from a floppy drive.
+
+				Input:
+				AX=Block
+				BL=Channel
+				DX=Port
+				DI=Address
+
+				Modifies: AX BX CX DX SI DI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="ReadBlocks">
+		<xsd:annotation>
+			<xsd:documentation>
+				Reads multiple blocks from a floppy drive.
+
+				Input:
+				DI=Address
+				AX=FirstBlock
+				CX=BlockCount
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="WriteBlock">
+		<xsd:annotation>
+			<xsd:documentation>
+				Writes a single block to a floppy drive.
+
+				Input:
+				SI=Address
+				AX=Block
+
+				Modifies: SI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+	<xsd:element name="WriteBlocks">
+		<xsd:annotation>
+			<xsd:documentation>
+				Writes multiple blocks to a floppy drive.
+
+				Input:
+				SI=Address
+				AX=FirstBlock
+				CX=BlockCount
+				
+				Modifies: SI
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+
+</xsd:schema>
