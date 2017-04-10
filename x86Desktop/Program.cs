@@ -26,7 +26,7 @@ namespace x86Desktop
 			{
 				var filename = program.OutputPath;
 
-				if(program.Address == MemoryAddress.Zero)
+				if(program.Address == null)
 					image.Add(ProgramReader.Read(XDocument.Load(filename)));
 				else if(program.Block == null)
 					image.Add(ProgramReader.Read(XDocument.Load(filename)), program.Address);

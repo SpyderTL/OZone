@@ -1,0 +1,282 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:kernel="http://metalx.org/Commodore64/Kernel"
+	xmlns:vid="http://metalx.org/Commodore64/Video"
+	xmlns:sys="http://metalx.org/Commodore64/System"
+	xmlns:key="http://metalx.org/Commodore64/Keyboard"
+	xmlns:mm="http://metalx.org/C64/Functions/MemoryManager"
+	xmlns:str="http://metalx.org/C64/Functions/String"
+	xmlns:cls="http://metalx.org/C64/Functions/Class">
+	
+	<!--Define Memory Address Labels-->	
+	<kernel:InitializeIODevices id="initializeIoDevices"/>
+	<kernel:InitializeMemoryPointers id="initializeMemoryPointers"/>
+	<kernel:RestoreIOVectors id="restoreIoVectors"/>
+	<kernel:InitializeScreenAndKeyboard id="initializeScreenAndKeyboard"/>
+	<vid:BorderColor id="borderColor"/>
+	<vid:BackgroundColor0 id="backgroundColor"/>
+	<sys:CharacterColor id="characterColor"/>
+	<vid:CharacterSettings id="characterSettings"/>
+	<sys:CpuRomBankControl id="romControl"/>
+	
+	<!--<label id="reset"/>-->
+	
+	<!--Disable BASIC ROM-->
+	<!--<cpu:CopyImmediate8ToAccumulator/>
+	<hex>36</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<addressOf ref="romControl" type="Absolute16Low8"/>-->
+
+	<!--Initialize System-->	
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="initializeIoDevices" type="Absolute16"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="initializeMemoryPointers" type="Absolute16"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="restoreIoVectors" type="Absolute16"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="initializeScreenAndKeyboard" type="Absolute16"/>
+	
+	<!--Enable Interrupts-->
+	<cpu:ClearInterruptDisableFlag/>
+
+	<!--Set Screen Color-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<byte>0</byte>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="borderColor" type="Absolute16"/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="backgroundColor" type="Absolute16"/>
+
+	<!--Set Text Color-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>ff</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="characterColor" type="Absolute16"/>
+
+	<!--Set Lower Case Mode-->
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<addressOf ref="characterSettings" type="Absolute16"/>
+
+	<cpu:OrAccumulatorWithImmediate8/>
+	<byte>2</byte>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="characterSettings" type="Absolute16"/>
+
+	<!--Turn On Cursor Blink Mode-->
+	<!--<cpu:CopyImmediate8ToAccumulator/>
+	<byte>0</byte>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>00cc</hex>-->
+
+	<!--Setup Memory Manager-->
+	<label id="memory" segment="0000" offset="c100"/>
+	<label id="memoryManager" segment="0000" offset="00FB"/>
+	<label id="selectedPointer" segment="0000" offset="00FD"/>
+	<label id="inputBuffer" segment="0000" offset="C000"/>
+
+	<mm:Reset memory="memory" memoryManager="memoryManager"/>
+	
+	<str:Create memoryManager="memoryManager" pointer="inputBuffer"/>
+
+	<!--Show Prompt-->
+	<kernel:WriteCharacterToScreen id="writeCharacter"/>
+	<kernel:GetCharacterFromKeyboard id="readCharacter"/>
+	
+	<label id="showPrompt"/>
+	<cpu:CopyImmediate8ToAccumulator/>
+	<string>&gt;</string>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="writeCharacter" type="Absolute16"/>
+
+	<!--Wait For Keypress-->
+	<label id="waitForKeypress" />
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="readCharacter" type="Absolute16"/>
+
+	<cpu:BranchToRelative8IfZero/>
+	<addressOf ref="waitForKeypress" type="Relative8"/>
+
+	<!--Check For Enter Key-->
+	<cpu:CompareAccumulatorToImmediate8/>
+	<key:Enter/>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="enterKeyPressed" type="Relative8"/>
+
+	<!--Check For Escape Key-->
+	<cpu:CompareAccumulatorToImmediate8/>
+	<key:Escape/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="escapeKeyNotPressed" type="Relative8"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="escapeKeyPressed" type="Absolute16"/>
+
+	<label id="escapeKeyNotPressed"/>
+
+	<!--Check For Backspace Key-->
+	<cpu:CompareAccumulatorToImmediate8/>
+	<key:Backspace/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="backspaceKeyNotPressed" type="Relative8"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="backspaceKeyPressed" type="Absolute16"/>
+
+	<label id="backspaceKeyNotPressed"/>
+
+	<!--Check Buffer Length-->
+	<cpu:PushAccumulatorToStack />
+	<str:GetLength pointer="inputBuffer"/>
+	<cpu:CompareAccumulatorToImmediate8/>
+	<byte>78</byte>
+	<cpu:BranchToRelative8IfEqual />
+	<addressOf ref="waitForKeypress" type="Relative8"/>
+	<cpu:PullAccumulatorFromStack />
+
+	<!--Write Character To Screen-->
+	<cpu:CallImmediate16Address />
+	<addressOf ref="writeCharacter" type="Absolute16"/>
+
+	<!--Add Character To Buffer-->
+	<str:AppendCharacter pointer="inputBuffer"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="waitForKeypress" type="Absolute16"/>
+
+	<!--Handle Enter Key-->
+	<label id="enterKeyPressed"/>
+
+	<cls:FindMethod class="systemClassPointer" methodName="inputBuffer"/>
+	
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<mm:SelectedPointer/>
+
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="executeMethod" type="Relative8"/>
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>FE</hex>
+	
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="executeMethod" type="Relative8"/>
+	
+	<cpu:CopyImmediate8ToAccumulator />
+	<key:Enter />
+	
+	<cpu:CallImmediate16Address />
+	<addressOf ref="writeCharacter" type="Absolute16"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="clearInputBuffer" type="Absolute16"/>
+	
+	<!--Execute Method-->
+	<label id="executeMethod"/>
+		
+	<mm:SelectReference/>
+	<cpu:JumpToImmediate8PointerAddress/>
+	<hex>00FD</hex>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="clearInputBuffer" type="Absolute16"/>
+	
+	<!--Handle Escape Key-->
+	<label id="escapeKeyPressed"/>
+
+	<cpu:CopyImmediate8ToAccumulator />
+	<key:Enter />
+
+	<cpu:CallImmediate16Address />
+	<addressOf ref="writeCharacter" type="Absolute16"/>
+
+	<!--Clear Input Buffer-->
+	<label id="clearInputBuffer"/>
+	<str:Clear pointer="inputBuffer"/>
+
+	<cpu:JumpToImmediate16Address />
+	<addressOf ref="showPrompt" type="Absolute16"/>
+	
+	<!--Handle Backspace Key-->
+	<label id="backspaceKeyPressed"/>
+	<str:GetLength pointer="inputBuffer"/>
+
+	<cpu:BranchToRelative8IfZero />
+	<addressOf ref="bufferEmpty" type="Relative8"/>
+
+	<str:TrimLastCharacter pointer="inputBuffer"/>
+	
+	<cpu:CopyImmediate8ToAccumulator />
+	<key:Backspace/>
+	
+	<cpu:CallImmediate16Address />
+	<addressOf ref="writeCharacter" type="Absolute16"/>
+
+	<label id="bufferEmpty"/>
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="waitForKeypress" type="Absolute16"/>
+
+	<label id="systemClassPointer"/>
+	<addressOf ref="systemClass" type="Absolute16"/>
+	
+	<!--Add System Class-->
+	<label id="systemClass"/>
+	<addressOf ref="nameField" type="Absolute16"/>
+	<addressOf ref="namespaceField" type="Absolute16"/>
+	
+	<!--Method Count-->
+	<byte>1</byte>
+
+	<addressOf ref="resetMethod" type="Absolute16"/>
+
+	<label id="nameField"/>
+	<byte>6</byte>
+	<string>System</string>
+
+	<label id="namespaceField"/>
+	<byte>5</byte>
+	<string>OZone</string>
+
+	<!--Methods-->
+	<kernel:Reset id="reset"/>
+	
+	<label id="resetMethod"/>
+	<addressOf ref="methodName" type="Absolute16"/>
+	<addressOf ref="method" type="Absolute16"/>
+	
+	<label id="method"/>
+	
+	<!--Enable BASIC ROM-->
+	<!--<cpu:CopyImmediate8ToAccumulator/>
+	<hex>37</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<addressOf ref="romControl" type="Absolute16Low8"/>-->
+	
+	<!--<cpu:JumpToIndirectMemory/>-->
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="reset" type="Absolute16"/>
+
+	<!--<cpu:JumpToImmediate16Address/>
+	<addressOf ref="reset" type="Absolute16"/>-->
+
+	<label id="methodName" />
+	<byte>5</byte>
+	<string>reset</string>
+</scope>

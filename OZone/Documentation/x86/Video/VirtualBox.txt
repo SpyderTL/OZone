@@ -1,2 +1,78 @@
 ﻿InnoTek Systemberatung GmbH VirtualBox Graphics Adapter
 80EE:BEEF
+
+VirtualBox Guest Services
+80EE:CAFE
+
+BAR0 Memory Mapped IO
+	00		Send Packet Address
+
+BAR1 Virtual Machine State
+	Unknown				12
+	IRQ Mask				4
+
+I/O Port 0x0504 VM Log File Write
+
+Packet Header		24
+	Size						4
+	Version					4					// 0x00010001
+	Request Type			4
+	Return Code			4
+	Reserved				8
+
+Guest Info Packet
+	Size						4					// 32
+	Version					4					// 0x00010001
+	Request Type			4					// 50
+	Return Code			4
+	Reserved				8
+	Version					4					// 0x00010003
+	OS Type				4					// 0 - Unknown
+
+Set Guest Capabilities
+	Size						4					// 32
+	Version					4					// 0x00010001
+	Request Type			4					// 55
+	Return Code			4
+	Reserved				8
+	Capabilities			4					// 4 - Graphics
+
+Get Display Change
+	Size						4					// 32
+	Version					4					// 0x00010001
+	Request Type			4					// 51
+	Return Code			4
+	Reserved				8
+	X							4
+	Y							4
+	Bits Per Pixel			4
+	Acknowledge			4					// 1
+
+Acknowledge Events
+	Size						4					// 32
+	Version					4					// 0x00010001
+	Request Type			4					// 41
+	Return Code			4
+	Reserved				8
+	Events					4
+
+Get Mouse
+	Size						4					// 36
+	Version					4					// 0x00010001
+	Request Type			4					// 1
+	Return Code			4
+	Reserved				8
+	Features				4					// 1 - Absolute Mouse, 16 - Absolute Position
+	X							4					// 0x0000 - 0xffff
+	Y							4					// 0x0000 - 0xffff
+
+Set Mouse
+	Size						4					// 36
+	Version					4					// 0x00010001
+	Request Type			4					// 2
+	Return Code			4
+	Reserved				8
+	Features				4					// 1 - Absolute Mouse, 16 - Absolute Position
+	X							4					// 0x0000 - 0xffff
+	Y							4					// 0x0000 - 0xffff
+

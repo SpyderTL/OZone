@@ -24,7 +24,7 @@ namespace x86Console64
 
 				try
 				{
-					if(program.Address == MemoryAddress.Zero)
+					if(program.Address == null)
 						image.Add(ProgramReader.Read(XDocument.Load(filename, LoadOptions.SetLineInfo)));
 					else if(program.Block == null)
 						image.Add(ProgramReader.Read(XDocument.Load(filename, LoadOptions.SetLineInfo)), program.Address);

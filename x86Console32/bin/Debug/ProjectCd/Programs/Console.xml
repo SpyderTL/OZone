@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<scope xmlns="http://metalx.org/Program" xmlns:var="http://metalx.org/Variable" xmlns:cpu="http://metalx.org/Intel/80386/Operators" xmlns:op="http://metalx.org/Intel/80386/Operands" xmlns:math="http://metalx.org/Intel/80386/Math" xmlns:ari="http://metalx.org/Intel/80386/Arithmetic" xmlns:imm="http://metalx.org/Intel/80386/Immediate" xmlns:shift="http://metalx.org/Intel/80386/Shift" xmlns:logic="http://metalx.org/Intel/80386/Logic" xmlns:kbc="http://metalx.org/Pc/Keyboard" xmlns:ksc="http://metalx.org/Pc/Keyboard/ScanCodes" xmlns:asc="http://metalx.org/Ansi/Ascii" xmlns:cls="http://metalx.org/i386/Functions/Class" xmlns:obj="http://metalx.org/i386/Functions/Object" xmlns:cat="http://metalx.org/i386/Functions/Catalog" xmlns:lst="http://metalx.org/i386/Functions/List" xmlns:mm="http://metalx.org/i386/Functions/MemoryManager" xmlns:tm="http://metalx.org/i386/Functions/TaskManager" xmlns:sys="http://metalx.org/i386/Functions/System" xmlns:str="http://metalx.org/i386/Functions/String" xmlns:int="http://metalx.org/i386/Functions/Integer" xmlns:float="http://metalx.org/i386/Functions/Float" xmlns:kbd="http://metalx.org/i386/Functions/Keyboard" xmlns:vid="http://metalx.org/i386/Functions/Video" xmlns:ex="http://metalx.org/i386/Functions/Exception">
+<scope xmlns="http://metalx.org/Program" xmlns:var="http://metalx.org/Variable" xmlns:cpu="http://metalx.org/Intel/80386/Operators" xmlns:op="http://metalx.org/Intel/80386/Operands" xmlns:math="http://metalx.org/Intel/80386/Math" xmlns:ari="http://metalx.org/Intel/80386/Arithmetic" xmlns:imm="http://metalx.org/Intel/80386/Immediate" xmlns:inc="http://metalx.org/Intel/80386/Increment" xmlns:shift="http://metalx.org/Intel/80386/Shift" xmlns:logic="http://metalx.org/Intel/80386/Logic" xmlns:kbc="http://metalx.org/Pc/Keyboard" xmlns:ksc="http://metalx.org/Pc/Keyboard/ScanCodes" xmlns:asc="http://metalx.org/Ansi/Ascii" xmlns:cls="http://metalx.org/i386/Functions/Class" xmlns:obj="http://metalx.org/i386/Functions/Object" xmlns:cat="http://metalx.org/i386/Functions/Catalog" xmlns:lst="http://metalx.org/i386/Functions/List" xmlns:col="http://metalx.org/i386/Functions/Collection" xmlns:mm="http://metalx.org/i386/Functions/MemoryManager" xmlns:tm="http://metalx.org/i386/Functions/TaskManager" xmlns:sys="http://metalx.org/i386/Functions/System" xmlns:str="http://metalx.org/i386/Functions/String" xmlns:int="http://metalx.org/i386/Functions/Integer" xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal" xmlns:float="http://metalx.org/i386/Functions/Float" xmlns:kbd="http://metalx.org/i386/Functions/Keyboard" xmlns:vid="http://metalx.org/i386/Functions/Video" xmlns:ex="http://metalx.org/i386/Functions/Exception">
 	<!--Setup Keyboard Array-->
 	<hex>BF</hex>
-	<hex>00007000</hex>
+	<hex>00070000</hex>
 	<hex>89</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
 	<addressOf ref="keyboard" type="Absolute32" />
@@ -50,10 +50,15 @@
 	<int>254</int>
 	<hex>C7</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">07</prg:hex>
-	<int xmlns:inc="http://metalx.org/Intel/80386/Increment">0</int>
+	<int>0</int>
 	<hex>89</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
 	<addressOf ref="commandBuffer" type="Absolute32" />
+	<!--<str:Create length="250"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-ImmediateAddress/>
+	<addressOf ref="lastCommand" type="Absolute32"/>-->
 	<hex>8B</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
 	<hex>01100000</hex>
@@ -63,20 +68,7 @@
 	<int>254</int>
 	<hex>C7</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">07</prg:hex>
-	<int xmlns:inc="http://metalx.org/Intel/80386/Increment">0</int>
-	<hex>89</hex>
-	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
-	<addressOf ref="lastCommand" type="Absolute32" />
-	<hex>8B</hex>
-	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
-	<hex>01100000</hex>
-	<hex>81</hex>
-	<hex>05</hex>
-	<hex>01100000</hex>
-	<int>254</int>
-	<hex>C7</hex>
-	<prg:hex xmlns:prg="http://metalx.org/Program">07</prg:hex>
-	<int xmlns:inc="http://metalx.org/Intel/80386/Increment">0</int>
+	<int>0</int>
 	<hex>89</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
 	<addressOf ref="className" type="Absolute32" />
@@ -89,10 +81,207 @@
 	<int>254</int>
 	<hex>C7</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">07</prg:hex>
-	<int xmlns:inc="http://metalx.org/Intel/80386/Increment">0</int>
+	<int>0</int>
 	<hex>89</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
 	<addressOf ref="memberName" type="Absolute32" />
+	<!--Setup Command History-->
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+	<hex>01100000</hex>
+	<hex>81</hex>
+	<hex>05</hex>
+	<hex>01100000</hex>
+	<int>1024</int>
+	<hex>C7</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">07</prg:hex>
+	<int>255</int>
+	<scope>
+		<hex>8B</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">07</prg:hex>
+		<hex>40</hex>
+		<hex>C1</hex>
+		<hex>E0</hex>
+		<byte>2</byte>
+		<hex>50</hex>
+		<hex>56</hex>
+		<hex>57</hex>
+		<hex>BF</hex>
+		<addressOf ref="className" type="Absolute32" />
+		<hex>BE</hex>
+		<hex xmlns:kbd="http://metalx.org/Pc/Keyboard">00005000</hex>
+		<scope>
+			<scope>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
+				<hex>83</hex>
+				<hex>F9</hex>
+				<byte>0</byte>
+				<hex>75</hex>
+				<addressOf ref="start" type="Relative8" />
+				<hex>E9</hex>
+				<addressOf ref="end" type="Relative32" />
+				<label id="start" />
+				<hex>83</hex>
+				<hex>C6</hex>
+				<byte>4</byte>
+				<hex>89</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">F2</prg:hex>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
+				<hex>56</hex>
+				<hex>57</hex>
+				<hex>51</hex>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">76</prg:hex>
+				<byte>4</byte>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
+				<hex>83</hex>
+				<hex>C1</hex>
+				<byte>4</byte>
+				<hex>F3</hex>
+				<hex>A6</hex>
+				<hex>59</hex>
+				<hex>5F</hex>
+				<hex>5E</hex>
+				<hex>74</hex>
+				<addressOf ref="classFound" type="Relative8" />
+				<hex>89</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">D6</prg:hex>
+				<hex>E2</hex>
+				<addressOf ref="start" type="Relative8" />
+				<label id="end" />
+			</scope>
+			<label id="classFound" />
+		</scope>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">F3</prg:hex>
+		<hex>5F</hex>
+		<hex>5E</hex>
+		<hex>58</hex>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">FA</prg:hex>
+		<hex>8B</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+		<hex>01100000</hex>
+		<hex>81</hex>
+		<hex>05</hex>
+		<hex>01100000</hex>
+		<int>12</int>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">1F</prg:hex>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">57</prg:hex>
+		<byte xmlns:index="http://metalx.org/Intel/80386/Index" xmlns:clsf="http://metalx.org/i386/Functions/Class">4</byte>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">47</prg:hex>
+		<byte xmlns:index="http://metalx.org/Intel/80386/Index" xmlns:clsf="http://metalx.org/i386/Functions/Class">8</byte>
+		<hex>EB</hex>
+		<addressOf ref="end" type="Relative8" />
+		<label id="className" />
+		<int>22</int>
+		<string>http://metalx.org/List</string>
+		<label id="end" />
+	</scope>
+	<hex>57</hex>
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+	<hex>01100000</hex>
+	<hex>81</hex>
+	<hex>05</hex>
+	<hex>01100000</hex>
+	<int>8</int>
+	<hex>C7</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">07</prg:hex>
+	<int>0</int>
+	<hex>58</hex>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">47</prg:hex>
+	<byte>4</byte>
+	<scope>
+		<hex>57</hex>
+		<hex>BF</hex>
+		<addressOf ref="className" type="Absolute32" />
+		<hex>BE</hex>
+		<hex xmlns:kbd="http://metalx.org/Pc/Keyboard">00005000</hex>
+		<scope>
+			<scope>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
+				<hex>83</hex>
+				<hex>F9</hex>
+				<byte>0</byte>
+				<hex>75</hex>
+				<addressOf ref="start" type="Relative8" />
+				<hex>E9</hex>
+				<addressOf ref="end" type="Relative32" />
+				<label id="start" />
+				<hex>83</hex>
+				<hex>C6</hex>
+				<byte>4</byte>
+				<hex>89</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">F2</prg:hex>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
+				<hex>56</hex>
+				<hex>57</hex>
+				<hex>51</hex>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">76</prg:hex>
+				<byte>4</byte>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
+				<hex>83</hex>
+				<hex>C1</hex>
+				<byte>4</byte>
+				<hex>F3</hex>
+				<hex>A6</hex>
+				<hex>59</hex>
+				<hex>5F</hex>
+				<hex>5E</hex>
+				<hex>74</hex>
+				<addressOf ref="classFound" type="Relative8" />
+				<hex>89</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">D6</prg:hex>
+				<hex>E2</hex>
+				<addressOf ref="start" type="Relative8" />
+				<label id="end" />
+			</scope>
+			<label id="classFound" />
+		</scope>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">F3</prg:hex>
+		<hex>5F</hex>
+		<hex>B8</hex>
+		<int>8</int>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">FA</prg:hex>
+		<hex>8B</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+		<hex>01100000</hex>
+		<hex>81</hex>
+		<hex>05</hex>
+		<hex>01100000</hex>
+		<int>12</int>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">1F</prg:hex>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">57</prg:hex>
+		<byte xmlns:index="http://metalx.org/Intel/80386/Index" xmlns:clsf="http://metalx.org/i386/Functions/Class">4</byte>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">47</prg:hex>
+		<byte xmlns:index="http://metalx.org/Intel/80386/Index" xmlns:clsf="http://metalx.org/i386/Functions/Class">8</byte>
+		<hex>EB</hex>
+		<addressOf ref="end" type="Relative8" />
+		<label id="className" />
+		<int>28</int>
+		<string>http://metalx.org/Collection</string>
+		<label id="end" />
+	</scope>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+	<addressOf ref="commandHistory" type="Absolute32" />
 	<!--Clear Screen-->
 	<label id="clearScreen" />
 	<hex>BF</hex>
@@ -208,6 +397,13 @@
 	<hex>E9</hex>
 	<addressOf ref="handleUpArrow" type="Relative32" />
 	<label id="notUpArrow" />
+	<hex>3C</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">50</prg:hex>
+	<hex>75</hex>
+	<addressOf ref="notDownArrow" type="Relative8" />
+	<hex>E9</hex>
+	<addressOf ref="handleDownArrow" type="Relative32" />
+	<label id="notDownArrow" />
 	<hex>A8</hex>
 	<binary>10000000</binary>
 	<hex>74</hex>
@@ -558,13 +754,196 @@
 	<prg:hex xmlns:prg="http://metalx.org/Program">35</prg:hex>
 	<addressOf ref="commandBuffer" type="Absolute32" />
 	<hex>8B</hex>
-	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
-	<addressOf ref="lastCommand" type="Absolute32" />
-	<hex>8B</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">C8</prg:hex>
+	<hex>05</hex>
+	<int>4</int>
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+	<hex>01100000</hex>
+	<hex>01</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">05</prg:hex>
+	<hex>01100000</hex>
+	<hex>57</hex>
 	<hex>A5</hex>
 	<hex>F3</hex>
 	<hex>A4</hex>
+	<hex>5F</hex>
+	<scope>
+		<hex>8B</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">07</prg:hex>
+		<hex>40</hex>
+		<hex>40</hex>
+		<hex>40</hex>
+		<hex>40</hex>
+		<hex>50</hex>
+		<hex>56</hex>
+		<hex>57</hex>
+		<hex>BF</hex>
+		<addressOf ref="stringClassName" type="Absolute32" />
+		<hex>BE</hex>
+		<hex xmlns:kbd="http://metalx.org/Pc/Keyboard">00005000</hex>
+		<scope>
+			<scope>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
+				<hex>83</hex>
+				<hex>F9</hex>
+				<byte>0</byte>
+				<hex>75</hex>
+				<addressOf ref="start" type="Relative8" />
+				<hex>E9</hex>
+				<addressOf ref="end" type="Relative32" />
+				<label id="start" />
+				<hex>83</hex>
+				<hex>C6</hex>
+				<byte>4</byte>
+				<hex>89</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">F2</prg:hex>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
+				<hex>56</hex>
+				<hex>57</hex>
+				<hex>51</hex>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">76</prg:hex>
+				<byte>4</byte>
+				<hex>8B</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
+				<hex>83</hex>
+				<hex>C1</hex>
+				<byte>4</byte>
+				<hex>F3</hex>
+				<hex>A6</hex>
+				<hex>59</hex>
+				<hex>5F</hex>
+				<hex>5E</hex>
+				<hex>74</hex>
+				<addressOf ref="classFound" type="Relative8" />
+				<hex>89</hex>
+				<prg:hex xmlns:prg="http://metalx.org/Program">D6</prg:hex>
+				<hex>E2</hex>
+				<addressOf ref="start" type="Relative8" />
+				<label id="end" />
+			</scope>
+			<label id="classFound" />
+		</scope>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">F3</prg:hex>
+		<hex>5F</hex>
+		<hex>5E</hex>
+		<hex>58</hex>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">FA</prg:hex>
+		<hex>8B</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+		<hex>01100000</hex>
+		<hex>81</hex>
+		<hex>05</hex>
+		<hex>01100000</hex>
+		<int>12</int>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">1F</prg:hex>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">57</prg:hex>
+		<byte xmlns:index="http://metalx.org/Intel/80386/Index" xmlns:clsf="http://metalx.org/i386/Functions/Class">4</byte>
+		<hex>89</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">47</prg:hex>
+		<byte xmlns:index="http://metalx.org/Intel/80386/Index" xmlns:clsf="http://metalx.org/i386/Functions/Class">8</byte>
+		<hex>EB</hex>
+		<addressOf ref="end" type="Relative8" />
+		<label id="stringClassName" />
+		<int>24</int>
+		<string>http://metalx.org/String</string>
+		<label id="end" />
+	</scope>
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">2D</prg:hex>
+	<addressOf ref="arguments" type="Absolute32" />
+	<hex>83</hex>
+	<hex>ED</hex>
+	<byte>4</byte>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">7D</prg:hex>
+	<byte>0</byte>
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">35</prg:hex>
+	<addressOf ref="commandHistory" type="Absolute32" />
+	<scope xmlns:index="http://metalx.org/Intel/80386/Index" xmlns:clsf="http://metalx.org/i386/Functions/Class">
+		<hex>56</hex>
+		<hex>8B</hex>
+		<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
+		<hex>56</hex>
+		<hex>BF</hex>
+		<addressOf ref="methodName" type="Absolute32" />
+		<scope>
+			<hex>8B</hex>
+			<prg:hex xmlns:prg="http://metalx.org/Program">76</prg:hex>
+			<byte>16</byte>
+			<hex>8B</hex>
+			<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
+			<hex>83</hex>
+			<hex>F9</hex>
+			<byte>0</byte>
+			<hex>75</hex>
+			<addressOf ref="firstMethod" type="Relative8" />
+			<hex>83</hex>
+			<hex>F9</hex>
+			<byte>1</byte>
+			<hex>E9</hex>
+			<addressOf ref="exitFunction" type="Relative32" />
+			<label id="firstMethod" />
+			<hex>83</hex>
+			<hex>C6</hex>
+			<byte>4</byte>
+			<label id="nextMethod" />
+			<hex>89</hex>
+			<prg:hex xmlns:prg="http://metalx.org/Program">F2</prg:hex>
+			<hex>57</hex>
+			<hex>51</hex>
+			<hex>8B</hex>
+			<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
+			<hex>56</hex>
+			<hex>8B</hex>
+			<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
+			<hex>8B</hex>
+			<prg:hex xmlns:prg="http://metalx.org/Program">0F</prg:hex>
+			<hex>83</hex>
+			<hex>C1</hex>
+			<byte>4</byte>
+			<hex>F3</hex>
+			<hex>A6</hex>
+			<hex>5E</hex>
+			<hex>59</hex>
+			<hex>5F</hex>
+			<hex>74</hex>
+			<addressOf ref="exitFunction" type="Relative8" />
+			<hex>89</hex>
+			<prg:hex xmlns:prg="http://metalx.org/Program">D6</prg:hex>
+			<hex>83</hex>
+			<hex>C6</hex>
+			<byte>4</byte>
+			<hex>E0</hex>
+			<addressOf ref="nextMethod" type="Relative8" />
+			<label id="exitFunction" />
+		</scope>
+		<hex>5B</hex>
+		<hex>5F</hex>
+		<hex>FF</hex>
+		<hex>56</hex>
+		<byte>12</byte>
+		<hex>EB</hex>
+		<addressOf ref="end" type="Relative8" />
+		<label id="methodName" />
+		<int>3</int>
+		<string>Add</string>
+		<label id="end" />
+	</scope>
+	<hex>C7</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">05</prg:hex>
+	<addressOf ref="commandHistoryIndex" type="Absolute32" />
+	<int>-1</int>
 	<!--Prepare To Evaluate Command-->
 	<label id="evaluateCommand" />
 	<hex>8B</hex>
@@ -582,13 +961,13 @@
 	<addressOf ref="memberName" type="Absolute32" />
 	<hex>C7</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
-	<int xmlns:inc="http://metalx.org/Intel/80386/Increment">0</int>
+	<int>0</int>
 	<hex>8B</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">35</prg:hex>
 	<addressOf ref="className" type="Absolute32" />
 	<hex>C7</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
-	<int xmlns:inc="http://metalx.org/Intel/80386/Increment">0</int>
+	<int>0</int>
 	<hex>87</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">F7</prg:hex>
 	<!--Detect Type-->
@@ -665,7 +1044,7 @@
 	<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
 	<hex>83</hex>
 	<hex>C6</hex>
-	<byte xmlns:inc="http://metalx.org/Intel/80386/Increment">3</byte>
+	<byte>3</byte>
 	<hex>88</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
 	<hex>5E</hex>
@@ -696,7 +1075,7 @@
 	<hex>F3</hex>
 	<hex>A4</hex>
 	<hex>5F</hex>
-	<scope xmlns:inc="http://metalx.org/Intel/80386/Increment">
+	<scope>
 		<hex>8B</hex>
 		<prg:hex xmlns:prg="http://metalx.org/Program">07</prg:hex>
 		<hex>40</hex>
@@ -876,7 +1255,7 @@
 	<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
 	<hex>83</hex>
 	<hex>C6</hex>
-	<byte xmlns:inc="http://metalx.org/Intel/80386/Increment">3</byte>
+	<byte>3</byte>
 	<hex>88</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
 	<hex>5E</hex>
@@ -902,7 +1281,7 @@
 	<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
 	<hex>83</hex>
 	<hex>C6</hex>
-	<byte xmlns:inc="http://metalx.org/Intel/80386/Increment">3</byte>
+	<byte>3</byte>
 	<hex>88</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
 	<hex>5E</hex>
@@ -916,7 +1295,7 @@
 	<hex>60</hex>
 	<hex>87</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">F7</prg:hex>
-	<scope xmlns:inc="http://metalx.org/Intel/80386/Increment">
+	<scope>
 		<hex>AD</hex>
 		<hex>89</hex>
 		<prg:hex xmlns:prg="http://metalx.org/Program">C1</prg:hex>
@@ -980,7 +1359,7 @@
 		<hex>40</hex>
 		<label id="notNegative2" />
 	</scope>
-	<scope xmlns:inc="http://metalx.org/Intel/80386/Increment">
+	<scope>
 		<hex>56</hex>
 		<hex>8B</hex>
 		<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
@@ -1166,7 +1545,7 @@
 	<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
 	<hex>83</hex>
 	<hex>C6</hex>
-	<byte xmlns:inc="http://metalx.org/Intel/80386/Increment">3</byte>
+	<byte>3</byte>
 	<hex>88</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
 	<hex>5E</hex>
@@ -1180,7 +1559,7 @@
 	<hex>60</hex>
 	<hex>87</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">F7</prg:hex>
-	<scope xmlns:inc="http://metalx.org/Intel/80386/Increment" xmlns:fpu="http://metalx.org/Intel/80386/FpuOperators">
+	<scope xmlns:fpu="http://metalx.org/Intel/80386/FpuOperators">
 		<prg:hex xmlns:prg="http://metalx.org/Program">E3DB</prg:hex>
 		<hex>9B</hex>
 		<hex>B8</hex>
@@ -1257,7 +1636,7 @@
 		<int>0</int>
 		<label id="end" />
 	</scope>
-	<scope xmlns:inc="http://metalx.org/Intel/80386/Increment" xmlns:fpu="http://metalx.org/Intel/80386/FpuOperators">
+	<scope xmlns:fpu="http://metalx.org/Intel/80386/FpuOperators">
 		<hex>56</hex>
 		<hex>8B</hex>
 		<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
@@ -1438,7 +1817,7 @@
 	<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
 	<hex>83</hex>
 	<hex>C6</hex>
-	<byte xmlns:inc="http://metalx.org/Intel/80386/Increment">3</byte>
+	<byte>3</byte>
 	<hex>88</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
 	<hex>5E</hex>
@@ -1453,7 +1832,7 @@
 	<hex>BE</hex>
 	<hex xmlns:kbd="http://metalx.org/Pc/Keyboard">00005000</hex>
 	<scope>
-		<scope xmlns:inc="http://metalx.org/Intel/80386/Increment">
+		<scope>
 			<hex>8B</hex>
 			<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
 			<hex>83</hex>
@@ -1587,7 +1966,7 @@
 	<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
 	<hex>83</hex>
 	<hex>C6</hex>
-	<byte xmlns:inc="http://metalx.org/Intel/80386/Increment">3</byte>
+	<byte>3</byte>
 	<hex>88</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
 	<hex>5E</hex>
@@ -1929,7 +2308,7 @@
 	<hex>BE</hex>
 	<hex xmlns:kbd="http://metalx.org/Pc/Keyboard">00005000</hex>
 	<scope>
-		<scope xmlns:inc="http://metalx.org/Intel/80386/Increment">
+		<scope>
 			<hex>8B</hex>
 			<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
 			<hex>83</hex>
@@ -2091,7 +2470,7 @@
 	<prg:hex xmlns:prg="http://metalx.org/Program">F7</prg:hex>
 	<hex>C7</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
-	<int xmlns:inc="http://metalx.org/Intel/80386/Increment">0</int>
+	<int>0</int>
 	<hex>87</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">F7</prg:hex>
 	<label id="getNextMemberName" />
@@ -2157,7 +2536,7 @@
 	<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
 	<hex>83</hex>
 	<hex>C6</hex>
-	<byte xmlns:inc="http://metalx.org/Intel/80386/Increment">3</byte>
+	<byte>3</byte>
 	<hex>88</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
 	<hex>5E</hex>
@@ -2535,7 +2914,7 @@
 	<addressOf ref="commandBuffer" type="Absolute32" />
 	<hex>C7</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
-	<int xmlns:inc="http://metalx.org/Intel/80386/Increment">0</int>
+	<int>0</int>
 	<hex>E9</hex>
 	<addressOf ref="showPrompt" type="Relative32" />
 	<!--Handle Tab Key-->
@@ -2562,7 +2941,7 @@
 	<addressOf ref="className" type="Absolute32" />
 	<hex>C7</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
-	<int xmlns:inc="http://metalx.org/Intel/80386/Increment">0</int>
+	<int>0</int>
 	<hex>87</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">F7</prg:hex>
 	<!--Detect Type-->
@@ -2634,7 +3013,7 @@
 	<hex>BE</hex>
 	<hex xmlns:kbd="http://metalx.org/Pc/Keyboard">00005000</hex>
 	<scope>
-		<scope xmlns:inc="http://metalx.org/Intel/80386/Increment">
+		<scope>
 			<hex>8B</hex>
 			<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
 			<hex>83</hex>
@@ -2746,7 +3125,7 @@
 	<hex>BE</hex>
 	<hex xmlns:kbd="http://metalx.org/Pc/Keyboard">00005000</hex>
 	<scope>
-		<scope xmlns:inc="http://metalx.org/Intel/80386/Increment">
+		<scope>
 			<hex>8B</hex>
 			<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
 			<hex>83</hex>
@@ -2827,7 +3206,7 @@
 	<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
 	<hex>83</hex>
 	<hex>C6</hex>
-	<byte xmlns:inc="http://metalx.org/Intel/80386/Increment">3</byte>
+	<byte>3</byte>
 	<hex>88</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
 	<hex>5E</hex>
@@ -2838,7 +3217,7 @@
 	<!--Autocomplete Class Name-->
 	<hex>BE</hex>
 	<hex xmlns:kbd="http://metalx.org/Pc/Keyboard">00005000</hex>
-	<scope xmlns:inc="http://metalx.org/Intel/80386/Increment">
+	<scope>
 		<hex>8B</hex>
 		<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
 		<hex>83</hex>
@@ -2927,7 +3306,7 @@
 	<hex>BE</hex>
 	<hex xmlns:kbd="http://metalx.org/Pc/Keyboard">00005000</hex>
 	<scope>
-		<scope xmlns:inc="http://metalx.org/Intel/80386/Increment">
+		<scope>
 			<hex>8B</hex>
 			<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
 			<hex>83</hex>
@@ -2998,7 +3377,7 @@
 	<prg:hex xmlns:prg="http://metalx.org/Program">F7</prg:hex>
 	<hex>C7</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
-	<int xmlns:inc="http://metalx.org/Intel/80386/Increment">0</int>
+	<int>0</int>
 	<hex>87</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">F7</prg:hex>
 	<label id="getAutocompleteStaticMethodCharacter" />
@@ -3070,7 +3449,7 @@
 	<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
 	<hex>83</hex>
 	<hex>C6</hex>
-	<byte xmlns:inc="http://metalx.org/Intel/80386/Increment">3</byte>
+	<byte>3</byte>
 	<hex>88</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
 	<hex>5E</hex>
@@ -3089,7 +3468,7 @@
 	<hex>8B</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">76</prg:hex>
 	<byte>20</byte>
-	<scope xmlns:inc="http://metalx.org/Intel/80386/Increment">
+	<scope>
 		<hex>8B</hex>
 		<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
 		<hex>83</hex>
@@ -3244,7 +3623,7 @@
 	<hex>BE</hex>
 	<hex xmlns:kbd="http://metalx.org/Pc/Keyboard">00005000</hex>
 	<scope>
-		<scope xmlns:inc="http://metalx.org/Intel/80386/Increment">
+		<scope>
 			<hex>8B</hex>
 			<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
 			<hex>83</hex>
@@ -3316,7 +3695,7 @@
 	<hex>BE</hex>
 	<hex xmlns:kbd="http://metalx.org/Pc/Keyboard">00005000</hex>
 	<scope>
-		<scope xmlns:inc="http://metalx.org/Intel/80386/Increment">
+		<scope>
 			<hex>8B</hex>
 			<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
 			<hex>83</hex>
@@ -3390,7 +3769,7 @@
 	<prg:hex xmlns:prg="http://metalx.org/Program">F7</prg:hex>
 	<hex>C7</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
-	<int xmlns:inc="http://metalx.org/Intel/80386/Increment">0</int>
+	<int>0</int>
 	<hex>87</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">F7</prg:hex>
 	<label id="getAutocompleteMemberCharacter" />
@@ -3429,7 +3808,7 @@
 	<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
 	<hex>83</hex>
 	<hex>C6</hex>
-	<byte xmlns:inc="http://metalx.org/Intel/80386/Increment">3</byte>
+	<byte>3</byte>
 	<hex>88</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
 	<hex>5E</hex>
@@ -3444,7 +3823,7 @@
 	<hex>8B</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">76</prg:hex>
 	<byte>16</byte>
-	<scope xmlns:inc="http://metalx.org/Intel/80386/Increment">
+	<scope>
 		<hex>8B</hex>
 		<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
 		<hex>83</hex>
@@ -3666,7 +4045,7 @@
 	<hex>8B</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">76</prg:hex>
 	<byte>12</byte>
-	<scope xmlns:inc="http://metalx.org/Intel/80386/Increment">
+	<scope>
 		<hex>8B</hex>
 		<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
 		<hex>83</hex>
@@ -3743,38 +4122,83 @@
 	<label id="handleUpArrow" />
 	<hex>8B</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">35</prg:hex>
-	<addressOf ref="commandBuffer" type="Absolute32" />
+	<addressOf ref="commandHistory" type="Absolute32" />
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">76</prg:hex>
+	<byte xmlns:index="http://metalx.org/Intel/80386/Index" xmlns:clsf="http://metalx.org/i386/Functions/Class">4</byte>
 	<hex>8B</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
 	<hex>3D</hex>
 	<int>0</int>
-	<hex>75</hex>
+	<hex>74</hex>
 	<addressOf ref="skipRecall" type="Relative8" />
+	<hex>81</hex>
+	<hex>3D</hex>
+	<addressOf ref="commandHistoryIndex" type="Absolute32" />
+	<int>-1</int>
+	<hex>75</hex>
+	<addressOf ref="skipLastCommand" type="Relative8" />
+	<hex>48</hex>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">05</prg:hex>
+	<addressOf ref="commandHistoryIndex" type="Absolute32" />
+	<hex>EB</hex>
+	<addressOf ref="getCommand" type="Relative8" />
+	<label id="skipLastCommand" />
+	<hex>E8</hex>
+	<addressOf ref="eraseCommand" type="Relative32" />
+	<hex>FF</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">0D</prg:hex>
+	<addressOf ref="commandHistoryIndex" type="Absolute32" />
+	<hex>81</hex>
+	<hex>3D</hex>
+	<addressOf ref="commandHistoryIndex" type="Absolute32" />
+	<int>-1</int>
+	<hex>75</hex>
+	<addressOf ref="getCommand" type="Relative8" />
+	<hex>E9</hex>
+	<addressOf ref="updateCursorPosition" type="Relative32" />
+	<label id="getCommand" />
+	<hex>E8</hex>
+	<addressOf ref="drawHistoryCommand" type="Relative32" />
+	<label id="skipRecall" />
+	<hex>E9</hex>
+	<addressOf ref="updateCursorPosition" type="Relative32" />
+	<!--Handle Down Arrow-->
+	<label id="handleDownArrow" />
 	<hex>8B</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">35</prg:hex>
-	<addressOf ref="lastCommand" type="Absolute32" />
-	<hex>AD</hex>
+	<addressOf ref="commandHistory" type="Absolute32" />
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">76</prg:hex>
+	<byte xmlns:index="http://metalx.org/Intel/80386/Index" xmlns:clsf="http://metalx.org/i386/Functions/Class">4</byte>
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
 	<hex>3D</hex>
 	<int>0</int>
 	<hex>74</hex>
 	<addressOf ref="skipRecall" type="Relative8" />
-	<hex>89</hex>
-	<prg:hex xmlns:prg="http://metalx.org/Program">C1</prg:hex>
-	<label id="forEachCharacter" />
-	<hex>AC</hex>
-	<hex>56</hex>
-	<hex>57</hex>
-	<hex>51</hex>
+	<hex>FF</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">05</prg:hex>
+	<addressOf ref="commandHistoryIndex" type="Absolute32" />
+	<hex>3B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">05</prg:hex>
+	<addressOf ref="commandHistoryIndex" type="Absolute32" />
+	<hex>75</hex>
+	<addressOf ref="skipFirstCommand" type="Relative8" />
+	<hex>C7</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">05</prg:hex>
+	<addressOf ref="commandHistoryIndex" type="Absolute32" />
+	<int>-1</int>
+	<label id="skipFirstCommand" />
 	<hex>E8</hex>
-	<addressOf ref="writeCharacter" type="Relative32" />
-	<hex>E8</hex>
-	<addressOf ref="scrollScreen" type="Relative32" />
-	<hex>59</hex>
-	<hex>5F</hex>
-	<hex>5E</hex>
-	<hex>E2</hex>
-	<addressOf ref="forEachCharacter" type="Relative8" />
-	<label id="skipRecall" />
+	<addressOf ref="eraseCommand" type="Relative32" />
+	<hex>81</hex>
+	<hex>3D</hex>
+	<addressOf ref="commandHistoryIndex" type="Absolute32" />
+	<int>-1</int>
+	<hex>75</hex>
+	<addressOf ref="getCommand" type="Relative8" />
 	<hex>E9</hex>
 	<addressOf ref="updateCursorPosition" type="Relative32" />
 	<!--Show Static Class List-->
@@ -3783,7 +4207,7 @@
 	<addressOf ref="moveCursorToNextLine" type="Relative32" />
 	<hex>BE</hex>
 	<hex xmlns:kbd="http://metalx.org/Pc/Keyboard">00005000</hex>
-	<scope xmlns:inc="http://metalx.org/Intel/80386/Increment">
+	<scope>
 		<hex>8B</hex>
 		<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
 		<hex>83</hex>
@@ -3845,7 +4269,7 @@
 	<hex>8B</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">76</prg:hex>
 	<byte>20</byte>
-	<scope xmlns:inc="http://metalx.org/Intel/80386/Increment">
+	<scope>
 		<hex>8B</hex>
 		<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
 		<hex>83</hex>
@@ -3926,7 +4350,7 @@
 	<hex>8B</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">76</prg:hex>
 	<byte>12</byte>
-	<scope xmlns:inc="http://metalx.org/Intel/80386/Increment">
+	<scope>
 		<hex>8B</hex>
 		<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
 		<hex>83</hex>
@@ -3970,7 +4394,7 @@
 	<hex>8B</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">76</prg:hex>
 	<byte>16</byte>
-	<scope xmlns:inc="http://metalx.org/Intel/80386/Increment">
+	<scope>
 		<hex>8B</hex>
 		<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
 		<hex>83</hex>
@@ -4042,13 +4466,99 @@
 	<hex>E9</hex>
 	<addressOf ref="updateCursorPosition" type="Relative32" />
 	<!--Routines-->
+	<!--Erase Current Command-->
+	<label id="eraseCommand" />
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">35</prg:hex>
+	<addressOf ref="commandBuffer" type="Absolute32" />
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
+	<hex>3D</hex>
+	<int>0</int>
+	<hex>74</hex>
+	<addressOf ref="skipEraseCommand" type="Relative8" />
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">C1</prg:hex>
+	<label id="deleteCharacter" />
+	<hex>56</hex>
+	<hex>57</hex>
+	<hex>51</hex>
+	<hex>FF</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+	<addressOf ref="cursorPosition" type="Absolute32" />
+	<hex>83</hex>
+	<hex>EF</hex>
+	<byte>2</byte>
+	<hex>66</hex>
+	<hex>C7</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">07</prg:hex>
+	<hex>0720</hex>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
+	<addressOf ref="cursorPosition" type="Absolute32" />
+	<hex>59</hex>
+	<hex>5F</hex>
+	<hex>5E</hex>
+	<hex>E2</hex>
+	<addressOf ref="deleteCharacter" type="Relative8" />
+	<label id="skipEraseCommand" />
+	<hex>C3</hex>
+	<!--Draw History Command-->
+	<label id="drawHistoryCommand" />
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">35</prg:hex>
+	<addressOf ref="commandHistory" type="Absolute32" />
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">76</prg:hex>
+	<byte xmlns:index="http://metalx.org/Intel/80386/Index" xmlns:clsf="http://metalx.org/i386/Functions/Class">4</byte>
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">05</prg:hex>
+	<addressOf ref="commandHistoryIndex" type="Absolute32" />
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">76</prg:hex>
+	<byte>4</byte>
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">76</prg:hex>
+	<byte xmlns:index="http://metalx.org/Intel/80386/Index" xmlns:clsf="http://metalx.org/i386/Functions/Class">4</byte>
+	<hex>40</hex>
+	<hex>C1</hex>
+	<hex>E0</hex>
+	<byte>2</byte>
+	<hex>01</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">C6</prg:hex>
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
+	<hex>8B</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">76</prg:hex>
+	<byte xmlns:index="http://metalx.org/Intel/80386/Index" xmlns:clsf="http://metalx.org/i386/Functions/Class">4</byte>
+	<hex>AD</hex>
+	<hex>89</hex>
+	<prg:hex xmlns:prg="http://metalx.org/Program">C1</prg:hex>
+	<label id="forEachHistoryCharacter" />
+	<hex>AC</hex>
+	<hex>56</hex>
+	<hex>57</hex>
+	<hex>51</hex>
+	<hex>E8</hex>
+	<addressOf ref="writeCharacter" type="Relative32" />
+	<hex>E8</hex>
+	<addressOf ref="scrollScreen" type="Relative32" />
+	<hex>59</hex>
+	<hex>5F</hex>
+	<hex>5E</hex>
+	<hex>E2</hex>
+	<addressOf ref="forEachHistoryCharacter" type="Relative8" />
+	<hex>C3</hex>
+	<!--Find Class By Name-->
 	<label id="findClassAndReturn" />
 	<hex>56</hex>
 	<hex>51</hex>
 	<hex>BE</hex>
 	<hex xmlns:kbd="http://metalx.org/Pc/Keyboard">00005000</hex>
 	<scope>
-		<scope xmlns:inc="http://metalx.org/Intel/80386/Increment">
+		<scope>
 			<hex>8B</hex>
 			<prg:hex xmlns:prg="http://metalx.org/Program">0E</prg:hex>
 			<hex>83</hex>
@@ -4437,7 +4947,7 @@
 	<prg:hex xmlns:prg="http://metalx.org/Program">36</prg:hex>
 	<hex>83</hex>
 	<hex>C6</hex>
-	<byte xmlns:inc="http://metalx.org/Intel/80386/Increment">3</byte>
+	<byte>3</byte>
 	<hex>88</hex>
 	<prg:hex xmlns:prg="http://metalx.org/Program">06</prg:hex>
 	<hex>8B</hex>
@@ -4462,7 +4972,7 @@
 	<hex>C3</hex>
 	<!--Throw Exceptions-->
 	<label id="throwException" />
-	<scope xmlns:inc="http://metalx.org/Intel/80386/Increment">
+	<scope>
 		<hex>57</hex>
 		<hex>8B</hex>
 		<prg:hex xmlns:prg="http://metalx.org/Program">3D</prg:hex>
@@ -4564,8 +5074,11 @@
 	<int>0</int>
 	<label id="commandBuffer" />
 	<int>0</int>
-	<label id="lastCommand" />
+	<!--<var:integer id="lastCommand">0</var:integer>-->
+	<label id="commandHistory" />
 	<int>0</int>
+	<label id="commandHistoryIndex" />
+	<int>-1</int>
 	<label id="className" />
 	<int>0</int>
 	<label id="classObject" />

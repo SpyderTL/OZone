@@ -1,0 +1,382 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:vid="http://metalx.org/Commodore64/Video"
+	xmlns:sys="http://metalx.org/Commodore64/System"
+	xmlns:key="http://metalx.org/Commodore64/Keyboard"
+	xmlns:kernel="http://metalx.org/Commodore64/Kernel"
+	xmlns:mm="http://metalx.org/C64/Functions/MemoryManager"
+	xmlns:str="http://metalx.org/C64/Functions/String"
+	xmlns:cls="http://metalx.org/C64/Functions/Class">
+	
+	<!--Define Memory Address Labels-->
+	<kernel:InitializeIODevices id="initializeIoDevices"/>
+	<kernel:InitializeMemoryPointers id="initializeMemoryPointers"/>
+	<kernel:RestoreIOVectors id="restoreIoVectors"/>
+	<kernel:InitializeScreenAndKeyboard id="initializeScreenAndKeyboard"/>
+	<kernel:GetCharacterFromKeyboard id="readCharacter"/>
+	<kernel:WriteCharacterToScreen id="writeCharacter"/>
+	<sys:CharacterColor id="characterColor"/>
+	<sys:CpuRomBankControl id="romControl"/>
+	<vid:BorderColor id="borderColor"/>
+	<vid:BackgroundColor0 id="backgroundColor"/>
+	<vid:CharacterSettings id="characterSettings"/>
+
+	<!--Initialize System-->
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="initializeIoDevices" type="Absolute16"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="initializeMemoryPointers" type="Absolute16"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="restoreIoVectors" type="Absolute16"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="initializeScreenAndKeyboard" type="Absolute16"/>
+	
+	<cpu:SetInterruptDisableFlag/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>00100111</binary>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="romControl" type="Absolute16"/>
+
+	<!--Clear Screen-->
+	<cpu:CopyImmediate8ToXIndex/>
+	<hex>00</hex>
+
+	<cpu:CopyXIndexToImmediate16Address/>
+	<hex>d021</hex>
+
+	<cpu:CopyXIndexToImmediate16Address/>
+	<hex>d020</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>20</hex>
+
+	<label id="nextCharacter"/>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>0400</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>0500</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>0600</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>0700</hex>
+
+	<cpu:IncrementXIndex/>
+
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="nextCharacter" type="Relative8"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>01</hex>
+
+	<label id="nextCharacter2"/>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>d800</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>d900</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>da00</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>db00</hex>
+
+	<cpu:IncrementXIndex/>
+
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="nextCharacter2" type="Relative8"/>
+	
+	<!--Enable Lower Case Characters-->
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<addressOf ref="characterSettings" type="Absolute16"/>
+
+	<cpu:OrAccumulatorWithImmediate8/>
+	<binary>00000010</binary>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="characterSettings" type="Absolute16"/>
+
+	<!--Set Cursor Position-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>00</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>fb</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>04</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>fc</hex>
+
+	<!--Enable Interrupts-->
+	<!--<cpu:ClearInterruptDisableFlag/>-->
+
+	<!--Show Prompt-->
+	<label id="showPrompt"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<string>&gt;</string>
+
+	<cpu:CopyImmediate8ToYIndex/>
+	<byte>0</byte>
+
+	<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+	<hex>fb</hex>
+
+	<cpu:IncrementImmediate8Address/>
+	<hex>fb</hex>
+
+	<!--Reset SID Chip-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>00</hex>
+
+	<cpu:CopyImmediate8ToXIndex/>
+	<hex>1c</hex>
+
+	<label id="resetSid"/>
+	
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>d400</hex>
+
+	<cpu:DecrementXIndex/>
+
+	<cpu:BranchToRelative8IfPositive/>
+	<addressOf ref="resetSid" type="Relative8"/>
+	
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>00001111</binary>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>d418</hex>
+
+	<!--Turn On Voice 1-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<byte>36</byte>
+
+	<cpu:ShiftAccumulatorLeft/>
+	
+	<cpu:CopyAccumulatorToXIndex/>
+
+	<!--<cpu:CopyImmediate8ToAccumulator/>
+	<hex>62</hex>-->
+
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<addressOf ref="notes" type="Absolute16"/>
+	
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>d400</hex>
+
+	<!--<cpu:CopyImmediate8ToAccumulator/>
+	<hex>08</hex>-->
+
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<addressOf ref="notes" type="Absolute16" offset="1"/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>d401</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>f0</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>d406</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>00010001</binary>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>d404</hex>
+
+	<!--Turn On Voice 2-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<byte>40</byte>
+
+	<cpu:ShiftAccumulatorLeft/>
+	
+	<cpu:CopyAccumulatorToXIndex/>
+
+	<!--<cpu:CopyImmediate8ToAccumulator/>
+	<hex>90</hex>-->
+
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<addressOf ref="notes" type="Absolute16"/>
+	
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>d407</hex>
+
+	<!--<cpu:CopyImmediate8ToAccumulator/>
+	<hex>0a</hex>-->
+
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<addressOf ref="notes" type="Absolute16" offset="1"/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>d408</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>f0</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>d40d</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>00010001</binary>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>d40b</hex>
+
+	<!--Turn On Voice 3-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<byte>43</byte>
+
+	<cpu:ShiftAccumulatorLeft/>
+	
+	<cpu:CopyAccumulatorToXIndex/>
+
+	<!--<cpu:CopyImmediate8ToAccumulator/>
+	<hex>8f</hex>-->
+
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<addressOf ref="notes" type="Absolute16"/>
+	
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>d40e</hex>
+
+	<!--<cpu:CopyImmediate8ToAccumulator/>
+	<hex>0c</hex>-->
+
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<addressOf ref="notes" type="Absolute16" offset="1"/>
+	
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>d40f</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>f0</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>d414</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>00010001</binary>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>d412</hex>
+
+	<label id="wait"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="wait" type="Absolute16"/>
+	
+	<label id="notes"/>
+	<hex>010C</hex>
+	<hex>011C</hex>
+	<hex>012D</hex>
+	<hex>013F</hex>
+	<hex>0152</hex>
+	<hex>0166</hex>
+	<hex>017B</hex>
+	<hex>0192</hex>
+	<hex>01AA</hex>
+	<hex>01C3</hex>
+	<hex>01DE</hex>
+	<hex>01FA</hex>
+	<hex>0218</hex>
+	<hex>0238</hex>
+	<hex>025A</hex>
+	<hex>027E</hex>
+	<hex>02A4</hex>
+	<hex>02CC</hex>
+	<hex>02F7</hex>
+	<hex>0324</hex>
+	<hex>0354</hex>
+	<hex>0386</hex>
+	<hex>03BC</hex>
+	<hex>03F5</hex>
+	<hex>0431</hex>
+	<hex>0471</hex>
+	<hex>04B4</hex>
+	<hex>04FC</hex>
+	<hex>0548</hex>
+	<hex>0598</hex>
+	<hex>05ED</hex>
+	<hex>0648</hex>
+	<hex>06A7</hex>
+	<hex>070C</hex>
+	<hex>0778</hex>
+	<hex>07E9</hex>
+	<hex>0862</hex>
+	<hex>08E2</hex>
+	<hex>0969</hex>
+	<hex>09F8</hex>
+	<hex>0A90</hex>
+	<hex>0B30</hex>
+	<hex>0BDB</hex>
+	<hex>0C8F</hex>
+	<hex>0D4E</hex>
+	<hex>0E19</hex>
+	<hex>0EF0</hex>
+	<hex>0FD3</hex>
+	<hex>10C4</hex>
+	<hex>11C3</hex>
+	<hex>12D1</hex>
+	<hex>13F0</hex>
+	<hex>151F</hex>
+	<hex>1661</hex>
+	<hex>17B6</hex>
+	<hex>191E</hex>
+	<hex>1A9D</hex>
+	<hex>1C32</hex>
+	<hex>1DDF</hex>
+	<hex>1FA6</hex>
+	<hex>2188</hex>
+	<hex>2386</hex>
+	<hex>25A3</hex>
+	<hex>27E0</hex>
+	<hex>2A3F</hex>
+	<hex>2CC2</hex>
+	<hex>2F6B</hex>
+	<hex>323D</hex>
+	<hex>353A</hex>
+	<hex>3864</hex>
+	<hex>3BBE</hex>
+	<hex>3F4C</hex>
+	<hex>430F</hex>
+	<hex>470C</hex>
+	<hex>4B46</hex>
+	<hex>4FBF</hex>
+	<hex>547D</hex>
+	<hex>5984</hex>
+	<hex>5ED6</hex>
+	<hex>647A</hex>
+	<hex>6A73</hex>
+	<hex>70C8</hex>
+	<hex>777D</hex>
+	<hex>7E97</hex>
+	<hex>861E</hex>
+	<hex>8E18</hex>
+	<hex>968B</hex>
+	<hex>9F7F</hex>
+	<hex>A8FB</hex>
+	<hex>B307</hex>
+	<hex>BDAC</hex>
+	<hex>C8F4</hex>
+	<hex>D4E7</hex>
+	<hex>E18F</hex>
+	<hex>EEF9</hex>
+	<hex>FD2F</hex>
+</scope>

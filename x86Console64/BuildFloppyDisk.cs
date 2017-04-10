@@ -23,7 +23,7 @@ namespace x86Console64
 			{
 				var filename = file.OutputPath;
 
-				if(file.Address == MemoryAddress.Zero)
+				if(file.Address == null)
 					image.Add(ProgramReader.Read(XDocument.Load(filename)));
 				else if(file.Block == null)
 					image.Add(ProgramReader.Read(XDocument.Load(filename)), file.Address);

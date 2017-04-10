@@ -9,12 +9,16 @@ namespace OZone.Programs
 		public static void Compile(Program program, MemoryAddress baseAddress, BinaryWriter writer)
 		{
 			// Assign memory addresses
-			MemoryAddress position = baseAddress;
+			MemoryAddress position = new MemoryAddress { Segment = baseAddress.Segment, Offset = baseAddress.Offset };
 
 			foreach(ProgramSegment segment in program.Segments)
 			{
-				if(segment.Address == MemoryAddress.Zero)
-					segment.Address = position;
+				if (segment.Address == null)
+					segment.Address = new MemoryAddress
+					{
+						Offset = position.Offset,
+						Segment = position.Segment
+					};
 
 				position.Offset += segment.GetLength();
 			}

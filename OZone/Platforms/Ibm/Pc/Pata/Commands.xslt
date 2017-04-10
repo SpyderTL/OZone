@@ -138,6 +138,9 @@
 	<xsl:template match="ns:ReadBuffer">
 		<xsl:element name="prg:hex">E4</xsl:element>
 	</xsl:template>
+	<xsl:template match="ns:FlushCache">
+		<xsl:element name="prg:hex">E7</xsl:element>
+	</xsl:template>
 	<xsl:template match="ns:WriteBuffer">
 		<xsl:element name="prg:hex">E8</xsl:element>
 	</xsl:template>

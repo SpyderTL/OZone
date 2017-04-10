@@ -143,11 +143,17 @@ namespace OZone.Programs
 					case "label":
 						Label label = labels[element.Attribute("id").Value];
 
-						if(element.Attributes("page").Any())
-							label.Address.Segment = element.Attribute("page").Value.ToHexInt();
+						if (element.Attributes("page").Any() ||
+							element.Attributes("offset").Any())
+						{
+							label.Address = new MemoryAddress();
 
-						if(element.Attributes("offset").Any())
-							label.Address.Offset = element.Attribute("offset").Value.ToHexInt();
+							if (element.Attributes("page").Any())
+								label.Address.Segment = element.Attribute("page").Value.ToHexInt();
+
+							if (element.Attributes("offset").Any())
+								label.Address.Offset = element.Attribute("offset").Value.ToHexInt();
+						}
 
 						yield return label;
 

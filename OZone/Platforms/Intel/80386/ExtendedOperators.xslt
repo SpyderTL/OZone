@@ -27,6 +27,9 @@
 	<xsl:template match="ns:RandomFunction">
 		<xsl:element name="prg:hex">C7</xsl:element>
 	</xsl:template>
+	<xsl:template match="ns:CopyTimestampCounterToAXDX">
+		<xsl:element name="prg:hex">31</xsl:element>
+	</xsl:template>
 	<xsl:template match="ns:EmptyMmxState">
 		<xsl:element name="prg:hex">77</xsl:element>
 	</xsl:template>

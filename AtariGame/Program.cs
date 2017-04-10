@@ -22,7 +22,7 @@ namespace AtariGame
 					"../../../OZone/Platforms/Atari/2600/TelevisionInterfaceAdapter.xslt",
 					"../../../OZone/Platforms/Atari/2600/PeripheralInterfaceAdapter.xslt");
 
-				MemoryAddress address = new MemoryAddress(0x0000, 0xf000);
+				MemoryAddress address = new MemoryAddress { Offset = 0xf000 };
 
 				ProgramCompiler.Compile(program, address, binaryWriter);
 

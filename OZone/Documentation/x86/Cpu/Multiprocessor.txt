@@ -22,3 +22,53 @@ Application Processor Startup
 	Target Processor
 		Load Stack Pointer From Shared Memory
 
+
+Multiprocessor Pointer								16
+	Signature													4				// "_MP_"
+	ConfigurationTableAddress							4				
+	Length														1				// Length / 16
+	Revision													1
+	Checksum													1				// All bytes should add up to zero
+	DefaultConfiguration									1				// 0 = Use Configuration Table
+	Features													4
+		Reserved													25 bits
+		InterruptModeConfigurationRegister			1 bit
+		Reserved													6 bits
+
+Multiprocessor Table									44
+	Signature													4				// "PCMP"
+	Length														2
+	Revision													1
+	Checksum													1
+	OemID														8
+	ProductID													12
+	OemTableAddress										4
+	OemTableLength										2
+	EntryCount													2
+	LocalApicAddress										4
+	ExtendedTableLength									2
+	ExtendedTableChecksum							1
+	Reserved													1
+	TableEntry[EntryCount]
+
+ProcessorTableEntry									20
+	Type															1				(0)
+	LocalApicID												1
+	LocalApicVersion										1
+	Flags															1
+		Reserved													6 bits
+		Bootstrap													1 bit
+		Available													1 bit
+	Signature													4
+	Features													4
+	Reserved													8
+
+IOApicTableEntry										8
+	Type															1				(2)
+	IoApicID													1
+	Version														1
+	Flags															1
+		Reserved													7 bits
+		Unavailable												1 bit
+	Address													4
+

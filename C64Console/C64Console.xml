@@ -3,255 +3,606 @@
 <scope
 	xmlns="http://metalx.org/Program"
 	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
-	xmlns:mem="http://metalx.org/Commodore64/Memory"
+	xmlns:vid="http://metalx.org/Commodore64/Video"
+	xmlns:sys="http://metalx.org/Commodore64/System"
 	xmlns:key="http://metalx.org/Commodore64/Keyboard"
+	xmlns:kernel="http://metalx.org/Commodore64/Kernel"
 	xmlns:mm="http://metalx.org/C64/Functions/MemoryManager"
 	xmlns:str="http://metalx.org/C64/Functions/String"
 	xmlns:cls="http://metalx.org/C64/Functions/Class">
-
-	<!--Initialize System-->
-	<mem:KernelInitializeIODevices id="initializeIoDevices"/>
-	<mem:KernelInitializeMemoryPointers id="initializeMemoryPointers"/>
-	<mem:KernelRestoreIOVectors id="restoreIoVectors"/>
-	<mem:KernelInitializeScreenAndKeyboard id="initializeScreenAndKeyboard"/>
-	<mem:VideoBorderColor id="borderColor"/>
-	<mem:VideoBackgroundColor0 id="backgroundColor"/>
-	<mem:SystemCharacterColor id="characterColor"/>
-	<mem:VideoCharacterSettings id="characterSettings"/>
 	
-	<cpu:CallProcedureAtAbsoluteMemory/>
-	<addressOf ref="initializeIoDevices" type="Absolute16"/>
-
-	<cpu:CallProcedureAtAbsoluteMemory/>
-	<addressOf ref="initializeMemoryPointers" type="Absolute16"/>
-
-	<cpu:CallProcedureAtAbsoluteMemory/>
-	<addressOf ref="restoreIoVectors" type="Absolute16"/>
-
-	<cpu:CallProcedureAtAbsoluteMemory/>
-	<addressOf ref="initializeScreenAndKeyboard" type="Absolute16"/>
+	<!--Define Memory Address Labels-->
+	<sys:CpuPortDirectionControl id="cpuPortDirectionControl"/>
+	<sys:CpuRomBankControl id="cpuRomBankControl"/>
+	<vid:BorderColor id="borderColor"/>
+	<vid:CharacterSettings id="characterSettings"/>
 	
-	<!--Enable Interrupts-->
-	<cpu:ClearInterruptDisableFlag/>
+	<!--Disable CPU Interrupts-->
+	<cpu:SetInterruptDisableFlag/>
+	
+	<!--Copy ROM to RAM-->
+	<cpu:CopyImmediate8ToXIndex/>
+	<hex>00</hex>
 
-	<!--Set Screen Color-->
-	<cpu:CopyImmediateToAccumulator/>
-	<byte>0</byte>
+	<label id="copyRom"/>
+	
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<hex>8000</hex>
 
-	<cpu:CopyAccumulatorToAbsoluteMemory/>
-	<addressOf ref="borderColor" type="Absolute16"/>
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>1000</hex>
 
-	<cpu:CopyAccumulatorToAbsoluteMemory/>
-	<addressOf ref="backgroundColor" type="Absolute16"/>
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<hex>8100</hex>
 
-	<!--Set Text Color-->
-	<cpu:CopyImmediateToAccumulator/>
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>1100</hex>
+
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<hex>8200</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>1200</hex>
+
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<hex>8300</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>1300</hex>
+
+	<cpu:IncrementXIndex/>
+
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="copyRom" type="Relative8"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="start" type="Absolute16"/>
+	
+	<label id="start"/>
+	
+	<!--Disable CIA Interrupts-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>7f</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>dc0d</hex>
+	
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>dd0d</hex>
+	
+	<!--Setup CIA 1 Chip (Keyboard)-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>11111111</binary>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>dc02</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>00000000</binary>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>dc03</hex>
+
+	<!--Setup VIC Chip-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>00011011</binary>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>d011</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>0f</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>d012</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>00001000</binary>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>d016</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>10000001</binary>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>d01a</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>00010100</binary>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>d018</hex>
+	
+	<!--Clear Interrupts-->
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>dc0d</hex>
+
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>dd0d</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>00001111</binary>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>d019</hex>
+
+	<!--Clear Screen-->
+	<cpu:CopyImmediate8ToXIndex/>
+	<hex>00</hex>
+
+	<cpu:CopyXIndexToImmediate16Address/>
+	<hex>d021</hex>
+
+	<cpu:CopyXIndexToImmediate16Address/>
+	<hex>d020</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>20</hex>
+
+	<label id="nextCharacter"/>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>0400</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>0500</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>0600</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>0700</hex>
+
+	<cpu:IncrementXIndex/>
+
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="nextCharacter" type="Relative8"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>01</hex>
+
+	<label id="nextCharacter2"/>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>d800</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>d900</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>da00</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>db00</hex>
+
+	<cpu:IncrementXIndex/>
+
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="nextCharacter2" type="Relative8"/>
+	
+	<!--Enable Lower Case Characters-->
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<addressOf ref="characterSettings" type="Absolute16"/>
+
+	<cpu:OrAccumulatorWithImmediate8/>
+	<binary>00000010</binary>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="characterSettings" type="Absolute16"/>
+
+	<!--Disable ROM Banks-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>11101111</binary>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<addressOf ref="cpuPortDirectionControl" type="Absolute16Low8"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>00100000</binary>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+
+	<!--Setup Interrupt Handlers-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<addressOf ref="interruptHandler" type="Absolute16Low8"/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>fffe</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<addressOf ref="interruptHandler" type="Absolute16High8"/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>ffff</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<addressOf ref="resetHandler" type="Absolute16Low8"/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>fffa</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<addressOf ref="resetHandler" type="Absolute16High8"/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>fffb</hex>
+
+	<!--Initialize Keyboard-->
+	<cpu:CopyImmediate8ToXIndex/>
+	<byte>15</byte>
+
+	<cpu:CopyImmediate8ToAccumulator/>
 	<hex>ff</hex>
 
-	<cpu:CopyAccumulatorToAbsoluteMemory/>
-	<addressOf ref="characterColor" type="Absolute16"/>
+	<label id="initializeKeyboard"/>
 
-	<!--Set Lower Case Mode-->
-	<cpu:CopyAbsoluteMemoryToAccumulator/>
-	<addressOf ref="characterSettings" type="Absolute16"/>
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>0200</hex>
 
-	<cpu:OrImmediateWithAccumulator/>
-	<byte>2</byte>
+	<cpu:DecrementXIndex/>
 
-	<cpu:CopyAccumulatorToAbsoluteMemory/>
-	<addressOf ref="characterSettings" type="Absolute16"/>
-
-	<!--Turn On Cursor Blink Mode-->
-	<!--<cpu:CopyImmediateToAccumulator/>
-	<byte>0</byte>
-
-	<cpu:CopyAccumulatorToAbsoluteMemory/>
-	<hex>00cc</hex>-->
-
-	<!--Setup Memory Manager-->
-	<label id="memory" segment="0000" offset="c100"/>
-	<label id="memoryManager" segment="0000" offset="00FB"/>
-	<label id="selectedPointer" segment="0000" offset="00FD"/>
-	<label id="inputBuffer" segment="0000" offset="C000"/>
-
-	<mm:Reset memory="memory" memoryManager="memoryManager"/>
+	<cpu:BranchToRelative8IfPositive/>
+	<addressOf ref="initializeKeyboard" type="Relative8"/>
 	
-	<str:Create memoryManager="memoryManager" pointer="inputBuffer"/>
+	<!--Set Cursor Position-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>00</hex>
 
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>fb</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>04</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>fc</hex>
+
+	<!--Enable Interrupts-->
+	<cpu:ClearInterruptDisableFlag/>
+	
 	<!--Show Prompt-->
-	<mem:KernelWriteCharacterToScreen id="writeCharacter"/>
-	<mem:KernelGetCharacterFromKeyboard id="readCharacter"/>
-	
 	<label id="showPrompt"/>
-	<cpu:CopyImmediateToAccumulator/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
 	<string>&gt;</string>
 
-	<cpu:CallProcedureAtAbsoluteMemory/>
-	<addressOf ref="writeCharacter" type="Absolute16"/>
+	<cpu:CopyImmediate8ToYIndex/>
+	<byte>0</byte>
 
-	<!--Wait For Keypress-->
-	<label id="waitForKeypress" />
+	<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+	<hex>fb</hex>
 
-	<cpu:CallProcedureAtAbsoluteMemory/>
-	<addressOf ref="readCharacter" type="Absolute16"/>
+	<cpu:IncrementImmediate8Address/>
+	<hex>fb</hex>
 
-	<cpu:BranchToRelativeMemoryIfZero/>
-	<addressOf ref="waitForKeypress" type="Relative8"/>
+	<label id="waitForKeypress"/>
 
-	<!--Check For Enter Key-->
-	<cpu:CompareAccumulatorToImmediate/>
-	<key:Enter/>
+	<!--Store Keys-->
+	<cpu:CopyImmediate8ToXIndex/>
+	<byte>7</byte>
 
-	<cpu:BranchToRelativeMemoryIfEqual/>
-	<addressOf ref="enterKeyPressed" type="Relative8"/>
+	<label id="storeKeys"/>
 
-	<!--Check For Escape Key-->
-	<cpu:CompareAccumulatorToImmediate/>
-	<key:Escape/>
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<hex>0200</hex>
 
-	<cpu:BranchToRelativeMemoryIfNotEqual/>
-	<addressOf ref="escapeKeyNotPressed" type="Relative8"/>
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>0208</hex>
 
-	<cpu:JumpToAbsoluteMemory/>
-	<addressOf ref="escapeKeyPressed" type="Absolute16"/>
+	<cpu:DecrementXIndex/>
 
-	<label id="escapeKeyNotPressed"/>
+	<cpu:BranchToRelative8IfPositive/>
+	<addressOf ref="storeKeys" type="Relative8"/>
 
-	<!--Check For Backspace Key-->
-	<cpu:CompareAccumulatorToImmediate/>
-	<key:Backspace/>
+	<cpu:SetInterruptDisableFlag/>
 
-	<cpu:BranchToRelativeMemoryIfNotEqual/>
-	<addressOf ref="backspaceKeyNotPressed" type="Relative8"/>
+	<!--Enable I/O Access-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>00100101</binary>
 
-	<cpu:JumpToAbsoluteMemory/>
-	<addressOf ref="backspaceKeyPressed" type="Absolute16"/>
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
 
-	<label id="backspaceKeyNotPressed"/>
+	<!--Read Keys-->
+	<cpu:CopyImmediate8ToXIndex/>
+	<byte>7</byte>
 
-	<!--Check Buffer Length-->
-	<cpu:PushAccumulatorToStack />
-	<str:GetLength pointer="inputBuffer"/>
-	<cpu:CompareAccumulatorToImmediate/>
-	<byte>78</byte>
-	<cpu:BranchToRelativeMemoryIfEqual />
-	<addressOf ref="waitForKeypress" type="Relative8"/>
-	<cpu:PullAccumulatorFromStack />
+	<label id="readKeys"/>
 
-	<!--Write Character To Screen-->
-	<cpu:CallProcedureAtAbsoluteMemory />
-	<addressOf ref="writeCharacter" type="Absolute16"/>
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<addressOf ref="keyboardRowMasks" type="Absolute16"/>
 
-	<!--Add Character To Buffer-->
-	<str:AppendCharacter pointer="inputBuffer"/>
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>dc00</hex>
 
-	<cpu:JumpToAbsoluteMemory/>
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>dc01</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>0200</hex>
+	
+	<cpu:DecrementXIndex/>
+
+	<cpu:BranchToRelative8IfPositive/>
+	<addressOf ref="readKeys" type="Relative8"/>
+	
+	<!--Disable I/O Access-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>00100000</binary>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+
+	<cpu:ClearInterruptDisableFlag/>
+
+	<!--Find Keys-->
+	<cpu:CopyImmediate8ToXIndex/>
+	<byte>32</byte>
+
+	<label id="findKeys"/>
+	
+	<cpu:CopyImmediate16PlusXIndexAddressToYIndex/>
+	<addressOf ref="keyboardColumns" type="Absolute16"/>
+
+	<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+	<hex>0200</hex>
+
+	<cpu:AndAccumulatorWithImmediate16PlusXIndexAddress/>
+	<addressOf ref="keyboardRows" type="Absolute16"/>
+
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="notPressed" type="Relative8"/>
+
+	<cpu:ExclusiveOrAccumulatorWithImmediate16PlusYIndexAddress/>
+	<hex>0208</hex>
+
+	<cpu:AndAccumulatorWithImmediate16PlusXIndexAddress/>
+	<addressOf ref="keyboardRows" type="Absolute16"/>
+
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="keyPressed" type="Relative8"/>
+
+	<label id="notPressed"/>
+
+	<cpu:DecrementXIndex/>
+
+	<cpu:BranchToRelative8IfPositive/>
+	<addressOf ref="findKeys" type="Relative8"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="waitForKeypress" type="Absolute16"/>
+	
+	<label id="keyPressed"/>
+
+	<cpu:CopyXIndexToAccumulator/>
+
+	<cpu:CopyImmediate8ToYIndex/>
+	<byte>0</byte>
+
+	<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+	<hex>fb</hex>
+
+	<cpu:IncrementImmediate8Address/>
+	<hex>fb</hex>
+
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="notCarry" type="Relative8"/>
+
+	<cpu:IncrementImmediate8Address/>
+	<hex>fc</hex>
+
+	<label id="notCarry"/>
+
+	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="waitForKeypress" type="Absolute16"/>
 
-	<!--Handle Enter Key-->
-	<label id="enterKeyPressed"/>
-
-	<cls:FindMethod class="systemClassPointer" methodName="inputBuffer"/>
+	<cpu:NoOperation/>
 	
-	<cpu:CopyZeroPageMemoryToAccumulator/>
-	<mm:SelectedPointer/>
+	<!--Reset Handler-->
+	<label id="resetHandler"/>
 
-	<cpu:BranchToRelativeMemoryIfNotZero/>
-	<addressOf ref="executeMethod" type="Relative8"/>
+	<cpu:PullAccumulatorFromStack/>
+	<cpu:PullAccumulatorFromStack/>
+	<cpu:PullAccumulatorFromStack/>
 
-	<cpu:CopyZeroPageMemoryToAccumulator/>
-	<hex>FE</hex>
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="start" type="Absolute16"/>
+
+	<!--Interrupt Handler-->
+	<label id="interruptHandler"/>
+
+	<cpu:PushAccumulatorToStack/>
+
+	<!--Enable I/O Access-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>00100101</binary>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>d019</hex>
+
+	<cpu:AndAccumulatorWithImmediate8/>
+	<binary>00000001</binary>
+
+	<cpu:BranchToRelative8IfZero/>
+	<addressOf ref="returnFromInterrupt" type="Relative8"/>
 	
-	<cpu:BranchToRelativeMemoryIfNotZero/>
-	<addressOf ref="executeMethod" type="Relative8"/>
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<hex>d019</hex>
 	
-	<cpu:CopyImmediateToAccumulator />
-	<key:Enter />
+	<label id="returnFromInterrupt"/>
+
+	<!--Disable ROM Banks-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>00100000</binary>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+
+	<cpu:PullAccumulatorFromStack/>
 	
-	<cpu:CallProcedureAtAbsoluteMemory />
-	<addressOf ref="writeCharacter" type="Absolute16"/>
+	<cpu:ReturnFromInterrupt/>
 
-	<cpu:JumpToAbsoluteMemory/>
-	<addressOf ref="clearInputBuffer" type="Absolute16"/>
+	<!--Keyboard Row Masks-->
+	<label id="keyboardRowMasks"/>
+	<hex>fe</hex>
+	<hex>fd</hex>
+	<hex>fb</hex>
+	<hex>f7</hex>
+	<hex>ef</hex>
+	<hex>df</hex>
+	<hex>bf</hex>
+	<hex>7f</hex>
 	
-	<!--Execute Method-->
-	<label id="executeMethod"/>
-		
-	<mm:SelectReference/>
-	<cpu:JumpToIndirectMemory/>
-	<hex>00FD</hex>
+	<!--Keyboard Column Table-->
+	<label id="keyboardColumns"/>
+	<byte>5</byte>
+	<byte>1</byte>
+	<byte>3</byte>
+	<byte>2</byte>
+	<byte>2</byte>
+	<byte>1</byte>
+	<byte>2</byte>
+	<byte>3</byte>
 
-	<cpu:JumpToAbsoluteMemory/>
-	<addressOf ref="clearInputBuffer" type="Absolute16"/>
-	
-	<!--Handle Escape Key-->
-	<label id="escapeKeyPressed"/>
+	<byte>3</byte>
+	<byte>4</byte>
+	<byte>4</byte>
+	<byte>4</byte>
+	<byte>5</byte>
+	<byte>4</byte>
+	<byte>4</byte>
+	<byte>4</byte>
 
-	<cpu:CopyImmediateToAccumulator />
-	<key:Enter />
-
-	<cpu:CallProcedureAtAbsoluteMemory />
-	<addressOf ref="writeCharacter" type="Absolute16"/>
-
-	<!--Clear Input Buffer-->
-	<label id="clearInputBuffer"/>
-	<str:Clear pointer="inputBuffer"/>
-
-	<cpu:JumpToAbsoluteMemory />
-	<addressOf ref="showPrompt" type="Absolute16"/>
-	
-	<!--Handle Backspace Key-->
-	<label id="backspaceKeyPressed"/>
-	<str:GetLength pointer="inputBuffer"/>
-
-	<cpu:BranchToRelativeMemoryIfZero />
-	<addressOf ref="bufferEmpty" type="Relative8"/>
-
-	<str:TrimLastCharacter pointer="inputBuffer"/>
-	
-	<cpu:CopyImmediateToAccumulator />
-	<key:Backspace/>
-	
-	<cpu:CallProcedureAtAbsoluteMemory />
-	<addressOf ref="writeCharacter" type="Absolute16"/>
-
-	<label id="bufferEmpty"/>
-	<cpu:JumpToAbsoluteMemory/>
-	<addressOf ref="waitForKeypress" type="Absolute16"/>
-
-	<label id="systemClassPointer"/>
-	<addressOf ref="systemClass" type="Absolute16"/>
-	
-	<!--Add System Class-->
-	<label id="systemClass"/>
-	<addressOf ref="nameField" type="Absolute16"/>
-	<addressOf ref="namespaceField" type="Absolute16"/>
-	
-	<!--Method Count-->
+	<byte>5</byte>
+	<byte>7</byte>
+	<byte>2</byte>
+	<byte>1</byte>
+	<byte>2</byte>
+	<byte>3</byte>
+	<byte>3</byte>
 	<byte>1</byte>
 
-	<addressOf ref="resetMethod" type="Absolute16"/>
-
-	<label id="nameField"/>
-	<byte>6</byte>
-	<string>System</string>
-
-	<label id="namespaceField"/>
+	<byte>2</byte>
+	<byte>3</byte>
+	<byte>1</byte>
 	<byte>5</byte>
-	<string>OZone</string>
-
-	<!--Methods-->
-	<mem:KernelReset id="reset"/>
-	
-	<label id="resetMethod"/>
-	<addressOf ref="methodName" type="Absolute16"/>
-	<addressOf ref="method" type="Absolute16"/>
-	
-	<label id="method"/>
-	<cpu:JumpToIndirectMemory/>
-	<addressOf ref="reset" type="Absolute16"/>
-
-	<label id="methodName" />
 	<byte>5</byte>
-	<string>reset</string>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+
+	<byte>7</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	<byte>5</byte>
+	
+	<!--Keyboard Row Table-->
+	<label id="keyboardRows"/>
+	<binary>01000000</binary>
+	<binary>00000100</binary>
+	<binary>00010000</binary>
+	<binary>00010000</binary>
+	<binary>00000100</binary>
+	<binary>01000000</binary>
+	<binary>00100000</binary>
+	<binary>00000100</binary>
+
+	<binary>00100000</binary>
+	<binary>00000010</binary>
+	<binary>00000100</binary>
+	<binary>00100000</binary>
+	<binary>00000100</binary>
+	<binary>00010000</binary>
+	<binary>10000000</binary>
+	<binary>01000000</binary>
+
+	<binary>00000010</binary>
+	<binary>01000000</binary>
+	<binary>00000010</binary>
+	<binary>00100000</binary>
+	<binary>01000000</binary>
+	<binary>01000000</binary>
+	<binary>10000000</binary>
+	<binary>00000010</binary>
+
+	<binary>10000000</binary>
+	<binary>00000010</binary>
+	<binary>00010000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+
+	<binary>00010000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
+	<binary>00000000</binary>
 </scope>

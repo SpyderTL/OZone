@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema targetNamespace="http://metalx.org/Subleq" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:element name="Jump">
+		<xsd:annotation>
+			<xsd:documentation>
+				Jump to a label.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="destination" type="xsd:IDREF" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="Next">
+		<xsd:annotation>
+			<xsd:documentation>
+				Branch to the next instruction.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType/>
+	</xsd:element>
+	<xsd:element name="Copy">
+		<xsd:annotation>
+			<xsd:documentation>
+				Copy source to destination.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="source" type="xsd:IDREF"/>
+			<xsd:attribute name="destination" type="xsd:IDREF"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="CopyIndirect">
+		<xsd:annotation>
+			<xsd:documentation>
+				Copy pointer value to destination.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="pointer" type="xsd:IDREF"/>
+			<xsd:attribute name="destination" type="xsd:IDREF"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="Equals">
+		<xsd:annotation>
+			<xsd:documentation>
+				Branch to label if values are equal.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="value1" type="xsd:IDREF" use="required"/>
+			<xsd:attribute name="value2" type="xsd:IDREF" use="required"/>
+			<xsd:attribute name="branch" type="xsd:IDREF" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="Zero">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sets a value to zero.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="value" type="xsd:IDREF"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="Increment">
+		<xsd:annotation>
+			<xsd:documentation>
+				Increments a value.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="value" type="xsd:IDREF"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="Decrement">
+		<xsd:annotation>
+			<xsd:documentation>
+				Decrements a value.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="value" type="xsd:IDREF" use="required"/>
+			<xsd:attribute name="branch" type="xsd:IDREF"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="Add">
+		<xsd:annotation>
+			<xsd:documentation>
+				Adds source to destination.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="source" type="xsd:IDREF"/>
+			<xsd:attribute name="destination" type="xsd:IDREF"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="Subtract">
+		<xsd:annotation>
+			<xsd:documentation>
+				Subtract source from destination.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="source" type="xsd:IDREF" use="required"/>
+			<xsd:attribute name="destination" type="xsd:IDREF" use="required"/>
+			<xsd:attribute name="branch" type="xsd:IDREF"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="Multiply">
+		<xsd:annotation>
+			<xsd:documentation>
+				Multiply destination by source.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="source" type="xsd:IDREF"/>
+			<xsd:attribute name="destination" type="xsd:IDREF"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="Divide">
+		<xsd:annotation>
+			<xsd:documentation>
+				Divide destination by source.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="source" type="xsd:IDREF"/>
+			<xsd:attribute name="destnation" type="xsd:IDREF"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="Loop">
+		<xsd:annotation>
+			<xsd:documentation>
+				Executes code multiple times.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:any/>
+			</xsd:choice>
+			<xsd:attribute name="count" type="xsd:IDREF"/>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

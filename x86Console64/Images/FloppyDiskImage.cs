@@ -11,7 +11,7 @@ namespace x86Console64
 	{
 		private List<DiskImageProgram> _programs = new List<DiskImageProgram>();
 		private int _block = 5;
-		private MemoryAddress _address = new MemoryAddress(0x0000, 0x10000);
+		private MemoryAddress _address = new MemoryAddress { Offset = 0x10000 };
 		//private const int _startupAddress = 0x10000;
 		//private const int _catalogAddress = 0x5000;
 		private const int _blockLength = 512;
@@ -37,7 +37,11 @@ namespace x86Console64
 				{
 					Block = _block,
 					Length = blocks,
-					Address = _address,
+					Address = new MemoryAddress
+					{
+						Offset = _address.Offset,
+						Segment = _address.Segment
+					},
 					Program = program
 				});
 
@@ -58,7 +62,11 @@ namespace x86Console64
 				{
 					Block = _block,
 					Length = blocks,
-					Address = address,
+					Address = new MemoryAddress
+					{
+						Offset = address.Offset,
+						Segment = address.Segment
+					},
 					Program = program
 				});
 
@@ -78,7 +86,11 @@ namespace x86Console64
 				{
 					Block = block,
 					Length = blocks,
-					Address = address,
+					Address = new MemoryAddress
+					{
+						Offset = address.Offset,
+						Segment = address.Segment
+					},
 					Program = program
 				});
 		}

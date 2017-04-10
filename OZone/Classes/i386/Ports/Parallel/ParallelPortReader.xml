@@ -404,25 +404,21 @@
 	</cls:method>
 
 	<label id="readByte">
-		<!--Wait For Data-->
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToDXRegister/>
-		<byte>5</byte>
+		<!--Wait For Ready-->
+		<cpu:IncrementDX/>
 
-		<label id="waitForData"/>
+		<label id="waitForBusy"/>
 
 		<cpu:ReadFromDXPortToAL/>
 
 		<cpu:TestALWithImmediate/>
 		<binary>00000001</binary>
 
-		<cpu:BranchToRelative8IfZero/>
-		<addressOf ref="waitForData" type="Relative8"/>
+		<!--<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="waitForBusy" type="Relative8"/>-->
 
 		<!--Read Byte-->
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:SubtractFromDXRegister/>
-		<byte>5</byte>
+		<cpu:DecrementDX/>
 
 		<cpu:ReadFromDXPortToAL/>
 

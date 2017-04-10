@@ -1,0 +1,729 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="GraphicsTest"
+	type="http://metalx.org/Video/Graphics/GraphicsTest"
+	static="true"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:con="http://metalx.org/i386/Functions/Console"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:inc="http://metalx.org/Intel/80386/Increment"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:index="http://metalx.org/Intel/80386/Index"
+	xmlns:ext="http://metalx.org/Intel/80386/ExtendedOperators"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands">
+
+	<cls:method name="ColorFade" type="http://metalx.org/Video/Graphics/Color" static="true">
+		<cls:parameter name="PixelRenderer" type="http://metalx.org/Video/Graphics/PixelRenderer"/>
+
+		<cpu:PushImmediateToStack/>
+		<int>0</int>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetType/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="setColor" type="Absolute32"/>
+
+		<clsf:FindMethod/>
+
+		<clsf:GetMethodEntryPoint/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>ff000000</hex>
+
+		<int:CreateObject/>
+
+		<cpu:PushDIToStack/>
+
+		<label id="forEachColor"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:LogicFunction/>
+		<logic:CallIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+		
+		<!--Get Next Color-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+
+		<cpu:IncrementAX/>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-ImmediateAddress/>
+		<addressOf ref="colors" type="Absolute32"/>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notLastColor" type="Relative8"/>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+		
+		<label id="notLastColor"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddImmediateToAX/>
+		<addressOf ref="colors" type="Absolute32" offset="4"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<obj:GetData/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddress/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="forEachColor" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="setColor">SetColor</var:string>
+
+		<label id="colors">
+			<int>2</int>
+			<hex>ff000000</hex>
+			<hex>ffffffff</hex>
+		</label>
+	</cls:method>
+
+	<cls:method name="Colors" type="http://metalx.org/Video/Graphics/Color" static="true">
+		<cls:parameter name="PixelRenderer" type="http://metalx.org/Video/Graphics/PixelRenderer"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetType/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="setColor" type="Absolute32"/>
+
+		<clsf:FindMethod/>
+
+		<clsf:GetMethodEntryPoint/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>ff000000</hex>
+
+		<int:CreateObject/>
+
+		<cpu:PushDIToStack/>
+
+		<label id="forEachColor"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:LogicFunction/>
+		<logic:CallIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<obj:GetData/>
+
+		<cpu:IncrementFunction/>
+		<inc:IncrementSIAddress/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="forEachColor" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="setColor">SetColor</var:string>
+	</cls:method>
+
+	<cls:method name="RandomColors" type="http://metalx.org/Video/Graphics/Color" static="true">
+		<cls:parameter name="PixelRenderer" type="http://metalx.org/Video/Graphics/PixelRenderer"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetType/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="setColor" type="Absolute32"/>
+
+		<clsf:FindMethod/>
+
+		<clsf:GetMethodEntryPoint/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>ff000000</hex>
+
+		<int:CreateObject/>
+
+		<cpu:PushDIToStack/>
+
+		<label id="forEachColor"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:LogicFunction/>
+		<logic:CallIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<obj:GetData/>
+
+		<cpu:ExtendedOperator/>
+		<ext:CopyTimestampCounterToAXDX/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddress/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="forEachColor" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="setColor">SetColor</var:string>
+	</cls:method>
+
+	<cls:method name="Noise" type="http://metalx.org/Video/Graphics/Color" static="true">
+		<cls:parameter name="PixelRenderer" type="http://metalx.org/Video/Graphics/PixelRenderer"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetType/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="drawPoint" type="Absolute32"/>
+
+		<clsf:FindMethod/>
+
+		<clsf:GetMethodEntryPoint/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>ffff00ff</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:PushDIToStack/>
+
+		<mm:CheckOut length="8"/>
+
+		<obj:Create length="8" type="http://metalx.org/Video/Graphics/Point"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:ExecuteMethod name="GetSize"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<label id="forEachFrame"/>
+
+		<cpu:PushDXToStack/>
+
+		<!--Reset Point.Y-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>0</int>
+
+		<label id="forEachRow"/>
+
+		<cpu:PushDXToStack/>
+		<cpu:PushCXToStack/>
+
+		<!--Reset Point.X-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>12</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>0</int>
+
+		<label id="forEachPixel"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<!--Set Random Color-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>16</byte>
+
+		<obj:GetData/>
+
+		<cpu:ExtendedOperator/>
+		<ext:CopyTimestampCounterToAXDX/>
+
+		<cpu:ExclusiveOrOperandWithRegister/>
+		<op:AX-SIAddress/>
+
+		<!--Point-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>12</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<!--Color-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>16</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:LogicFunction/>
+		<logic:CallIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>20</byte>
+
+		<!--Increment Point.X-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>12</byte>
+
+		<obj:GetData/>
+
+		<cpu:IncrementFunction/>
+		<inc:IncrementSIAddress/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachPixel" type="Relative8"/>
+
+		<!--Increment Point.Y-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>12</byte>
+
+		<obj:GetData/>
+
+		<cpu:IncrementFunction/>
+		<inc:IncrementSIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullDXFromStack/>
+
+		<cpu:DecrementDX/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="forEachRow" type="Relative8"/>
+
+		<cpu:PullDXFromStack/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="forEachFrame" type="Relative8"/>
+
+		<!--<cpu:PullCXFromStack/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachPixel" type="Relative8"/>
+
+		<cpu:PullDXFromStack/>
+		<cpu:PullCXFromStack/>
+
+		<cpu:DecrementDX/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="forEachRow" type="Relative8"/>-->
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="getSize">GetSize</var:string>
+		<var:string id="drawPoint">DrawPoint</var:string>
+	</cls:method>
+
+	<cls:method name="GrayNoise" type="http://metalx.org/Video/Graphics/Color" static="true">
+		<cls:parameter name="PixelRenderer" type="http://metalx.org/Video/Graphics/PixelRenderer"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetType/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="drawPoint" type="Absolute32"/>
+
+		<clsf:FindMethod/>
+
+		<clsf:GetMethodEntryPoint/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>ff000000</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:PushDIToStack/>
+
+		<mm:CheckOut length="8"/>
+
+		<obj:Create length="8" type="http://metalx.org/Video/Graphics/Point"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:ExecuteMethod name="GetSize"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<label id="forEachFrame"/>
+
+		<cpu:PushDXToStack/>
+
+		<!--Reset Point.Y-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>0</int>
+
+		<label id="forEachRow"/>
+
+		<cpu:PushDXToStack/>
+		<cpu:PushCXToStack/>
+
+		<!--Reset Point.X-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>12</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddress/>
+		<int>0</int>
+
+		<label id="forEachPixel"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<!--Set Random Color-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>16</byte>
+
+		<obj:GetData/>
+
+		<cpu:ExtendedOperator/>
+		<ext:CopyTimestampCounterToAXDX/>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AL-SIAddress/>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-SIAddress/>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>1</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>2</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>3</byte>
+
+		<!--Point-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>12</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<!--Color-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>16</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:LogicFunction/>
+		<logic:CallIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>20</byte>
+
+		<!--Increment Point.X-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>12</byte>
+
+		<obj:GetData/>
+
+		<cpu:IncrementFunction/>
+		<inc:IncrementSIAddress/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachPixel" type="Relative8"/>
+
+		<!--Increment Point.Y-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>12</byte>
+
+		<obj:GetData/>
+
+		<cpu:IncrementFunction/>
+		<inc:IncrementSIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullDXFromStack/>
+
+		<cpu:DecrementDX/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="forEachRow" type="Relative8"/>
+
+		<cpu:PullDXFromStack/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="forEachFrame" type="Relative8"/>
+
+		<!--<cpu:PullCXFromStack/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachPixel" type="Relative8"/>
+
+		<cpu:PullDXFromStack/>
+		<cpu:PullCXFromStack/>
+
+		<cpu:DecrementDX/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="forEachRow" type="Relative8"/>-->
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="getSize">GetSize</var:string>
+		<var:string id="drawPoint">DrawPoint</var:string>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="deviceName" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="deviceName">Graphics Test</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

@@ -30,7 +30,7 @@ namespace NesGame
 					"../../../OZone/Platforms/Nintendo/Nes/PictureProcessingUnit.xslt",
 					"../../../OZone/Platforms/Mos/6502/Operators.xslt");
 
-				MemoryAddress address = new MemoryAddress(0x0000, 0x8000);
+				MemoryAddress address = new MemoryAddress { Offset = 0x8000 };
 
 				ProgramCompiler.Compile(program, address, binaryWriter);
 

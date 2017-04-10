@@ -194,25 +194,8 @@
 	</cls:method>
 
 	<!--<cls:method name="WriteBlock" type="http://metalx.org/String" static="true">
-		<cpu:CopyImmediateToAX/>
-		<int>0</int>
-
-		-->
-	<!--Read Data-->
-	<!--
-		
-
-		<mm:CheckOut length="516"/>
-
-		<cpu:PushDIToStack/>
-		<cpu:PushAXToStack/>
-
-		<cpu:CopyImmediateToAX/>
-		<int>512</int>
-
-		<cpu:CopyAXToDIAddressAndIncrementDI/>
-
-		<cpu:PushDIToStack/>
+		<cpu:CopyImmediateToDI/>
+		<hex>00008000</hex>
 
 		<cpu:CopyImmediateToAL/>
 		<string>!</string>
@@ -223,21 +206,23 @@
 		<cpu:Repeat/>
 		<cpu:CopyALToDIAddressAndIncrementDI/>
 
-		<cpu:PullSIFromStack/>
-
 		<cpu:CopyImmediateToDX/>
 		<hex>000001f0</hex>
 
-		<cpu:PullAXFromStack/>
+		<cpu:CopyImmediateToSI/>
+		<hex>00008000</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:CopyImmediateToBX/>
+		<int>0</int>
 
 		<hd:WriteBlock/>
 
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
 		
-
-		<cpu:PullDIFromStack/>
-
-		<str:CreateObject/>
-
 		<cpu:ReturnToNearCaller/>
 	</cls:method>-->
 
@@ -295,7 +280,7 @@
 	<cls:method name="GetReader" type="http://metalx.org/Storage/Ide/IdeHardDriveReader">
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
-		
+
 		<mm:CheckOut length="8"/>
 
 		<cpu:CopyRegisterToOperand/>
@@ -310,7 +295,26 @@
 
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
-	
+
+	<cls:method name="GetWriter" type="http://metalx.org/Storage/Ide/IdeHardDriveWriter">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<mm:CheckOut length="8"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIAddress/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>0</int>
+
+		<obj:Create length="8" type="http://metalx.org/Storage/Ide/IdeHardDriveWriter"/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
 	<cls:method name="ToString" type="http://metalx.org/String">
 		<!--<cpu:CopyImmediateToDI/>
 		<addressOf ref="deviceName" type="Absolute32"/>

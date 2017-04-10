@@ -3,7 +3,7 @@ namespace OZone.Programs
 {
 	public abstract class ProgramSegment
 	{
-		public MemoryAddress Address = MemoryAddress.Zero;
+		public MemoryAddress Address;
 		public string Source;
 
 		public abstract uint GetLength();

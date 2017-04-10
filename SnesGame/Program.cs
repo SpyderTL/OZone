@@ -21,7 +21,7 @@ namespace SnesGame
 
 				var header = ProgramBuilder.Build("../../SnesHeader.xml");
 
-				ProgramCompiler.Compile(header, MemoryAddress.Zero, writer);
+				ProgramCompiler.Compile(header, null, writer);
 
 				// Default Interrupt Handler
 				stream.Position = 0x8000;
@@ -32,7 +32,7 @@ namespace SnesGame
 					"../../DefaultInterruptHandler.xml",
 					"../../../OZone/Platforms/Mos/65816/Operators.xslt");
 
-				ProgramCompiler.Compile(defaultHandler, new MemoryAddress(0x0000, 0x8000), writer);
+				ProgramCompiler.Compile(defaultHandler, new MemoryAddress { Offset = 0x8000 }, writer);
 
 				// Reset Handler
 				stream.Position = 0x8001;
@@ -43,7 +43,7 @@ namespace SnesGame
 					"../../ResetHandler.xml",
 					"../../../OZone/Platforms/Mos/65816/Operators.xslt");
 
-				ProgramCompiler.Compile(resetHandler, new MemoryAddress(0x0000, 0x8001), writer);
+				ProgramCompiler.Compile(resetHandler, new MemoryAddress { Offset = 0x8001 }, writer);
 
 				stream.SetLength(0x400000);
 			}

@@ -29,7 +29,9 @@ namespace x86Console32
 
                     var program = ProgramReader.Read(document);
 
-					if(file.Address == MemoryAddress.Zero)
+					program.Name = file.Path;
+
+					if(file.Address == null)
 						image.Add(program);
 					else if(file.Block == null)
 						image.Add(program, file.Address);

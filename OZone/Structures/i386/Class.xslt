@@ -16,7 +16,11 @@
 		</xsl:copy>
 	</xsl:template>
 
-	<xsl:template match="cls:class">
+	<xsl:template match="cls:return">
+		<cpu:ReturnToNearCaller/>
+	</xsl:template>
+
+		<xsl:template match="cls:class">
 		<scope>
 			<addressOf ref="className" type="Absolute32"/>
 			<addressOf ref="classType" type="Absolute32"/>

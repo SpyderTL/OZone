@@ -1,0 +1,1377 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Hpet"
+	type="http://metalx.org/Hpet"
+	static="true"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:date="http://metalx.org/i386/Functions/Date"
+	xmlns:time="http://metalx.org/i386/Functions/Time"
+	xmlns:clk="http://metalx.org/i386/Functions/Clock"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:byte="http://metalx.org/i386/Functions/Byte"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate">
+
+	<cls:method name="IsInstalled" static="true" type="http://metalx.org/Boolean">
+		<cpu:CopyImmediateToCX/>
+		<hex>00010000</hex>
+
+		<cpu:CopyImmediateToSI/>
+		<int>0</int>
+
+		<label id="next"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddress/>
+		<string xml:space="preserve">RSD </string>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<string xml:space="preserve">PTR </string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="found" type="Relative8"/>
+
+		<label id="notFound"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>16</byte>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="next" type="Relative8"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="found"/>
+
+		<cpu:PushSIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediateToCX/>
+		<int>20</int>
+
+		<label id="checksum"/>
+
+		<cpu:AddOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="checksum" type="Relative8"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromCXRegister/>
+		<byte>36</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftCXRegisterRight/>
+		<byte>2</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>36</byte>
+
+		<label id="nextTable"/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithAXAddress/>
+		<string>HPET</string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="hpetFound" type="Relative8"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextTable" type="Relative8"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="createObject" type="Relative8"/>
+
+		<label id="hpetFound"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<label id="createObject"/>
+		
+		<bool:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetRevision" static="true" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyImmediateToCX/>
+		<hex>00010000</hex>
+
+		<cpu:CopyImmediateToSI/>
+		<int>0</int>
+
+		<label id="next"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddress/>
+		<string xml:space="preserve">RSD </string>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<string xml:space="preserve">PTR </string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="found" type="Relative8"/>
+
+		<label id="notFound"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>16</byte>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="next" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="found"/>
+
+		<cpu:PushSIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediateToCX/>
+		<int>20</int>
+
+		<label id="checksum"/>
+
+		<cpu:AddOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="checksum" type="Relative8"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromCXRegister/>
+		<byte>36</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftCXRegisterRight/>
+		<byte>2</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>36</byte>
+
+		<label id="nextTable"/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithAXAddress/>
+		<string>HPET</string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="hpetFound" type="Relative8"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextTable" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="hpetFound"/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-AXAddressPlusImmediate8/>
+		<byte>36</byte>
+
+		<label id="createObject"/>
+
+		<byte:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetHpetNumber" static="true" type="http://metalx.org/Byte">
+		<cpu:CopyImmediateToCX/>
+		<hex>00010000</hex>
+
+		<cpu:CopyImmediateToSI/>
+		<int>0</int>
+
+		<label id="next"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddress/>
+		<string xml:space="preserve">RSD </string>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<string xml:space="preserve">PTR </string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="found" type="Relative8"/>
+
+		<label id="notFound"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>16</byte>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="next" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="found"/>
+
+		<cpu:PushSIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediateToCX/>
+		<int>20</int>
+
+		<label id="checksum"/>
+
+		<cpu:AddOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="checksum" type="Relative8"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromCXRegister/>
+		<byte>36</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftCXRegisterRight/>
+		<byte>2</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>36</byte>
+
+		<label id="nextTable"/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithAXAddress/>
+		<string>HPET</string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="hpetFound" type="Relative8"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextTable" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="hpetFound"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AL-AXAddressPlusImmediate8/>
+		<byte>52</byte>
+
+		<label id="createObject"/>
+
+		<byte:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetComparitorCount" static="true" type="http://metalx.org/Byte">
+		<cpu:CopyImmediateToCX/>
+		<hex>00010000</hex>
+
+		<cpu:CopyImmediateToSI/>
+		<int>0</int>
+
+		<label id="next"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddress/>
+		<string xml:space="preserve">RSD </string>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<string xml:space="preserve">PTR </string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="found" type="Relative8"/>
+
+		<label id="notFound"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>16</byte>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="next" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="found"/>
+
+		<cpu:PushSIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediateToCX/>
+		<int>20</int>
+
+		<label id="checksum"/>
+
+		<cpu:AddOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="checksum" type="Relative8"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromCXRegister/>
+		<byte>36</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftCXRegisterRight/>
+		<byte>2</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>36</byte>
+
+		<label id="nextTable"/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithAXAddress/>
+		<string>HPET</string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="hpetFound" type="Relative8"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextTable" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="hpetFound"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AL-AXAddressPlusImmediate8/>
+		<byte>37</byte>
+
+		<cpu:AndALWithImmediate/>
+		<hex>1f</hex>
+
+		<label id="createObject"/>
+
+		<byte:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetAddress" static="true" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyImmediateToCX/>
+		<hex>00010000</hex>
+
+		<cpu:CopyImmediateToSI/>
+		<int>0</int>
+
+		<label id="next"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddress/>
+		<string xml:space="preserve">RSD </string>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<string xml:space="preserve">PTR </string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="found" type="Relative8"/>
+
+		<label id="notFound"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>16</byte>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="next" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="found"/>
+
+		<cpu:PushSIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediateToCX/>
+		<int>20</int>
+
+		<label id="checksum"/>
+
+		<cpu:AddOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="checksum" type="Relative8"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromCXRegister/>
+		<byte>36</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftCXRegisterRight/>
+		<byte>2</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>36</byte>
+
+		<label id="nextTable"/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithAXAddress/>
+		<string>HPET</string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="hpetFound" type="Relative8"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextTable" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="hpetFound"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<byte>44</byte>
+
+		<label id="createObject"/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Enable" static="true" type="http://metalx.org/Object">
+		<cpu:CopyImmediateToCX/>
+		<hex>00010000</hex>
+
+		<cpu:CopyImmediateToSI/>
+		<int>0</int>
+
+		<label id="next"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddress/>
+		<string xml:space="preserve">RSD </string>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<string xml:space="preserve">PTR </string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="found" type="Relative8"/>
+
+		<label id="notFound"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>16</byte>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="next" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="found"/>
+
+		<cpu:PushSIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediateToCX/>
+		<int>20</int>
+
+		<label id="checksum"/>
+
+		<cpu:AddOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="checksum" type="Relative8"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromCXRegister/>
+		<byte>36</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftCXRegisterRight/>
+		<byte>2</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>36</byte>
+
+		<label id="nextTable"/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithAXAddress/>
+		<string>HPET</string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="hpetFound" type="Relative8"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextTable" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="hpetFound"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-AXAddressPlusImmediate8/>
+		<byte>44</byte>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<hex>10</hex>
+		
+		<cpu:OrALWithImmediate/>
+		<binary>00000001</binary>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<hex>10</hex>
+		
+		<!--Initialize Comparators-->
+		
+		
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+		
+	<cls:method name="GetCapabilities" static="true" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyImmediateToCX/>
+		<hex>00010000</hex>
+
+		<cpu:CopyImmediateToSI/>
+		<int>0</int>
+
+		<label id="next"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddress/>
+		<string xml:space="preserve">RSD </string>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<string xml:space="preserve">PTR </string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="found" type="Relative8"/>
+
+		<label id="notFound"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>16</byte>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="next" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="found"/>
+
+		<cpu:PushSIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediateToCX/>
+		<int>20</int>
+
+		<label id="checksum"/>
+
+		<cpu:AddOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="checksum" type="Relative8"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromCXRegister/>
+		<byte>36</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftCXRegisterRight/>
+		<byte>2</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>36</byte>
+
+		<label id="nextTable"/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithAXAddress/>
+		<string>HPET</string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="hpetFound" type="Relative8"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextTable" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="hpetFound"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<byte>44</byte>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+		
+		<hex:CreateObject/>
+		
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+		
+	<cls:method name="GetConfiguration" static="true" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyImmediateToCX/>
+		<hex>00010000</hex>
+
+		<cpu:CopyImmediateToSI/>
+		<int>0</int>
+
+		<label id="next"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddress/>
+		<string xml:space="preserve">RSD </string>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<string xml:space="preserve">PTR </string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="found" type="Relative8"/>
+
+		<label id="notFound"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>16</byte>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="next" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="found"/>
+
+		<cpu:PushSIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediateToCX/>
+		<int>20</int>
+
+		<label id="checksum"/>
+
+		<cpu:AddOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="checksum" type="Relative8"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromCXRegister/>
+		<byte>36</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftCXRegisterRight/>
+		<byte>2</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>36</byte>
+
+		<label id="nextTable"/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithAXAddress/>
+		<string>HPET</string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="hpetFound" type="Relative8"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextTable" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="hpetFound"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<byte>44</byte>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<hex>10</hex>
+		
+		<hex:CreateObject/>
+		
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+		
+	<cls:method name="GetInterruptStatus" static="true" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyImmediateToCX/>
+		<hex>00010000</hex>
+
+		<cpu:CopyImmediateToSI/>
+		<int>0</int>
+
+		<label id="next"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddress/>
+		<string xml:space="preserve">RSD </string>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<string xml:space="preserve">PTR </string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="found" type="Relative8"/>
+
+		<label id="notFound"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>16</byte>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="next" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="found"/>
+
+		<cpu:PushSIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediateToCX/>
+		<int>20</int>
+
+		<label id="checksum"/>
+
+		<cpu:AddOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="checksum" type="Relative8"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromCXRegister/>
+		<byte>36</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftCXRegisterRight/>
+		<byte>2</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>36</byte>
+
+		<label id="nextTable"/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithAXAddress/>
+		<string>HPET</string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="hpetFound" type="Relative8"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextTable" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="hpetFound"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<byte>44</byte>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<hex>20</hex>
+		
+		<hex:CreateObject/>
+		
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+		
+	<cls:method name="GetMainCounter" static="true" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyImmediateToCX/>
+		<hex>00010000</hex>
+
+		<cpu:CopyImmediateToSI/>
+		<int>0</int>
+
+		<label id="next"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddress/>
+		<string xml:space="preserve">RSD </string>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<string xml:space="preserve">PTR </string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="found" type="Relative8"/>
+
+		<label id="notFound"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>16</byte>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="next" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="found"/>
+
+		<cpu:PushSIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediateToCX/>
+		<int>20</int>
+
+		<label id="checksum"/>
+
+		<cpu:AddOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="checksum" type="Relative8"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromCXRegister/>
+		<byte>36</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftCXRegisterRight/>
+		<byte>2</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>36</byte>
+
+		<label id="nextTable"/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithAXAddress/>
+		<string>HPET</string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="hpetFound" type="Relative8"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextTable" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="hpetFound"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<byte>44</byte>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<hex>F0</hex>
+		
+		<hex:CreateObject/>
+		
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+		
+	<cls:method name="GetTimerCapabilities" static="true" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyImmediateToCX/>
+		<hex>00010000</hex>
+
+		<cpu:CopyImmediateToSI/>
+		<int>0</int>
+
+		<label id="next"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddress/>
+		<string xml:space="preserve">RSD </string>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<string xml:space="preserve">PTR </string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="found" type="Relative8"/>
+
+		<label id="notFound"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>16</byte>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="next" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="found"/>
+
+		<cpu:PushSIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediateToCX/>
+		<int>20</int>
+
+		<label id="checksum"/>
+
+		<cpu:AddOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="checksum" type="Relative8"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromCXRegister/>
+		<byte>36</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftCXRegisterRight/>
+		<byte>2</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>36</byte>
+
+		<label id="nextTable"/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithAXAddress/>
+		<string>HPET</string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="hpetFound" type="Relative8"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextTable" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="hpetFound"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<byte>44</byte>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate/>
+		<hex>00000100</hex>
+		
+		<hex:CreateObject/>
+		
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

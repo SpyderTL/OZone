@@ -11,7 +11,7 @@ namespace x86Desktop
 	{
 		private List<DiskImageProgram> _programs = new List<DiskImageProgram>();
 		private int _block;
-		private MemoryAddress _address = new MemoryAddress(0x0000, 0x1000);
+		private MemoryAddress _address = new MemoryAddress { Offset = 0x1000 };
 		private const int _blockLength = 512;
 		private const int _blockCount = 2880;
 		private const int _diskLength = _blockLength * _blockCount;
@@ -27,7 +27,11 @@ namespace x86Desktop
 				{
 					Block = _block,
 					Length = blocks,
-					Address = _address,
+					Address = new MemoryAddress
+					{
+						Offset = _address.Offset,
+						Segment = _address.Segment
+					},
 					Program = program
 				});
 
@@ -48,7 +52,11 @@ namespace x86Desktop
 				{
 					Block = _block,
 					Length = blocks,
-					Address = address,
+					Address = new MemoryAddress
+					{
+						Offset = address.Offset,
+						Segment = address.Segment
+					},
 					Program = program
 				});
 
@@ -68,7 +76,11 @@ namespace x86Desktop
 				{
 					Block = block,
 					Length = blocks,
-					Address = address,
+					Address = new MemoryAddress
+					{
+						Offset = address.Offset,
+						Segment = address.Segment
+					},
 					Program = program
 				});
 		}

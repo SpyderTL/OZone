@@ -29,7 +29,7 @@ namespace x86Console
 			{
 				var filename = Path.Combine(project.Name, Path.GetFileName(program.Path) + ".program");
 
-				if(program.Address == MemoryAddress.Zero)
+				if(program.Address == null)
 					image.Add(ProgramReader.Read(XDocument.Load(filename)));
 				else if(program.Block == null)
 					image.Add(ProgramReader.Read(XDocument.Load(filename)), program.Address);

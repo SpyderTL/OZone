@@ -19,16 +19,29 @@ namespace x86Console32
 
 			var image = new FloppyDiskImage();
 
-			foreach(var file in project.Files)
+			foreach (var file in project.Files)
 			{
 				var filename = file.OutputPath;
 
-				if(file.Address == MemoryAddress.Zero)
-					image.Add(ProgramReader.Read(XDocument.Load(filename)));
-				else if(file.Block == null)
-					image.Add(ProgramReader.Read(XDocument.Load(filename)), file.Address);
-				else
-					image.Add(ProgramReader.Read(XDocument.Load(filename)), file.Address, file.Block.Value);
+				try
+				{
+					var document = XDocument.Load(filename, LoadOptions.SetLineInfo);
+
+					var program = ProgramReader.Read(document);
+
+					program.Name = file.Path;
+
+					if (file.Address == null)
+						image.Add(program);
+					else if (file.Block == null)
+						image.Add(program, file.Address);
+					else
+						image.Add(program, file.Address, file.Block.Value);
+				}
+				catch (Exception e)
+				{
+					throw new Exception("Error Reading File: " + filename + "\r\n" + e.Message, e);
+				}
 			}
 
 			// Write Image To Disk

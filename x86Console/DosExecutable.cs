@@ -10,15 +10,19 @@ namespace x86Console
 	public class DosExecutable
 	{
 		private List<DosExecutableProgram> _programs = new List<DosExecutableProgram>();
-		private MemoryAddress _address = new MemoryAddress(0x0000, 0x1000);
-		private MemoryAddress _baseAddress = new MemoryAddress(0x0000, 0x0100);
+		private MemoryAddress _address = new MemoryAddress { Offset = 0x1000 };
+		private MemoryAddress _baseAddress = new MemoryAddress { Offset = 0x0100 };
 
 		public void Add(OZone.Programs.Program program)
 		{
 			_programs.Add(
 				new DosExecutableProgram
 				{
-					Address = _address,
+					Address = new MemoryAddress
+					{
+						Offset = _address.Offset,
+						Segment = _address.Segment
+					},
 					Program = program
 				});
 
@@ -30,7 +34,11 @@ namespace x86Console
 			_programs.Add(
 				new DosExecutableProgram
 				{
-					Address = address,
+					Address = new MemoryAddress
+					{
+						Offset = address.Offset,
+						Segment = address.Segment
+					},
 					Program = program
 				});
 		}

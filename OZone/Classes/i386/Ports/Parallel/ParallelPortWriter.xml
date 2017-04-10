@@ -325,26 +325,22 @@
 
 	<label id="writeByte">
 		<!--Wait For Ready-->
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToDXRegister/>
-		<byte>1</byte>
+		<cpu:IncrementDX/>
 		
 		<cpu:ExchangeBXWithAX/>
 
-		<label id="waitForReady"/>
+		<label id="waitForBusy"/>
 
 		<cpu:ReadFromDXPortToAL/>
 
 		<cpu:TestALWithImmediate/>
-		<binary>10000000</binary>
+		<binary>00000001</binary>
 
-		<cpu:BranchToRelative8IfZero/>
-		<addressOf ref="waitForReady" type="Relative8"/>
+		<!--<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="waitForBusy" type="Relative8"/>-->
 
 		<!--Write Byte-->
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:SubtractFromDXRegister/>
-		<byte>1</byte>
+		<cpu:DecrementDX/>
 		
 		<cpu:ExchangeBXWithAX/>
 
@@ -353,14 +349,16 @@
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToDXRegister/>
 		<byte>2</byte>
-		
-		<cpu:CopyImmediateToAL/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:OrALWithImmediate/>
 		<binary>00000001</binary>
 	
 		<cpu:WriteALToDXPort/>
 
-		<cpu:CopyImmediateToAL/>
-		<binary>00000000</binary>
+		<cpu:AndALWithImmediate/>
+		<binary>11111110</binary>
 	
 		<cpu:WriteALToDXPort/>
 
@@ -368,6 +366,6 @@
 		<math:SubtractFromDXRegister/>
 		<byte>2</byte>
 		
-	<cpu:ReturnToNearCaller/>
+		<cpu:ReturnToNearCaller/>
 	</label>
 </cls:class>

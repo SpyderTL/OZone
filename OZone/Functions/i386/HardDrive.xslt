@@ -565,12 +565,12 @@
 	</xsl:template>
 
 	<xsl:template match="ns:WriteBlock">
-		<cpu:PushAXToStack/>
-
-		<!--Set Drive And Block3-->
+		<!--Select Master Drive And Send Block3-->
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToDXRegister/>
 		<pata:DriveAndHead/>
+
+		<cpu:PushAXToStack/>
 
 		<cpu:ShiftRegisterByImmediate8Function/>
 		<shift:ShiftAXRegisterRight/>
@@ -582,19 +582,26 @@
 		<cpu:OrALWithImmediate/>
 		<binary>11100000</binary>
 
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftBLRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrRegisterWithOperand8/>
+		<op:AL-BLRegister/>
+
 		<cpu:WriteALToDXPort/>
 
-		<!--Set Block Count-->
+		<!--Send Block Count-->
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:SubtractFromDXRegister/>
-		<hex>04</hex>
+		<byte>4</byte>
 
 		<cpu:CopyImmediateToAL/>
 		<byte>1</byte>
 
 		<cpu:WriteALToDXPort/>
 
-		<!--Set Block0-->
+		<!--Send Block0-->
 		<cpu:IncrementDX/>
 
 		<cpu:PullAXFromStack/>
@@ -602,7 +609,7 @@
 
 		<cpu:WriteALToDXPort/>
 
-		<!--Set Block1-->
+		<!--Send Block1-->
 		<cpu:IncrementDX/>
 
 		<cpu:PullAXFromStack/>
@@ -614,7 +621,7 @@
 
 		<cpu:WriteALToDXPort/>
 
-		<!--Set Block2-->
+		<!--Send Block2-->
 		<cpu:IncrementDX/>
 
 		<cpu:PullAXFromStack/>
@@ -625,17 +632,41 @@
 
 		<cpu:WriteALToDXPort/>
 
-		<!--Send Write Sector Command-->
+		<!--Send Read Sector Command-->
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToDXRegister/>
 		<hex>02</hex>
 
 		<cpu:CopyImmediateToAL/>
-		<cmd:WriteSectors/>
-
+		<!--<cmd:ReadSectors/>-->
+		<!--<cmd:ReadSectorsAndRetry/>-->
+		<cmd:WriteSectorsAndRetry/>
+		
 		<cpu:WriteALToDXPort/>
 
-		<!--Send Data-->
+		<!--Wait For Data-->
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<label id="waitForData"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:TestALWithImmediate/>
+		<sta:Error/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="error" type="Relative8"/>
+
+		<cpu:TestALWithImmediate/>
+		<sta:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="waitForData" type="Relative8"/>
+
+		<!--Write Data-->
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:SubtractFromDXRegister/>
 		<hex>07</hex>
@@ -643,8 +674,24 @@
 		<cpu:CopyImmediateToCX/>
 		<int>128</int>
 
-		<cpu:Repeat/>
+		<!--<cpu:Repeat/>-->
+		<label id="writeByte"/>
+		
 		<cpu:WriteSIAddressToDXPortAndIncrementSI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="writeByte" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<hex>07</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:FlushCache/>
+
+		<cpu:WriteALToDXPort/>
+
+		<label id="error"/>
 	</xsl:template>
 
 	<xsl:template match="ns:WriteBlocks">

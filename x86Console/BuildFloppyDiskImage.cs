@@ -21,7 +21,7 @@ namespace x86Console
 
 			foreach(var program in project.Files)
 			{
-				if(program.Address == MemoryAddress.Zero)
+				if(program.Address == null)
 					image.Add(ProgramReader.Read(XDocument.Load(program.OutputPath)));
 				else if(program.Block == null)
 					image.Add(ProgramReader.Read(XDocument.Load(program.OutputPath)), program.Address);

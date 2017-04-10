@@ -10,15 +10,19 @@ namespace x86Console
 	public class PxeImage
 	{
 		private List<PxeImageProgram> _programs = new List<PxeImageProgram>();
-		private MemoryAddress _address = new MemoryAddress(0x0000, 0x7c00);
-		private MemoryAddress _baseAddress = new MemoryAddress(0x0000, 0x7c00);
+		private MemoryAddress _address = new MemoryAddress { Offset = 0x7c00 };
+		private MemoryAddress _baseAddress = new MemoryAddress { Offset = 0x7c00 };
 
 		public void Add(OZone.Programs.Program program)
 		{
 			_programs.Add(
 				new PxeImageProgram
 				{
-					Address = _address,
+					Address = new MemoryAddress
+					{
+						Offset = _address.Offset,
+						Segment = _address.Segment
+					},
 					Program = program
 				});
 
@@ -30,7 +34,11 @@ namespace x86Console
 			_programs.Add(
 				new PxeImageProgram
 				{
-					Address = address,
+					Address = new MemoryAddress
+					{
+						Offset = address.Offset,
+						Segment = address.Segment
+					},
 					Program = program
 				});
 		}

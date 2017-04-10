@@ -20,17 +20,31 @@ Offset		Length	Description
 00b0			4			EOI Register
 00c0			4			Remote Read Register
 00d0			4			Logical Destination Register
+	Logical APIC ID						8 bits
+	Reserved								24 bits
 00e0			4			Destination Format Register
+	Model									4 bits					// 0 - Cluster, 0xF - Flat
+	Reserved(1)
 00f0			4			Spurrious Interrupt Vector Register
 	Reserved								23 bits
 	Enabled									1 bit
 	Spurrious Interrupt Vector		8 bits
-0100			80			In-Service Registers
-0180			80			Trigger Mode Registers
-0200			80			Interrupt Request Registers
+0100			32			In-Service Registers
+	Interrupt Processing				256 bits
+0180			32			Trigger Mode Registers
+	Interrupt Trigger Mode			256 bits					// 0 - Edge, 1 - Level
+0200			32			Interrupt Request Registers	
+	Interrupt Request					256 bits	
 0280			4			Error Status Register
-02f0			4			Local Vector Table CMCI Register
-0300			4			Local APIC Interrupt Command Register (Low)
+02f0			4			Corrected Machine Check Vector Table Register
+	Reserved								15 bits
+	Disable									1 bit
+	Reserved								3 bits
+	Pending									1 bit
+	Reserved								1 bit
+	Delivery Mode						3 bits
+	Vector									8 bits
+0300			4			Local APIC Interrupt Command Register
 	Reserved								12 bits
 	Destination Type					2 bits	// 0 - Use Target Register, 1 - Self, 2 - All, 3 - Other
 	Reserved								2 bits
@@ -44,15 +58,60 @@ Offset		Length	Description
 0310			4			Local APIC Interrupt Target Register
 	Target Processor ID				8 bits
 	Reserved								24 bits
-0320			4			Timer Register
-0330			4			Thermal Sensor Regster
-0340			4			Performance Counters Register
-0350			4			Interrupt 0 Register
-0360			4			Interrupt 1 Register
-0370			4			Error Register
+0320			4			Timer Vector Table Register
+	Reserved								13 bits
+	Mode									2 bits	// 0 - One Shot, 1 - Periodic, 2 - TSC Deadline
+	Disable									1 bit
+	Reserved								3 bits
+	Pending									1 bit
+	Reserved								1 bit
+	Delivery Mode						3 bits
+	Vector									8 bits	
+0330			4			Thermal Sensor Vector Table Regster
+	Reserved								15 bits
+	Disable									1 bit
+	Reserved								3 bits
+	Pending									1 bit
+	Reserved								1 bit
+	Delivery Mode						3 bits
+	Vector									8 bits
+0340			4			Performance Counter Vector Table Register
+	Reserved								15 bits
+	Disable									1 bit
+	Reserved								3 bits
+	Pending									1 bit
+	Reserved								1 bit
+	Delivery Mode						3 bits
+	Vector									8 bits
+0350			4			Interrupt 0 Vector Table Register
+	Reserved								15 bits
+	Disable									1 bit
+	Reserved								3 bits
+	Pending									1 bit
+	Reserved								1 bit
+	Delivery Mode						3 bits
+	Vector									8 bits
+0360			4			Interrupt 1 Vector Table Register
+	Reserved								15 bits
+	Disable									1 bit
+	Reserved								3 bits
+	Pending									1 bit
+	Reserved								1 bit
+	Delivery Mode						3 bits
+	Vector									8 bits
+0370			4			Error Vector Table Register
+	Reserved								15 bits
+	Disable									1 bit
+	Reserved								3 bits
+	Pending									1 bit
+	Reserved								1 bit
+	Delivery Mode						3 bits
+	Vector									8 bits
 0380			4			Timer Initial Count Register
 0390			4			Timer Current Count Register
 03e0			4			Timer Divide Configuration Register
+	Reserved								28 bits
+	Divisor									4 bits								// 0 - 2, 1 - 4, 2 - 8, 3 - 16, 8 - 32, 9 - 64, 10 - 128, 11 - 1
 
 Interrupt Sources
 	Local Devices
@@ -74,7 +133,7 @@ Offset		Length	Description
 Index		Description
 00			I/O APIC ID
 	Reserved								4 bits
-	Processor APIC ID					4 bits
+	I/O APIC ID							4 bits
 	Reserved								24 bits
 01			I/O APIC Version
 	Reserved								8 bits
@@ -82,13 +141,17 @@ Index		Description
 	Reserved								8 bits		
 	I/O APIC Version					8 bits
 02			I/O APIC Arbitration ID
-10			8			I/O APIC Redirection Table[MaxRedirectEntry+1]
-	Interrupt Vector						8 bits
-	Delivery Mode						3 bits	// 0 - Fixed, 1 - Low Priority, 2 - SMI, 4 - NMI, 5 - INIT, 7 - External INIT
-	Destination Type					1 bit		// 0 - Physical, 1 - Logical
-	Delivery Status						1 bit		// 0 - Idle, 1 - Interrupt Pending
-	Pin Polarity							1 bit		// 0 - Active High, 1 - Active Low
-	Remote IRR							1 bit
-	Trigger Mode						1 bit		// 0 - Edge, 1 - Level
-	Disable									1 bit
-	Destination							8 bits	// Physical: Destination CPU APIC ID
+10			I/O APIC Redirection Table[MaxRedirectEntry+1]		8
+	Destination						4
+		Destination							8 bits	// Physical: Destination CPU APIC ID
+		Reserved								24 bits
+	Interrupt							4
+		Reserved								15 bits
+		Disabled								1 bit
+		Trigger Mode						1 bit		// 0 - Edge, 1 - Level
+		Remote IRR							1 bit
+		Pin Polarity							1 bit		// 0 - Active High, 1 - Active Low
+		Delivery Status						1 bit		// 0 - Idle, 1 - Interrupt Pending
+		Destination Type					1 bit		// 0 - Physical, 1 - Logical
+		Delivery Mode						3 bits	// 0 - Fixed, 1 - Low Priority, 2 - SMI, 4 - NMI, 5 - INIT, 7 - External INIT
+		Interrupt Vector						8 bits	// 0x10 - 0xFE

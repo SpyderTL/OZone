@@ -34,7 +34,7 @@ namespace x86Desktop32
 
 					var program = ProgramReader.Read(document);
 
-					if (file.Address == MemoryAddress.Zero)
+					if (file.Address == null)
 						image.Add(program);
 					else if (file.Block == null)
 						image.Add(program, file.Address);

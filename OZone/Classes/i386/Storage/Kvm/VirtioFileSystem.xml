@@ -80,24 +80,24 @@
 		<cpu:Operand16/>
 		<cpu:WriteAXToDXPort/>
 
-		<!--Set Queue 0 Address (0x100000)-->
+		<!--Set Queue 0 Address (0x200000)-->
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:SubtractFromDXRegister/>
 		<byte>6</byte>
 
 		<cpu:CopyImmediateToAX/>
-		<hex>00000100</hex>
+		<hex>00000200</hex>
 
 		<cpu:WriteAXToDXPort/>
 
 		<!--Setup Queue-->
 		<cpu:CopyImmediateToSI/>
-		<hex>00100000</hex>
+		<hex>00200000</hex>
 
 		<!--Buffer 0 Address-->
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToSIAddress/>
-		<hex>00110000</hex>
+		<hex>00210000</hex>
 
 		<!--Buffer 0 Address (64-bit)-->
 		<cpu:CopyImmediateToOperandFunction/>
@@ -129,7 +129,7 @@
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToSIAddressPlusImmediate8/>
 		<byte>16</byte>
-		<hex>00110100</hex>
+		<hex>00210100</hex>
 
 		<!--Buffer 1 Address (64-bit)-->
 		<cpu:CopyImmediateToOperandFunction/>
@@ -164,12 +164,19 @@
 		<hex>00000204</hex>
 		<short>0</short>
 
+		<!--Add Available Buffer (1)-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate/>
+		<hex>00000206</hex>
+		<short>1</short>
+
 		<!--Set Available Flags (No Interrupt)-->
 		<cpu:Operand16/>
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToSIAddressPlusImmediate/>
 		<hex>00000200</hex>
-		<short>0</short>
+		<short>1</short>
 
 		<!--Set Next Index (0)-->
 		<cpu:Operand16/>
@@ -178,12 +185,12 @@
 		<hex>00000202</hex>
 		<short>0</short>
 
-		<!--Set Used Flags (None)-->
+		<!--Set Used Flags (No Interrupt)-->
 		<cpu:Operand16/>
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToSIAddressPlusImmediate/>
 		<hex>00001000</hex>
-		<short>0</short>
+		<short>1</short>
 
 		<!--Set Used Index (0)-->
 		<cpu:Operand16/>
@@ -192,13 +199,13 @@
 		<hex>00001002</hex>
 		<short>0</short>
 
-		<!--Set Guest Features (Unknown)-->
+		<!--Set Guest Features (None)-->
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:SubtractFromDXRegister/>
 		<byte>4</byte>
 
 		<cpu:CopyImmediateToAX/>
-		<hex>00000000</hex>
+		<hex>00000001</hex>
 
 		<cpu:WriteAXToDXPort/>
 
@@ -279,58 +286,58 @@
 		<!--Fill Buffer-->
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00110000</hex>
+		<hex>00210000</hex>
 		<int>21</int>
 
 		<cpu:CopyImmediateToOperandFunction8/>
 		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00110004</hex>
+		<hex>00210004</hex>
 		<byte>100</byte>
 
 		<cpu:Operand16/>
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00110005</hex>
+		<hex>00210005</hex>
 		<short>99</short>
 
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00110007</hex>
+		<hex>00210007</hex>
 		<int>10</int>
 
 		<cpu:Operand16/>
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
-		<hex>0011000b</hex>
+		<hex>0021000b</hex>
 		<short>8</short>
 
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
-		<hex>0011000d</hex>
+		<hex>0021000d</hex>
 		<string>9P20</string>
 
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00110011</hex>
+		<hex>00210011</hex>
 		<string>00.L</string>
 		
 		<!--Add Buffer To Available Queue-->
 		<cpu:Operand16/>
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00100204</hex>
+		<hex>00200204</hex>
 		<short>0</short>
 
 		<cpu:Operand16/>
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00100206</hex>
+		<hex>00200206</hex>
 		<short>1</short>
 
 		<cpu:Operand16/>
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00100202</hex>
+		<hex>00200202</hex>
 		<short>2</short>
 
 		<!--Notify Device-->
@@ -345,7 +352,7 @@
 
 	<cls:method name="GetAvailableFlags" type="http://metalx.org/Integer">
 		<cpu:CopyImmediateToSI/>
-		<hex>0010000c</hex>
+		<hex>0020000c</hex>
 
 		<cpu:Operand16/>
 		<cpu:CopyOperandToRegister/>
@@ -361,7 +368,7 @@
 
 	<cls:method name="GetUsedFlags" type="http://metalx.org/Integer">
 		<cpu:CopyImmediateToSI/>
-		<hex>00102000</hex>
+		<hex>00202000</hex>
 
 		<cpu:Operand16/>
 		<cpu:CopyOperandToRegister/>
@@ -377,7 +384,7 @@
 
 	<cls:method name="GetUsedIndex" type="http://metalx.org/Integer">
 		<cpu:CopyImmediateToSI/>
-		<hex>00101002</hex>
+		<hex>00201002</hex>
 
 		<cpu:Operand16/>
 		<cpu:CopySIAddressToAXAndIncrementSI/>
@@ -392,7 +399,7 @@
 
 	<cls:method name="GetUsedBufferIndex" type="http://metalx.org/Integer">
 		<cpu:CopyImmediateToSI/>
-		<hex>00102002</hex>
+		<hex>00202002</hex>
 
 		<cpu:Operand16/>
 		<cpu:CopySIAddressToAXAndIncrementSI/>
@@ -419,7 +426,7 @@
 
 	<cls:method name="GetUsedBufferLength" type="http://metalx.org/Integer">
 		<cpu:CopyImmediateToSI/>
-		<hex>00102002</hex>
+		<hex>00202002</hex>
 
 		<cpu:Operand16/>
 		<cpu:CopySIAddressToAXAndIncrementSI/>
@@ -449,7 +456,7 @@
 
 	<cls:method name="GetAvailableIndex" type="http://metalx.org/Integer">
 		<cpu:CopyImmediateToSI/>
-		<hex>00100202</hex>
+		<hex>00200202</hex>
 
 		<cpu:Operand16/>
 		<cpu:CopySIAddressToAXAndIncrementSI/>
@@ -464,7 +471,7 @@
 
 	<cls:method name="GetAvailableBufferIndex" type="http://metalx.org/Integer">
 		<cpu:CopyImmediateToSI/>
-		<hex>00101002</hex>
+		<hex>00201002</hex>
 
 		<cpu:Operand16/>
 		<cpu:CopySIAddressToAXAndIncrementSI/>
@@ -496,7 +503,7 @@
 
 	<cls:method name="GetAvailableBufferAddress" type="http://metalx.org/Hexadecimal">
 		<cpu:CopyImmediateToSI/>
-		<hex>00101002</hex>
+		<hex>00201002</hex>
 
 		<cpu:Operand16/>
 		<cpu:CopySIAddressToAXAndIncrementSI/>
@@ -541,7 +548,7 @@
 
 	<cls:method name="GetAvailableBufferLength" type="http://metalx.org/Integer">
 		<cpu:CopyImmediateToSI/>
-		<hex>00101002</hex>
+		<hex>00201002</hex>
 
 		<cpu:Operand16/>
 		<cpu:CopySIAddressToAXAndIncrementSI/>

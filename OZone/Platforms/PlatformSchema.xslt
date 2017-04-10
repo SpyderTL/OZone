@@ -33,7 +33,12 @@
 					<xsl:attribute name="name">
 						<xsl:value-of select="@name"/>
 					</xsl:attribute>
-					<xsl:element name="xsd:complexType"/>
+					<xsl:element name="xsd:complexType">
+						<xsl:element name="xsd:attribute">
+							<xsl:attribute name="name">id</xsl:attribute>
+							<xsl:attribute name="type">xsd:ID</xsl:attribute>
+						</xsl:element>
+					</xsl:element>
 				</xsl:element>
 			</xsl:for-each>
 			<xsl:for-each select="p:constants/p:constant">

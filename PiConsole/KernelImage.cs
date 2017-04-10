@@ -10,7 +10,7 @@ namespace PiConsole
 	public class KernelImage
 	{
 		private List<KernelImageProgram> _programs = new List<KernelImageProgram>();
-		private MemoryAddress _address = new MemoryAddress(0x0000, 0x8000);
+		private MemoryAddress _address = new MemoryAddress { Offset = 0x8000 };
 
 		public void Add(OZone.Programs.Program program)
 		{
@@ -18,7 +18,11 @@ namespace PiConsole
 
 			foreach(var segment in program.Segments)
 			{
-				segment.Address = address;
+				segment.Address = new MemoryAddress
+				{
+					Offset = address.Offset,
+					Segment = address.Segment
+				};
 
 				address.Offset += segment.GetLength();
 			}
@@ -29,7 +33,11 @@ namespace PiConsole
 				new KernelImageProgram
 				{
 					Length = length,
-					Address = _address,
+					Address = new MemoryAddress
+					{
+						Offset = _address.Offset,
+						Segment = _address.Segment
+					},
 					Program = program
 				});
 
@@ -40,7 +48,11 @@ namespace PiConsole
 		{
 			foreach(var segment in program.Segments)
 			{
-				segment.Address = address;
+				segment.Address = new MemoryAddress
+				{
+					Offset = address.Offset,
+					Segment = address.Segment
+				};
 
 				address.Offset += segment.GetLength();
 			}
@@ -51,7 +63,11 @@ namespace PiConsole
 				new KernelImageProgram
 				{
 					Length = length,
-					Address = address,
+					Address = new MemoryAddress
+					{
+						Offset = address.Offset,
+						Segment = address.Segment
+					},
 					Program = program
 				});
 		}

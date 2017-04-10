@@ -1,0 +1,1171 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+</head>
+<body>
+	<canvas id="canvas" width="200" height="200"></canvas>
+	<script>
+		var canvas = document.getElementById('canvas');
+		var context = canvas.getContext('2d');
+
+		var image = context.getImageData(0, 0, canvas.width, canvas.height);
+
+		var centerX = image.width / 2;
+		var centerY = image.height / 2;
+
+		var depth = new Array(image.width * image.height);
+
+		var color = [0x10, 0x10, 0x10, 0x10];
+		var background = [0x00, 0x00, 0xFF, 0xFF];
+		 
+		const bytesPerPixel = 4;
+
+		//var verteces = [
+		//	100, 0, 0, 1,
+		//	0, 100, 0, 1,
+		//	-100, 0, 0, 1,
+		//	0, -100, 0, 1
+		//];
+
+		//var verteces = [
+		//	0, 100, 0, 1,
+		//	100, 0, 0, 1,
+		//	100, 0, 0, 1,
+		//	-100, 0, 0, 1,
+		//	-100, 0, 0, 1,
+		//	0, 100, 0, 1
+		//];
+
+		//var verteces = [
+		//	0, 50, 0, 1,
+		//	100, -50, 0, 1,
+		//	-100, -50, 0, 1
+		//];
+
+		//var verteces = [
+		//	0, 50, 0, 1,			255, 0, 0, 255,
+		//	100, -50, 0, 1,	0, 255, 0, 255,
+		//	-100, -50, 0, 1,	0, 0, 255, 255,
+		//];
+
+		//var verteces = [
+		//	0, 50, 0, 1,			255, 255, 255, 255,
+		//	100, -50, 0, 1,	0, 0, 0, 0,
+		//	-100, -50, 0, 1,	0, 0, 0, 0,
+		//];
+
+		//const stride = 8;
+
+		var verteces = [
+			0, 50, 0, 1,			0.5, 0,
+			100, -50, 0, 1,		1, 1,
+			-100, -50, 0, 1,	0, 1
+		];
+
+		const stride = 6;
+
+		var texture;
+
+		loadTexture('texture.png', function (result) { texture = result; });
+
+		function loadTexture(path, onLoad) {
+			var textureImage = document.createElement('image');
+
+			textureImage.addEventListener('load', function () {
+				var textureCanvas = document.createElement('canvas');
+
+				textureCanvas.width = textureImage.width;
+				textureCanvas.height = textureImage.height;
+
+				var context = textureCanvas.getContext('2d');
+
+				context.drawImage(textureImage, 0, 0);
+
+				var texture = context.getImageData(0, 0, textureImage.width, textureImage.height);
+
+				onLoad(texture);
+			});
+
+			textureImage.src = path;
+		}
+
+		var transformedVerteces = new Array(verteces.length);
+
+		var world = identity();
+		var view = identity();
+		var projection = identity();
+
+		//translate(0, 0, -500, world);
+
+		fieldOfView(Math.PI / 2, image.width / image.height, 0.1, 1000, projection);
+
+		//invert(view);
+
+		var position = [0, 0, -200];
+		var rotation = [0, 0, 0];
+
+		var cameraPosition = [0, 0, 0];
+		var cameraRotation = [0, 0, 0];
+
+		window.setInterval(function () {
+			update();
+			draw();
+
+			context.putImageData(image, 0, 0);
+		}, 1000 / 30);
+
+		function update() {
+			position[2] += 1;
+			rotation[2] += 0.1;
+			//rotation[1] += 0.1;
+
+			//cameraPosition[2] -= 5;
+
+			//cameraRotation[2] += 0.1;
+
+			//rotateZ(rotation, world);
+			//translate(0, 0, time, world);
+
+			//rotateY(rotation, view);
+
+			//invert(view);
+		}
+
+		function draw() {
+			clear();
+
+			var worldPosition = new Array(16);
+			var worldRotation = new Array(16);
+
+			translate(position[0], position[1], position[2], worldPosition);
+			yawPitchRoll(rotation[1], rotation[0], rotation[2], worldRotation);
+
+			multiply(worldRotation, worldPosition, world);
+
+			var viewPosition = new Array(16);
+			var viewRotation = new Array(16);
+
+			translate(cameraPosition[0], cameraPosition[1], cameraPosition[2], viewPosition);
+			yawPitchRoll(cameraRotation[1], cameraRotation[0], cameraRotation[2], viewRotation);
+			//rotateY(cameraRotation[1], viewRotation);
+			//rotateZ(cameraRotation[2], viewRotation);
+
+			multiply(viewRotation, viewPosition, view);
+
+			invert(view);
+
+			//drawPoints(verteces, 0, verteces.length / 4);
+			//drawLines(verteces, 0, verteces.length / 2);
+			//drawLineStrip(verteces, 0, verteces.length - 2);
+			//drawTriangles(verteces, 0, verteces.length / (stride * 3));
+			//drawColorTriangles(verteces, 0, verteces.length / (stride * 3));
+			drawTextureTriangles(verteces, 0, verteces.length / (stride * 3));
+			//drawTriangleStrip(verteces, 0, verteces.length - 2);
+		}
+
+		function clear() {
+			for (var x = 0; x < image.width * image.height * bytesPerPixel;) {
+				image.data[x++] = background[0];
+				image.data[x++] = background[1];
+				image.data[x++] = background[2];
+				image.data[x++] = background[3];
+			}
+
+			//for (var x = 0; x < depth.length; x++)
+			//	depth[x] = 1.0;
+		}
+
+		function drawPoints(verteces, offset, count) {
+			var worldView = new Array(16);
+			var worldViewProjection = new Array(16);
+
+			multiply(world, view, worldView);
+			multiply(worldView, projection, worldViewProjection);
+
+			transform(verteces, worldViewProjection, transformedVerteces);
+
+			for (var point = 0; point < count; point++) {
+				var index = (offset + point) * stride;
+
+				var x = centerX + Math.floor((transformedVerteces[index] / transformedVerteces[index + 3]) * centerX);
+				var y = centerY - Math.floor((transformedVerteces[index + 1] / transformedVerteces[index + 3]) * centerY);
+
+				if (x > 0 && x < image.width - 1 &&
+					y > 0 && y < image.height - 1 &&
+					transformedVerteces[index + 2] >= 0.1 && transformedVerteces[index + 2] <= 1000) {
+					index = ((y * image.width) + x) * bytesPerPixel;
+
+					image.data[index + 0] = color[0];
+					image.data[index + 1] = color[1];
+					image.data[index + 2] = color[2];
+					image.data[index + 3] = color[3];
+				}
+			}
+		}
+
+		function drawLines(verteces, offset, count) {
+			var worldView = new Array(16);
+			var worldViewProjection = new Array(16);
+
+			multiply(world, view, worldView);
+			multiply(worldView, projection, worldViewProjection);
+
+			transform(verteces, worldViewProjection, transformedVerteces);
+
+			var index1 = 0;
+			var index2 = 0;
+
+			for (var line = 0; line < count; line++) {
+				var index = (offset + point) * 8;
+
+				if (transformedVerteces[index + 1] <= transformedVerteces[index + 5]) {
+					index1 = index;
+					index2 = index + stride;
+				} else {
+					index1 = index + stride;
+					index2 = index;
+				}
+
+				var x1 = centerX + transformedVerteces[index1];
+				var y1 = centerY - transformedVerteces[index1 + 1];
+				var x2 = centerX + transformedVerteces[index2];
+				var y2 = centerY - transformedVerteces[index2 + 1];
+
+				if (x1 <= x2) {
+					var ratio = (x2 - x1) / (Math.max(y2 - y1, 1));
+					var x = x1;
+					var next = x1 + ratio;
+
+					for (var y = y1; y <= y2; y++) {
+						while (x <= next) {
+							if (x > 0 && x < image.width - 1 &&
+								y > 0 && y < image.height - 1) {
+								index = ((Math.floor(y) * image.width) + Math.floor(x)) * bytesPerPixel;
+
+								image.data[index + 0] = color[0];
+								image.data[index + 1] = color[1];
+								image.data[index + 2] = color[2];
+								image.data[index + 3] = color[3];
+							}
+						}
+
+						if (ratio == 0)
+							x -= 1;
+
+						next += ratio;
+					}
+				}
+				else {
+				}
+			}
+		}
+
+		function drawTriangles(verteces, offset, count) {
+			var worldView = new Array(16);
+			var worldViewProjection = new Array(16);
+
+			multiply(world, view, worldView);
+			multiply(worldView, projection, worldViewProjection);
+
+			transform(verteces, worldViewProjection, transformedVerteces);
+
+			console.log(transformedVerteces[5]);
+			console.log(transformedVerteces[9]);
+
+			for (var triangle = 0; triangle < count; triangle++) {
+				var index = (triangle * stride * 3) + offset;
+
+				drawTriangle(transformedVerteces, index, index + stride, index + stride + stride);
+			}
+		}
+
+		function drawColorTriangles(verteces, offset, count) {
+			var worldView = new Array(16);
+			var worldViewProjection = new Array(16);
+
+			multiply(world, view, worldView);
+			multiply(worldView, projection, worldViewProjection);
+
+			transform(verteces, worldViewProjection, transformedVerteces);
+
+			console.log(transformedVerteces[5]);
+			console.log(transformedVerteces[9]);
+
+			for (var triangle = 0; triangle < count; triangle++) {
+				var index = (triangle * stride * 3) + offset;
+
+				drawColorTriangle(transformedVerteces, index, index + stride, index + stride + stride);
+			}
+		}
+
+		function drawTextureTriangles(verteces, offset, count) {
+			var worldView = new Array(16);
+			var worldViewProjection = new Array(16);
+
+			multiply(world, view, worldView);
+			multiply(worldView, projection, worldViewProjection);
+
+			transform(verteces, worldViewProjection, transformedVerteces);
+
+			console.log(transformedVerteces[5]);
+			console.log(transformedVerteces[9]);
+
+			for (var triangle = 0; triangle < count; triangle++) {
+				var index = (triangle * stride * 3) + offset;
+
+				drawTextureTriangle(transformedVerteces, index, index + stride, index + stride + stride);
+			}
+		}
+
+		function drawTriangle(verteces, index1, index2, index3) {
+			var vertex1y = centerY - Math.floor((verteces[index1 + 1] / verteces[index1 + 3]) * centerY);
+			var vertex2y = centerY - Math.floor((verteces[index2 + 1] / verteces[index2 + 3]) * centerY);
+			var vertex3y = centerY - Math.floor((verteces[index3 + 1] / verteces[index3 + 3]) * centerY);
+
+			var temp = 0;
+
+			if (vertex1y > vertex2y) {
+				temp = index1;
+				index1 = index2;
+				index2 = temp;
+
+				temp = vertex1y;
+				vertex1y = vertex2y;
+				vertex2y = temp;
+			}
+
+			if (vertex2y > vertex3y) {
+				temp = index2;
+				index2 = index3;
+				index3 = temp;
+
+				temp = vertex2y;
+				vertex2y = vertex3y;
+				vertex3y = temp;
+			}
+
+			if (vertex1y > vertex2y) {
+				temp = index1;
+				index1 = index2;
+				index2 = temp;
+
+				temp = vertex1y;
+				vertex1y = vertex2y;
+				vertex2y = temp;
+			}
+
+			var vertex1x = centerX + Math.floor((verteces[index1] / verteces[index1 + 3]) * centerX);
+			var vertex2x = centerX + Math.floor((verteces[index2] / verteces[index2 + 3]) * centerX);
+			var vertex3x = centerX + Math.floor((verteces[index3] / verteces[index3 + 3]) * centerX);
+
+			var x1 = vertex2x - vertex1x;
+			var y1 = vertex2y - vertex1y;
+
+			var x2 = vertex3x - vertex1x;
+			var y2 = vertex3y - vertex1y;
+
+			var area = (x1 * y2) - (x2 * y1);
+
+			var left = vertex1x;
+			var right = vertex1x;
+
+			if (vertex1y != vertex2y) {
+				var width1 = vertex2x - vertex1x;
+				var height1 = vertex2y - vertex1y;
+
+				var slope1 = width1 / height1;
+
+				var width2 = vertex3x - vertex1x;
+				var height2 = vertex3y - vertex1y;
+
+				var slope2 = width2 / height2;
+
+				for (var y = vertex1y; y < vertex2y; y++) {
+					x1 = Math.floor(left);
+					x2 = Math.floor(right);
+
+					drawHorizontalLine(y, x1, x2);
+
+					if (area > 0) {
+						left += slope2;
+						right += slope1;
+					}
+					else {
+						left += slope1;
+						right += slope2;
+					}
+				}
+			}
+			else {
+				left = area > 0 ? vertex1x : vertex2x;
+				right = area > 0 ? vertex2x : vertex1x;
+			}
+
+			if (vertex2y != vertex3y) {
+				var width1 = vertex3x - vertex2x;
+				var height1 = vertex3y - vertex2y;
+
+				var slope1 = width1 / height1;
+
+				var width2 = vertex3x - vertex1x;
+				var height2 = vertex3y - vertex1y;
+
+				var slope2 = width2 / height2;
+
+				for (var y = vertex2y; y < vertex3y; y++) {
+					x1 = Math.floor(left);
+					x2 = Math.floor(right);
+
+					drawHorizontalLine(y, x1, x2);
+
+					if (area > 0) {
+						left += slope2;
+						right += slope1;
+					}
+					else {
+						left += slope1;
+						right += slope2;
+					}
+				}
+			}
+		}
+
+		function drawColorTriangle(verteces, index1, index2, index3) {
+			var vertex1y = centerY - Math.floor((verteces[index1 + 1] / verteces[index1 + 3]) * centerY);
+			var vertex2y = centerY - Math.floor((verteces[index2 + 1] / verteces[index2 + 3]) * centerY);
+			var vertex3y = centerY - Math.floor((verteces[index3 + 1] / verteces[index3 + 3]) * centerY);
+
+			var temp = 0;
+
+			if (vertex1y > vertex2y) {
+				temp = index1;
+				index1 = index2;
+				index2 = temp;
+
+				temp = vertex1y;
+				vertex1y = vertex2y;
+				vertex2y = temp;
+			}
+
+			if (vertex2y > vertex3y) {
+				temp = index2;
+				index2 = index3;
+				index3 = temp;
+
+				temp = vertex2y;
+				vertex2y = vertex3y;
+				vertex3y = temp;
+			}
+
+			if (vertex1y > vertex2y) {
+				temp = index1;
+				index1 = index2;
+				index2 = temp;
+
+				temp = vertex1y;
+				vertex1y = vertex2y;
+				vertex2y = temp;
+			}
+
+			var vertex1x = centerX + Math.floor((verteces[index1] / verteces[index1 + 3]) * centerX);
+			var vertex2x = centerX + Math.floor((verteces[index2] / verteces[index2 + 3]) * centerX);
+			var vertex3x = centerX + Math.floor((verteces[index3] / verteces[index3 + 3]) * centerX);
+
+			var x1 = vertex2x - vertex1x;
+			var y1 = vertex2y - vertex1y;
+
+			var x2 = vertex3x - vertex1x;
+			var y2 = vertex3y - vertex1y;
+
+			var area = (x1 * y2) - (x2 * y1);
+
+			var left = vertex1x;
+			var right = vertex1x;
+
+			var leftRed = verteces[index1 + 4];
+			var leftGreen = verteces[index1 + 5];
+			var leftBlue = verteces[index1 + 6];
+			var leftAlpha = verteces[index1 + 7];
+
+			var rightRed = leftRed;
+			var rightGreen = leftGreen;
+			var rightBlue = leftBlue;
+			var rightAlpha = leftAlpha;
+
+			if (vertex1y != vertex2y) {
+				var width1 = vertex2x - vertex1x;
+				var height1 = vertex2y - vertex1y;
+
+				var slope1 = width1 / height1;
+
+				var width2 = vertex3x - vertex1x;
+				var height2 = vertex3y - vertex1y;
+
+				var slope2 = width2 / height2;
+
+				var redDelta1 = (verteces[index2 + 4] - verteces[index1 + 4]) / height1;
+				var greenDelta1 = (verteces[index2 + 5] - verteces[index1 + 5]) / height1;
+				var blueDelta1 = (verteces[index2 + 6] - verteces[index1 + 6]) / height1;
+				var alphaDelta1 = (verteces[index2 + 7] - verteces[index1 + 7]) / height1;
+
+				var redDelta2 = (verteces[index3 + 4] - verteces[index1 + 4]) / height2;
+				var greenDelta2 = (verteces[index3 + 5] - verteces[index1 + 5]) / height2;
+				var blueDelta2 = (verteces[index3 + 6] - verteces[index1 + 6]) / height2;
+				var alphaDelta2 = (verteces[index3 + 7] - verteces[index1 + 7]) / height2;
+
+				for (var y = vertex1y; y < vertex2y; y++) {
+					x1 = Math.floor(left);
+					x2 = Math.floor(right);
+
+					var r1 = Math.floor(leftRed);
+					var r2 = Math.floor(rightRed);
+					var g1 = Math.floor(leftGreen);
+					var g2 = Math.floor(rightGreen);
+					var b1 = Math.floor(leftBlue);
+					var b2 = Math.floor(rightBlue);
+					var a1 = Math.floor(leftAlpha);
+					var a2 = Math.floor(rightAlpha);
+
+					drawHorizontalGradientLine(y, x1, x2, r1, g1, b1, a1, r2, g2, b2, a2);
+
+					if (area > 0) {
+						left += slope2;
+						right += slope1;
+
+						leftRed += redDelta2;
+						rightRed += redDelta1;
+						leftGreen += greenDelta2;
+						rightGreen += greenDelta1;
+						leftBlue += blueDelta2;
+						rightBlue += blueDelta1;
+						leftAlpha += alphaDelta2;
+						rightAlpha += alphaDelta1;
+					}
+					else {
+						left += slope1;
+						right += slope2;
+
+						leftRed += redDelta1;
+						rightRed += redDelta2;
+						leftGreen += greenDelta1;
+						rightGreen += greenDelta2;
+						leftBlue += blueDelta1;
+						rightBlue += blueDelta2;
+						leftAlpha += alphaDelta1;
+						rightAlpha += alphaDelta2;
+					}
+				}
+			}
+			else {
+				left = area > 0 ? vertex1x : vertex2x;
+				right = area > 0 ? vertex2x : vertex1x;
+
+				leftRed = area > 0 ? verteces[index1 + 4] : verteces[index2 + 4];
+				rightRed = area > 0 ? verteces[index2 + 4] : verteces[index1 + 4];
+				leftGreen = area > 0 ? verteces[index1 + 5] : verteces[index2 + 5];
+				rightGreen = area > 0 ? verteces[index2 + 5] : verteces[index1 + 5];
+				leftBlue = area > 0 ? verteces[index1 + 6] : verteces[index2 + 6];
+				rightBlue = area > 0 ? verteces[index2 + 6] : verteces[index1 + 6];
+				leftAlpha = area > 0 ? verteces[index1 + 7] : verteces[index2 + 4];
+				rightAlpha = area > 0 ? verteces[index2 + 7] : verteces[index1 + 7];
+			}
+
+			if (vertex2y != vertex3y) {
+				var width1 = vertex3x - vertex2x;
+				var height1 = vertex3y - vertex2y;
+
+				var slope1 = width1 / height1;
+
+				var width2 = vertex3x - vertex1x;
+				var height2 = vertex3y - vertex1y;
+
+				var slope2 = width2 / height2;
+
+				var redDelta1 = (verteces[index3 + 4] - verteces[index2 + 4]) / height1;
+				var greenDelta1 = (verteces[index3 + 5] - verteces[index2 + 5]) / height1;
+				var blueDelta1 = (verteces[index3 + 6] - verteces[index2 + 6]) / height1;
+				var alphaDelta1 = (verteces[index3 + 7] - verteces[index2 + 7]) / height1;
+
+				var redDelta2 = (verteces[index3 + 4] - verteces[index1 + 4]) / height2;
+				var greenDelta2 = (verteces[index3 + 5] - verteces[index1 + 5]) / height2;
+				var blueDelta2 = (verteces[index3 + 6] - verteces[index1 + 6]) / height2;
+				var alphaDelta2 = (verteces[index3 + 7] - verteces[index1 + 7]) / height2;
+
+				for (var y = vertex2y; y < vertex3y; y++) {
+					x1 = Math.floor(left);
+					x2 = Math.floor(right);
+
+					var r1 = Math.floor(leftRed);
+					var r2 = Math.floor(rightRed);
+					var g1 = Math.floor(leftGreen);
+					var g2 = Math.floor(rightGreen);
+					var b1 = Math.floor(leftBlue);
+					var b2 = Math.floor(rightBlue);
+					var a1 = Math.floor(leftAlpha);
+					var a2 = Math.floor(rightAlpha);
+
+					drawHorizontalGradientLine(y, x1, x2, r1, g1, b1, a1, r2, g2, b2, a2);
+
+					if (area > 0) {
+						left += slope2;
+						right += slope1;
+
+						leftRed += redDelta2;
+						rightRed += redDelta1;
+						leftGreen += greenDelta2;
+						rightGreen += greenDelta1;
+						leftBlue += blueDelta2;
+						rightBlue += blueDelta1;
+						leftAlpha += alphaDelta2;
+						rightAlpha += alphaDelta1;
+					}
+					else {
+						left += slope1;
+						right += slope2;
+
+						leftRed += redDelta1;
+						rightRed += redDelta2;
+						leftGreen += greenDelta1;
+						rightGreen += greenDelta2;
+						leftBlue += blueDelta1;
+						rightBlue += blueDelta2;
+						leftAlpha += alphaDelta1;
+						rightAlpha += alphaDelta2;
+					}
+				}
+			}
+		}
+
+		function drawTextureTriangle(verteces, index1, index2, index3) {
+			var vertex1y = centerY - Math.floor((verteces[index1 + 1] / verteces[index1 + 3]) * centerY);
+			var vertex2y = centerY - Math.floor((verteces[index2 + 1] / verteces[index2 + 3]) * centerY);
+			var vertex3y = centerY - Math.floor((verteces[index3 + 1] / verteces[index3 + 3]) * centerY);
+
+			var temp = 0;
+
+			if (vertex1y > vertex2y) {
+				temp = index1;
+				index1 = index2;
+				index2 = temp;
+
+				temp = vertex1y;
+				vertex1y = vertex2y;
+				vertex2y = temp;
+			}
+
+			if (vertex2y > vertex3y) {
+				temp = index2;
+				index2 = index3;
+				index3 = temp;
+
+				temp = vertex2y;
+				vertex2y = vertex3y;
+				vertex3y = temp;
+			}
+
+			if (vertex1y > vertex2y) {
+				temp = index1;
+				index1 = index2;
+				index2 = temp;
+
+				temp = vertex1y;
+				vertex1y = vertex2y;
+				vertex2y = temp;
+			}
+
+			var vertex1x = centerX + Math.floor((verteces[index1] / verteces[index1 + 3]) * centerX);
+			var vertex2x = centerX + Math.floor((verteces[index2] / verteces[index2 + 3]) * centerX);
+			var vertex3x = centerX + Math.floor((verteces[index3] / verteces[index3 + 3]) * centerX);
+
+			var x1 = vertex2x - vertex1x;
+			var y1 = vertex2y - vertex1y;
+
+			var x2 = vertex3x - vertex1x;
+			var y2 = vertex3y - vertex1y;
+
+			var area = (x1 * y2) - (x2 * y1);
+
+			var left = vertex1x;
+			var right = vertex1x;
+
+			var leftU = verteces[index1 + 4];
+			var leftV = verteces[index1 + 5];
+
+			var rightU = leftU;
+			var rightV = leftV;
+
+			if (vertex1y != vertex2y) {
+				var width1 = vertex2x - vertex1x;
+				var height1 = vertex2y - vertex1y;
+
+				var slope1 = width1 / height1;
+
+				var width2 = vertex3x - vertex1x;
+				var height2 = vertex3y - vertex1y;
+
+				var slope2 = width2 / height2;
+
+				var uDelta1 = (verteces[index2 + 4] - verteces[index1 + 4]) / height1;
+				var vDelta1 = (verteces[index2 + 5] - verteces[index1 + 5]) / height1;
+
+				var uDelta2 = (verteces[index3 + 4] - verteces[index1 + 4]) / height2;
+				var vDelta2 = (verteces[index3 + 5] - verteces[index1 + 5]) / height2;
+
+				for (var y = vertex1y; y < vertex2y; y++) {
+					x1 = Math.floor(left);
+					x2 = Math.floor(right);
+
+					var u1 = Math.floor(leftU * (texture.width - 1));
+					var u2 = Math.floor(rightU * (texture.width - 1));
+					var v1 = Math.floor(leftV * (texture.height - 1));
+					var v2 = Math.floor(rightV * (texture.height - 1));
+
+					drawHorizontalTextureLine(y, x1, x2, u1, v1, u2, v2);
+
+					if (area > 0) {
+						left += slope2;
+						right += slope1;
+
+						leftU += uDelta2;
+						rightU += uDelta1;
+						leftV += vDelta2;
+						rightV += vDelta1;
+					}
+					else {
+						left += slope1;
+						right += slope2;
+
+						leftU += uDelta1;
+						rightU += uDelta2;
+						leftV += vDelta1;
+						rightV += vDelta2;
+					}
+				}
+			}
+			else {
+				left = area > 0 ? vertex1x : vertex2x;
+				right = area > 0 ? vertex2x : vertex1x;
+
+				leftU = area > 0 ? verteces[index1 + 4] : verteces[index2 + 4];
+				rightU = area > 0 ? verteces[index2 + 4] : verteces[index1 + 4];
+				leftV = area > 0 ? verteces[index1 + 5] : verteces[index2 + 5];
+				rightV = area > 0 ? verteces[index2 + 5] : verteces[index1 + 5];
+			}
+
+			if (vertex2y != vertex3y) {
+				var width1 = vertex3x - vertex2x;
+				var height1 = vertex3y - vertex2y;
+
+				var slope1 = width1 / height1;
+
+				var width2 = vertex3x - vertex1x;
+				var height2 = vertex3y - vertex1y;
+
+				var slope2 = width2 / height2;
+
+				var uDelta1 = (verteces[index3 + 4] - verteces[index2 + 4]) / height1;
+				var vDelta1 = (verteces[index3 + 5] - verteces[index2 + 5]) / height1;
+
+				var uDelta2 = (verteces[index3 + 4] - verteces[index1 + 4]) / height2;
+				var vDelta2 = (verteces[index3 + 5] - verteces[index1 + 5]) / height2;
+
+				for (var y = vertex2y; y < vertex3y; y++) {
+					x1 = Math.floor(left);
+					x2 = Math.floor(right);
+
+					var u1 = Math.floor(leftU * (texture.width - 1));
+					var u2 = Math.floor(rightU * (texture.width - 1));
+					var v1 = Math.floor(leftV * (texture.height - 1));
+					var v2 = Math.floor(rightV * (texture.height - 1));
+
+					drawHorizontalTextureLine(y, x1, x2, u1, v1, u2, v2);
+
+					if (area > 0) {
+						left += slope2;
+						right += slope1;
+
+						leftU += uDelta2;
+						rightU += uDelta1;
+						leftV += vDelta2;
+						rightV += vDelta1;
+					}
+					else {
+						left += slope1;
+						right += slope2;
+
+						leftU += uDelta1;
+						rightU += uDelta2;
+						leftV += vDelta1;
+						rightV += vDelta2;
+					}
+				}
+			}
+		}
+
+		function drawHorizontalLine(y, x1, x2) {
+			y = Math.max(0, Math.min(y, image.height));
+			x1 = Math.max(0, Math.min(x1, image.width));
+			x2 = Math.max(0, Math.min(x2, image.width));
+
+			var index = ((y * image.width) + x1) * bytesPerPixel;
+
+			for (var x = x1; x <= x2; x++) {
+				//image.data[index++] = color[0];
+				//image.data[index++] = color[1];
+				//image.data[index++] = color[2];
+				//image.data[index++] = color[3];
+
+				image.data[index] = Math.max(0, Math.min(255, ((image.data[index] * (1 - (color[3] / 0xFF))) + color[0])));
+				index++;
+
+				image.data[index] = Math.max(0, Math.min(255, ((image.data[index] * (1 - (color[3] / 0xFF))) + color[1])));
+				index++;
+
+				image.data[index] = Math.max(0, Math.min(255, ((image.data[index] * (1 - (color[3] / 0xFF))) + color[2])));
+				index += 2;
+			}
+		}
+
+		function drawHorizontalGradientLine(y, x1, x2, r1, g1, b1, a1, r2, g2, b2, a2) {
+			y = Math.max(0, Math.min(y, image.height));
+			x1 = Math.max(0, Math.min(x1, image.width));
+			x2 = Math.max(0, Math.min(x2, image.width));
+
+			var index = ((y * image.width) + x1) * bytesPerPixel;
+
+			var width = Math.max(1, x2 - x1);
+
+			var deltaR = (r2 - r1) / width;
+			var deltaG = (g2 - g1) / width;
+			var deltaB = (b2 - b1) / width;
+			var deltaA = (a2 - a1) / width;
+
+			for (var x = x1; x <= x2; x++) {
+				image.data[index] = Math.max(0, Math.min(255, ((image.data[index] * (1 - (a1 / 0xFF))) + r1)));
+				index++;
+
+				image.data[index] = Math.max(0, Math.min(255, ((image.data[index] * (1 - (a1 / 0xFF))) + g1)));
+				index++;
+
+				image.data[index] = Math.max(0, Math.min(255, ((image.data[index] * (1 - (a1 / 0xFF))) + b1)));
+				index += 2;
+
+				r1 += deltaR;
+				g1 += deltaG;
+				b1 += deltaB;
+				a1 += deltaA;
+			}
+		}
+
+		function drawHorizontalTextureLine(y, x1, x2, u1, v1, u2, v2) {
+			y = Math.max(0, Math.min(y, image.height));
+			x1 = Math.max(0, Math.min(x1, image.width));
+			x2 = Math.max(0, Math.min(x2, image.width));
+
+			var index = ((y * image.width) + x1) * bytesPerPixel;
+
+			var width = Math.max(1, x2 - x1);
+
+			var deltaU = (u2 - u1) / width;
+			var deltaV = (v2 - v1) / width;
+
+			for (var x = x1; x <= x2; x++) {
+				var u = Math.floor(u1);
+				var v = Math.floor(v1);
+
+				var textureIndex = ((v * texture.width) + u) * bytesPerPixel;
+
+				var r = texture.data[textureIndex + 0];
+				var g = texture.data[textureIndex + 1];
+				var b = texture.data[textureIndex + 2];
+				var a = texture.data[textureIndex + 3];
+
+				image.data[index] = Math.max(0, Math.min(255, ((image.data[index] * (1 - (a / 0xFF))) + r)));
+				index++;
+
+				image.data[index] = Math.max(0, Math.min(255, ((image.data[index] * (1 - (a / 0xFF))) + g)));
+				index++;
+
+				image.data[index] = Math.max(0, Math.min(255, ((image.data[index] * (1 - (a / 0xFF))) + b)));
+				index += 2;
+
+				u1 += deltaU;
+				v1 += deltaV;
+			}
+		}
+
+		function transform(verteces, matrix, result) {
+			for (var vertex = 0; vertex < verteces.length; vertex += stride) {
+				result[vertex + 0] = (verteces[vertex + 0] * matrix[0]) + (verteces[vertex + 1] * matrix[4]) + (verteces[vertex + 2] * matrix[8]) + (verteces[vertex + 3] * matrix[12]);
+				result[vertex + 1] = (verteces[vertex + 0] * matrix[1]) + (verteces[vertex + 1] * matrix[5]) + (verteces[vertex + 2] * matrix[9]) + (verteces[vertex + 3] * matrix[13]);
+				result[vertex + 2] = (verteces[vertex + 0] * matrix[2]) + (verteces[vertex + 1] * matrix[6]) + (verteces[vertex + 2] * matrix[10]) + (verteces[vertex + 3] * matrix[14]);
+				result[vertex + 3] = (verteces[vertex + 0] * matrix[3]) + (verteces[vertex + 1] * matrix[7]) + (verteces[vertex + 2] * matrix[11]) + (verteces[vertex + 3] * matrix[15]);
+			}
+
+			if (stride > 4)
+				for (var vertex = 0; vertex < verteces.length; vertex += stride)
+					for (var index = 4; index < stride; index++)
+						result[vertex + index] = verteces[vertex + index];
+		}
+
+		function multiply(matrix1, matrix2, result) {
+			result[0] = (matrix1[0] * matrix2[0]) + (matrix1[1] * matrix2[4]) + (matrix1[2] * matrix2[8]) + (matrix1[3] * matrix2[12]);
+			result[1] = (matrix1[0] * matrix2[1]) + (matrix1[1] * matrix2[5]) + (matrix1[2] * matrix2[9]) + (matrix1[3] * matrix2[13]);
+			result[2] = (matrix1[0] * matrix2[2]) + (matrix1[1] * matrix2[6]) + (matrix1[2] * matrix2[10]) + (matrix1[3] * matrix2[14]);
+			result[3] = (matrix1[0] * matrix2[3]) + (matrix1[1] * matrix2[7]) + (matrix1[2] * matrix2[11]) + (matrix1[3] * matrix2[15]);
+			result[4] = (matrix1[4] * matrix2[0]) + (matrix1[5] * matrix2[4]) + (matrix1[6] * matrix2[8]) + (matrix1[7] * matrix2[12]);
+			result[5] = (matrix1[4] * matrix2[1]) + (matrix1[5] * matrix2[5]) + (matrix1[6] * matrix2[9]) + (matrix1[7] * matrix2[13]);
+			result[6] = (matrix1[4] * matrix2[2]) + (matrix1[5] * matrix2[6]) + (matrix1[6] * matrix2[10]) + (matrix1[7] * matrix2[14]);
+			result[7] = (matrix1[4] * matrix2[3]) + (matrix1[5] * matrix2[7]) + (matrix1[6] * matrix2[11]) + (matrix1[7] * matrix2[15]);
+			result[8] = (matrix1[8] * matrix2[0]) + (matrix1[9] * matrix2[4]) + (matrix1[10] * matrix2[8]) + (matrix1[11] * matrix2[12]);
+			result[9] = (matrix1[8] * matrix2[1]) + (matrix1[9] * matrix2[5]) + (matrix1[10] * matrix2[9]) + (matrix1[11] * matrix2[13]);
+			result[10] = (matrix1[8] * matrix2[2]) + (matrix1[9] * matrix2[6]) + (matrix1[10] * matrix2[10]) + (matrix1[11] * matrix2[14]);
+			result[11] = (matrix1[8] * matrix2[3]) + (matrix1[9] * matrix2[7]) + (matrix1[10] * matrix2[11]) + (matrix1[11] * matrix2[15]);
+			result[12] = (matrix1[12] * matrix2[0]) + (matrix1[13] * matrix2[4]) + (matrix1[14] * matrix2[8]) + (matrix1[15] * matrix2[12]);
+			result[13] = (matrix1[12] * matrix2[1]) + (matrix1[13] * matrix2[5]) + (matrix1[14] * matrix2[9]) + (matrix1[15] * matrix2[13]);
+			result[14] = (matrix1[12] * matrix2[2]) + (matrix1[13] * matrix2[6]) + (matrix1[14] * matrix2[10]) + (matrix1[15] * matrix2[14]);
+			result[15] = (matrix1[12] * matrix2[3]) + (matrix1[13] * matrix2[7]) + (matrix1[14] * matrix2[11]) + (matrix1[15] * matrix2[15]);
+		}
+
+		function rotateX(radians, result) {
+			var val1 = Math.cos(radians);
+			var val2 = Math.sin(radians);
+
+			result[0] = 1;
+			result[1] = 0;
+			result[2] = 0;
+			result[3] = 0;
+
+			result[4] = 0;
+			result[5] = val1;
+			result[6] = val2;
+			result[7] = 0;
+
+			result[8] = 0;
+			result[9] = -val2;
+			result[10] = val1;
+			result[11] = 0;
+
+			result[12] = 0;
+			result[13] = 0;
+			result[14] = 0;
+			result[15] = 1;
+		}
+
+		function rotateY(radians, result) {
+			var val1 = Math.cos(radians);
+			var val2 = Math.sin(radians);
+
+			result[0] = val1;
+			result[1] = 0;
+			result[2] = -val2;
+			result[3] = 0;
+
+			result[4] = 0;
+			result[5] = 1;
+			result[6] = 0;
+			result[7] = 0;
+
+			result[8] = val2;
+			result[9] = 0;
+			result[10] = val1;
+			result[11] = 0;
+
+			result[12] = 0;
+			result[13] = 0;
+			result[14] = 0;
+			result[15] = 1;
+		}
+
+		function rotateZ(radians, result) {
+			var val1 = Math.cos(radians);
+			var val2 = Math.sin(radians);
+
+			result[0] = val1;
+			result[1] = val2;
+			result[2] = 0;
+			result[3] = 0;
+
+			result[4] = -val2;
+			result[5] = val1;
+			result[6] = 0;
+			result[7] = 0;
+
+			result[8] = 0;
+			result[9] = 0;
+			result[10] = 1;
+			result[11] = 0;
+
+			result[12] = 0;
+			result[13] = 0;
+			result[14] = 0;
+			result[15] = 1;
+		}
+
+		function translate(x, y, z, result) {
+			result[0] = 1;
+			result[1] = 0;
+			result[2] = 0;
+			result[3] = 0;
+
+			result[4] = 0;
+			result[5] = 1;
+			result[6] = 0;
+			result[7] = 0;
+
+			result[8] = 0;
+			result[9] = 0;
+			result[10] = 1;
+			result[11] = 0;
+
+			result[12] = x;
+			result[13] = y;
+			result[14] = z;
+			result[15] = 1;
+		}
+
+		function fieldOfView(fieldOfView, aspectRatio, nearPlaneDistance, farPlaneDistance, result) {
+			var x = 1 / Math.tan(fieldOfView / 2);
+			var y = x / aspectRatio;
+
+			result[0] = y;
+			result[1] = 0;
+			result[2] = 0;
+			result[3] = 0;
+
+			result[4] = 0;
+			result[5] = x;
+			result[6] = 0;
+			result[7] = 0;
+
+			result[8] = 0;
+			result[9] = 0;
+			result[10] = farPlaneDistance / (nearPlaneDistance - farPlaneDistance);
+			result[11] = -1;
+
+			result[12] = 0;
+			result[13] = 0;
+			result[14] = (nearPlaneDistance * farPlaneDistance) / (nearPlaneDistance - farPlaneDistance);
+			result[15] = 0;
+		}
+
+		function invert(matrix) {
+			var num1 = matrix[0];
+			var num2 = matrix[1];
+			var num3 = matrix[2];
+			var num4 = matrix[3];
+			var num5 = matrix[4];
+			var num6 = matrix[5];
+			var num7 = matrix[6];
+			var num8 = matrix[7];
+			var num9 = matrix[8];
+			var num10 = matrix[9];
+			var num11 = matrix[10];
+			var num12 = matrix[11];
+			var num13 = matrix[12];
+			var num14 = matrix[13];
+			var num15 = matrix[14];
+			var num16 = matrix[15];
+			var num17 = (num11 * num16 - num12 * num15);
+			var num18 = (num10 * num16 - num12 * num14);
+			var num19 = (num10 * num15 - num11 * num14);
+			var num20 = (num9 * num16 - num12 * num13);
+			var num21 = (num9 * num15 - num11 * num13);
+			var num22 = (num9 * num14 - num10 * num13);
+			var num23 = (num6 * num17 - num7 * num18 + num8 * num19);
+			var num24 = -(num5 * num17 - num7 * num20 + num8 * num21);
+			var num25 = (num5 * num18 - num6 * num20 + num8 * num22);
+			var num26 = -(num5 * num19 - num6 * num21 + num7 * num22);
+			var num27 = (1.0 / (num1 * num23 + num2 * num24 + num3 * num25 + num4 * num26));
+
+			matrix[0] = num23 * num27;
+			matrix[4] = num24 * num27;
+			matrix[8] = num25 * num27;
+			matrix[12] = num26 * num27;
+
+			matrix[1] = -(num2 * num17 - num3 * num18 + num4 * num19) * num27;
+			matrix[5] = (num1 * num17 - num3 * num20 + num4 * num21) * num27;
+			matrix[9] = -(num1 * num18 - num2 * num20 + num4 * num22) * num27;
+			matrix[13] = (num1 * num19 - num2 * num21 + num3 * num22) * num27;
+
+			var num28 = (num7 * num16 - num8 * num15);
+			var num29 = (num6 * num16 - num8 * num14);
+			var num30 = (num6 * num15 - num7 * num14);
+			var num31 = (num5 * num16 - num8 * num13);
+			var num32 = (num5 * num15 - num7 * num13);
+			var num33 = (num5 * num14 - num6 * num13);
+
+			matrix[2] = (num2 * num28 - num3 * num29 + num4 * num30) * num27;
+			matrix[6] = -(num1 * num28 - num3 * num31 + num4 * num32) * num27;
+			matrix[10] = (num1 * num29 - num2 * num31 + num4 * num33) * num27;
+			matrix[14] = -(num1 * num30 - num2 * num32 + num3 * num33) * num27;
+
+			var num34 = (num7 * num12 - num8 * num11);
+			var num35 = (num6 * num12 - num8 * num10);
+			var num36 = (num6 * num11 - num7 * num10);
+			var num37 = (num5 * num12 - num8 * num9);
+			var num38 = (num5 * num11 - num7 * num9);
+			var num39 = (num5 * num10 - num6 * num9);
+
+			matrix[3] = -(num2 * num34 - num3 * num35 + num4 * num36) * num27;
+			matrix[7] = (num1 * num34 - num3 * num37 + num4 * num38) * num27;
+			matrix[11] = -(num1 * num35 - num2 * num37 + num4 * num39) * num27;
+			matrix[15] = (num1 * num36 - num2 * num38 + num3 * num39) * num27;
+		}
+
+		function identity() {
+			return [1, 0, 0, 0,
+						0, 1, 0, 0,
+						0, 0, 1, 0,
+						0, 0, 0, 1];
+		}
+
+		function yawPitchRoll(yaw, pitch, roll, result) {
+			var num9 = roll * 0.5;
+			var num6 = Math.sin(num9);
+			var num5 = Math.cos(num9);
+			var num8 = pitch * 0.5;
+			var num4 = Math.sin(num8);
+			var num3 = Math.cos(num8);
+			var num7 = yaw * 0.5;
+			var num2 = Math.sin(num7);
+			var num = Math.cos(num7);
+
+			var X = ((num * num4) * num5) + ((num2 * num3) * num6);
+			var Y = ((num2 * num3) * num5) - ((num * num4) * num6);
+			var Z = ((num * num3) * num6) - ((num2 * num4) * num5);
+			var W = ((num * num3) * num5) + ((num2 * num4) * num6);
+
+			number9 = X * X;
+			number8 = Y * Y;
+			number7 = Z * Z;
+			number6 = X * Y;
+			number5 = Z * W;
+			number4 = Z * X;
+			number3 = Y * W;
+			number2 = Y * Z;
+			number = X * W;
+
+			result[0] = 1 - (2 * (number8 + number7));
+			result[1] = 2 * (number6 + number5);
+			result[2] = 2 * (number4 - number3);
+			result[3] = 0;
+			result[4] = 2 * (number6 - number5);
+			result[5] = 1 - (2 * (number7 + number9));
+			result[6] = 2 * (number2 + number);
+			result[7] = 0;
+			result[8] = 2 * (number4 + number3);
+			result[9] = 2 * (number2 - number);
+			result[10] = 1 - (2 * (number8 + number9));
+			result[11] = 0;
+			result[12] = 0;
+			result[13] = 0;
+			result[14] = 0;
+			result[15] = 1;
+		}
+	</script>
+</body>
+</html>

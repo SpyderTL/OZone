@@ -26,7 +26,7 @@ namespace x86Desktop32
 
 			foreach(var file in project.Files)
 			{
-				if(file.Address == MemoryAddress.Zero)
+				if(file.Address == null)
 					image.Add(ProgramReader.Read(XDocument.Load(file.OutputPath)));
 				else if(file.Block == null)
 					image.Add(ProgramReader.Read(XDocument.Load(file.OutputPath)), file.Address);

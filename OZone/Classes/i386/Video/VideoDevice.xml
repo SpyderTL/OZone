@@ -33,15 +33,71 @@
 
 	<cls:field name="Device" type="http://metalx.org/Pci/PciDevice" offset="0"/>
 
-	<cls:method name="SetPixel" type="http://metalx.org/Video/VideoDevice">
-		<cls:parameter name="Pixel" type="http://metalx.org/Video/Graphics/Pixel"/>
+	<cls:method name="SetColor" type="http://metalx.org/Video/VideoDevice">
+		<cls:parameter name="Color" type="http://metalx.org/Video/Graphics/Color"/>
 
 		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
 		<byte>4</byte>
 
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
-	
+
+	<cls:method name="DrawPoint" type="http://metalx.org/Video/VideoDevice">
+		<cls:parameter name="Point" type="http://metalx.org/Video/Graphics/Point"/>
+		<cls:parameter name="Color" type="http://metalx.org/Video/Graphics/Color"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>8</byte>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="DrawHorizontalLine" type="http://metalx.org/Video/VideoDevice">
+		<cls:parameter name="Line" type="http://metalx.org/Video/Graphics/Line"/>
+		<cls:parameter name="Color" type="http://metalx.org/Video/Graphics/Color"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>8</byte>
+
+		<cls:return/>
+	</cls:method>
+
+	<cls:method name="DrawVerticalLine" type="http://metalx.org/Video/VideoDevice">
+		<cls:parameter name="Line" type="http://metalx.org/Video/Graphics/Line"/>
+		<cls:parameter name="Color" type="http://metalx.org/Video/Graphics/Color"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>16</byte>
+
+		<cls:return/>
+	</cls:method>
+
+	<cls:method name="FillRectangle" type="http://metalx.org/Video/VideoDevice">
+		<cls:parameter name="Rectangle" type="http://metalx.org/Video/Graphics/Rectangle"/>
+		<cls:parameter name="Color" type="http://metalx.org/Video/Graphics/Color"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>8</byte>
+
+		<cls:return/>
+	</cls:method>
+
+	<cls:method name="DrawImage" type="http://metalx.org/Video/VideoDevice">
+		<cls:parameter name="Image" type="http://metalx.org/Video/Graphics/Image"/>
+		<cls:parameter name="Point" type="http://metalx.org/Video/Graphics/Point"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>8</byte>
+
+		<cls:return/>
+	</cls:method>
+
 	<cls:method name="ToString" type="http://metalx.org/String">
 		<cpu:CopyImmediateToDI/>
 		<addressOf ref="deviceName" type="Absolute32"/>

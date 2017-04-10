@@ -286,7 +286,7 @@
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
 	
-	<cls:method name="GetLineStatus" type="http://metalx.org/Hexadecimal">
+	<cls:method name="GetStatus" type="http://metalx.org/Hexadecimal">
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
 
@@ -297,7 +297,7 @@
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToDXRegister/>
-		<byte>5</byte>
+		<byte>1</byte>
 		
 		<cpu:ExclusiveOrRegisterWithOperand/>
 		<op:AX-AXRegister/>
@@ -309,7 +309,7 @@
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
 
-	<cls:method name="GetFifoControl" type="http://metalx.org/Hexadecimal">
+	<cls:method name="GetControl" type="http://metalx.org/Hexadecimal">
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
 
@@ -328,224 +328,6 @@
 		<cpu:ReadFromDXPortToAL/>
 		
 		<hex:CreateObject/>
-
-		<cpu:ReturnToNearCaller/>
-	</cls:method>
-
-	<cls:method name="GetLineControl" type="http://metalx.org/Hexadecimal">
-		<cpu:CopyRegisterToOperand/>
-		<op:DI-SIRegister/>
-
-		<obj:GetData/>
-
-		<cpu:CopyOperandToRegister/>
-		<op:DX-SIAddress/>
-
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToDXRegister/>
-		<byte>3</byte>
-		
-		<cpu:ExclusiveOrRegisterWithOperand/>
-		<op:AX-AXRegister/>
-
-		<cpu:ReadFromDXPortToAL/>
-		
-		<hex:CreateObject/>
-
-		<cpu:ReturnToNearCaller/>
-	</cls:method>
-
-	<cls:method name="GetModemControl" type="http://metalx.org/Hexadecimal">
-		<cpu:CopyRegisterToOperand/>
-		<op:DI-SIRegister/>
-
-		<obj:GetData/>
-
-		<cpu:CopyOperandToRegister/>
-		<op:DX-SIAddress/>
-
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToDXRegister/>
-		<byte>4</byte>
-		
-		<cpu:ExclusiveOrRegisterWithOperand/>
-		<op:AX-AXRegister/>
-
-		<cpu:ReadFromDXPortToAL/>
-		
-		<hex:CreateObject/>
-
-		<cpu:ReturnToNearCaller/>
-	</cls:method>
-
-	<cls:method name="GetModemStatus" type="http://metalx.org/Hexadecimal">
-		<cpu:CopyRegisterToOperand/>
-		<op:DI-SIRegister/>
-
-		<obj:GetData/>
-
-		<cpu:CopyOperandToRegister/>
-		<op:DX-SIAddress/>
-
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToDXRegister/>
-		<byte>6</byte>
-		
-		<cpu:ExclusiveOrRegisterWithOperand/>
-		<op:AX-AXRegister/>
-
-		<cpu:ReadFromDXPortToAL/>
-		
-		<hex:CreateObject/>
-
-		<cpu:ReturnToNearCaller/>
-	</cls:method>
-
-	<cls:method name="GetBaudRate" type="http://metalx.org/Integer">
-		<cpu:CopyRegisterToOperand/>
-		<op:DI-SIRegister/>
-
-		<obj:GetData/>
-
-		<cpu:CopyOperandToRegister/>
-		<op:DX-SIAddress/>
-
-		<!--Enable Baud Rate Registers-->
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToDXRegister/>
-		<byte>3</byte>
-
-		<cpu:PushDXToStack/>
-
-		<cpu:ReadFromDXPortToAL/>
-
-		<cpu:OrALWithImmediate/>
-		<binary>10000000</binary>
-
-		<cpu:WriteALToDXPort/>
-		
-		<!--Get Baud Rate-->
-		<cpu:ExclusiveOrOperandWithRegister/>
-		<op:AX-AXRegister/>
-
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:SubtractFromDXRegister/>
-		<byte>2</byte>
-
-		<cpu:ReadFromDXPortToAL/>
-
-		<cpu:ShiftRegisterByImmediate8Function/>
-		<shift:ShiftAXRegisterLeft/>
-		<byte>8</byte>
-
-		<cpu:DecrementDX/>
-
-		<cpu:ReadFromDXPortToAL/>
-		
-		<!--Calculate Baud Rate-->
-		<cpu:CopyRegisterToOperand/>
-		<op:AX-BXRegister/>
-
-		<cpu:CopyImmediateToAX/>
-		<int>115200</int>
-
-		<cpu:ExclusiveOrOperandWithRegister/>
-		<op:DX-DXRegister/>
-
-		<cpu:ArithmeticDXAXOperandFunction/>
-		<ari:DivideByBXRegister/>
-		
-		<int:CreateObject/>
-
-		<cpu:PullDXFromStack/>
-
-		<cpu:ReadFromDXPortToAL/>
-
-		<cpu:AndALWithImmediate/>
-		<binary>01111111</binary>
-
-		<cpu:WriteALToDXPort/>
-
-		<cpu:ReturnToNearCaller/>
-	</cls:method>
-	
-	<cls:method name="SetBaudRate" type="http://metalx.org/Ports/Parallel/ParallelPort">
-		<cls:parameter name="Value" type="http://metalx.org/Integer"/>
-		
-		<cpu:PushDIToStack/>
-		
-		<cpu:CopyRegisterToOperand/>
-		<op:DI-SIRegister/>
-
-		<obj:GetData/>
-
-		<cpu:CopyOperandToRegister/>
-		<op:DX-SIAddress/>
-
-		<!--Enable Baud Rate Registers-->
-		<cpu:PushDXToStack/>
-
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToDXRegister/>
-		<byte>3</byte>
-
-		<cpu:ReadFromDXPortToAL/>
-
-		<cpu:OrALWithImmediate/>
-		<binary>10000000</binary>
-
-		<cpu:WriteALToDXPort/>
-		
-		<!--Calculate Baud Rate-->
-		<cpu:CopyOperandToRegister/>
-		<op:SI-BPAddressPlusImmediate8/>
-		<byte>0</byte>
-
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToBPRegister/>
-		<byte>4</byte>
-
-		<obj:GetData/>
-
-		<cpu:CopySIAddressToAXAndIncrementSI/>
-		
-		<cpu:CopyRegisterToOperand/>
-		<op:AX-BXRegister/>
-
-		<cpu:CopyImmediateToAX/>
-		<int>115200</int>
-
-		<cpu:ExclusiveOrOperandWithRegister/>
-		<op:DX-DXRegister/>
-
-		<cpu:ArithmeticDXAXOperandFunction/>
-		<ari:DivideByBXRegister/>
-		
-		<!--Set Baud Rate-->
-		<cpu:PullDXFromStack/>
-		
-		<cpu:WriteALToDXPort/>
-
-		<cpu:ShiftRegisterByImmediate8Function/>
-		<shift:ShiftAXRegisterRight/>
-		<byte>8</byte>
-
-		<cpu:IncrementDX/>
-		
-		<cpu:WriteALToDXPort/>
-
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToDXRegister/>
-		<byte>2</byte>
-
-		<cpu:ReadFromDXPortToAL/>
-
-		<cpu:AndALWithImmediate/>
-		<binary>01111111</binary>
-
-		<cpu:WriteALToDXPort/>
-
-		<cpu:PullDIFromStack/>
 
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
@@ -563,91 +345,64 @@
 		<cpu:CopyOperandToRegister/>
 		<op:DX-SIAddress/>
 		
-		<!--Disable Interrupts-->
-		<cpu:IncrementDX/>
-
-		<cpu:CopyImmediateToAL/>
-		<byte>0</byte>
-
-		<cpu:WriteALToDXPort/>
-		
-		<!--Set Line Control-->
-		<cpu:MathImmediate8ToOperandFunction />
-		<math:AddToDXRegister />
-		<byte>2</byte>
-		
-		<cpu:CopyImmediateToAL/>
-		<binary>00000011</binary>
-		
-		<cpu:WriteALToDXPort/>
-		
-		<!--Set FIFO Control-->
-		<cpu:DecrementDX/>
-		
-		<cpu:CopyImmediateToAL/>
-		<binary>11000111</binary>
-		
-		<cpu:WriteALToDXPort/>
-		
-		<!--Set Modem Control-->
-		<cpu:MathImmediate8ToOperandFunction />
-		<math:AddToDXRegister />
-		<byte>2</byte>
-
-		<cpu:CopyImmediateToAL/>
-		<binary>00000000</binary>
-		
-		<cpu:WriteALToDXPort/>
-		
-		<!--Write Bytes-->
+		<!--Get String-->
 		<cpu:CopyOperandToRegister/>
 		<op:SI-BPAddressPlusImmediate8/>
 		<byte>0</byte>
-		
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-SIAddress/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>4</byte>
+
+		<loop:For>
+			<!--Wait For Busy-->
+			<cpu:IncrementDX/>
+
+			<label id="waitForBusy"/>
+
+			<cpu:ReadFromDXPortToAL/>
+
+			<cpu:TestALWithImmediate/>
+			<binary>10000000</binary>
+
+			<!--<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="waitForBusy" type="Relative8"/>-->
+
+			<cpu:DecrementDX/>
+
+			<cpu:WriteSIAddressToDXPortAndIncrementSI8/>
+
+			<cpu:MathImmediate8ToOperandFunction/>
+			<math:AddToDXRegister/>
+			<byte>2</byte>
+
+			<cpu:ReadFromDXPortToAL/>
+
+			<cpu:OrALWithImmediate/>
+			<binary>00000001</binary>
+
+			<cpu:WriteALToDXPort/>
+			
+			<cpu:AndALWithImmediate/>
+			<binary>11111110</binary>
+			
+			<cpu:WriteALToDXPort/>
+
+			<cpu:MathImmediate8ToOperandFunction/>
+			<math:SubtractFromDXRegister/>
+			<byte>2</byte>
+		</loop:For>
+
+		<cpu:PullDIFromStack/>
+
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
 		<byte>4</byte>
-		
-		<obj:GetData/>
-		
-		<cpu:CopySIAddressToAXAndIncrementSI/>
-		
-		<cpu:CopyRegisterToOperand/>
-		<op:AX-CXRegister/>
-		
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:SubtractFromDXRegister/>
-		<byte>4</byte>
-		
-		<!--Write Byte-->
-		<label id="forEachCharacter"/>
-		
-		<!--Wait For Ready-->
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToDXRegister/>
-		<byte>5</byte>
-		
-		<label id="waitForReady"/>
-		
-		<cpu:ReadFromDXPortToAL/>
-		
-		<cpu:TestALWithImmediate/>
-		<binary>00100000</binary>
-		
-		<cpu:BranchToRelative8IfZero/>
-		<addressOf ref="waitForReady" type="Relative8"/>
-		
-		<!--Send Byte-->
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:SubtractFromDXRegister/>
-		<byte>5</byte>
-		
-		<cpu:WriteSIAddressToDXPortAndIncrementSI8/>
-				
-		<cpu:LoopToRelative8/>
-		<addressOf ref="forEachCharacter" type="Relative8"/>
-		
-		<cpu:PullDIFromStack/>
 
 		<cpu:ReturnToNearCaller/>
 	</cls:method>

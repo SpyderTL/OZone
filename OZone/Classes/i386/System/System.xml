@@ -40,7 +40,7 @@
 		<addressOf ref="resetFailed" type="Absolute32"/>
 
 		<ex:CreateObject/>
-		
+
 		<cpu:ReturnToNearCaller/>
 
 		<var:string id="resetFailed">Reset Failed</var:string>
@@ -603,38 +603,38 @@
 
 		<cpu:ExclusiveOrRegisterWithOperand/>
 		<op:CX-CXRegister/>
-		
+
 		<cpu:Operand16/>
 		<cpu:CopyOperandToRegister/>
 		<op:CX-SIAddressPlusImmediate8/>
 		<hex>1c</hex>
-		
+
 		<cpu:CopyOperandToRegister/>
 		<op:SI-SIAddressPlusImmediate8/>
 		<hex>18</hex>
-		
+
 		<!--Find Table-->
 		<label id="nextTable"/>
-		
+
 		<cpu:MathImmediateToOperandFunction8/>
 		<math:CompareWithSIAddress/>
 		<byte>0</byte>
-		
+
 		<cpu:BranchToRelative8IfEqual/>
 		<addressOf ref="found2" type="Relative8"/>
 
 		<cpu:ExclusiveOrRegisterWithOperand/>
 		<op:AX-AXRegister/>
-		
+
 		<cpu:CopyOperandToRegister8/>
 		<op:AL-SIAddressPlusImmediate8/>
 		<byte>1</byte>
-		
+
 		<cpu:AddRegisterToOperand/>
 		<op:AX-SIRegister/>
 
 		<label id="skipStrings"/>
-		
+
 		<cpu:Operand16/>
 		<cpu:MathImmediateToOperandFunction/>
 		<math:CompareWithSIAddress/>
@@ -649,26 +649,26 @@
 		<addressOf ref="skipStrings" type="Relative8"/>
 
 		<label id="endOfStrings"/>
-		
+
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToSIRegister/>
 		<byte>2</byte>
-		
+
 		<cpu:LoopToRelative8/>
 		<addressOf ref="nextTable" type="Relative8"/>
-		
+
 		<cpu:ExclusiveOrRegisterWithOperand/>
 		<op:DI-DIRegister/>
-		
+
 		<cpu:ReturnToNearCaller/>
-		
+
 		<label id="found2"/>
-		
+
 		<mm:CheckOut length="4"/>
-		
+
 		<cpu:CopyRegisterToOperand/>
 		<op:SI-DIAddress/>
-		
+
 		<obj:Create length="4" type="http://metalx.org/System/Management/BiosInformationTable"/>
 
 		<cpu:ReturnToNearCaller/>
@@ -1404,6 +1404,190 @@
 		<int:CreateObject/>
 
 		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetInterruptControllers" type="http://metalx.org/List" static="true">
+		<cpu:CopyImmediateToCX/>
+		<hex>00010000</hex>
+
+		<cpu:CopyImmediateToSI/>
+		<int>0</int>
+
+		<label id="next"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithSIAddress/>
+		<string>_MP_</string>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="found" type="Relative8"/>
+
+		<label id="notFound"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>16</byte>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="next" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<int>0</int>
+
+		<cpu:ReturnToNearCaller/>
+
+		<!--<cpu:JumpToRelative/>
+		<addressOf ref="createObject" type="Relative32"/>-->
+
+		<label id="found"/>
+
+		<cpu:PushSIToStack/>
+		<cpu:PushCXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediateToCX/>
+		<int>16</int>
+
+		<label id="checksum"/>
+
+		<cpu:AddOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:IncrementSI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="checksum" type="Relative8"/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFound" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-SIAddressPlusImmediate8/>
+		<byte>32</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftCXRegisterRight/>
+		<byte>16</byte>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>44</byte>
+
+		<label id="forEachEntry"/>
+
+		<cpu:MathImmediateToOperandFunction8/>
+		<math:CompareWithSIAddress/>
+		<byte>2</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notApic" type="Relative8"/>
+
+		<cpu:IncrementAX/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:PushDIToStack/>
+
+		<label id="notApic"/>
+
+		<cpu:MathImmediateToOperandFunction8/>
+		<math:CompareWithSIAddress/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notCpu" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>20</byte>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="nextEntry" type="Relative8"/>
+
+		<label id="notCpu"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>8</byte>
+
+		<label id="nextEntry"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachEntry" type="Relative8"/>
+
+		<!--Create List-->
+		<cpu:PushAXToStack/>
+
+		<lst:Create/>
+
+		<cpu:PushDIToStack/>
+
+		<!--Find Interrupt Controller Class-->
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="interruptController" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<!--Create Device Objects-->
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:PullSIFromStack/>
+		<cpu:PullCXFromStack/>
+
+		<label id="forEachDevice"/>
+
+		<mm:CheckOut length="4"/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddress/>
+
+		<obj:Create length="4"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:DecrementAX/>
+
+		<cpu:PushSIToStack/>
+
+		<lst:SetItem/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachDevice" type="Relative8"/>
+
+		<!--Create List Object-->
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+		
+		<lst:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="interruptController">http://metalx.org/System/Interrupts/InterruptController</var:string>
 	</cls:method>
 
 	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">

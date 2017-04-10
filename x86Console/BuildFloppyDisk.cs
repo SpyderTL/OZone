@@ -24,7 +24,7 @@ namespace x86Console
 				ProgramBuilder.Build(
 					new XmlTextReader("../../BootLoaderFd.xml"),
 					x86Console.Transforms),
-				new MemoryAddress(0x0000, 0x7c00));
+				new MemoryAddress { Offset = 0x7c00 } );
 
 			// Programs
 			foreach(var program in x86Console.Programs)

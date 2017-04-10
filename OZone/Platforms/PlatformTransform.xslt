@@ -46,7 +46,7 @@
 						<xsl:value-of select="@name"/>
 					</xsl:attribute>
 					<xsl:element name="xsl:element">
-						<xsl:attribute name="name">label</xsl:attribute>
+						<xsl:attribute name="name">prg:label</xsl:attribute>
 						<xsl:element name="xsl:attribute">
 							<xsl:attribute name="name">id</xsl:attribute>
 							<xsl:element name="xsl:value-of">

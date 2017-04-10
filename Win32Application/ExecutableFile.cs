@@ -10,7 +10,7 @@ namespace Win32Application
 	public class ExecutableFile
 	{
 		private List<ExecutableProgram> _programs = new List<ExecutableProgram>();
-		private MemoryAddress _address = new MemoryAddress(0x0000, 0x400000);
+		private MemoryAddress _address = new MemoryAddress { Offset = 0x400000 };
 
 		public void Add(OZone.Programs.Program program)
 		{
@@ -20,7 +20,11 @@ namespace Win32Application
 				new ExecutableProgram
 				{
 					Length = length,
-					Address = _address,
+					Address = new MemoryAddress
+					{
+						Offset = _address.Offset,
+						Segment = _address.Segment
+					},
 					Program = program
 				});
 
@@ -35,7 +39,11 @@ namespace Win32Application
 				new ExecutableProgram
 				{
 					Length = length,
-					Address = address,
+					Address = new MemoryAddress
+					{
+						Offset = address.Offset,
+						Segment = address.Segment
+					},
 					Program = program
 				});
 		}
@@ -49,7 +57,7 @@ namespace Win32Application
 
 
 
-				ProgramCompiler.Compile(header, MemoryAddress.Zero, writer);
+				ProgramCompiler.Compile(header, null, writer);
 
 				// Write Programs
 				foreach(var program in _programs)
