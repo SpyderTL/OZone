@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xsl:stylesheet version="1.0" xmlns="http://metalx.org/Program" xmlns:sq="http://metalx.org/Subleq" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0" xmlns="http://metalx.org/Program" xmlns:sq="http://metalx.org/Subleq" xmlns:math="http://metalx.org/Subleq/Math" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:output method="xml" indent="yes" />
   <xsl:template match="@* | node()">
     <xsl:copy>
@@ -29,7 +29,7 @@
 			<addressOf ref="{@destination}" type="Absolute64"/>
 			<xsl:call-template name="Next"/>
 
-			<xsl:call-template name="Add"/>
+			<math:Add source="{@source}" destination="{@destination}"/>
 		</scope>
 	</xsl:template>
 	<xsl:template match="sq:CopyIndirect">
@@ -184,78 +184,6 @@
 
 			<label id="one"/>
 			<long>1</long>
-
-			<label id="end"/>
-		</scope>
-	</xsl:template>
-	<xsl:template match="sq:Add" name="Add">
-		<scope>
-			<addressOf ref="{@source}" type="Absolute64"/>
-			<addressOf ref="zero" type="Absolute64"/>
-			<xsl:call-template name="Next"/>
-
-			<addressOf ref="zero" type="Absolute64"/>
-			<addressOf ref="{@destination}" type="Absolute64"/>
-			<xsl:call-template name="Next"/>
-
-			<addressOf ref="zero" type="Absolute64"/>
-			<addressOf ref="zero" type="Absolute64"/>
-			<addressOf ref="end" type="Absolute64"/>
-
-			<label id="zero"/>
-			<long>0</long>
-
-			<label id="end"/>
-		</scope>
-	</xsl:template>
-	<xsl:template match="sq:Subtract" name="Subtract">
-		<addressOf ref="{@source}" type="Absolute64"/>
-		<addressOf ref="{@destination}" type="Absolute64"/>
-		<xsl:choose>
-			<xsl:when test="@branch">
-				<addressOf ref="{@branch}" type="Absolute64"/>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:call-template name="Next"/>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-	<xsl:template match="sq:Multiply" name="Multiply">
-		<scope>
-			<addressOf ref="{@source}" type="Absolute64"/>
-			<addressOf ref="zero" type="Absolute64"/>
-			<xsl:call-template name="Next"/>
-
-			<addressOf ref="zero" type="Absolute64"/>
-			<addressOf ref="{@destination}" type="Absolute64"/>
-			<xsl:call-template name="Next"/>
-
-			<addressOf ref="zero" type="Absolute64"/>
-			<addressOf ref="zero" type="Absolute64"/>
-			<addressOf ref="end" type="Absolute64"/>
-
-			<label id="zero"/>
-			<long>0</long>
-
-			<label id="end"/>
-		</scope>
-	</xsl:template>
-	<xsl:template match="sq:Divide" name="Divide">
-		<scope>
-			<addressOf ref="{@source}" type="Absolute64"/>
-			<addressOf ref="zero" type="Absolute64"/>
-			<xsl:call-template name="Next"/>
-
-			<addressOf ref="zero" type="Absolute64"/>
-			<addressOf ref="{@destination}" type="Absolute64"/>
-			<xsl:call-template name="Next"/>
-
-			<addressOf ref="zero" type="Absolute64"/>
-			<addressOf ref="zero" type="Absolute64"/>
-			<addressOf ref="end" type="Absolute64"/>
-
-			<label id="zero"/>
-			<long>0</long>
 
 			<label id="end"/>
 		</scope>

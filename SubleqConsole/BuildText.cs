@@ -17,7 +17,7 @@ namespace SubleqConsole
 		{
 			var project = ProjectReader.Read("../../Projects/ProjectText.xml");
 
-			//ProjectBuilder.Clean(project);
+			ProjectBuilder.Clean(project);
 
 			ProjectBuilder.Build(project);
 
