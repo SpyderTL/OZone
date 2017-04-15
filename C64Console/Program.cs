@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using OZone.Programs;
+using OZone.Programs.Compilers;
 
 namespace C64Console
 {
@@ -11,6 +12,8 @@ namespace C64Console
 	{
 		static void Main(string[] args)
 		{
+			var compiler = new BinaryCompiler();
+
 			var program = ProgramBuilder.Build(
 				"../../C64Cartridge.xml");
 
@@ -19,7 +22,7 @@ namespace C64Console
 			using(Stream stream = File.Create("C64Console.bin"))
 			using(BinaryWriter binaryWriter = new BinaryWriter(stream))
 			{
-				ProgramCompiler.Compile(program, address, binaryWriter);
+				compiler.Compile(program, address, binaryWriter);
 
 				program = ProgramBuilder.Build(
 					"../../C64Console.xml",
@@ -34,7 +37,7 @@ namespace C64Console
 
 				address.Offset = (uint)binaryWriter.BaseStream.Position + 0x1000;
 
-				ProgramCompiler.Compile(program, address, binaryWriter);
+				compiler.Compile(program, address, binaryWriter);
 
 				binaryWriter.BaseStream.SetLength(8192);
 			}

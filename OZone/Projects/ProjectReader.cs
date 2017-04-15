@@ -48,6 +48,11 @@ namespace OZone.Projects
 							if(block != null)
 								program.Block = int.Parse(block);
 
+							var compiler = reader.GetAttribute("compiler");
+
+							if (compiler != null)
+								program.Compiler = compiler;
+
 							project.Files.Add(program);
 							break;
 

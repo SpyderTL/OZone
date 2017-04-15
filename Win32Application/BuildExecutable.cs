@@ -8,6 +8,7 @@ using System.Xml.Xsl;
 using System.Xml;
 using OZone.Projects;
 using System.Xml.Linq;
+using OZone.Programs.Compilers;
 
 namespace Win32Application
 {
@@ -24,14 +25,16 @@ namespace Win32Application
 			// Save Executable
 			Console.WriteLine("Writing test.exe");
 
-			using(Stream stream = File.Create("test.exe"))
+			var compiler = new BinaryCompiler();
+
+			using (Stream stream = File.Create("test.exe"))
 			using(BinaryWriter writer = new BinaryWriter(stream))
 			{
 				foreach(var program in project.Files)
 				{
 					//var filename = Path.Combine(project.Name, Path.GetFileName(program.Path) + ".program");
 
-					ProgramCompiler.Compile(
+					compiler.Compile(
 						ProgramReader.Read(XDocument.Load(program.OutputPath)),
 						program.Address,
 						writer);

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using OZone.Programs;
 using System.IO;
+using OZone.Programs.Compilers;
 
 namespace SubleqConsole.Images
 {
@@ -20,9 +21,9 @@ namespace SubleqConsole.Images
 		private static readonly int[] _diskInfoBlocks = new int[] { 1, 2 };
 		private const int _bootLoaderCount = 8;
 
-		public void Add(Program program)
+		public void Add(Program program, ProgramCompiler compiler)
 		{
-			int length = (int)program.Segments.Sum(p => p.GetLength());
+			int length = (int)program.Segments.Sum(p => compiler.GetLength(p));
 			int blocks = (int)Math.Ceiling((decimal)length / (decimal)_blockLength);
 
 			_programs.Add(
@@ -35,16 +36,17 @@ namespace SubleqConsole.Images
 						Offset = _address.Offset,
 						Segment = _address.Segment
 					},
-					Program = program
+					Program = program,
+					Compiler = compiler
 				});
 
 			_block += blocks;
 			_address.Offset += (uint)blocks * (uint)_blockLength;
 		}
 
-		public void Add(OZone.Programs.Program program, MemoryAddress address)
+		public void Add(OZone.Programs.Program program, ProgramCompiler compiler, MemoryAddress address)
 		{
-			int length = (int)program.Segments.Sum(p => p.GetLength());
+			int length = (int)program.Segments.Sum(p => compiler.GetLength(p));
 			int blocks = length / _blockLength;
 
 			if (length % _blockLength != 0)
@@ -60,15 +62,16 @@ namespace SubleqConsole.Images
 						Offset = address.Offset,
 						Segment = address.Segment
 					},
-					Program = program
+					Program = program,
+					Compiler = compiler
 				});
 
 			_block += blocks;
 		}
 
-		public void Add(OZone.Programs.Program program, MemoryAddress address, int block)
+		public void Add(OZone.Programs.Program program, ProgramCompiler compiler, MemoryAddress address, int block)
 		{
-			int length = (int)program.Segments.Sum(p => p.GetLength());
+			int length = (int)program.Segments.Sum(p => compiler.GetLength(p));
 			int blocks = length / _blockLength;
 
 			if (length % _blockLength != 0)
@@ -84,7 +87,8 @@ namespace SubleqConsole.Images
 						Offset = address.Offset,
 						Segment = address.Segment
 					},
-					Program = program
+					Program = program,
+					Compiler = compiler
 				});
 		}
 
@@ -97,7 +101,11 @@ namespace SubleqConsole.Images
 				foreach (var program in _programs)
 				{
 					memory.Position = program.Block * _blockLength;
-					ProgramCompiler.Compile(program.Program, program.Address, writer);
+
+					if(program.Compiler is BinaryCompiler)
+						program.Compiler.Compile(program.Program, program.Address, writer);
+					else
+						program.Compiler.Compile(program.Program, new MemoryAddress { Segment = program.Address.Segment, Offset = program.Address.Offset >> 2 }, writer);
 				}
 
 				// Write Program List
@@ -209,6 +217,7 @@ namespace SubleqConsole.Images
 			public int Length;
 			public MemoryAddress Address;
 			public Program Program;
+			public ProgramCompiler Compiler;
 		}
 	}
 }

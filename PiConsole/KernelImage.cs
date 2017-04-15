@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using OZone.Programs;
+using OZone.Programs.Compilers;
 
 namespace PiConsole
 {
@@ -74,10 +75,12 @@ namespace PiConsole
 
 		public void Save(Stream stream)
 		{
-			using(BinaryWriter writer = new BinaryWriter(stream))
+			var compiler = new BinaryCompiler();
+
+			using (BinaryWriter writer = new BinaryWriter(stream))
 			{
 				foreach(var program in _programs)
-					ProgramCompiler.Compile(program.Program, program.Address, writer);
+					compiler.Compile(program.Program, program.Address, writer);
 
 				writer.Flush();
 			}

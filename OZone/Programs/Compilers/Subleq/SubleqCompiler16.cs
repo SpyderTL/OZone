@@ -2,12 +2,13 @@
 using System.Linq;
 using System.Diagnostics;
 using OZone.Programs;
+using System;
 
-namespace OZone.Programs.Subleq
+namespace OZone.Programs.Compilers.Subleq
 {
-	public static class SubleqCompiler
+	public class SubleqCompiler16 : ProgramCompiler
 	{
-		public static void Compile(Program program, MemoryAddress baseAddress, BinaryWriter writer)
+		public override void Compile(Program program, MemoryAddress baseAddress, BinaryWriter writer)
 		{
 			// Assign memory addresses
 			MemoryAddress position = new MemoryAddress { Segment = baseAddress.Segment, Offset = baseAddress.Offset };
@@ -40,6 +41,16 @@ namespace OZone.Programs.Subleq
 				else if (segment is AddressOf)
 					writer.Write((short)((AddressOf)segment).Segment.Address.Offset);
 			}
+		}
+
+		public override uint GetLength(ProgramSegment segment)
+		{
+			if (segment is StringValue)
+				return (uint)(((StringValue)segment).Value.Length * 2);
+			else if (segment is Label)
+				return 0;
+			else
+				return 2;
 		}
 	}
 }

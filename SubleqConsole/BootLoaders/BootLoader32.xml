@@ -1,0 +1,478 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:ex="http://metalx.org/Intel/80386/ExtendedOperators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:seg="http://metalx.org/Intel/80386/Segments"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:index="http://metalx.org/Intel/80386/Index"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:gdt="http://metalx.org/Intel/80386/DescriptorTable"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:inc="http://metalx.org/Intel/80386/Increment"
+	xmlns:sys="http://metalx.org/Pc/Bios/System"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:pic="http://metalx.org/Pc/Pic/Ports"
+	xmlns:cmd="http://metalx.org/Pc/Pic/Commands"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:tm="http://metalx.org/i386/Functions/TaskManager"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:sf="http://metalx.org/i386/Functions/System"
+	xmlns:col="http://metalx.org/i386/Functions/Collection"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:sysf="http://metalx.org/i386/Functions/System"
+	xmlns:flp="http://metalx.org/i386/Functions/FloppyDrive">
+
+	<cpu:PushSIToStack/>
+	
+	<!--Reset System Lock-->
+	<sysf:Unlock/>
+	
+	<!--Setup Memory Manager-->
+	<mm:Reset/>
+
+	<!--Setup Task Manager-->
+	<tm:Reset/>
+	
+	<!--Setup Processors-->
+	<lst:Create length="32"/>
+
+	<cpu:PushDIToStack/>
+
+	<mm:CheckOut length="32"/>
+
+	<!--Get Processor ID-->
+	<!--<cpuf:GetProcessorID/>-->
+	<cpu:CopyImmediateToCX/>
+	<hex>0000001B</hex>
+
+	<cpu:ExtendedOperator/>
+	<ex:CopyCXModelSpecificRegisterToAXDX/>
+
+	<cpu:AndAXWithImmediate/>
+	<hex>fffff000</hex>
+
+	<cpu:CopyOperandToRegister/>
+	<op:AX-AXAddressPlusImmediate8/>
+	<hex>20</hex>
+
+	<cpu:ShiftRegisterByImmediate8Function/>
+	<shift:ShiftAXRegisterRight/>
+	<byte>24</byte>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:AX-DIAddress/>
+
+	<!--Processor State-->
+	
+	<!--Flags-->
+
+	<!--Reserved-->
+
+	<!--Tasks-->
+
+	<!--Create Processor Object-->
+	<obj:Create length="32" type="http://metalx.org/Processor"/>
+
+	<!--Add Processor To List-->
+	<cpu:CopyOperandToRegister/>
+	<op:SI-IndexAddress/>
+	<index:SP/>
+	
+	<lst:SetItem index="0"/>
+	
+	<cpu:PullDIFromStack/>
+
+	<lst:CreateObject/>
+
+	<sf:GetProcessors/>
+
+	<cpu:CopyImmediateToOperandFunction/>
+	<imm:CopyImmediateToSIAddress/>
+	<int>1</int>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DI-SIAddressPlusImmediate8/>
+	<byte>4</byte>
+
+	<cpu:PullSIFromStack/>
+
+	<!--Setup Interrupt Descriptor Table-->
+	<cpu:CopyImmediateToDI/>
+	<hex>00000500</hex>
+
+	<cpu:CopyImmediateToCX/>
+	<int>256</int>
+
+	<cpu:CopyImmediateToDX/>
+	<hex>00002000</hex>
+
+	<label id="writeInterruptDescriptor"/>
+
+	<!--Base (Low)-->
+	<cpu:CopyRegisterToOperand/>
+	<op:DX-AXRegister/>
+
+	<cpu:Operand16/>
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<!--Segment-->
+	<cpu:Operand16/>
+	<cpu:CopyImmediateToAX/>
+	<hex>0008</hex>
+
+	<cpu:Operand16/>
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<!--Attributes-->
+	<cpu:Operand16/>
+	<cpu:CopyImmediateToAX/>
+	<hex>00</hex>
+	<binary>10001110</binary>
+
+	<cpu:Operand16/>
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<!--Base (High)-->
+	<cpu:Operand16/>
+	<cpu:CopyImmediateToAX/>
+	<hex>0000</hex>
+
+	<cpu:Operand16/>
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:MathImmediate8ToOperandFunction/>
+	<math:AddToDXRegister/>
+	<byte>16</byte>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="writeInterruptDescriptor" type="Relative8"/>
+
+	<!--Setup Interrupt Handlers-->
+	<cpu:CopyImmediateToDI/>
+	<hex>00002000</hex>
+
+	<cpu:CopyImmediateToDX/>
+	<hex>00001000</hex>
+
+	<cpu:CopyImmediateToCX/>
+	<int>32</int>
+
+	<!--Default Interrupt Handler-->
+	<label id="writeDefaultInterruptHandler"/>
+
+	<cpu:CopyImmediateToAL/>
+	<cpu:IncrementFunction8/>
+
+	<cpu:CopyALToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToAL/>
+	<inc:IncrementImmediateAddress/>
+
+	<cpu:CopyALToDIAddressAndIncrementDI/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DX-AXRegister/>
+
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToAL/>
+	<cpu:JumpToImmediatePointer/>
+
+	<cpu:CopyALToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToAX/>
+	<hex>00000d00</hex>
+
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToAX/>
+	<hex>00000008</hex>
+
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:IncrementDI/>
+
+	<cpu:IncrementDX/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="writeDefaultInterruptHandler" type="Relative8"/>
+
+	<!--Timer Interrupt Handler-->
+	<cpu:CopyImmediateToAL/>
+	<cpu:IncrementFunction8/>
+
+	<cpu:CopyALToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToAL/>
+	<inc:IncrementImmediateAddress/>
+
+	<cpu:CopyALToDIAddressAndIncrementDI/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DX-AXRegister/>
+
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToAL/>
+	<cpu:JumpToImmediatePointer/>
+
+	<cpu:CopyALToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToAX/>
+	<hex>0000d000</hex>
+
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToAX/>
+	<hex>00000008</hex>
+
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:IncrementDI/>
+
+	<cpu:IncrementDX/>
+
+	<!--Master Interrupt Handler-->
+	<cpu:CopyImmediateToCX/>
+	<int>7</int>
+
+	<label id="writeMasterInterruptHandler"/>
+
+	<cpu:CopyImmediateToAL/>
+	<cpu:IncrementFunction8/>
+
+	<cpu:CopyALToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToAL/>
+	<inc:IncrementImmediateAddress/>
+
+	<cpu:CopyALToDIAddressAndIncrementDI/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DX-AXRegister/>
+
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToAL/>
+	<cpu:JumpToImmediatePointer/>
+
+	<cpu:CopyALToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToAX/>
+	<hex>00000e00</hex>
+
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToAX/>
+	<hex>00000008</hex>
+
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:IncrementDI/>
+
+	<cpu:IncrementDX/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="writeMasterInterruptHandler" type="Relative8"/>
+
+	<!--Slave Interrupt Handler-->
+	<cpu:CopyImmediateToCX/>
+	<int>8</int>
+
+	<label id="writeSlaveInterruptHandler"/>
+
+	<cpu:CopyImmediateToAL/>
+	<cpu:IncrementFunction8/>
+
+	<cpu:CopyALToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToAL/>
+	<inc:IncrementImmediateAddress/>
+
+	<cpu:CopyALToDIAddressAndIncrementDI/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DX-AXRegister/>
+
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToAL/>
+	<cpu:JumpToImmediatePointer/>
+
+	<cpu:CopyALToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToAX/>
+	<hex>00000f00</hex>
+
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToAX/>
+	<hex>00000008</hex>
+
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:IncrementDI/>
+
+	<cpu:IncrementDX/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="writeSlaveInterruptHandler" type="Relative8"/>
+
+	<!--Default Interrupt Handler-->
+	<cpu:CopyImmediateToCX/>
+	<int>208</int>
+
+	<label id="writeDefaultInterruptHandler2"/>
+
+	<cpu:CopyImmediateToAL/>
+	<cpu:IncrementFunction8/>
+
+	<cpu:CopyALToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToAL/>
+	<inc:IncrementImmediateAddress/>
+
+	<cpu:CopyALToDIAddressAndIncrementDI/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:DX-AXRegister/>
+
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToAL/>
+	<cpu:JumpToImmediatePointer/>
+
+	<cpu:CopyALToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToAX/>
+	<hex>00000d00</hex>
+
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:CopyImmediateToAX/>
+	<hex>00000008</hex>
+
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:IncrementDI/>
+
+	<cpu:IncrementDX/>
+
+	<cpu:LoopToRelative8/>
+	<addressOf ref="writeDefaultInterruptHandler2" type="Relative8"/>
+
+	<!--Load Interrupt Descriptor Table-->
+	<cpu:ExtendedOperator/>
+	<ex:DescriptorTableFunction/>
+	<gdt:CopyImmediateAddressToInterruptDescriptorTableRegister/>
+	<addressOf ref="interruptDescriptorTablePointer" type="Absolute32"/>
+
+	<!--Set Timer Frequency to ~100 Hz-->
+	<cpu:CopyImmediateToAL/>
+	<binary>00110100</binary>
+	<!--<binary>00110110</binary>-->
+
+	<cpu:WriteALToImmediate8Port/>
+	<hex>43</hex>
+
+	<cpu:CopyImmediateToAL/>
+	<hex>00</hex>
+
+	<cpu:WriteALToImmediate8Port/>
+	<hex>40</hex>
+
+	<cpu:CopyImmediateToAL/>
+	<hex>20</hex>
+
+	<cpu:WriteALToImmediate8Port/>
+	<hex>40</hex>
+
+	<!--Enable Interrupts-->
+	<cpu:SetInterruptFlag/>
+
+	
+	
+	
+	
+	
+	
+	
+	<cpu:IncrementFunction8/>
+	<inc:IncrementImmediateAddress/>
+	<hex>000b8000</hex>
+
+	<cpu:CopyImmediateToSI/>
+	<hex>00100000</hex>
+	
+	<!--<cpu:JumpToRelative8/>
+	<sbyte>-2</sbyte>-->
+
+	<label id="forEachInstruction"/>
+
+	<cpu:CopyOperandToRegister/>
+	<op:AX-SIAddress/>
+	
+	<cpu:CopyOperandToRegister/>
+	<op:BX-SIAddressPlusImmediate8/>
+	<byte>4</byte>
+
+	<cpu:CopyOperandToRegister/>
+	<op:CX-SIAddressPlusImmediate8/>
+	<byte>8</byte>
+
+	<cpu:MathImmediate8ToOperandFunction/>
+	<math:AddToSIRegister/>
+	<byte>12</byte>
+	
+	<!--Adjust Addresses-->
+	<cpu:ShiftRegisterByImmediate8Function/>
+	<shift:ShiftAXRegisterLeft/>
+	<byte>2</byte>
+
+	<cpu:ShiftRegisterByImmediate8Function/>
+	<shift:ShiftBXRegisterLeft/>
+	<byte>2</byte>
+
+	<cpu:ShiftRegisterByImmediate8Function/>
+	<shift:ShiftCXRegisterLeft/>
+	<byte>2</byte>
+	
+	<!--Subtract A from B-->
+	<cpu:CopyOperandToRegister/>
+	<op:AX-AXAddress/>
+
+	<cpu:SubtractRegisterFromOperand/>
+	<op:AX-BXAddress/>
+
+	<!--Branch if Less or Equal-->
+	<cpu:BranchToRelative8IfGreater/>
+	<addressOf ref="skipBranch" type="Relative8"/>
+
+	<cpu:CopyRegisterToOperand/>
+	<op:CX-SIRegister/>
+	
+	<label id="skipBranch"/>
+	
+	
+	
+	<!--<cpu:IncrementFunction8/>
+	<inc:IncrementImmediateAddress/>
+	<hex>000b8000</hex>-->
+
+
+	
+	<cpu:JumpToRelative/>
+	<addressOf ref="forEachInstruction" type="Relative32"/>
+	
+	<!--<cpu:LogicFunction/>
+	<logic:JumpToSIRegister/>-->
+
+	<!--Interrupt Descriptor Table Pointer-->
+	<label id="interruptDescriptorTablePointer"/>
+	<short>2048</short>
+	<hex>00000500</hex>
+</scope>

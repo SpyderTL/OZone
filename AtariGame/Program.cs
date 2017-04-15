@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using OZone.Programs;
+using OZone.Programs.Compilers;
 
 namespace AtariGame
 {
@@ -11,6 +12,8 @@ namespace AtariGame
 	{
 		static void Main(string[] args)
 		{
+			var compiler = new BinaryCompiler();
+
 			using(Stream stream = File.Create("AtariGame.bin"))
 			using(BinaryWriter binaryWriter = new BinaryWriter(stream))
 			{
@@ -24,7 +27,7 @@ namespace AtariGame
 
 				MemoryAddress address = new MemoryAddress { Offset = 0xf000 };
 
-				ProgramCompiler.Compile(program, address, binaryWriter);
+				compiler.Compile(program, address, binaryWriter);
 
 				binaryWriter.Seek(0x0ffc, SeekOrigin.Begin);
 

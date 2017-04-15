@@ -3,7 +3,7 @@ using System.Linq;
 using System.Diagnostics;
 using OZone.Programs;
 
-namespace OZone.Programs.Subleq
+namespace OZone.Programs.Compilers.Subleq
 {
 	public static class SubleqTextCompiler
 	{

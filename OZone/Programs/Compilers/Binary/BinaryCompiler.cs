@@ -1,12 +1,13 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Diagnostics;
+using System;
 
-namespace OZone.Programs
+namespace OZone.Programs.Compilers
 {
-	public static class ProgramCompiler
+	public class BinaryCompiler : ProgramCompiler
 	{
-		public static void Compile(Program program, MemoryAddress baseAddress, BinaryWriter writer)
+		public override void Compile(Program program, MemoryAddress baseAddress, BinaryWriter writer)
 		{
 			// Assign memory addresses
 			MemoryAddress position = new MemoryAddress { Segment = baseAddress.Segment, Offset = baseAddress.Offset };
@@ -26,6 +27,11 @@ namespace OZone.Programs
 			// Compile program bytes
 			foreach(ProgramSegment segment in program.Segments)
 				segment.Write(writer);
+		}
+
+		public override uint GetLength(ProgramSegment segment)
+		{
+			return segment.GetLength();
 		}
 	}
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using OZone.Programs;
+using OZone.Programs.Compilers;
 
 namespace GbGame
 {
@@ -11,7 +12,9 @@ namespace GbGame
 	{
 		static void Main(string[] args)
 		{
-			using(var stream = File.Create("GbGame.gb"))
+			var compiler = new BinaryCompiler();
+
+			using (var stream = File.Create("GbGame.gb"))
 			using(var writer = new BinaryWriter(stream))
 			{
 				// Interrupt Handlers
@@ -21,7 +24,7 @@ namespace GbGame
 					"../../InterruptHandlers.xml",
 					"../../../OZone/Platforms/Nintendo/GameBoy/Operators.xslt");
 
-				ProgramCompiler.Compile(handlers, null, writer);
+				compiler.Compile(handlers, null, writer);
 
 				// Interrupt Handlers
 				Console.WriteLine("Building Header.xml");
@@ -32,7 +35,7 @@ namespace GbGame
 					"../../Header.xml",
 					"../../../OZone/Platforms/Nintendo/GameBoy/Operators.xslt");
 
-				ProgramCompiler.Compile(header, null, writer);
+				compiler.Compile(header, null, writer);
 
 				// Interrupt Handlers
 				Console.WriteLine("Building GbGame.xml");
@@ -43,7 +46,7 @@ namespace GbGame
 					"../../GbGame.xml",
 					"../../../OZone/Platforms/Nintendo/GameBoy/Operators.xslt");
 
-				ProgramCompiler.Compile(program, new MemoryAddress { Offset = 0x0150 }, writer);
+				compiler.Compile(program, new MemoryAddress { Offset = 0x0150 }, writer);
 
 				stream.Position = 0x0134;
 

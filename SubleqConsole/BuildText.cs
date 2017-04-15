@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using OZone.Programs;
-using OZone.Programs.Subleq;
+using OZone.Programs.Compilers.Subleq;
 using OZone.Projects;
 
 namespace SubleqConsole

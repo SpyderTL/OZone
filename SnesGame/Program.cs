@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using OZone.Programs;
+using OZone.Programs.Compilers;
 
 namespace SnesGame
 {
@@ -11,7 +12,9 @@ namespace SnesGame
 	{
 		static void Main(string[] args)
 		{
-			using(var stream = File.Create("SnesGame.smc"))
+			var compiler = new BinaryCompiler();
+
+			using (var stream = File.Create("SnesGame.smc"))
 			using(var writer = new BinaryWriter(stream))
 			{
 				// Header
@@ -21,7 +24,7 @@ namespace SnesGame
 
 				var header = ProgramBuilder.Build("../../SnesHeader.xml");
 
-				ProgramCompiler.Compile(header, null, writer);
+				compiler.Compile(header, null, writer);
 
 				// Default Interrupt Handler
 				stream.Position = 0x8000;
@@ -32,7 +35,7 @@ namespace SnesGame
 					"../../DefaultInterruptHandler.xml",
 					"../../../OZone/Platforms/Mos/65816/Operators.xslt");
 
-				ProgramCompiler.Compile(defaultHandler, new MemoryAddress { Offset = 0x8000 }, writer);
+				compiler.Compile(defaultHandler, new MemoryAddress { Offset = 0x8000 }, writer);
 
 				// Reset Handler
 				stream.Position = 0x8001;
@@ -43,7 +46,7 @@ namespace SnesGame
 					"../../ResetHandler.xml",
 					"../../../OZone/Platforms/Mos/65816/Operators.xslt");
 
-				ProgramCompiler.Compile(resetHandler, new MemoryAddress { Offset = 0x8001 }, writer);
+				compiler.Compile(resetHandler, new MemoryAddress { Offset = 0x8001 }, writer);
 
 				stream.SetLength(0x400000);
 			}

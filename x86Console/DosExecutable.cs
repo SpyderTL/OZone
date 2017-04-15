@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using OZone.Programs;
 using System.IO;
+using OZone.Programs.Compilers;
 
 namespace x86Console
 {
@@ -45,13 +46,15 @@ namespace x86Console
 
 		public void Save(Stream stream)
 		{
-			using(BinaryWriter writer = new BinaryWriter(stream))
+			var compiler = new BinaryCompiler();
+
+			using (BinaryWriter writer = new BinaryWriter(stream))
 			{
 				// Write Programs
 				foreach(var program in _programs)
 				{
 					stream.Position = program.Address.Offset - _baseAddress.Offset;
-					ProgramCompiler.Compile(program.Program, program.Address, writer);
+					compiler.Compile(program.Program, program.Address, writer);
 				}
 
 				// Write Catalog

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using OZone.Programs;
 using System.IO;
+using OZone.Programs.Compilers;
 
 namespace Win32Application
 {
@@ -50,18 +51,18 @@ namespace Win32Application
 
 		public void Save(Stream stream)
 		{
-			using(var writer = new BinaryWriter(stream))
+			var compiler = new BinaryCompiler();
+
+			using (var writer = new BinaryWriter(stream))
 			{
 				// Build Header
 				var header = new Program();
 
-
-
-				ProgramCompiler.Compile(header, null, writer);
+				compiler.Compile(header, null, writer);
 
 				// Write Programs
 				foreach(var program in _programs)
-					ProgramCompiler.Compile(program.Program, program.Address, writer);
+					compiler.Compile(program.Program, program.Address, writer);
 			}
 		}
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using OZone.Programs;
+using OZone.Programs.Compilers;
 
 namespace NesGame
 {
@@ -11,7 +12,9 @@ namespace NesGame
 	{
 		static void Main(string[] args)
 		{
-			using(Stream stream = File.Create("NesGame.nes"))
+			var compiler = new BinaryCompiler();
+
+			using (Stream stream = File.Create("NesGame.nes"))
 			using(BinaryWriter binaryWriter = new BinaryWriter(stream))
 			{
 				Console.WriteLine("Writing iNes Header");
@@ -32,7 +35,7 @@ namespace NesGame
 
 				MemoryAddress address = new MemoryAddress { Offset = 0x8000 };
 
-				ProgramCompiler.Compile(program, address, binaryWriter);
+				compiler.Compile(program, address, binaryWriter);
 
 				binaryWriter.Seek(0x7ffc + 16, SeekOrigin.Begin);
 

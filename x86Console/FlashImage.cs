@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using OZone.Programs;
+using OZone.Programs.Compilers;
 
 namespace x86Console
 {
@@ -83,6 +84,8 @@ namespace x86Console
 
 		public void Save(Stream stream)
 		{
+			var compiler = new BinaryCompiler();
+
 			int catalog = _block;
 
 			using(MemoryStream memory = new MemoryStream())
@@ -92,7 +95,7 @@ namespace x86Console
 				foreach(var program in _programs)
 				{
 					memory.Position = program.Block * _blockLength;
-					ProgramCompiler.Compile(program.Program, program.Address, writer);
+					compiler.Compile(program.Program, program.Address, writer);
 				}
 
 				// Write Catalog

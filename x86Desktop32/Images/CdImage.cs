@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using OZone.Programs;
+using OZone.Programs.Compilers;
 
 namespace x86Desktop32
 {
@@ -92,7 +93,9 @@ namespace x86Desktop32
 			var now = DateTime.UtcNow;
 			var catalog = _block;
 
-			using(MemoryStream memory = new MemoryStream())
+			var compiler = new BinaryCompiler();
+
+			using (MemoryStream memory = new MemoryStream())
 			using(BinaryWriter writer = new BinaryWriter(memory))
 			{
 				writer.BaseStream.Position = 2048 * 16;
@@ -452,7 +455,7 @@ namespace x86Desktop32
 				foreach(var program in _programs)
 				{
 					memory.Position = program.Block * _blockLength;
-					ProgramCompiler.Compile(program.Program, program.Address, writer);
+					compiler.Compile(program.Program, program.Address, writer);
 				}
 
 				// Write Program List

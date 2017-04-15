@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using OZone.Programs;
+using OZone.Programs.Compilers;
 
 namespace x86Console32
 {
@@ -91,6 +92,8 @@ namespace x86Console32
 		public void Save(Stream stream)
 		{
 			var now = DateTime.UtcNow;
+
+			var compiler = new BinaryCompiler();
 
 			using(MemoryStream memory = new MemoryStream())
 			using(BinaryWriter writer = new BinaryWriter(memory))
@@ -448,7 +451,7 @@ namespace x86Console32
 				foreach(var program in _programs)
 				{
 					memory.Position = program.Block * _blockLength;
-					ProgramCompiler.Compile(program.Program, program.Address, writer);
+					compiler.Compile(program.Program, program.Address, writer);
 				}
 
 				// Write Program List

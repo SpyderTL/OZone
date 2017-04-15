@@ -14,5 +14,6 @@ namespace OZone.Projects
 		public int? Block;
 		public string Path;
 		public string OutputPath;
+		public string Compiler;
 	}
 }

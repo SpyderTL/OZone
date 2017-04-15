@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using OZone.Programs;
 using System.IO;
+using OZone.Programs.Compilers;
 
 namespace x86Desktop32.Images
 {
@@ -89,14 +90,16 @@ namespace x86Desktop32.Images
 
 		public void Save(Stream stream)
 		{
-			using(var memory = new MemoryStream((int)_diskLength))
+			var compiler = new BinaryCompiler();
+
+			using (var memory = new MemoryStream((int)_diskLength))
 			using(var writer = new BinaryWriter(memory))
 			{
 				// Write Programs
 				foreach(var program in _programs)
 				{
 					memory.Position = program.Block * _blockLength;
-					ProgramCompiler.Compile(program.Program, program.Address, writer);
+					compiler.Compile(program.Program, program.Address, writer);
 				}
 
 				// Write Program List

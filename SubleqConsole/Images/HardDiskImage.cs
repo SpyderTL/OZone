@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using OZone.Programs;
 using System.IO;
+using OZone.Programs.Compilers;
 
 namespace SubleqConsole.Images
 {
@@ -93,7 +94,7 @@ namespace SubleqConsole.Images
 				foreach (var program in _programs)
 				{
 					memory.Position = program.Block * _blockLength;
-					ProgramCompiler.Compile(program.Program, program.Address, writer);
+					program.Compiler.Compile(program.Program, program.Address, writer);
 				}
 
 				// Write Program List
@@ -205,6 +206,7 @@ namespace SubleqConsole.Images
 			public int Length;
 			public MemoryAddress Address;
 			public Program Program;
+			public ProgramCompiler Compiler;
 		}
 	}
 }

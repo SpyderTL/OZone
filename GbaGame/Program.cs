@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using OZone.Programs;
+using OZone.Programs.Compilers;
 
 namespace GbaGame
 {
@@ -11,7 +12,9 @@ namespace GbaGame
 	{
 		static void Main(string[] args)
 		{
-			using(var stream = File.Create("GbaGame.gba"))
+			var compiler = new BinaryCompiler();
+
+			using (var stream = File.Create("GbaGame.gba"))
 			using(var writer = new BinaryWriter(stream))
 			{
 				Console.WriteLine("Building GbaGame.xml");
@@ -20,7 +23,7 @@ namespace GbaGame
 					"../../Header.xml",
 					"../../../OZone/Platforms/Arm/Arm7/Operators.xslt");
 
-				ProgramCompiler.Compile(header, new MemoryAddress { Offset = 0x800000 }, writer);
+				compiler.Compile(header, new MemoryAddress { Offset = 0x800000 }, writer);
 
 				Console.WriteLine("Building GbaGame.xml");
 
@@ -28,7 +31,7 @@ namespace GbaGame
 					"../../GbaGame.xml",
 					"../../../OZone/Platforms/Arm/Arm7/Operators.xslt");
 
-				ProgramCompiler.Compile(program, new MemoryAddress { Offset = 0x8000c0 }, writer);
+				compiler.Compile(program, new MemoryAddress { Offset = 0x8000c0 }, writer);
 
 				int checksum = 0;
 
