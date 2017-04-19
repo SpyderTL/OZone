@@ -33,6 +33,190 @@
 	<cls:field name="Device" type="http://metalx.org/Pci/PciDevice" offset="0"/>
 	<cls:field name="Port" type="http://metalx.org/Integer" offset="4"/>
 
+	<cls:method name="GetDevice" type="http://metalx.org/Usb/Uhci/UhciUsbDevice">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<pcif:GetBaseAddress4/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>11111100</binary>
+
+		<cpu:AddImmediateToAL/>
+		<hex>10</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>2</int>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByBXRegister/>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-DXRegister/>
+		
+		<!--Reset Port-->
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0204</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+		
+		<cpu:Operand16/>
+		<cpu:CopyImmediateToAX/>
+		<hex>0004</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>
+		
+		<!--Wait For Port Reset-->
+		
+		<!--Set Device Address (1)-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00820000</hex>
+		<hex>00</hex>
+		<hex>05</hex>
+		<hex>0001</hex>
+		
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00820004</hex>
+		<hex>00000000</hex>
+		
+		<!--Create Setup Transfer Descriptor-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00810000</hex>
+		<!--<hex>00810010</hex>-->
+		<hex>00000001</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00810004</hex>
+		<hex>00800000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00810008</hex>
+		<hex>00E0002D</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0081000c</hex>
+		<hex>00820000</hex>
+
+		<!--Create Result Transfer Descriptor-->
+		<!--<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00810010</hex>
+		<hex>00810020</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00810014</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00810018</hex>
+		<hex>00810020</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0081001c</hex>
+		<hex>00000000</hex>-->
+
+		<!--Create Terminator Transfer Descriptor-->
+		<!--<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00810020</hex>
+		<hex>00000001</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00810024</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00810028</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0081002c</hex>
+		<hex>00000000</hex>-->
+
+		<!--Queue Transfer Descriptors-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00800000</hex>
+		<hex>00810000</hex>
+		
+		<!--Create Control Endpoint Descriptor (64 byte, general, disabled, low-speed, auto direction, address 1, index 0)-->
+		<!--Queue Endpoint Descriptor-->
+		<!--Enable Endpoint-->
+		<!--Notify Controller-->
+		<!--Wait For Data-->
+
+		<label id="waitForData"/>
+		
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<hex>00810004</hex>
+
+		<cpu:TestAXWithImmediate/>
+		<hex>00800000</hex>
+
+		<!--<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="waitForData" type="Relative8"/>-->
+		
+		<!--Disable Endpoint-->
+		
+		<!--Create Device-->
+		<mm:CheckOut length="8"/>
+
+		<cpu:PushDIToStack/>
+		
+		<!--Find Class-->
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="uhciUsbDevice" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<!--Create Object-->
+		<cpu:PullDIFromStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>8</int>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+		
+		<var:string id="uhciUsbDevice">http://metalx.org/Usb/Uhci/UhciUsbDevice</var:string>
+	</cls:method>
+	
 	<cls:method name="GetStatus" type="http://metalx.org/Hexadecimal">
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>

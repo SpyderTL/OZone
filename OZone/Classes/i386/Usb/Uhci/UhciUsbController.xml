@@ -395,6 +395,8 @@
 	</cls:method>
 
 	<cls:method name="Enable" type="http://metalx.org/Usb/Uhci/UhciUsbController">
+		<cpu:PushDIToStack/>
+		
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
 
@@ -410,12 +412,60 @@
 
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-DXRegister/>
+		
+		<!--Setup Descriptor List-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDXRegister/>
+		<usb:FrameListAddress/>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>00800000</hex>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<usb:FrameListAddress/>
+
+		<cpu:CopyImmediateToCX/>
+		<int>1024</int>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>00810000</hex>
+
+		<cpu:CopyImmediateToDI/>
+		<hex>00800000</hex>
+
+		<cpu:Repeat/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00810000</hex>
+		<hex>00000001</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00810004</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00810008</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0081000c</hex>
+		<hex>00000000</hex>
 
 		<cpu:CopyImmediateToAX/>
 		<int>1</int>
 
 		<cpu:Operand16/>
 		<cpu:WriteAXToDXPort/>
+
+		<cpu:PullDIFromStack/>
 
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
