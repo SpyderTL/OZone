@@ -1,120 +1,130 @@
 ﻿UHCI I/O Registers (PCI BAR4+IO Register)
 	Command						00h	short
-		Reserved					8 bits
-		MaxPacket					1 bit
-		Configure					1 bit
-		SoftwareDebug			1 bit
-		GlobalResume			1 bit
-		GlobalSuspend			1 bit
-		GlobalReset				1 bit
-		HostControllerReset	1 bit
-		Run							1 bit
+		Reserved						8 bits
+		MaxPacket						1 bit
+		Configure						1 bit
+		SoftwareDebug				1 bit
+		GlobalResume				1 bit
+		GlobalSuspend				1 bit
+		GlobalReset					1 bit
+		HostControllerReset		1 bit
+		Run								1 bit
 	Status							02h	short
-		Reserved					10 bits
-		Halted						1 bit
-		ProcessError				1 bit
-		SystemError				1 bit
-		ResumeDetected		1 bit
-		ErrorInterrupt			1 bit
-		Interrupt					1 bit
+		Reserved						10 bits
+		Halted							1 bit
+		ProcessError					1 bit
+		SystemError					1 bit
+		ResumeDetected			1 bit
+		ErrorInterrupt				1 bit
+		Interrupt						1 bit
 	InterruptEnable				04h	short
-		Reserved					12 bits
-		ShortPacket				1 bits
-		Complete					1 bits
-		Resume						1 bits
-		TimeoutCrc				1 bits
+		Reserved						12 bits
+		ShortPacket					1 bits
+		Complete						1 bits
+		Resume							1 bits
+		TimeoutCrc					1 bits
 	FrameNumber				06h	short
-		Reserved					5 bits
-		FrameNumber			11 bits
+		Reserved						5 bits
+		FrameNumber				11 bits
 	FrameListAddress			08h	int
-		BaseAddress				20 bits
-		Reserved					12 bits
+		BaseAddress					20 bits
+		Reserved						12 bits
 	StartOfFrame					0Ch	byte
-		Reserved					1 bit
-		Timing						7 bits
+		Reserved						1 bit
+		Timing							7 bits
 	Port1Status					10h	short
-		Reserved					3 bits
-		Suspend					1 bit
-		Reserved					2 bits
-		Reset						1 bit
-		LowSpeed					1 bit
-		Reserved(1)				1 bit
-		ResumeDetected		1 bit
-		LineStatus					2 bits
-		PortEnabledChanged	1 bit
-		PortEnabled				1 bit
-		ConnectedChanged	1 bit
-		Connected					1 bit
+		Reserved						3 bits
+		Suspend						1 bit
+
+		Reserved						2 bits
+		Reset							1 bit
+		LowSpeed						1 bit
+
+		Reserved(1)					1 bit
+		ResumeDetected			1 bit
+		LineStatus						2 bits
+
+		PortEnabledChanged		1 bit
+		PortEnabled					1 bit
+		ConnectedChanged		1 bit
+		Connected						1 bit
 	Port2Status					12h	short
-		Reserved					3 bits
-		Suspend					1 bit
-		Reserved					2 bits
-		Reset						1 bit
-		LowSpeed					1 bit
-		Reserved(1)				1 bit
-		ResumeDetected		1 bit
-		LineStatus					2 bits
-		PortEnabledChanged	1 bit
-		PortEnabled				1 bit
-		ConnectedChanged	1 bit
-		Connected					1 bit
+		Reserved						3 bits
+		Suspend						1 bit
+
+		Reserved						2 bits
+		Reset							1 bit
+		LowSpeed						1 bit
+
+		Reserved(1)					1 bit
+		ResumeDetected			1 bit
+		LineStatus						2 bits
+
+		PortEnabledChanged		1 bit
+		PortEnabled					1 bit
+		ConnectedChanged		1 bit
+		Connected						1 bit
 
 UHCI Frame List Table
 	FramePointer[1024]		4096 bytes
-		FirstDescriptor			4 bytes
-			Address				28 bits
-			Reserved(0)			2 bits
-			IsQueue					1 bit
-			IsEmpty					1 bit
+		FirstDescriptor				4 bytes
+			Address						28 bits
+
+			Reserved(0)					2 bits
+			IsQueue							1 bit
+			IsEmpty							1 bit
 
 UCHI Transfer Descriptor	32 bytes
 	NextDescriptor				4 bytes
-		Address					28 bits
-		Reserved(0)				1 bit
-		ProcessFullQueue		1 bit
-		IsQueue						1 bit
-		IsEmpty						1 bit
+		Address						28 bits
+
+		Reserved(0)					1 bit
+		ProcessFullQueue			1 bit
+		IsQueue							1 bit
+		IsEmpty							1 bit
 	Status							4 bytes
-		Reserved(0)				2 bits
-		ShortPacketDetect		1 bit
-		ErrorCounter				2 bits
-		LowSpeed					1 bit
-		IsIsochronous			1 bit
-		InterruptOnComplete	1 bit
-		Status						8 bits
-			Active					1 bit
-			Stalled					1 bit
-			DataBufferError		1 bit
-			BabbleDetected		1 bit
-			NonAcknowledge	1 bit
-			TimeoutCrc			1 bit
-			BitStuffError			1 bit
-			Reserved(0)			1 bit
-		Reserved(0)				5 bits
-		ActualLength				11 bits
+		Reserved(0)					2 bits
+		ShortPacketDetect			1 bit
+		ErrorCounter					2 bits
+		LowSpeed						1 bit
+		IsIsochronous				1 bit
+		InterruptOnComplete		1 bit
+
+		Status							8 bits
+			Active							1 bit
+			Stalled							1 bit
+			DataBufferError				1 bit
+			BabbleDetected				1 bit
+			NonAcknowledge			1 bit
+			TimeoutCrc					1 bit
+			BitStuffError					1 bit
+			Reserved(0)					1 bit
+
+		Reserved(0)					5 bits
+		ActualLength					11 bits
 	PacketHeader				4 bytes
-		MaximumLength*		11 bits
-		Reserved(0)				1 bit
-		DataToggle				1 bit
-		Endpoint					4 bits
-		Device						7 bits
-		PacketID**					8 bits
+		MaximumLength*			11 bits
+		Reserved(0)					1 bit
+		DataToggle					1 bit
+		Endpoint						4 bits
+		Device							7 bits
+		PacketID**						8 bits
 	Buffer							4 bytes
-		Address					32 bits
+		Address						32 bits
 	System							16 bytes
 
 * Length is the value in the MaximumLength field plus 1.  Maximum value is 0x4FF (1280 bytes). 0x7FF denotes an empty data packet.
 ** Valid packet ids are: IN (0x69h), OUT (0xE1h), and SETUP (0x2Dh).
 
 UCHI Queue Descriptor		8 bytes
-	NextDescriptor				4 bytes
-		Address					28 bits
-		Reserved(0)				2 bits
-		IsQueue						1 bit
-		IsEmpty						1 bit
-	FirstDescriptorInQueue	4 bytes
-		Address					28 bits
-		Reserved(0)				1 bit
-		Reserved					1 bit
-		IsQueue						1 bit
-		IsEmpty						1 bit
+	NextDescriptor					4 bytes
+		Address							28 bits
+		Reserved(0)						2 bits
+		IsQueue								1 bit
+		IsEmpty								1 bit
+	FirstDescriptorInQueue		4 bytes
+		Address							28 bits
+		Reserved(0)						1 bit
+		Reserved							1 bit
+		IsQueue								1 bit
+		IsEmpty								1 bit

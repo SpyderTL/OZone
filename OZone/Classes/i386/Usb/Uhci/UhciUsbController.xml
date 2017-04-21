@@ -215,6 +215,37 @@
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
 
+	<cls:method name="GetInterruptEnable" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress4/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>11111100</binary>
+
+		<cpu:AddImmediateToAL/>
+		<usb:InterruptEnable/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
 	<cls:method name="GetCurrentFrame" type="http://metalx.org/Integer">
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
@@ -261,7 +292,7 @@
 		<binary>11111100</binary>
 
 		<cpu:AddImmediateToAL/>
-		<usb:FrameNumber/>
+		<usb:FrameListAddress/>
 
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-DXRegister/>
@@ -442,7 +473,7 @@
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
 		<hex>00810000</hex>
-		<hex>00000001</hex>
+		<hex>00810000</hex>
 
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
