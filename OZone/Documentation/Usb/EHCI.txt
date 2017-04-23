@@ -1,0 +1,97 @@
+﻿EHCI Memory Mapped Capability Registers (PCI BAR0+Register)
+	Capability Register Length		00h		byte
+	Reserved								01h		byte
+	Interface Version					02h		short
+		Minor Version (BCD)				8 bits
+		Major Version (BCD)				8 bits
+	Structural Parameters				04h		int
+		Reserved								8 bits
+		Debug Port Number				4 bits
+		Reserved								3 bits
+		Port Indicator Support			1 bit
+		Companion Controllers			4 bits
+		Companion Port Count			4 bits
+		Port Routing Mode				1 bit
+		Reserved								2 bit
+		Port Power Control					1 bit
+		Port Count								4 bits
+	Capability Parameters				08h		int
+		Reserved								16 bits
+		PCI Capability Pointer				8 bits
+		Isochronous Threshold			4 bits
+		Reserved								1 bit
+		Async Schedule Park Support	1 bit
+		Programmable Frame List		1 bit
+		64-bit Address Support			1 bit
+	Companion Port Route			0Ch		long
+
+EHCI Memory Mapped Operational Registers (PCI BAR0+Capability Register Length+Register)
+	Command								00h		int
+		Reserved								8 bits
+		Interrupt Threshold Control		8 bits
+
+		Reserved								4 bits
+
+		Async Schedule Park Enable	1 bit
+		Reserved								1 bit
+		Async Schedule Park Count		2 bits
+
+		Light Host Controller Reset		1 bit
+		Interrupt Doorbell					1 bit
+		Async Schedule Enable			1 bit
+		Periodic Schedule Enable		1 bit
+
+		Frame List Size						2 bits
+		Host Controller Reset				1 bit
+		Run										1 bit
+	Status									04h		int
+		Reserved								16 bits
+		Async Schedule Status			1 bit
+		Periodic Schedule Status			1 bit
+		Reclamation							1 bit
+		Host Controller Halted			1 bit
+		Reserved								6 bits
+		Doorbell Interrupt					1 bit
+		Host System Error					1 bit
+		Frame List Rollover					1 bit
+		Port Change Detect				1 bit
+		USB Error Interrupt					1 bit
+		Transfer Complete					1 bit
+	Interrupt Enable						08h		int
+		Reserved								26 bits
+		Async Advance Enable			1 bit
+		Host System Error Enable		1 bit
+		Frame List Rollover Enable		1 bit
+		Port Change Enable				1 bit
+		USB Error Enable					1 bit
+		Transfer Complete Enable		1 bit
+	Frame Index							0Ch		int
+		Reserved								18 bits
+		Frame Index							14 bits
+	64-Bit Segment Selector			10h		int
+	Frame List Base Address			14h		int
+	Next Async List Address			18h		int
+	Reserved								1Ch
+	Configured Flag						40h		int
+		Reserved								31 bits
+		Local Port Control Default		1 bit
+	Port Status/Control					44h		int
+		Reserved								9 bits
+		Wake On Overcurrent				1 bit
+		Wake On Disconnect				1 bit
+		Wake On Connect					1 bit
+		Port Test Control					4 bits
+		Port Indicator Control				2 bits			// 0 = Off, 1 = Amber, 2 = Green
+		Port Owner							1 bit
+		Port Power							1 bit
+		Line Status								2 bits
+		Reserved								1 bit
+		Port Reset								1 bit
+		Suspend								1 bit
+		Force Resume						1 bit
+		Overcurrent Change				1 bit
+		Overcurrent Active					1 bit
+		Port Enable Change				1 bit
+		Port Enable							1 bit
+		Connect Change						1 bit
+		Connected								1 bit
