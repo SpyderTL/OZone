@@ -33,6 +33,61 @@
 	<cls:field name="Device" type="http://metalx.org/Pci/PciDevice" offset="0"/>
 	<cls:field name="Port" type="http://metalx.org/Integer" offset="4"/>
 
+	<cls:method name="GetDevice" type="http://metalx.org/Usb/Ehci/EhciUsbDevice">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:PushAXToStack/>
+
+		<!--Save Address-->
+		<cpu:PushImmediateToStack/>
+		<int>1</int>
+
+		<!--Create Device-->
+		<mm:CheckOut length="8"/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddress/>
+
+		<cpu:PushDIToStack/>
+
+		<!--Find Class-->
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="ehciUsbDevice" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<!--Create Object-->
+		<cpu:PullDIFromStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>8</int>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<obj:Create/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="ehciUsbDevice">http://metalx.org/Usb/Ehci/EhciUsbDevice</var:string>
+	</cls:method>
+
 	<cls:method name="GetStatus" type="http://metalx.org/Hexadecimal">
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>

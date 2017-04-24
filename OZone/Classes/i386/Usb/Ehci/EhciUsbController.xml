@@ -25,7 +25,6 @@
 	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
 	xmlns:shift="http://metalx.org/Intel/80386/Shift"
 	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
-	xmlns:usb="http://metalx.org/Usb/Ohci/Registers"
 	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
 	xmlns:cfg="http://metalx.org/Pc/Pci/Configuration">
 
@@ -428,7 +427,19 @@
 
 		<cpu:AddRegisterToOperand/>
 		<op:AX-SIRegister/>
+		
+		<!--Setup Async Frame List (Control/Bulk Transfers)-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<hex>18</hex>
+		<hex>00900000</hex>
 
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00900000</hex>
+		<hex>
+
+		<!--Enable Controller-->
 		<cpu:CopyOperandToRegister/>
 		<op:AX-SIAddress/>
 

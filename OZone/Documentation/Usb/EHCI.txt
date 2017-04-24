@@ -69,8 +69,8 @@ EHCI Memory Mapped Operational Registers (PCI BAR0+Capability Register Length+Re
 		Reserved								18 bits
 		Frame Index							14 bits
 	64-Bit Segment Selector			10h		int
-	Frame List Base Address			14h		int
-	Next Async List Address			18h		int
+	Periodic Frame List Address	14h		int			// Used for isochronous and interrupt transfers
+	Next Async List Address			18h		int			// Used for control and bulk transfers
 	Reserved								1Ch
 	Configured Flag						40h		int
 		Reserved								31 bits
@@ -95,3 +95,113 @@ EHCI Memory Mapped Operational Registers (PCI BAR0+Capability Register Length+Re
 		Port Enable							1 bit
 		Connect Change						1 bit
 		Connected								1 bit
+
+Queue Head
+	Horizontal Link Pointer
+		Address								27 bits
+		Reserved								2 bits
+		Type										2 bits			// 0 = Isochronous TD, 1 = Queue Head, 2 = Split Transaction Isochronous TD, 3 = Frame Span Traversal Node
+		Terminate								1 bit
+	Endpoint Characteristics
+		Not Acknowledge Reload		4 bits
+		Control Endpoint					1 bit
+		Maximum Packet Length			11 bits
+
+		Head Of Reclamation	Flag		1 bit
+		Data Toggle Mode					1 bit				// 0 = Queue Head, 1 = Transfer Descriptor
+		Endpoint Speed						2 bits			// 0 = Full Speed (12 Mbit/s), 1 = Low Speed (1.5 Mbit/s), 2 = High Speed (480 Mbit/s)
+		Endpoint Number					4 bits
+		Inactivate								1 bit
+		Device Address						7 bits
+	Endpoint Capabilities
+		Transactions Per Microframe	2 bits
+		Port Number							7 bits			// Only used in split transactions
+		Hub Address							7 bits			// Only used in split transactions
+		Split Mask								8 bits			// Only used in split transactions
+		Interrupt Mask						8 bits			// Only used in split transactions
+	Transfer Descriptor Working Area
+		Current TD
+			Address							28 bits
+			Reserved							4 bits
+		Next TD
+			Address							28 bits
+			Reserved							3 bits
+			Terminate							1 bit
+		Alternate Next TD
+			Address							28 bits
+			Not Acknowledge Count		3 bits
+			Terminate							1 bit
+		TD Token
+			Data Toggle Mode				1 bit
+			Total Bytes							15 bits
+			Interrupt On Complete		1 bit
+			Page Counter						3 bits
+			Error Counter					2 bits
+			PID Code							2 bits			// 0 = OUT (E1h), 1 = IN (69h), 2 = SETUP
+			Status								8 bits
+				Active								1 bit
+				Halted								1 bit
+				Data Buffer Error				1 bit
+				Babble Detected				1 bit
+				Transaction Error				1 bit
+				Missed Microframe			1 bit
+				Split Transaction State		1 bit
+				Ping State							1 bit
+		Buffer Pointer 0
+			Address							20 bits
+			Current Offset					12 bits
+		Buffer Pointer 1
+			Address							20 bits
+			Reserved							4 bits
+			C Prog Mask						8 bits
+		Buffer Pointer 2
+			Address							20 bits
+			Split Bytes							7 bits
+			Split Frame Tag					5 bits
+		Buffer Pointer 3
+			Address							20 bits
+			Reserved							12 bits
+		Buffer Pointer 4
+			Address							20 bits
+			Reserved							12 bits
+
+Transfer Descriptor
+	Next TD
+		Address								28 bits
+		Reserved								3 bits
+		Terminate								1 bit
+	Alternate Next TD
+		Address								28 bits
+		Reserved								3 bits
+		Terminate								1 bit
+	TD Token
+		Data Toggle Mode					1 bit
+		Total Bytes								15 bits
+		Interrupt On Complete			1 bit
+		Page Counter							3 bits
+		Error Counter						2 bits
+		PID Code								2 bits			// 0 = OUT (E1h), 1 = IN (69h), 2 = SETUP
+		Status									8 bits
+			Active									1 bit
+			Halted									1 bit
+			Data Buffer Error					1 bit
+			Babble Detected					1 bit
+			Transaction Error					1 bit
+			Missed Microframe				1 bit
+			Split Transaction State			1 bit
+			Ping State								1 bit
+	Buffer Pointer 0
+		Address								20 bits
+		Current Offset						12 bits
+	Buffer Pointer 1
+		Address								20 bits
+		Reserved								12 bits
+	Buffer Pointer 2
+		Address								20 bits
+		Reserved								12 bits
+	Buffer Pointer 3
+		Address								20 bits
+		Reserved								12 bits
+	Buffer Pointer 4
+		Address								20 bits
+		Reserved								12 bits
