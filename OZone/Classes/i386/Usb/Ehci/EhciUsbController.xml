@@ -343,6 +343,114 @@
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
 
+	<cls:method name="GetPeriodicFrameListAddress" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:AddImmediateToAL/>
+		<hex>14</hex>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetNextAsynchronousListAddress" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:AddImmediateToAL/>
+		<hex>18</hex>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetConfiguration" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:AddImmediateToAL/>
+		<hex>40</hex>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
 	<cls:method name="Reset" type="http://metalx.org/Usb/Ehci/EhciUsbController">
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
@@ -427,125 +535,26 @@
 
 		<cpu:AddRegisterToOperand/>
 		<op:AX-SIRegister/>
-		
-		<!--Setup Async Frame List (Control/Bulk Transfers)-->
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToSIAddressPlusImmediate8/>
-		<hex>18</hex>
-		<hex>00900000</hex>
-
-		<!--Setup Queue Decscriptor-->
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00900000</hex>
-		<hex>00900002</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00900004</hex>
-		<hex>08200000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00900008</hex>
-		<hex>40000000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>0090000c</hex>
-		<hex>00910000</hex>
-
-		<!--Setup Transfer Descriptor 0 (Setup)-->
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00910000</hex>
-		<hex>00910020</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00910004</hex>
-		<hex>00910020</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00910008</hex>
-		<hex>00080280</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>0091000c</hex>
-		<hex>00920000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00910010</hex>
-		<hex>00000000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00910014</hex>
-		<hex>00000000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00910018</hex>
-		<hex>00000000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>0091001c</hex>
-		<hex>00000000</hex>
-
-		<!--Setup Transfer Descriptor 1 (Result)-->
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00910020</hex>
-		<hex>00000001</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00910024</hex>
-		<hex>00000001</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00910028</hex>
-		<hex>00000180</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>0091002c</hex>
-		<hex>00000000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00910030</hex>
-		<hex>00000000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00910034</hex>
-		<hex>00000000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00910038</hex>
-		<hex>00000000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>0091003c</hex>
-		<hex>00000000</hex>
 
 		<!--Enable Controller-->
-		<cpu:CopyOperandToRegister/>
+		<!--<cpu:CopyOperandToRegister/>
 		<op:AX-SIAddress/>
 
 		<cpu:OrAXWithImmediate/>
-		<hex>00000001</hex>
+		<hex>00000001</hex>-->
+
+		<cpu:CopyImmediateToAX/>
+		<hex>00080001</hex>
 
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-SIAddress/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>1</int>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<hex>40</hex>
 
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
