@@ -202,6 +202,29 @@
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
 
+	<cls:method name="GetCapabilityParameters" type="http://metalx.org/Hexadecimal">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
 	<cls:method name="GetCommand" type="http://metalx.org/Hexadecimal">
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
@@ -473,35 +496,12 @@
 
 		<cpu:CopyOperandToRegister8/>
 		<op:AL-SIAddress/>
-		
+
 		<cpu:AddRegisterToOperand/>
 		<op:AX-SIRegister/>
 
-		<cpu:CopyOperandToRegister/>
-		<op:AX-SIAddress/>
-
-		<cpu:AndAXWithImmediate/>
-		<hex>fffffffe</hex>
-
-		<cpu:CopyRegisterToOperand/>
-		<op:AX-SIAddress/>
-
-		<label id="wait"/>
-
-		<cpu:CopyOperandToRegister/>
-		<op:AX-SIAddressPlusImmediate8/>
-		<byte>4</byte>
-
-		<cpu:TestAXWithImmediate/>
-		<hex>00001000</hex>
-
-		<cpu:BranchToRelative8IfZero/>
-		<addressOf ref="wait" type="Relative8"/>
-
-		<cpu:CopyOperandToRegister/>
-		<op:AX-SIAddress/>
-		
-		<cpu:OrAXWithImmediate/>
+		<!--Reset Controller-->
+		<cpu:CopyImmediateToAX/>
 		<hex>00000002</hex>
 
 		<cpu:CopyRegisterToOperand/>
@@ -535,8 +535,38 @@
 
 		<cpu:AddRegisterToOperand/>
 		<op:AX-SIRegister/>
+		
+		<!--Setup Periodic Schedule-->
+		<cpu:PushDIToStack/>
+		
+		<cpu:CopyImmediateToCX/>
+		<int>1024</int>
 
-		<!--Enable Controller-->
+		<cpu:CopyImmediateToAX/>
+		<hex>00000001</hex>
+
+		<cpu:CopyImmediateToDI/>
+		<hex>00950000</hex>
+
+		<cpu:Repeat/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<hex>14</hex>
+		<hex>00950000</hex>
+		
+		<!--Enable Interrupts-->
+		<cpu:CopyImmediateToAX/>
+		<hex>00000028</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<hex>08</hex>
+
+		<!--Enable Controller (w/ Periodic Schedule)-->
 		<!--<cpu:CopyOperandToRegister/>
 		<op:AX-SIAddress/>
 
@@ -544,11 +574,12 @@
 		<hex>00000001</hex>-->
 
 		<cpu:CopyImmediateToAX/>
-		<hex>00080001</hex>
+		<hex>00080011</hex>
 
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-SIAddress/>
-
+		
+		<!--Set Configuration-->
 		<cpu:CopyImmediateToAX/>
 		<int>1</int>
 
