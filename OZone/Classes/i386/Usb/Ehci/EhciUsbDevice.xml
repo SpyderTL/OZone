@@ -42,10 +42,30 @@
 		<op:DI-SIRegister/>
 
 		<obj:GetData/>
-		
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
 		<!--<cpu:CopyOperandToRegister/>
-		<op:AX-SIAddressPlusImmediate8/>
+		<op:BX-SIAddressPlusImmediate8/>
 		<byte>4</byte>-->
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffff0</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
 
 		<!--Get Device Descriptor-->
 		<cpu:CopyImmediateToOperandFunction/>
@@ -61,57 +81,6 @@
 		<hex>00920004</hex>
 		<short>0</short>
 		<short>18</short>
-
-		<!--Setup Queue Descriptors-->
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00900000</hex>
-		<hex>00900022</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00900004</hex>
-		<hex>0040e000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00900008</hex>
-		<hex>40000000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>0090000c</hex>
-		<hex>00000000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00900010</hex>
-		<hex>00910000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00900020</hex>
-		<hex>00900002</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00900024</hex>
-		<hex>00406000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00900028</hex>
-		<hex>40000000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>0090002c</hex>
-		<hex>00000000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00900030</hex>
-		<hex>00910000</hex>
 
 		<!--Setup Transfer Descriptor 0 (Setup)-->
 		<cpu:CopyImmediateToOperandFunction/>
@@ -158,22 +127,22 @@
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
 		<hex>00910020</hex>
-		<hex>00000001</hex>
+		<hex>00910040</hex>
 
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
 		<hex>00910024</hex>
-		<hex>00000001</hex>
+		<hex>00910040</hex>
 
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
 		<hex>00910028</hex>
-		<hex>00000180</hex>
+		<hex>80120180</hex>
 
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
 		<hex>0091002c</hex>
-		<hex>00000000</hex>
+		<hex>00930000</hex>
 
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
@@ -194,6 +163,73 @@
 		<imm:CopyImmediateToImmediateAddress/>
 		<hex>0091003c</hex>
 		<hex>00000000</hex>
+
+		<!--Setup Transfer Descriptor 2 (Status)-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00910040</hex>
+		<hex>00000001</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00910044</hex>
+		<hex>00000001</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00910048</hex>
+		<hex>80000180</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0091004c</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00910050</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00910054</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00910058</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0091005c</hex>
+		<hex>00000000</hex>
+
+		<!--Setup Queue Descriptors-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00900000</hex>
+		<hex>00900002</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00900004</hex>
+		<hex>0020e001</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00900008</hex>
+		<hex>40000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0090000c</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00900010</hex>
+		<hex>00910000</hex>
 
 		<!--Queue Transfer Descriptors-->
 		<cpu:CopyImmediateToOperandFunction/>
@@ -223,9 +259,19 @@
 		<cpu:BranchToRelative8IfNotZero/>
 		<addressOf ref="waitForData" type="Relative8"/>
 
+		<!--Disable Async List-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>ffffffdf</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddress/>
+
 		<!--Get Product String-->
 		<cpu:CopyAbsoluteMemoryToAL/>
-		<hex>0092000f</hex>
+		<hex>0093000f</hex>
 
 		<!--Get String Descriptor-->
 		<cpu:CopyImmediateToOperandFunction/>
@@ -243,58 +289,7 @@
 		<imm:CopyImmediateToImmediateAddress/>
 		<hex>00920004</hex>
 		<short>1033</short>
-		<short>64</short>
-
-		<!--Setup Queue Descriptors-->
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00900000</hex>
-		<hex>00900022</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00900004</hex>
-		<hex>0040e000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00900008</hex>
-		<hex>40000000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>0090000c</hex>
-		<hex>00000000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00900010</hex>
-		<hex>00910000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00900020</hex>
-		<hex>00900002</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00900024</hex>
-		<hex>00406000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00900028</hex>
-		<hex>40000000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>0090002c</hex>
-		<hex>00000000</hex>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToImmediateAddress/>
-		<hex>00900030</hex>
-		<hex>00910000</hex>
+		<short>32</short>
 
 		<!--Setup Transfer Descriptor 0 (Setup)-->
 		<cpu:CopyImmediateToOperandFunction/>
@@ -341,22 +336,22 @@
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
 		<hex>00910020</hex>
-		<hex>00000001</hex>
+		<hex>00910040</hex>
 
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
 		<hex>00910024</hex>
-		<hex>00000001</hex>
+		<hex>00910040</hex>
 
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
 		<hex>00910028</hex>
-		<hex>00000180</hex>
+		<hex>80200180</hex>
 
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
 		<hex>0091002c</hex>
-		<hex>00000000</hex>
+		<hex>00930000</hex>
 
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToImmediateAddress/>
@@ -378,6 +373,89 @@
 		<hex>0091003c</hex>
 		<hex>00000000</hex>
 
+		<!--Setup Transfer Descriptor 2 (Status)-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00910040</hex>
+		<hex>00000001</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00910044</hex>
+		<hex>00000001</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00910048</hex>
+		<hex>80000180</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0091004c</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00910050</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00910054</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00910058</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0091005c</hex>
+		<hex>00000000</hex>
+
+		<!--Setup Queue Descriptors-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00900000</hex>
+		<hex>00900002</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00900004</hex>
+		<hex>0020e001</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00900008</hex>
+		<hex>40000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>0090000c</hex>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00900010</hex>
+		<hex>00910000</hex>
+
+		<!--Queue Transfer Descriptors-->
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<hex>18</hex>
+		<hex>00900000</hex>
+
+		<!--Enable Controller (w/ Async List)-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:OrAXWithImmediate/>
+		<hex>00000021</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddress/>
+
 		<!--Wait For Data-->
 		<label id="waitForData2"/>
 
@@ -390,12 +468,30 @@
 		<cpu:BranchToRelative8IfNotZero/>
 		<addressOf ref="waitForData2" type="Relative8"/>
 		
+		<!--Disable Async List-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>ffffffdf</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddress/>
+
 		<!--Read Data-->
 		<cpu:CopyAbsoluteMemoryToAL/>
-		<hex>00920000</hex>
+		<hex>00930000</hex>
 
 		<cpu:AndAXWithImmediate/>
 		<hex>000000ff</hex>
+
+
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+
 
 		<cpu:ShiftRegisterByOneFunction/>
 		<shift:ShiftAXRegisterRight/>
@@ -415,7 +511,7 @@
 		<cpu:CopyAXToDIAddressAndIncrementDI/>
 
 		<cpu:CopyImmediateToSI/>
-		<hex>00920002</hex>
+		<hex>00930002</hex>
 
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-CXRegister/>
