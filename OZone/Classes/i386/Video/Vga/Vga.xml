@@ -1,0 +1,1040 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Vga"
+	type="http://metalx.org/Video/Vga"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:short="http://metalx.org/i386/Functions/Short"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:index="http://metalx.org/Intel/80386/Index"
+	xmlns:ext="http://metalx.org/Intel/80386/ExtendedOperators"
+	xmlns:mmx="http://metalx.org/Intel/80386/MmxOperands"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands">
+
+	<cls:method name="Test" type="http://metalx.org/Hexadecimal" static="true">
+		<!--Wait For VSYNC-->
+		<cpu:CopyImmediateToDX/>
+		<hex>000003da</hex>
+
+		<label id="waitForVSyncOff"/>
+		
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:TestALWithImmediate/>
+		<binary>00001000</binary>
+
+		<cpu:LoopToRelative8WhileNotZero/>
+		<addressOf ref="waitForVSyncOff" type="Relative8"/>
+
+		<label id="waitForVSyncOn"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:TestALWithImmediate/>
+		<binary>00001000</binary>
+
+		<cpu:LoopToRelative8WhileZero/>
+		<addressOf ref="waitForVSyncOn" type="Relative8"/>
+
+		<!--Set VGA MISC (0x63)-->
+		<cpu:CopyImmediateToDX/>
+		<hex>000003c2</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>63</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<!--Set VGA FEATURE (0x00)-->
+		<cpu:CopyImmediateToDX/>
+		<hex>000003da</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<!--Set VGA SEQUENCER-->
+		<cpu:CopyImmediateToDX/>
+		<hex>000003c4</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003c5</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>03</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003c4</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>01</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003c5</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>01</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003c4</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>02</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003c5</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0f</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003c4</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>03</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003c5</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003c4</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>04</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003c5</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0e</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<!--Unlock VGA CRT Controller-->
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>03</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:OrALWithImmediate/>
+		<binary>10000000</binary>
+		
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>11</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>01111111</binary>
+		
+		<cpu:WriteALToDXPort/>
+		
+		<!--Set VGA CRT Controller-->
+		<!--<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>9c</hex>
+
+		<cpu:AndALWithImmediate/>
+		<hex>07</hex>
+
+		<cpu:ExchangeOperandWithRegister8/>
+		<op:AL-AHRegister/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>11</hex>
+
+		<cpu:Operand16/>
+		<cpu:WriteAXToDXPort/>-->
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>5f</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>01</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>4f</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>02</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>50</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>03</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>82</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>04</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>54</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>05</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>80</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>06</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>bf</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>07</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>1f</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>08</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>09</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>41</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>0a</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>0b</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>0c</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>0d</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>0e</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>0f</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>10</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>9c</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>11</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>0e</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>12</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>8f</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>13</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>28</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>14</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>40</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>15</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>96</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>16</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>b9</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>17</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>a3</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d4</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>18</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003d5</hex>
+		
+		<cpu:CopyImmediateToAL/>
+		<hex>ff</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<!--Set VGA GRAPHICS-->
+		<cpu:CopyImmediateToDX/>
+		<hex>000003ce</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003cf</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003ce</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>01</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003cf</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003ce</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>02</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003cf</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003ce</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>03</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003cf</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003ce</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>04</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003cf</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003ce</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>05</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003cf</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>40</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003ce</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>06</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003cf</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>05</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003ce</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>07</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003cf</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0f</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003ce</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>08</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003cf</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>ff</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<!--Set VGA ATTRIB-->
+		<cpu:CopyImmediateToDX/>
+		<hex>000003da</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003c0</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>01</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>01</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>02</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>02</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>03</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>03</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>04</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>04</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>05</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>05</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>06</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>06</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>07</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>07</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>08</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>08</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>09</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>09</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0a</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0a</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0b</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0b</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0c</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0c</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0d</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0d</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0e</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0e</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0f</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0f</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>10</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>41</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>11</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>12</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0f</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>13</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>14</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>20</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<!--Clear Screen-->
+		<cpu:CopyImmediateToDI/>
+		<hex>000a0000</hex>
+		
+		<cpu:CopyImmediateToCX/>
+		<int>16384</int>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>01010101</hex>
+
+		<cpu:Repeat/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>12345678</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+	
+	<cls:method name="Enable" type="http://metalx.org/Video/VMWare/VMWare">
+
+	</cls:method>
+
+	<cls:method name="Disable" type="http://metalx.org/Video/VMWare/VMWare">
+
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="deviceName" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="deviceName">VGA Graphics Adapter</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>
