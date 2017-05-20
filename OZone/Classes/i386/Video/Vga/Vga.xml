@@ -21,12 +21,31 @@
 	xmlns:logic="http://metalx.org/Intel/80386/Logic"
 	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
 	xmlns:index="http://metalx.org/Intel/80386/Index"
+	xmlns:inc="http://metalx.org/Intel/80386/Increment"
 	xmlns:ext="http://metalx.org/Intel/80386/ExtendedOperators"
 	xmlns:mmx="http://metalx.org/Intel/80386/MmxOperands"
 	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
 	xmlns:op="http://metalx.org/Intel/80386/Operands">
 
-	<cls:method name="Test" type="http://metalx.org/Hexadecimal" static="true">
+	<cls:field name="Address" type="http://metalx.org/Hexadecimal" offset="0"/>
+
+	<cls:method name="Create" type="http://metalx.org/Video/Vga" static="true">
+		<mm:CheckOut length="4"/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddress/>
+		<hex>000a0000</hex>
+
+		<obj:Create length="4"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cls:return/>
+	</cls:method>
+
+	<cls:method name="Enable" type="http://metalx.org/Video/Vga">
 		<!--Wait For VSYNC-->
 		<cpu:CopyImmediateToDX/>
 		<hex>000003da</hex>
@@ -974,34 +993,68 @@
 		<hex>20</hex>
 
 		<cpu:WriteALToDXPort/>
-		
-		<!--Clear Screen-->
-		<cpu:CopyImmediateToDI/>
-		<hex>000a0000</hex>
-		
-		<cpu:CopyImmediateToCX/>
-		<int>16384</int>
-
-		<cpu:CopyImmediateToAX/>
-		<hex>01010101</hex>
-
-		<cpu:Repeat/>
-		<cpu:CopyAXToDIAddressAndIncrementDI/>
-
-		<cpu:CopyImmediateToAX/>
-		<hex>12345678</hex>
-
-		<hex:CreateObject/>
 
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
 	
-	<cls:method name="Enable" type="http://metalx.org/Video/VMWare/VMWare">
-
+	<cls:method name="Disable" type="http://metalx.org/Video/Vga">
+		<cls:return/>
 	</cls:method>
 
-	<cls:method name="Disable" type="http://metalx.org/Video/VMWare/VMWare">
+	<cls:method name="SetColor" type="http://metalx.org/Video/Vga">
+		<cls:parameter name="Color" type="http://metalx.org/Video/Graphics/Color"/>
 
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="getColor" type="Relative32"/>
+
+		<!--<cpu:CopyRegisterToOperand/>
+		<op:AX-BXRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:OrRegisterWithOperand/>
+		<op:AX-BXRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>8</byte>-->
+
+		<cpu:CopyImmediateToCX/>
+		<int>64000</int>
+
+		<cpu:Repeat/>
+		<cpu:CopyALToDIAddressAndIncrementDI/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+
+		<!--<int:CreateObject/>-->
+
+		<cls:return/>
 	</cls:method>
 
 	<cls:method name="ToString" type="http://metalx.org/String">
@@ -1037,4 +1090,447 @@
 
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
+
+	<label id="getColor">
+		<cpu:PushCXToStack/>
+		<cpu:PushDXToStack/>
+
+		<cpu:CopyImmediateToCX/>
+		<!--<int>248</int>-->
+		<int>16</int>
+
+		<cpu:CallRelative/>
+		<addressOf ref="getDistance" type="Relative32"/>
+
+		<cpu:DecrementCX/>
+
+		<cpu:PushCXToStack/>
+		<cpu:PushDXToStack/>
+
+		<label id="forEachColor"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="getDistance" type="Relative32"/>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:DX-IndexAddress/>
+		<index:SP/>
+
+		<cpu:BranchToRelative8IfGreater/>
+		<addressOf ref="notCloser" type="Relative8"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:IncrementFunction/>
+		<inc:DecrementIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DX-IndexAddress/>
+		<index:SP/>
+
+		<label id="notCloser"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachColor" type="Relative8"/>
+
+		<cpu:PullAXFromStack/>
+		<cpu:PullAXFromStack/>
+		
+		<cpu:PullDXFromStack/>
+		<cpu:PullCXFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+	
+	<label id="getDistance">
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:DecrementAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddImmediateToAX/>
+		<addressOf ref="colorPalette" type="Absolute32"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-AXAddress/>
+
+		<cpu:PushAXToStack/>
+
+		<!--Red-->
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:BX-BXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>2</byte>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:BL-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>6</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sort" type="Relative32"/>
+
+		<cpu:SubtractOperandFromRegister/>
+		<op:AX-BXRegister/>
+
+		<!--<cpu:ArithmeticAXOperandFunction/>
+		<ari:MultiplyByALRegister/>-->
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<!--Green-->
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:BX-BXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>1</byte>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:BL-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>5</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sort" type="Relative32"/>
+
+		<cpu:SubtractOperandFromRegister/>
+		<op:AX-BXRegister/>
+
+		<!--<cpu:ArithmeticAXOperandFunction/>
+		<ari:MultiplyByALRegister/>-->
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<!--Blue-->
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:BX-BXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>0</byte>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:BL-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="sort" type="Relative32"/>
+
+		<cpu:SubtractOperandFromRegister/>
+		<op:AX-BXRegister/>
+
+		<!--<cpu:ArithmeticAXOperandFunction/>
+		<ari:MultiplyByALRegister/>-->
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:PullAXFromStack/>
+		<cpu:PullAXFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+	
+	<label id="sort">
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-BXRegister/>
+
+		<cpu:BranchToRelative8IfNotLess/>
+		<addressOf ref="notLess" type="Relative8"/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:AX-BXRegister/>
+
+		<label id="notLess"/>
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+
+	<label id="colorPalette">
+		<hex>ff000000</hex>
+		<hex>ff0000aa</hex>
+		<hex>ff00aa00</hex>
+		<hex>ff00aaaa</hex>
+		<hex>ffaa0000</hex>
+		<hex>ffaa00aa</hex>
+		<hex>ffaa5500</hex>
+		<hex>ffaaaaaa</hex>
+		<hex>ff555555</hex>
+		<hex>ff5555ff</hex>
+		<hex>ff55ff55</hex>
+		<hex>ff55ffff</hex>
+		<hex>ffff5555</hex>
+		<hex>ffff55ff</hex>
+		<hex>ffffff55</hex>
+		<hex>ffffffff</hex>
+		<hex>ff000000</hex>
+		<hex>ff101010</hex>
+		<hex>ff202020</hex>
+		<hex>ff353535</hex>
+		<hex>ff454545</hex>
+		<hex>ff555555</hex>
+		<hex>ff656565</hex>
+		<hex>ff757575</hex>
+		<hex>ff8a8a8a</hex>
+		<hex>ff9a9a9a</hex>
+		<hex>ffaaaaaa</hex>
+		<hex>ffbababa</hex>
+		<hex>ffcacaca</hex>
+		<hex>ffdfdfdf</hex>
+		<hex>ffefefef</hex>
+		<hex>ffffffff</hex>
+		<hex>ff0000ff</hex>
+		<hex>ff4100ff</hex>
+		<hex>ff8200ff</hex>
+		<hex>ffbe00ff</hex>
+		<hex>ffff00ff</hex>
+		<hex>ffff00be</hex>
+		<hex>ffff0082</hex>
+		<hex>ffff0041</hex>
+		<hex>ffff0000</hex>
+		<hex>ffff4100</hex>
+		<hex>ffff8200</hex>
+		<hex>ffffbe00</hex>
+		<hex>ffffff00</hex>
+		<hex>ffbeff00</hex>
+		<hex>ff82ff00</hex>
+		<hex>ff41ff00</hex>
+		<hex>ff00ff00</hex>
+		<hex>ff00ff41</hex>
+		<hex>ff00ff82</hex>
+		<hex>ff00ffbe</hex>
+		<hex>ff00ffff</hex>
+		<hex>ff00beff</hex>
+		<hex>ff0082ff</hex>
+		<hex>ff0041ff</hex>
+		<hex>ff8282ff</hex>
+		<hex>ff9e82ff</hex>
+		<hex>ffbe82ff</hex>
+		<hex>ffdf82ff</hex>
+		<hex>ffff82ff</hex>
+		<hex>ffff82df</hex>
+		<hex>ffff82be</hex>
+		<hex>ffff829e</hex>
+		<hex>ffff8282</hex>
+		<hex>ffff9e82</hex>
+		<hex>ffffbe82</hex>
+		<hex>ffffdf82</hex>
+		<hex>ffffff82</hex>
+		<hex>ffdfff82</hex>
+		<hex>ffbeff82</hex>
+		<hex>ff9eff82</hex>
+		<hex>ff82ff82</hex>
+		<hex>ff82ff9e</hex>
+		<hex>ff82ffbe</hex>
+		<hex>ff82ffdf</hex>
+		<hex>ff82ffff</hex>
+		<hex>ff82dfff</hex>
+		<hex>ff82beff</hex>
+		<hex>ff829eff</hex>
+		<hex>ffbabaff</hex>
+		<hex>ffcabaff</hex>
+		<hex>ffdfbaff</hex>
+		<hex>ffefbaff</hex>
+		<hex>ffffbaff</hex>
+		<hex>ffffbaef</hex>
+		<hex>ffffbadf</hex>
+		<hex>ffffbaca</hex>
+		<hex>ffffbaba</hex>
+		<hex>ffffcaba</hex>
+		<hex>ffffdfba</hex>
+		<hex>ffffefba</hex>
+		<hex>ffffffba</hex>
+		<hex>ffefffba</hex>
+		<hex>ffdfffba</hex>
+		<hex>ffcaffba</hex>
+		<hex>ffbaffba</hex>
+		<hex>ffbaffca</hex>
+		<hex>ffbaffdf</hex>
+		<hex>ffbaffef</hex>
+		<hex>ffbaffff</hex>
+		<hex>ffbaefff</hex>
+		<hex>ffbadfff</hex>
+		<hex>ffbacaff</hex>
+		<hex>ff000071</hex>
+		<hex>ff1c0071</hex>
+		<hex>ff390071</hex>
+		<hex>ff550071</hex>
+		<hex>ff710071</hex>
+		<hex>ff710055</hex>
+		<hex>ff710039</hex>
+		<hex>ff71001c</hex>
+		<hex>ff710000</hex>
+		<hex>ff711c00</hex>
+		<hex>ff713900</hex>
+		<hex>ff715500</hex>
+		<hex>ff717100</hex>
+		<hex>ff557100</hex>
+		<hex>ff397100</hex>
+		<hex>ff1c7100</hex>
+		<hex>ff007100</hex>
+		<hex>ff00711c</hex>
+		<hex>ff007139</hex>
+		<hex>ff007155</hex>
+		<hex>ff007171</hex>
+		<hex>ff005571</hex>
+		<hex>ff003971</hex>
+		<hex>ff001c71</hex>
+		<hex>ff393971</hex>
+		<hex>ff453971</hex>
+		<hex>ff553971</hex>
+		<hex>ff613971</hex>
+		<hex>ff713971</hex>
+		<hex>ff713961</hex>
+		<hex>ff713955</hex>
+		<hex>ff713945</hex>
+		<hex>ff713939</hex>
+		<hex>ff714539</hex>
+		<hex>ff715539</hex>
+		<hex>ff716139</hex>
+		<hex>ff717139</hex>
+		<hex>ff617139</hex>
+		<hex>ff557139</hex>
+		<hex>ff457139</hex>
+		<hex>ff397139</hex>
+		<hex>ff397145</hex>
+		<hex>ff397155</hex>
+		<hex>ff397161</hex>
+		<hex>ff397171</hex>
+		<hex>ff396171</hex>
+		<hex>ff395571</hex>
+		<hex>ff394571</hex>
+		<hex>ff515171</hex>
+		<hex>ff595171</hex>
+		<hex>ff615171</hex>
+		<hex>ff695171</hex>
+		<hex>ff715171</hex>
+		<hex>ff715169</hex>
+		<hex>ff715161</hex>
+		<hex>ff715159</hex>
+		<hex>ff715151</hex>
+		<hex>ff715951</hex>
+		<hex>ff716151</hex>
+		<hex>ff716951</hex>
+		<hex>ff717151</hex>
+		<hex>ff697151</hex>
+		<hex>ff617151</hex>
+		<hex>ff597151</hex>
+		<hex>ff517151</hex>
+		<hex>ff517159</hex>
+		<hex>ff517161</hex>
+		<hex>ff517169</hex>
+		<hex>ff517171</hex>
+		<hex>ff516971</hex>
+		<hex>ff516171</hex>
+		<hex>ff515971</hex>
+		<hex>ff000041</hex>
+		<hex>ff100041</hex>
+		<hex>ff200041</hex>
+		<hex>ff310041</hex>
+		<hex>ff410041</hex>
+		<hex>ff410031</hex>
+		<hex>ff410020</hex>
+		<hex>ff410010</hex>
+		<hex>ff410000</hex>
+		<hex>ff411000</hex>
+		<hex>ff412000</hex>
+		<hex>ff413100</hex>
+		<hex>ff414100</hex>
+		<hex>ff314100</hex>
+		<hex>ff204100</hex>
+		<hex>ff104100</hex>
+		<hex>ff004100</hex>
+		<hex>ff004110</hex>
+		<hex>ff004120</hex>
+		<hex>ff004131</hex>
+		<hex>ff004141</hex>
+		<hex>ff003141</hex>
+		<hex>ff002041</hex>
+		<hex>ff001041</hex>
+		<hex>ff202041</hex>
+		<hex>ff282041</hex>
+		<hex>ff312041</hex>
+		<hex>ff392041</hex>
+		<hex>ff412041</hex>
+		<hex>ff412039</hex>
+		<hex>ff412031</hex>
+		<hex>ff412028</hex>
+		<hex>ff412020</hex>
+		<hex>ff412820</hex>
+		<hex>ff413120</hex>
+		<hex>ff413920</hex>
+		<hex>ff414120</hex>
+		<hex>ff394120</hex>
+		<hex>ff314120</hex>
+		<hex>ff284120</hex>
+		<hex>ff204120</hex>
+		<hex>ff204128</hex>
+		<hex>ff204131</hex>
+		<hex>ff204139</hex>
+		<hex>ff204141</hex>
+		<hex>ff203941</hex>
+		<hex>ff203141</hex>
+		<hex>ff202841</hex>
+		<hex>ff2d2d41</hex>
+		<hex>ff312d41</hex>
+		<hex>ff352d41</hex>
+		<hex>ff3d2d41</hex>
+		<hex>ff412d41</hex>
+		<hex>ff412d3d</hex>
+		<hex>ff412d35</hex>
+		<hex>ff412d31</hex>
+		<hex>ff412d2d</hex>
+		<hex>ff41312d</hex>
+		<hex>ff41352d</hex>
+		<hex>ff413d2d</hex>
+		<hex>ff41412d</hex>
+		<hex>ff3d412d</hex>
+		<hex>ff35412d</hex>
+		<hex>ff31412d</hex>
+		<hex>ff2d412d</hex>
+		<hex>ff2d4131</hex>
+		<hex>ff2d4135</hex>
+		<hex>ff2d413d</hex>
+		<hex>ff2d4141</hex>
+		<hex>ff2d3d41</hex>
+		<hex>ff2d3541</hex>
+		<hex>ff2d3141</hex>
+		<hex>ff000000</hex>
+		<hex>ff000000</hex>
+		<hex>ff000000</hex>
+		<hex>ff000000</hex>
+		<hex>ff000000</hex>
+		<hex>ff000000</hex>
+		<hex>ff000000</hex>
+		<hex>ff000000</hex>
+	</label>
 </cls:class>
