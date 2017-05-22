@@ -718,7 +718,8 @@
 		<hex>000003cf</hex>
 
 		<cpu:CopyImmediateToAL/>
-		<hex>40</hex>
+		<!--<hex>40</hex>-->
+		<hex>50</hex>
 
 		<cpu:WriteALToDXPort/>
 
@@ -734,7 +735,8 @@
 		<hex>000003cf</hex>
 
 		<cpu:CopyImmediateToAL/>
-		<hex>05</hex>
+		<!--<hex>05</hex>-->
+		<hex>07</hex>
 
 		<cpu:WriteALToDXPort/>
 
@@ -993,6 +995,37 @@
 		<hex>20</hex>
 
 		<cpu:WriteALToDXPort/>
+		
+		<!--Set Palette-->
+		<!--PELADDRESSWRITE = 0x3c8-->
+		<!--PELDATAREG = 0x3c9-->
+
+		<cpu:CopyImmediateToDX/>
+		<hex>000003c8</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToDXPort/>
+		
+		<cpu:CopyImmediateToDX/>
+		<hex>000003c9</hex>
+
+		<cpu:CopyImmediateToCX/>
+		<!--<int>256</int>-->
+		<int>768</int>
+
+		<cpu:CopyImmediateToSI/>
+		<addressOf ref="palette" type="Absolute32"/>
+		
+		<label id="forEachColor"/>
+
+		<cpu:CopySIAddressToALAndIncrementSI/>
+		
+		<cpu:WriteALToDXPort/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachColor" type="Relative8"/>
 
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
@@ -1025,19 +1058,41 @@
 		<cpu:CallRelative/>
 		<addressOf ref="getColor" type="Relative32"/>
 
-		<!--<cpu:CopyRegisterToOperand/>
-		<op:AX-BXRegister/>
+		<cpu:CopyImmediateToCX/>
+		<int>64000</int>
 
-		<cpu:ShiftRegisterByImmediate8Function/>
-		<shift:ShiftAXRegisterLeft/>
+		<cpu:Repeat/>
+		<cpu:CopyALToDIAddressAndIncrementDI/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
 		<byte>4</byte>
 
-		<cpu:OrRegisterWithOperand/>
-		<op:AX-BXRegister/>
+		<cls:return/>
+	</cls:method>
 
-		<cpu:ShiftRegisterByImmediate8Function/>
-		<shift:ShiftAXRegisterLeft/>
-		<byte>8</byte>-->
+	<cls:method name="SetPaletteColor" type="http://metalx.org/Video/Vga">
+		<cls:parameter name="Color" type="http://metalx.org/Integer"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
 
 		<cpu:CopyImmediateToCX/>
 		<int>64000</int>
@@ -1051,8 +1106,85 @@
 		<math:AddToBPRegister/>
 		<byte>4</byte>
 
+		<cls:return/>
+	</cls:method>
 
-		<!--<int:CreateObject/>-->
+	<cls:method name="DrawPoint" type="http://metalx.org/Video/Vga">
+		<cls:parameter name="Point" type="http://metalx.org/Video/Graphics/Point"/>
+		<cls:parameter name="Color" type="http://metalx.org/Video/Graphics/Color"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:DX-DXRegister/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByImmediateAddress/>
+		<addressOf ref="width" type="Absolute32"/>
+
+		<cpu:AddOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-DIRegister/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="getColor" type="Relative32"/>
+		
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddress/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>8</byte>
+
+		<cpu:PullDIFromStack/>
+
+		<cls:return/>
+
+		<var:integer id="width">320</var:integer>
+	</cls:method>
+
+	<cls:method name="GetSize" type="http://metalx.org/Video/Graphics/Size">
+		<mm:CheckOut length="8"/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddress/>
+		<int>320</int>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>200</int>
+
+		<obj:Create length="8" type="http://metalx.org/Video/Graphics/Size"/>
 
 		<cls:return/>
 	</cls:method>
@@ -1093,11 +1225,58 @@
 
 	<label id="getColor">
 		<cpu:PushCXToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>5</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>00000007</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>11</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>00000018</hex>
+
+		<cpu:OrRegisterWithOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>16</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000e0</hex>
+
+		<cpu:OrRegisterWithOperand/>
+		<op:AX-BXRegister/>
+
+		<cpu:PullCXFromStack/>
+		
+		<cpu:ReturnToNearCaller/>
+	</label>
+
+	<label id="getPaletteColor">
+		<cpu:PushCXToStack/>
 		<cpu:PushDXToStack/>
 
 		<cpu:CopyImmediateToCX/>
-		<!--<int>248</int>-->
-		<int>16</int>
+		<int>248</int>
+		<!--<int>16</int>-->
 
 		<cpu:CallRelative/>
 		<addressOf ref="getDistance" type="Relative32"/>
@@ -1140,13 +1319,13 @@
 
 		<cpu:PullAXFromStack/>
 		<cpu:PullAXFromStack/>
-		
+
 		<cpu:PullDXFromStack/>
 		<cpu:PullCXFromStack/>
 
 		<cpu:ReturnToNearCaller/>
 	</label>
-	
+
 	<label id="getDistance">
 		<cpu:PushAXToStack/>
 
@@ -1190,8 +1369,8 @@
 		<cpu:SubtractOperandFromRegister/>
 		<op:AX-BXRegister/>
 
-		<!--<cpu:ArithmeticAXOperandFunction/>
-		<ari:MultiplyByALRegister/>-->
+		<cpu:ArithmeticAXOperandFunction/>
+		<ari:MultiplyByALRegister/>
 
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-DXRegister/>
@@ -1219,8 +1398,8 @@
 		<cpu:SubtractOperandFromRegister/>
 		<op:AX-BXRegister/>
 
-		<!--<cpu:ArithmeticAXOperandFunction/>
-		<ari:MultiplyByALRegister/>-->
+		<cpu:ArithmeticAXOperandFunction/>
+		<ari:MultiplyByALRegister/>
 
 		<cpu:AddRegisterToOperand/>
 		<op:AX-DXRegister/>
@@ -1248,8 +1427,8 @@
 		<cpu:SubtractOperandFromRegister/>
 		<op:AX-BXRegister/>
 
-		<!--<cpu:ArithmeticAXOperandFunction/>
-		<ari:MultiplyByALRegister/>-->
+		<cpu:ArithmeticAXOperandFunction/>
+		<ari:MultiplyByALRegister/>
 
 		<cpu:AddRegisterToOperand/>
 		<op:AX-DXRegister/>
@@ -1264,7 +1443,7 @@
 		<cpu:CompareRegisterToOperand/>
 		<op:AX-BXRegister/>
 
-		<cpu:BranchToRelative8IfNotLess/>
+		<cpu:BranchToRelative8IfNotBelow/>
 		<addressOf ref="notLess" type="Relative8"/>
 
 		<cpu:ExchangeOperandWithRegister/>
@@ -1532,5 +1711,1093 @@
 		<hex>ff000000</hex>
 		<hex>ff000000</hex>
 		<hex>ff000000</hex>
+	</label>
+
+	<label id="palette">
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>09</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>12</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>1b</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>24</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>2d</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>36</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>3f</hex>
+
+
+		
+		<hex>00</hex>
+		<hex>15</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>15</hex>
+		<hex>09</hex>
+
+		<hex>00</hex>
+		<hex>15</hex>
+		<hex>12</hex>
+
+		<hex>00</hex>
+		<hex>15</hex>
+		<hex>1b</hex>
+
+		<hex>00</hex>
+		<hex>15</hex>
+		<hex>24</hex>
+
+		<hex>00</hex>
+		<hex>15</hex>
+		<hex>2d</hex>
+
+		<hex>00</hex>
+		<hex>15</hex>
+		<hex>36</hex>
+
+		<hex>00</hex>
+		<hex>15</hex>
+		<hex>3f</hex>
+
+		
+		
+		<hex>00</hex>
+		<hex>2a</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>2a</hex>
+		<hex>09</hex>
+
+		<hex>00</hex>
+		<hex>2a</hex>
+		<hex>12</hex>
+
+		<hex>00</hex>
+		<hex>2a</hex>
+		<hex>1b</hex>
+
+		<hex>00</hex>
+		<hex>2a</hex>
+		<hex>24</hex>
+
+		<hex>00</hex>
+		<hex>2a</hex>
+		<hex>2d</hex>
+
+		<hex>00</hex>
+		<hex>2a</hex>
+		<hex>36</hex>
+
+		<hex>00</hex>
+		<hex>2a</hex>
+		<hex>3f</hex>
+
+
+		
+		<hex>00</hex>
+		<hex>3f</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>3f</hex>
+		<hex>09</hex>
+
+		<hex>00</hex>
+		<hex>3f</hex>
+		<hex>12</hex>
+
+		<hex>00</hex>
+		<hex>3f</hex>
+		<hex>1b</hex>
+
+		<hex>00</hex>
+		<hex>3f</hex>
+		<hex>24</hex>
+
+		<hex>00</hex>
+		<hex>3f</hex>
+		<hex>2d</hex>
+
+		<hex>00</hex>
+		<hex>3f</hex>
+		<hex>36</hex>
+
+		<hex>00</hex>
+		<hex>3f</hex>
+		<hex>3f</hex>
+
+		
+		
+		<hex>09</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>09</hex>
+		<hex>00</hex>
+		<hex>09</hex>
+
+		<hex>09</hex>
+		<hex>00</hex>
+		<hex>12</hex>
+
+		<hex>09</hex>
+		<hex>00</hex>
+		<hex>1b</hex>
+
+		<hex>09</hex>
+		<hex>00</hex>
+		<hex>24</hex>
+
+		<hex>09</hex>
+		<hex>00</hex>
+		<hex>2d</hex>
+
+		<hex>09</hex>
+		<hex>00</hex>
+		<hex>36</hex>
+
+		<hex>09</hex>
+		<hex>00</hex>
+		<hex>3f</hex>
+
+		
+		
+		<hex>09</hex>
+		<hex>15</hex>
+		<hex>00</hex>
+
+		<hex>09</hex>
+		<hex>15</hex>
+		<hex>09</hex>
+
+		<hex>09</hex>
+		<hex>15</hex>
+		<hex>12</hex>
+
+		<hex>09</hex>
+		<hex>15</hex>
+		<hex>1b</hex>
+
+		<hex>09</hex>
+		<hex>15</hex>
+		<hex>24</hex>
+
+		<hex>09</hex>
+		<hex>15</hex>
+		<hex>2d</hex>
+
+		<hex>09</hex>
+		<hex>15</hex>
+		<hex>36</hex>
+
+		<hex>09</hex>
+		<hex>15</hex>
+		<hex>3f</hex>
+
+		
+		
+		<hex>09</hex>
+		<hex>2a</hex>
+		<hex>00</hex>
+
+		<hex>09</hex>
+		<hex>2a</hex>
+		<hex>09</hex>
+
+		<hex>09</hex>
+		<hex>2a</hex>
+		<hex>12</hex>
+
+		<hex>09</hex>
+		<hex>2a</hex>
+		<hex>1b</hex>
+
+		<hex>09</hex>
+		<hex>2a</hex>
+		<hex>24</hex>
+
+		<hex>09</hex>
+		<hex>2a</hex>
+		<hex>2d</hex>
+
+		<hex>09</hex>
+		<hex>2a</hex>
+		<hex>36</hex>
+
+		<hex>09</hex>
+		<hex>2a</hex>
+		<hex>3f</hex>
+
+		
+		
+		<hex>09</hex>
+		<hex>3f</hex>
+		<hex>00</hex>
+
+		<hex>09</hex>
+		<hex>3f</hex>
+		<hex>09</hex>
+
+		<hex>09</hex>
+		<hex>3f</hex>
+		<hex>12</hex>
+
+		<hex>09</hex>
+		<hex>3f</hex>
+		<hex>1b</hex>
+
+		<hex>09</hex>
+		<hex>3f</hex>
+		<hex>24</hex>
+
+		<hex>09</hex>
+		<hex>3f</hex>
+		<hex>2d</hex>
+
+		<hex>09</hex>
+		<hex>3f</hex>
+		<hex>36</hex>
+
+		<hex>09</hex>
+		<hex>3f</hex>
+		<hex>3f</hex>
+
+		
+		
+		<hex>12</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>12</hex>
+		<hex>00</hex>
+		<hex>09</hex>
+
+		<hex>12</hex>
+		<hex>00</hex>
+		<hex>12</hex>
+
+		<hex>12</hex>
+		<hex>00</hex>
+		<hex>1b</hex>
+
+		<hex>12</hex>
+		<hex>00</hex>
+		<hex>24</hex>
+
+		<hex>12</hex>
+		<hex>00</hex>
+		<hex>2d</hex>
+
+		<hex>12</hex>
+		<hex>00</hex>
+		<hex>36</hex>
+
+		<hex>12</hex>
+		<hex>00</hex>
+		<hex>3f</hex>
+
+		
+		
+		<hex>12</hex>
+		<hex>15</hex>
+		<hex>00</hex>
+
+		<hex>12</hex>
+		<hex>15</hex>
+		<hex>09</hex>
+
+		<hex>12</hex>
+		<hex>15</hex>
+		<hex>12</hex>
+
+		<hex>12</hex>
+		<hex>15</hex>
+		<hex>1b</hex>
+
+		<hex>12</hex>
+		<hex>15</hex>
+		<hex>24</hex>
+
+		<hex>12</hex>
+		<hex>15</hex>
+		<hex>2d</hex>
+
+		<hex>12</hex>
+		<hex>15</hex>
+		<hex>36</hex>
+
+		<hex>12</hex>
+		<hex>15</hex>
+		<hex>3f</hex>
+
+		
+		
+		<hex>12</hex>
+		<hex>2a</hex>
+		<hex>00</hex>
+
+		<hex>12</hex>
+		<hex>2a</hex>
+		<hex>09</hex>
+
+		<hex>12</hex>
+		<hex>2a</hex>
+		<hex>12</hex>
+
+		<hex>12</hex>
+		<hex>2a</hex>
+		<hex>1b</hex>
+
+		<hex>12</hex>
+		<hex>2a</hex>
+		<hex>24</hex>
+
+		<hex>12</hex>
+		<hex>2a</hex>
+		<hex>2d</hex>
+
+		<hex>12</hex>
+		<hex>2a</hex>
+		<hex>36</hex>
+
+		<hex>12</hex>
+		<hex>2a</hex>
+		<hex>3f</hex>
+
+		
+		
+		<hex>12</hex>
+		<hex>3f</hex>
+		<hex>00</hex>
+
+		<hex>12</hex>
+		<hex>3f</hex>
+		<hex>09</hex>
+
+		<hex>12</hex>
+		<hex>3f</hex>
+		<hex>12</hex>
+
+		<hex>12</hex>
+		<hex>3f</hex>
+		<hex>1b</hex>
+
+		<hex>12</hex>
+		<hex>3f</hex>
+		<hex>24</hex>
+
+		<hex>12</hex>
+		<hex>3f</hex>
+		<hex>2d</hex>
+
+		<hex>12</hex>
+		<hex>3f</hex>
+		<hex>36</hex>
+
+		<hex>12</hex>
+		<hex>3f</hex>
+		<hex>3f</hex>
+
+		
+		
+		<hex>1b</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>1b</hex>
+		<hex>00</hex>
+		<hex>09</hex>
+
+		<hex>1b</hex>
+		<hex>00</hex>
+		<hex>12</hex>
+
+		<hex>1b</hex>
+		<hex>00</hex>
+		<hex>1b</hex>
+
+		<hex>1b</hex>
+		<hex>00</hex>
+		<hex>24</hex>
+
+		<hex>1b</hex>
+		<hex>00</hex>
+		<hex>2d</hex>
+
+		<hex>1b</hex>
+		<hex>00</hex>
+		<hex>36</hex>
+
+		<hex>1b</hex>
+		<hex>00</hex>
+		<hex>3f</hex>
+
+		
+		
+		<hex>1b</hex>
+		<hex>15</hex>
+		<hex>00</hex>
+
+		<hex>1b</hex>
+		<hex>15</hex>
+		<hex>09</hex>
+
+		<hex>1b</hex>
+		<hex>15</hex>
+		<hex>12</hex>
+
+		<hex>1b</hex>
+		<hex>15</hex>
+		<hex>1b</hex>
+
+		<hex>1b</hex>
+		<hex>15</hex>
+		<hex>24</hex>
+
+		<hex>1b</hex>
+		<hex>15</hex>
+		<hex>2d</hex>
+
+		<hex>1b</hex>
+		<hex>15</hex>
+		<hex>36</hex>
+
+		<hex>1b</hex>
+		<hex>15</hex>
+		<hex>3f</hex>
+
+		
+		
+		<hex>1b</hex>
+		<hex>2a</hex>
+		<hex>00</hex>
+
+		<hex>1b</hex>
+		<hex>2a</hex>
+		<hex>09</hex>
+
+		<hex>1b</hex>
+		<hex>2a</hex>
+		<hex>12</hex>
+
+		<hex>1b</hex>
+		<hex>2a</hex>
+		<hex>1b</hex>
+
+		<hex>1b</hex>
+		<hex>2a</hex>
+		<hex>24</hex>
+
+		<hex>1b</hex>
+		<hex>2a</hex>
+		<hex>2d</hex>
+
+		<hex>1b</hex>
+		<hex>2a</hex>
+		<hex>36</hex>
+
+		<hex>1b</hex>
+		<hex>2a</hex>
+		<hex>3f</hex>
+
+
+		
+		<hex>1b</hex>
+		<hex>3f</hex>
+		<hex>00</hex>
+
+		<hex>1b</hex>
+		<hex>3f</hex>
+		<hex>09</hex>
+
+		<hex>1b</hex>
+		<hex>3f</hex>
+		<hex>12</hex>
+
+		<hex>1b</hex>
+		<hex>3f</hex>
+		<hex>1b</hex>
+
+		<hex>1b</hex>
+		<hex>3f</hex>
+		<hex>24</hex>
+
+		<hex>1b</hex>
+		<hex>3f</hex>
+		<hex>2d</hex>
+
+		<hex>1b</hex>
+		<hex>3f</hex>
+		<hex>36</hex>
+
+		<hex>1b</hex>
+		<hex>3f</hex>
+		<hex>3f</hex>
+
+
+		
+		<hex>24</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>24</hex>
+		<hex>00</hex>
+		<hex>09</hex>
+
+		<hex>24</hex>
+		<hex>00</hex>
+		<hex>12</hex>
+
+		<hex>24</hex>
+		<hex>00</hex>
+		<hex>1b</hex>
+
+		<hex>24</hex>
+		<hex>00</hex>
+		<hex>24</hex>
+
+		<hex>24</hex>
+		<hex>00</hex>
+		<hex>2d</hex>
+
+		<hex>24</hex>
+		<hex>00</hex>
+		<hex>36</hex>
+
+		<hex>24</hex>
+		<hex>00</hex>
+		<hex>3f</hex>
+
+
+		
+		<hex>24</hex>
+		<hex>15</hex>
+		<hex>00</hex>
+
+		<hex>24</hex>
+		<hex>15</hex>
+		<hex>09</hex>
+
+		<hex>24</hex>
+		<hex>15</hex>
+		<hex>12</hex>
+
+		<hex>24</hex>
+		<hex>15</hex>
+		<hex>1b</hex>
+
+		<hex>24</hex>
+		<hex>15</hex>
+		<hex>24</hex>
+
+		<hex>24</hex>
+		<hex>15</hex>
+		<hex>2d</hex>
+
+		<hex>24</hex>
+		<hex>15</hex>
+		<hex>36</hex>
+
+		<hex>24</hex>
+		<hex>15</hex>
+		<hex>3f</hex>
+
+
+		
+		<hex>24</hex>
+		<hex>2a</hex>
+		<hex>00</hex>
+
+		<hex>24</hex>
+		<hex>2a</hex>
+		<hex>09</hex>
+
+		<hex>24</hex>
+		<hex>2a</hex>
+		<hex>12</hex>
+
+		<hex>24</hex>
+		<hex>2a</hex>
+		<hex>1b</hex>
+
+		<hex>24</hex>
+		<hex>2a</hex>
+		<hex>24</hex>
+
+		<hex>24</hex>
+		<hex>2a</hex>
+		<hex>2d</hex>
+
+		<hex>24</hex>
+		<hex>2a</hex>
+		<hex>36</hex>
+
+		<hex>24</hex>
+		<hex>2a</hex>
+		<hex>3f</hex>
+
+
+		
+		<hex>24</hex>
+		<hex>3f</hex>
+		<hex>00</hex>
+
+		<hex>24</hex>
+		<hex>3f</hex>
+		<hex>09</hex>
+
+		<hex>24</hex>
+		<hex>3f</hex>
+		<hex>12</hex>
+
+		<hex>24</hex>
+		<hex>3f</hex>
+		<hex>1b</hex>
+
+		<hex>24</hex>
+		<hex>3f</hex>
+		<hex>24</hex>
+
+		<hex>24</hex>
+		<hex>3f</hex>
+		<hex>2d</hex>
+
+		<hex>24</hex>
+		<hex>3f</hex>
+		<hex>36</hex>
+
+		<hex>24</hex>
+		<hex>3f</hex>
+		<hex>3f</hex>
+
+
+		
+		<hex>2d</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>2d</hex>
+		<hex>00</hex>
+		<hex>09</hex>
+
+		<hex>2d</hex>
+		<hex>00</hex>
+		<hex>12</hex>
+
+		<hex>2d</hex>
+		<hex>00</hex>
+		<hex>1b</hex>
+
+		<hex>2d</hex>
+		<hex>00</hex>
+		<hex>24</hex>
+
+		<hex>2d</hex>
+		<hex>00</hex>
+		<hex>2d</hex>
+
+		<hex>2d</hex>
+		<hex>00</hex>
+		<hex>36</hex>
+
+		<hex>2d</hex>
+		<hex>00</hex>
+		<hex>3f</hex>
+
+
+		
+		<hex>2d</hex>
+		<hex>15</hex>
+		<hex>00</hex>
+
+		<hex>2d</hex>
+		<hex>15</hex>
+		<hex>09</hex>
+
+		<hex>2d</hex>
+		<hex>15</hex>
+		<hex>12</hex>
+
+		<hex>2d</hex>
+		<hex>15</hex>
+		<hex>1b</hex>
+
+		<hex>2d</hex>
+		<hex>15</hex>
+		<hex>24</hex>
+
+		<hex>2d</hex>
+		<hex>15</hex>
+		<hex>2d</hex>
+
+		<hex>2d</hex>
+		<hex>15</hex>
+		<hex>36</hex>
+
+		<hex>2d</hex>
+		<hex>15</hex>
+		<hex>3f</hex>
+
+
+		
+		<hex>2d</hex>
+		<hex>2a</hex>
+		<hex>00</hex>
+
+		<hex>2d</hex>
+		<hex>2a</hex>
+		<hex>09</hex>
+
+		<hex>2d</hex>
+		<hex>2a</hex>
+		<hex>12</hex>
+
+		<hex>2d</hex>
+		<hex>2a</hex>
+		<hex>1b</hex>
+
+		<hex>2d</hex>
+		<hex>2a</hex>
+		<hex>24</hex>
+
+		<hex>2d</hex>
+		<hex>2a</hex>
+		<hex>2d</hex>
+
+		<hex>2d</hex>
+		<hex>2a</hex>
+		<hex>36</hex>
+
+		<hex>2d</hex>
+		<hex>2a</hex>
+		<hex>3f</hex>
+
+
+		
+		<hex>2d</hex>
+		<hex>3f</hex>
+		<hex>00</hex>
+
+		<hex>2d</hex>
+		<hex>3f</hex>
+		<hex>09</hex>
+
+		<hex>2d</hex>
+		<hex>3f</hex>
+		<hex>12</hex>
+
+		<hex>2d</hex>
+		<hex>3f</hex>
+		<hex>1b</hex>
+
+		<hex>2d</hex>
+		<hex>3f</hex>
+		<hex>24</hex>
+
+		<hex>2d</hex>
+		<hex>3f</hex>
+		<hex>2d</hex>
+
+		<hex>2d</hex>
+		<hex>3f</hex>
+		<hex>36</hex>
+
+		<hex>2d</hex>
+		<hex>3f</hex>
+		<hex>3f</hex>
+
+
+		
+		<hex>36</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>36</hex>
+		<hex>00</hex>
+		<hex>09</hex>
+
+		<hex>36</hex>
+		<hex>00</hex>
+		<hex>12</hex>
+
+		<hex>36</hex>
+		<hex>00</hex>
+		<hex>1b</hex>
+
+		<hex>36</hex>
+		<hex>00</hex>
+		<hex>24</hex>
+
+		<hex>36</hex>
+		<hex>00</hex>
+		<hex>2d</hex>
+
+		<hex>36</hex>
+		<hex>00</hex>
+		<hex>36</hex>
+
+		<hex>36</hex>
+		<hex>00</hex>
+		<hex>3f</hex>
+
+
+		
+		<hex>36</hex>
+		<hex>15</hex>
+		<hex>00</hex>
+
+		<hex>36</hex>
+		<hex>15</hex>
+		<hex>09</hex>
+
+		<hex>36</hex>
+		<hex>15</hex>
+		<hex>12</hex>
+
+		<hex>36</hex>
+		<hex>15</hex>
+		<hex>1b</hex>
+
+		<hex>36</hex>
+		<hex>15</hex>
+		<hex>24</hex>
+
+		<hex>36</hex>
+		<hex>15</hex>
+		<hex>2d</hex>
+
+		<hex>36</hex>
+		<hex>15</hex>
+		<hex>36</hex>
+
+		<hex>36</hex>
+		<hex>15</hex>
+		<hex>3f</hex>
+
+
+		
+		<hex>36</hex>
+		<hex>2a</hex>
+		<hex>00</hex>
+
+		<hex>36</hex>
+		<hex>2a</hex>
+		<hex>09</hex>
+
+		<hex>36</hex>
+		<hex>2a</hex>
+		<hex>12</hex>
+
+		<hex>36</hex>
+		<hex>2a</hex>
+		<hex>1b</hex>
+
+		<hex>36</hex>
+		<hex>2a</hex>
+		<hex>24</hex>
+
+		<hex>36</hex>
+		<hex>2a</hex>
+		<hex>2d</hex>
+
+		<hex>36</hex>
+		<hex>2a</hex>
+		<hex>36</hex>
+
+		<hex>36</hex>
+		<hex>2a</hex>
+		<hex>3f</hex>
+
+
+		
+		<hex>36</hex>
+		<hex>3f</hex>
+		<hex>00</hex>
+
+		<hex>36</hex>
+		<hex>3f</hex>
+		<hex>09</hex>
+
+		<hex>36</hex>
+		<hex>3f</hex>
+		<hex>12</hex>
+
+		<hex>36</hex>
+		<hex>3f</hex>
+		<hex>1b</hex>
+
+		<hex>36</hex>
+		<hex>3f</hex>
+		<hex>24</hex>
+
+		<hex>36</hex>
+		<hex>3f</hex>
+		<hex>2d</hex>
+
+		<hex>36</hex>
+		<hex>3f</hex>
+		<hex>36</hex>
+
+		<hex>36</hex>
+		<hex>3f</hex>
+		<hex>3f</hex>
+
+		
+		
+		<hex>3f</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>3f</hex>
+		<hex>00</hex>
+		<hex>09</hex>
+
+		<hex>3f</hex>
+		<hex>00</hex>
+		<hex>12</hex>
+
+		<hex>3f</hex>
+		<hex>00</hex>
+		<hex>1b</hex>
+
+		<hex>3f</hex>
+		<hex>00</hex>
+		<hex>24</hex>
+
+		<hex>3f</hex>
+		<hex>00</hex>
+		<hex>2d</hex>
+
+		<hex>3f</hex>
+		<hex>00</hex>
+		<hex>36</hex>
+
+		<hex>3f</hex>
+		<hex>00</hex>
+		<hex>3f</hex>
+
+		
+		
+		<hex>3f</hex>
+		<hex>15</hex>
+		<hex>00</hex>
+
+		<hex>3f</hex>
+		<hex>15</hex>
+		<hex>09</hex>
+
+		<hex>3f</hex>
+		<hex>15</hex>
+		<hex>12</hex>
+
+		<hex>3f</hex>
+		<hex>15</hex>
+		<hex>1b</hex>
+
+		<hex>3f</hex>
+		<hex>15</hex>
+		<hex>24</hex>
+
+		<hex>3f</hex>
+		<hex>15</hex>
+		<hex>2d</hex>
+
+		<hex>3f</hex>
+		<hex>15</hex>
+		<hex>36</hex>
+
+		<hex>3f</hex>
+		<hex>15</hex>
+		<hex>3f</hex>
+
+		
+		
+		<hex>3f</hex>
+		<hex>2a</hex>
+		<hex>00</hex>
+
+		<hex>3f</hex>
+		<hex>2a</hex>
+		<hex>09</hex>
+
+		<hex>3f</hex>
+		<hex>2a</hex>
+		<hex>12</hex>
+
+		<hex>3f</hex>
+		<hex>2a</hex>
+		<hex>1b</hex>
+
+		<hex>3f</hex>
+		<hex>2a</hex>
+		<hex>24</hex>
+
+		<hex>3f</hex>
+		<hex>2a</hex>
+		<hex>2d</hex>
+
+		<hex>3f</hex>
+		<hex>2a</hex>
+		<hex>36</hex>
+
+		<hex>3f</hex>
+		<hex>2a</hex>
+		<hex>3f</hex>
+
+		
+		
+		<hex>3f</hex>
+		<hex>3f</hex>
+		<hex>00</hex>
+
+		<hex>3f</hex>
+		<hex>3f</hex>
+		<hex>09</hex>
+
+		<hex>3f</hex>
+		<hex>3f</hex>
+		<hex>12</hex>
+
+		<hex>3f</hex>
+		<hex>3f</hex>
+		<hex>1b</hex>
+
+		<hex>3f</hex>
+		<hex>3f</hex>
+		<hex>24</hex>
+
+		<hex>3f</hex>
+		<hex>3f</hex>
+		<hex>2d</hex>
+
+		<hex>3f</hex>
+		<hex>3f</hex>
+		<hex>36</hex>
+
+		<hex>3f</hex>
+		<hex>3f</hex>
+		<hex>3f</hex>
 	</label>
 </cls:class>
