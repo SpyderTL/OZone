@@ -1038,7 +1038,37 @@
 		<cls:parameter name="Color" type="http://metalx.org/Video/Graphics/Color"/>
 
 		<cpu:PushDIToStack/>
+		
+		
 
+		<!--Wait For VSYNC-->
+		<cpu:CopyImmediateToDX/>
+		<hex>000003da</hex>
+
+		<label id="waitForVSyncOff"/>
+		
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:TestALWithImmediate/>
+		<binary>00001000</binary>
+
+		<cpu:LoopToRelative8WhileNotZero/>
+		<addressOf ref="waitForVSyncOff" type="Relative8"/>
+
+		<label id="waitForVSyncOn"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:TestALWithImmediate/>
+		<binary>00001000</binary>
+
+		<cpu:LoopToRelative8WhileZero/>
+		<addressOf ref="waitForVSyncOn" type="Relative8"/>
+		
+		
+		
+		
+		
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
 
@@ -1058,11 +1088,31 @@
 		<cpu:CallRelative/>
 		<addressOf ref="getColor" type="Relative32"/>
 
-		<cpu:CopyImmediateToCX/>
+		<!--<cpu:CopyImmediateToCX/>
 		<int>64000</int>
 
 		<cpu:Repeat/>
-		<cpu:CopyALToDIAddressAndIncrementDI/>
+		<cpu:CopyALToDIAddressAndIncrementDI/>-->
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-AHRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BXRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>16</byte>
+
+		<cpu:Operand16/>
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyImmediateToCX/>
+		<int>16000</int>
+
+		<cpu:Repeat/>
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
 
 		<cpu:PullDIFromStack/>
 
