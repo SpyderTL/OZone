@@ -37,7 +37,7 @@ namespace OZone.Projects
 
 							var address = reader.GetAttribute("address");
 
-							if(address != null)
+							if (address != null)
 								program.Address = new OZone.Programs.MemoryAddress
 								{
 									Offset = uint.Parse(address, System.Globalization.NumberStyles.HexNumber)
@@ -45,10 +45,39 @@ namespace OZone.Projects
 
 							var block = reader.GetAttribute("block");
 
-							if(block != null)
+							if (block != null)
 								program.Block = int.Parse(block);
 
 							var compiler = reader.GetAttribute("compiler");
+
+							if (compiler != null)
+								program.Compiler = compiler;
+
+							project.Files.Add(program);
+							break;
+
+						case "class":
+							program = new ProjectFile
+							{
+								Type = ProjectFileType.Class,
+								Path = reader.GetAttribute("path"),
+								OutputPath = Path.Combine(project.Name, reader.GetAttribute("path"))
+							};
+
+							address = reader.GetAttribute("address");
+
+							if (address != null)
+								program.Address = new OZone.Programs.MemoryAddress
+								{
+									Offset = uint.Parse(address, System.Globalization.NumberStyles.HexNumber)
+								};
+
+							block = reader.GetAttribute("block");
+
+							if (block != null)
+								program.Block = int.Parse(block);
+
+							compiler = reader.GetAttribute("compiler");
 
 							if (compiler != null)
 								program.Compiler = compiler;

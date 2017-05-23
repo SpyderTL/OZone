@@ -8,6 +8,7 @@ namespace OZone.Projects
 	public enum ProjectFileType
 	{
 		Program,
+		Class,
 		Image
 	}
 }

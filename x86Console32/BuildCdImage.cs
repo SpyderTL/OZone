@@ -32,11 +32,11 @@ namespace x86Console32
 					program.Name = file.Path;
 
 					if(file.Address == null)
-						image.Add(program);
+						image.Add(program, file.Type == ProjectFileType.Class);
 					else if(file.Block == null)
-						image.Add(program, file.Address);
+						image.Add(program, file.Address, file.Type == ProjectFileType.Class);
 					else
-						image.Add(program, file.Address, file.Block.Value);
+						image.Add(program, file.Address, file.Block.Value, file.Type == ProjectFileType.Class);
 				}
 				catch(Exception e)
 				{
