@@ -97,6 +97,7 @@ namespace OZone.Projects
 					switch(file.Type)
 					{
 						case ProjectFileType.Program:
+						case ProjectFileType.Class:
 							Console.WriteLine("Building " + Path.GetFileName(file.Path));
 
 							using(var reader = XmlTextReader.Create(file.Path))
