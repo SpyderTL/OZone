@@ -31,9 +31,6 @@
 	<cls:method name="ColorFade" type="http://metalx.org/Video/Graphics/Color" static="true">
 		<cls:parameter name="PixelRenderer" type="http://metalx.org/Video/Graphics/PixelRenderer"/>
 
-		<cpu:PushImmediateToStack/>
-		<int>0</int>
-
 		<cpu:CopyOperandToRegister/>
 		<op:SI-BPAddressPlusImmediate8/>
 		<byte>0</byte>
@@ -52,19 +49,257 @@
 		<cpu:CopyImmediateToAX/>
 		<hex>ff000000</hex>
 
+		<cpu:PushAXToStack/>
+		
 		<int:CreateObject/>
 
 		<cpu:PushDIToStack/>
 
-		<label id="forEachColor"/>
+		<cpu:PushImmediateToStack/>
+		<int>0</int>
 
+		<label id="loop"/>
+		
+		<cpu:CopyImmediateToCX/>
+		<int>255</int>
+
+		<label id="forEachColor"/>
+		
+		<!--Calculate Blend Factor-->
+		<cpu:CopyImmediateToBX/>
+		<int>255</int>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:CX-BXRegister/>
+		
+		<!--Calculate Blue-->
 		<cpu:CopyOperandToRegister/>
-		<op:DI-BPAddressPlusImmediate8/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
 		<byte>0</byte>
 
-		<cpu:CopyOperandToRegister/>
-		<op:SI-IndexAddress/>
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddImmediateToAX/>
+		<addressOf ref="colors" type="Absolute32"/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-AXAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+		
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:DX-DXRegister/>
+		
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByCXRegister/>
+		
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:DivideByImmediateAddress/>
+		<addressOf ref="divisor" type="Absolute32"/>
+		
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-IndexAddressPlusImmediate8/>
 		<index:SP/>
+		<byte>8</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>0</byte>
+		
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddImmediateToAX/>
+		<addressOf ref="colors" type="Absolute32"/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-AXAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:DX-DXRegister/>
+		
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByBXRegister/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:DivideByImmediateAddress/>
+		<addressOf ref="divisor" type="Absolute32"/>
+
+		<cpu:AddRegisterToOperand8/>
+		<op:AL-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+		
+		<!--Calculate Green-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>0</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddImmediateToAX/>
+		<addressOf ref="colors" type="Absolute32"/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-AXAddressPlusImmediate8/>
+		<byte>1</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+		
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:DX-DXRegister/>
+		
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByCXRegister/>
+		
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:DivideByImmediateAddress/>
+		<addressOf ref="divisor" type="Absolute32"/>
+		
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>9</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>0</byte>
+		
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddImmediateToAX/>
+		<addressOf ref="colors" type="Absolute32"/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-AXAddressPlusImmediate8/>
+		<byte>5</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:DX-DXRegister/>
+		
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByBXRegister/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:DivideByImmediateAddress/>
+		<addressOf ref="divisor" type="Absolute32"/>
+
+		<cpu:AddRegisterToOperand8/>
+		<op:AL-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>9</byte>
+
+		<!--Calculate Red-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>0</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddImmediateToAX/>
+		<addressOf ref="colors" type="Absolute32"/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-AXAddressPlusImmediate8/>
+		<byte>2</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+		
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:DX-DXRegister/>
+		
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByCXRegister/>
+		
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:DivideByImmediateAddress/>
+		<addressOf ref="divisor" type="Absolute32"/>
+		
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>10</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>0</byte>
+		
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddImmediateToAX/>
+		<addressOf ref="colors" type="Absolute32"/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-AXAddressPlusImmediate8/>
+		<byte>6</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:DX-DXRegister/>
+		
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByBXRegister/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:DivideByImmediateAddress/>
+		<addressOf ref="divisor" type="Absolute32"/>
+
+		<cpu:AddRegisterToOperand8/>
+		<op:AL-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>10</byte>
+		
+		<!--Update Color-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddress/>
+		
+		<!--Push Color-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:SubtractFromBPRegister/>
@@ -73,58 +308,67 @@
 		<cpu:CopyRegisterToOperand/>
 		<op:SI-BPAddressPlusImmediate8/>
 		<byte>0</byte>
+		
+		<!--Get Renderer-->
+		<cpu:CopyOperandToRegister/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>4</byte>
+		
+		<!--Call SetColor Method-->
+		<cpu:CopyOperandToRegister/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>4</byte>
 
+		<cpu:PushCXToStack/>
+		
 		<cpu:LogicFunction/>
 		<logic:CallIndexAddressPlusImmediate8/>
 		<index:SP/>
-		<byte>4</byte>
+		<byte>16</byte>
+
+		<cpu:PullCXFromStack/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithCXRegister/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="lastColor" type="Relative8"/>
+
+		<cpu:DecrementCX/>
+		
+		<cpu:JumpToRelative/>
+		<addressOf ref="forEachColor" type="Relative32"/>
+		
+		<label id ="lastColor"/>
 		
 		<!--Get Next Color-->
 		<cpu:CopyOperandToRegister/>
 		<op:AX-IndexAddressPlusImmediate8/>
 		<index:SP/>
-		<byte>8</byte>
+		<byte>0</byte>
 
 		<cpu:IncrementAX/>
 
 		<cpu:CompareRegisterToOperand/>
 		<op:AX-ImmediateAddress/>
-		<addressOf ref="colors" type="Absolute32"/>
+		<addressOf ref="colorCount" type="Absolute32"/>
 
 		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="notLastColor" type="Relative8"/>
+		<addressOf ref="skipReset" type="Relative8"/>
 
 		<cpu:ExclusiveOrRegisterWithOperand/>
 		<op:AX-AXRegister/>
 		
-		<label id="notLastColor"/>
-
+		<label id="skipReset"/>
+		
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-IndexAddressPlusImmediate8/>
 		<index:SP/>
-		<byte>8</byte>
+		<byte>0</byte>
 
-		<cpu:ShiftRegisterByImmediate8Function/>
-		<shift:ShiftAXRegisterLeft/>
-		<byte>2</byte>
-
-		<cpu:AddImmediateToAX/>
-		<addressOf ref="colors" type="Absolute32" offset="4"/>
-
-		<cpu:CopyOperandToRegister/>
-		<op:AX-AXAddress/>
-
-		<cpu:CopyOperandToRegister/>
-		<op:SI-IndexAddress/>
-		<index:SP/>
-
-		<obj:GetData/>
-
-		<cpu:CopyRegisterToOperand/>
-		<op:AX-SIAddress/>
-
-		<cpu:JumpToRelative8/>
-		<addressOf ref="forEachColor" type="Relative8"/>
+		<cpu:JumpToRelative/>
+		<addressOf ref="loop" type="Relative32"/>
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
@@ -133,11 +377,14 @@
 		<cpu:ReturnToNearCaller/>
 
 		<var:string id="setColor">SetColor</var:string>
-
+		<var:integer id="divisor">255</var:integer>
+		<var:integer id="colorCount">3</var:integer>
+		
 		<label id="colors">
-			<int>2</int>
-			<hex>ff000000</hex>
-			<hex>ffffffff</hex>
+			<hex>ffff0000</hex>
+			<hex>ff00ff00</hex>
+			<hex>ff0000ff</hex>
+			<hex>ffff0000</hex>
 		</label>
 	</cls:method>
 
