@@ -111,18 +111,58 @@
 		</xsl:choose>
 	</xsl:template>
 
+	<xsl:template match="obj:Copy">
+		<mm:CheckOut length="12"/>
+
+		<cpu:PushDIToStack/>
+		<cpu:PushSIToStack/>
+
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<xsl:call-template name="GetDataLength"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<mm:CheckOut/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+		
+		<cpu:PullSIFromStack/>
+
+		<xsl:call-template name="GetData"/>
+
+		<cpu:Repeat/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI8/>
+
+		<cpu:PullDIFromStack/>
+	</xsl:template>
+
 	<xsl:template match="obj:GetType" name="GetType">
 		<cpu:CopyOperandToRegister/>
 		<op:SI-SIAddress/>
 	</xsl:template>
 
-	<xsl:template match="obj:GetData">
+	<xsl:template match="obj:GetData" name="GetData">
 		<cpu:CopyOperandToRegister/>
 		<op:SI-SIAddressPlusImmediate8/>
 		<byte>4</byte>
 	</xsl:template>
 
-	<xsl:template match="obj:GetDataLength">
+	<xsl:template match="obj:GetDataLength" name="GetDataLength">
 		<cpu:CopyOperandToRegister/>
 		<op:AX-SIAddressPlusImmediate8/>
 		<byte>8</byte>
