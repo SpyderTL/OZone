@@ -28,7 +28,74 @@
 	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
 	xmlns:op="http://metalx.org/Intel/80386/Operands">
 
-	<cls:method name="ColorFade" type="http://metalx.org/Video/Graphics/Color" static="true">
+	<cls:method name="FadeImage" type="http://metalx.org/Video/Graphics/Color" static="true">
+		<cls:parameter name="PixelRenderer" type="http://metalx.org/Video/Graphics/PixelRenderer"/>
+		<cls:parameter name="Image" type="http://metalx.org/Video/Graphics/Image"/>
+
+		<!--Get Pixel Renderer-->
+
+		<!--Find DrawImage Method-->
+
+		<!--Get Image-->
+		
+		<!--Copy Image-->
+
+		<!--Find BlendImage Method-->
+
+		<!--Create Color Object-->
+
+		<label id="loop"/>
+
+		<cpu:CopyImmediateToCX/>
+		<int>255</int>
+		
+		<label id="fadeIn"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>255</int>
+
+		<cpu:SubtractOperandFromRegister/>
+		<op:AX-CXRegister/>
+		
+		<cpu:CallRelative/>
+		<addressOf ref="drawFrame" type="Relative32"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="fadeIn" type="Relative8"/>
+
+		<cpu:CopyImmediateToCX/>
+		<int>255</int>
+		
+		<label id="fadeOut"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="drawFrame" type="Relative32"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="fadeOut" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="loop" type="Relative32"/>
+
+		<cls:return/>
+
+		<label id="drawFrame">
+			<!--Set Image To Black-->
+
+			<!--Update Color Object-->
+
+			<!--Call Blend Image Method-->
+
+			<!--Call Draw Image Method-->
+			
+			<cpu:ReturnToNearCaller/>
+		</label>
+	</cls:method>
+	
+	<cls:method name="FadeColors" type="http://metalx.org/Video/Graphics/Color" static="true">
 		<cls:parameter name="PixelRenderer" type="http://metalx.org/Video/Graphics/PixelRenderer"/>
 
 		<cpu:CopyOperandToRegister/>

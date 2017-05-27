@@ -92,7 +92,16 @@
 		<cpu:CopyImmediateToDI/>
 		<hex>00400000</hex>
 
-		<obj:Create length="1032" />
+		<obj:Create length="1364484" />
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Transparent" type="http://metalx.org/Video/Graphics/Image" static="true">
+		<cpu:CopyImmediateToDI/>
+		<hex>00600000</hex>
+
+		<obj:Create length="1228804" />
 
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
@@ -631,7 +640,48 @@
 		
 		<cpu:PushAXToStack/>
 
+		<!--Alpha-->
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>3</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BXRegister/>
+
+		<!--<cpu:CopySIAddressToALAndIncrementSI/>-->
+		
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>3</byte>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:DX-DXRegister/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByBXRegister/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:DivideByImmediateAddress/>
+		<addressOf ref="divisor" type="Absolute32"/>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>3</byte>
+
+		<cpu:CopyAXToAbsoluteMemory/>
+		<addressOf ref="blend" type="Absolute32"/>
+		
 		<!--Blue-->
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>0</byte>
+
 		<cpu:AndAXWithImmediate/>
 		<hex>000000ff</hex>
 
@@ -645,6 +695,14 @@
 
 		<cpu:ArithmeticDXAXOperandFunction/>
 		<ari:MultiplyByBXRegister/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:DivideByImmediateAddress/>
+		<addressOf ref="divisor" type="Absolute32"/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByImmediateAddress/>
+		<addressOf ref="blend" type="Absolute32"/>
 
 		<cpu:ArithmeticDXAXOperandFunction/>
 		<ari:DivideByImmediateAddress/>
@@ -673,6 +731,14 @@
 
 		<cpu:ArithmeticDXAXOperandFunction/>
 		<ari:MultiplyByBXRegister/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:DivideByImmediateAddress/>
+		<addressOf ref="divisor" type="Absolute32"/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByImmediateAddress/>
+		<addressOf ref="blend" type="Absolute32"/>
 
 		<cpu:ArithmeticDXAXOperandFunction/>
 		<ari:DivideByImmediateAddress/>
@@ -707,30 +773,9 @@
 		<ari:DivideByImmediateAddress/>
 		<addressOf ref="divisor" type="Absolute32"/>
 
-		<cpu:CopyRegisterToOperand8/>
-		<op:AL-IndexAddressPlusImmediate8/>
-		<index:SP/>
-		<byte>2</byte>
-
-		<!--Alpha-->
-		<cpu:CopyOperandToRegister8/>
-		<op:AL-IndexAddressPlusImmediate8/>
-		<index:SP/>
-		<byte>3</byte>
-
-		<cpu:AndAXWithImmediate/>
-		<hex>000000ff</hex>
-
-		<cpu:CopyRegisterToOperand/>
-		<op:AX-BXRegister/>
-
-		<cpu:CopySIAddressToALAndIncrementSI/>
-
-		<cpu:ExclusiveOrRegisterWithOperand/>
-		<op:DX-DXRegister/>
-
 		<cpu:ArithmeticDXAXOperandFunction/>
-		<ari:MultiplyByBXRegister/>
+		<ari:MultiplyByImmediateAddress/>
+		<addressOf ref="blend" type="Absolute32"/>
 
 		<cpu:ArithmeticDXAXOperandFunction/>
 		<ari:DivideByImmediateAddress/>
@@ -739,11 +784,16 @@
 		<cpu:CopyRegisterToOperand8/>
 		<op:AL-IndexAddressPlusImmediate8/>
 		<index:SP/>
-		<byte>3</byte>
+		<byte>2</byte>
+
+		<cpu:IncrementSI/>
 
 		<!--Blend Factor-->
 		<cpu:CopyImmediateToBX/>
 		<int>255</int>
+
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<addressOf ref="blend" type="Absolute32"/>
 			
 		<cpu:SubtractOperandFromRegister/>
 		<op:BX-AXRegister/>
@@ -841,7 +891,7 @@
 		<cpu:CopyALToDIAddressAndIncrementDI/>
 
 		<!--Alpha-->
-		<cpu:CopyOperandToRegister8/>
+		<!--<cpu:CopyOperandToRegister8/>
 		<op:AL-DIAddress/>
 			
 		<cpu:CopyOperandToRegister/>
@@ -859,7 +909,9 @@
 		<cpu:CallRelative/>
 		<addressOf ref="saturate" type="Relative32"/>
 
-		<cpu:CopyALToDIAddressAndIncrementDI/>
+		<cpu:CopyALToDIAddressAndIncrementDI/>-->
+
+		<cpu:IncrementDI/>
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToSPRegister/>
