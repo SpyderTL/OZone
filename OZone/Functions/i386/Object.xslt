@@ -134,8 +134,9 @@
 		<mm:CheckOut/>
 
 		<cpu:CopyOperandToRegister/>
-		<op:SI-IndexAddress/>
+		<op:SI-IndexAddressPlusImmediate8/>
 		<index:SP/>
+		<byte>4</byte>
 
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIAddressPlusImmediate8/>
