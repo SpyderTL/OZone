@@ -584,22 +584,26 @@
 		<cpu:PushSIToStack/>
 		
 		<!--Calculate Width-->
+		
+		<!--AX = this.Width-->
 		<cpu:CopyOperandToRegister/>
 		<op:AX-IndexAddressPlusImmediate8/>
 		<index:SP/>
 		<byte>32</byte>
 
+		<!--AX -= this.Width - point.X-->
 		<cpu:SubtractOperandFromRegister/>
 		<op:AX-IndexAddressPlusImmediate8/>
 		<index:SP/>
 		<byte>20</byte>
 
+		<!--if(AX < image.Width) AX = image.Width-->
 		<cpu:CompareRegisterToOperand/>
 		<op:AX-IndexAddressPlusImmediate8/>
 		<index:SP/>
 		<byte>8</byte>
 
-		<cpu:BranchToRelative8IfGreater/>
+		<cpu:BranchToRelative8IfGreaterOrEqual/>
 		<addressOf ref="skipWidth" type="Relative8"/>
 
 		<cpu:CopyOperandToRegister/>
@@ -612,22 +616,26 @@
 		<cpu:PushAXToStack/>
 
 		<!--Calculate Height-->
+
+		<!--AX = this.Height-->
 		<cpu:CopyOperandToRegister/>
 		<op:AX-IndexAddressPlusImmediate8/>
 		<index:SP/>
 		<byte>32</byte>
 
+		<!--AX -= this.Height - point.Y-->
 		<cpu:SubtractOperandFromRegister/>
 		<op:AX-IndexAddressPlusImmediate8/>
 		<index:SP/>
 		<byte>20</byte>
 
+		<!--if(AX < image.Height) AX = image.Height-->
 		<cpu:CompareRegisterToOperand/>
 		<op:AX-IndexAddressPlusImmediate8/>
 		<index:SP/>
 		<byte>8</byte>
 
-		<cpu:BranchToRelative8IfGreater/>
+		<cpu:BranchToRelative8IfGreaterOrEqual/>
 		<addressOf ref="skipHeight" type="Relative8"/>
 
 		<cpu:CopyOperandToRegister/>
@@ -643,7 +651,7 @@
 		<cpu:CopyOperandToRegister/>
 		<op:AX-IndexAddressPlusImmediate8/>
 		<index:SP/>
-		<byte>0</byte>
+		<byte>44</byte>
 
 		<cpu:ShiftRegisterByImmediate8Function/>
 		<shift:ShiftAXRegisterLeft/>
@@ -654,7 +662,7 @@
 		<cpu:CopyOperandToRegister/>
 		<op:AX-IndexAddressPlusImmediate8/>
 		<index:SP/>
-		<byte>44</byte>
+		<byte>20</byte>
 
 		<cpu:ShiftRegisterByImmediate8Function/>
 		<shift:ShiftAXRegisterLeft/>
@@ -664,17 +672,61 @@
 		
 		<!--Calculate Start-->
 		<cpu:CopyOperandToRegister/>
-		<op:DI-IndexAddressPlusImmediate8/>
-		<index:SP/>
-		<byte>40</byte>
-
-		<cpu:AddRegisterToOperand/>
-		<op:AX-DIRegister/>
-
-		<cpu:CopyOperandToRegister/>
 		<op:SI-IndexAddressPlusImmediate8/>
 		<index:SP/>
 		<byte>16</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>32</byte>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:DX-DXRegister/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>48</byte>
+
+		<cpu:AddOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>36</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>40</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIRegister/>
+		
+		<!--Get Counts-->
+		<cpu:CopyOperandToRegister/>
+		<op:CX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>12</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+		
+		
+		<!--TEST-->
+
+		<cpu:CopyImmediateToDX/>
+		<int>1</int>
+		
+		<cpu:CopyImmediateToCX/>
+		<int>1</int>
+		
+		
 		
 		<label id="forEachRow"/>
 
@@ -685,15 +737,16 @@
 		
 		<label id="forEachPixel"/>
 
-		<cpu:PushAXToStack/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>44</byte>
 		
 		<cpu:JumpToRelative/>
 		<addressOf ref="multiply" type="Relative32"/>
 
 		<label id="multiplyDone"/>
-		
-		<cpu:PullAXFromStack/>
-		
+				
 		<cpu:LoopToRelative8/>
 		<addressOf ref="forEachPixel" type="Relative8"/>
 
@@ -702,8 +755,14 @@
 		<cpu:PullCXFromStack/>
 		<cpu:PullDXFromStack/>
 
-		<!--<cpu:AddRegisterToOperand/>
-		<op:BX-DIRegister/>-->
+		<cpu:AddOperandToRegister/>
+		<op:DI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
 
 		<cpu:DecrementDX/>
 
@@ -713,6 +772,10 @@
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
 		<byte>12</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSPRegister/>
+		<byte>52</byte>
 
 		<cpu:PullDIFromStack/>
 
