@@ -530,11 +530,15 @@
 
 		<obj:GetData/>
 
-		<cpu:CopyRegisterToOperand/>
-		<op:SI-DIRegister/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
 
-		<cpu:CopyOperandToRegister/>
-		<op:BX-SIAddress/>
+		<cpu:PushAXToStack/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:PushSIToStack/>
 
 		<!--Get Point-->
 		<cpu:CopyOperandToRegister/>
@@ -543,26 +547,14 @@
 
 		<obj:GetData/>
 
-		<cpu:CopyOperandToRegister/>
-		<op:AX-SIAddressPlusImmediate8/>
-		<byte>4</byte>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
 
-		<cpu:ArithmeticDXAXOperandFunction/>
-		<ari:MultiplyByBXRegister/>
+		<cpu:PushAXToStack/>
 
-		<cpu:AddOperandToRegister/>
-		<op:AX-SIAddress/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
 
-		<cpu:ShiftRegisterByImmediate8Function/>
-		<shift:ShiftAXRegisterLeft/>
-		<byte>2</byte>
-
-		<cpu:AddImmediateToAX/>
-		<int>8</int>
-
-		<cpu:AddRegisterToOperand/>
-		<op:AX-DIRegister/>
-
+		<cpu:PushAXToStack/>
+		
 		<!--Get Color-->
 		<cpu:CopyOperandToRegister/>
 		<op:SI-BPAddressPlusImmediate8/>
@@ -572,6 +564,8 @@
 
 		<cpu:CopySIAddressToAXAndIncrementSI/>
 
+		<cpu:PushAXToStack/>
+
 		<!--Get Image-->
 		<cpu:CopyOperandToRegister/>
 		<op:SI-BPAddressPlusImmediate8/>
@@ -579,27 +573,115 @@
 
 		<obj:GetData/>
 
-		<cpu:CopyOperandToRegister/>
-		<op:CX-SIAddress/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
 
-		<cpu:CopyOperandToRegister/>
-		<op:DX-SIAddressPlusImmediate8/>
-		<byte>4</byte>
+		<cpu:PushAXToStack/>
 
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToSIRegister/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:PushSIToStack/>
+		
+		<!--Calculate Width-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>32</byte>
+
+		<cpu:SubtractOperandFromRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>20</byte>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
 		<byte>8</byte>
 
+		<cpu:BranchToRelative8IfGreater/>
+		<addressOf ref="skipWidth" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+
+		<label id="skipWidth"/>
+
+		<cpu:PushAXToStack/>
+
+		<!--Calculate Height-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>32</byte>
+
+		<cpu:SubtractOperandFromRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>20</byte>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+
+		<cpu:BranchToRelative8IfGreater/>
+		<addressOf ref="skipHeight" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+
+		<label id="skipHeight"/>
+
+		<cpu:PushAXToStack/>
+		
+		<!--Calculate Stride-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>0</byte>
+
 		<cpu:ShiftRegisterByImmediate8Function/>
-		<shift:ShiftBXRegisterLeft/>
+		<shift:ShiftAXRegisterLeft/>
 		<byte>2</byte>
 
+		<cpu:PushAXToStack/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>44</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:PushAXToStack/>
+		
+		<!--Calculate Start-->
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>40</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>16</byte>
+		
 		<label id="forEachRow"/>
 
 		<cpu:PushDXToStack/>
 		<cpu:PushCXToStack/>
-		<cpu:PushBXToStack/>
 		<cpu:PushDIToStack/>
+		<cpu:PushSIToStack/>
 		
 		<label id="forEachPixel"/>
 
@@ -615,13 +697,13 @@
 		<cpu:LoopToRelative8/>
 		<addressOf ref="forEachPixel" type="Relative8"/>
 
+		<cpu:PullSIFromStack/>
 		<cpu:PullDIFromStack/>
-		<cpu:PullBXFromStack/>
 		<cpu:PullCXFromStack/>
 		<cpu:PullDXFromStack/>
 
-		<cpu:AddRegisterToOperand/>
-		<op:BX-DIRegister/>
+		<!--<cpu:AddRegisterToOperand/>
+		<op:BX-DIRegister/>-->
 
 		<cpu:DecrementDX/>
 

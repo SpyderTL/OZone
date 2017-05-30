@@ -29,13 +29,13 @@
 	xmlns:op="http://metalx.org/Intel/80386/Operands">
 
 	<cls:method name="FadeImage" type="http://metalx.org/Video/Graphics/Color" static="true">
-		<cls:parameter name="PixelRenderer" type="http://metalx.org/Video/Graphics/PixelRenderer"/>
 		<cls:parameter name="Image" type="http://metalx.org/Video/Graphics/Image"/>
+		<cls:parameter name="PixelRenderer" type="http://metalx.org/Video/Graphics/PixelRenderer"/>
 
 		<!--Get Pixel Renderer-->
 		<cpu:CopyOperandToRegister/>
 		<op:SI-BPAddressPlusImmediate8/>
-		<byte>4</byte>
+		<byte>0</byte>
 
 		<cpu:PushSIToStack/>
 
@@ -54,18 +54,71 @@
 		<!--Get Image-->
 		<cpu:CopyOperandToRegister/>
 		<op:SI-BPAddressPlusImmediate8/>
-		<byte>0</byte>
+		<byte>4</byte>
 
 		<cpu:PushSIToStack/>
 
 		<!--Copy Image-->
-		<obj:Copy/>
+		<!--<obj:Copy/>
 
-		<cpu:PushDIToStack/>
+		<cpu:PushDIToStack/>-->
+		
+		<!--Create Screen Buffer-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
 
-		<!--Find SetColor Method-->
+		<obj:ExecuteMethod name="GetSize"/>
+
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
+		
+		<obj:GetData/>
+		
+		<cpu:PushSIToStack/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+		
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:DX-DXRegister/>
+		
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByBXRegister/>
+		
+		<cpu:AddImmediateToAX/>
+		<int>2</int>
+		
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+		
+		<mm:CheckOut/>
+		
+		<obj:Create type="http://metalx.org/Video/Graphics/Image"/>
+		
+		<cpu:PullSIFromStack/>
+		
+		<cpu:PushDIToStack/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:DI-DIAddressPlusImmediate8/>
+		<byte>4</byte>
+		
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+		
+		<!--Find SetColor Method-->
+		<!--<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>-->
+		
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
 
 		<obj:GetType/>
 
@@ -115,7 +168,7 @@
 		<byte>4</byte>
 		<int>0</int>
 
-		<obj:Create length="8" type="http://metalx.org/Video/Graphics/Point"/>
+		<obj:Create length="8"/>
 
 		<cpu:PushDIToStack/>
 		
@@ -214,7 +267,6 @@
 
 			<cpu:OrAXWithImmediate/>
 			<hex>00ffffff</hex>
-			<!--<hex>ffffffff</hex>-->
 
 			<cpu:CopyRegisterToOperand/>
 			<op:AX-SIAddress/>
