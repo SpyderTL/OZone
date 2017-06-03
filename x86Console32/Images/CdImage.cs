@@ -567,7 +567,7 @@ namespace x86Console32
 			public int Block;
 			public int Length;
 			public MemoryAddress Address;
-			public OZone.Programs.Program Program;
+			public Program Program;
 			public bool Catalog;
 		}
 	}

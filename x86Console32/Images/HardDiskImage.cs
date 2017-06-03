@@ -21,7 +21,7 @@ namespace x86Console32
 		private static readonly int[] _diskInfoBlocks = new int[] { 1, 2 };
 		private const int _bootLoaderCount = 8;
 
-		public void Add(Program program)
+		public void Add(Program program, bool catalog)
 		{
 			int length = (int)program.Segments.Sum(p => p.GetLength());
 			int blocks = (int)Math.Ceiling((decimal)length / (decimal)_blockLength);
@@ -32,14 +32,15 @@ namespace x86Console32
 					Block = _block,
 					Length = blocks,
 					Address = new MemoryAddress { Segment = _address.Segment, Offset = _address.Offset },
-					Program = program
+					Program = program,
+					Catalog = catalog
 				});
 
 			_block += blocks;
 			_address.Offset += (uint)blocks * (uint)_blockLength;
 		}
 
-		public void Add(OZone.Programs.Program program, MemoryAddress address)
+		public void Add(Program program, MemoryAddress address, bool catalog)
 		{
 			int length = (int)program.Segments.Sum(p => p.GetLength());
 			int blocks = length / _blockLength;
@@ -57,13 +58,14 @@ namespace x86Console32
 						Offset = address.Offset,
 						Segment = address.Segment
 					},
-					Program = program
+					Program = program,
+					Catalog = catalog
 				});
 
 			_block += blocks;
 		}
 
-		public void Add(OZone.Programs.Program program, MemoryAddress address, int block)
+		public void Add(Program program, MemoryAddress address, int block, bool catalog)
 		{
 			int length = (int)program.Segments.Sum(p => p.GetLength());
 			int blocks = length / _blockLength;
@@ -81,7 +83,8 @@ namespace x86Console32
 						Offset = address.Offset,
 						Segment = address.Segment
 					},
-					Program = program
+					Program = program,
+					Catalog = catalog
 				});
 		}
 
@@ -106,7 +109,7 @@ namespace x86Console32
 				_block += programsLength;
 
 				int catalog = _block;
-				int catalogLength = (int)Math.Ceiling(((decimal)(_programs.Count - (_bootLoaderCount - 1)) * 4.0m) / (decimal)_blockLength);
+				int catalogLength = (int)Math.Ceiling(((decimal)(_programs.Count(p => p.Catalog)) * 4.0m) / (decimal)_blockLength);
 
 				_block += catalogLength;
 
@@ -132,9 +135,9 @@ namespace x86Console32
 				// Write Catalog
 				memory.Position = catalog * _blockLength;
 
-				writer.Write((uint)(_programs.Count - _bootLoaderCount));
+				writer.Write((uint)(_programs.Count(p => p.Catalog)));
 
-				foreach (var program in _programs.Skip(_bootLoaderCount).OrderBy(p => Path.GetFileName(p.Program.Name)))
+				foreach (var program in _programs.Where(p => p.Catalog).OrderBy(p => Path.GetFileName(p.Program.Name)))
 					writer.Write((uint)program.Address.Offset);
 
 				// Write Object List
@@ -208,6 +211,7 @@ namespace x86Console32
 			public int Length;
 			public MemoryAddress Address;
 			public Program Program;
+			public bool Catalog;
 		}
 	}
 }

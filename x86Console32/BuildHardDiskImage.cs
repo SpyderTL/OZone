@@ -30,14 +30,14 @@ namespace x86Console32
 
 					program.Name = file.Path;
 
-					if(file.Address == null)
-						image.Add(program);
-					else if(file.Block == null)
-						image.Add(program, file.Address);
+					if (file.Address == null)
+						image.Add(program, file.Type == ProjectFileType.Class);
+					else if (file.Block == null)
+						image.Add(program, file.Address, file.Type == ProjectFileType.Class);
 					else
-						image.Add(program, file.Address, file.Block.Value);
+						image.Add(program, file.Address, file.Block.Value, file.Type == ProjectFileType.Class);
 				}
-				catch(Exception e)
+				catch (Exception e)
 				{
 					throw new Exception("Error Reading File: " + filename + "\r\n" + e.Message, e);
 				}
