@@ -1079,45 +1079,6 @@
 
 		<cpu:PushDIToStack/>
 
-		<!--Get Size-->
-		<cpu:CopyRegisterToOperand/>
-		<op:DI-SIRegister/>
-
-		<obj:GetData/>
-
-		<cpu:CopyRegisterToOperand/>
-		<op:SI-DIRegister/>
-
-		<cpu:CopyOperandToRegister/>
-		<op:BX-SIAddress/>
-
-		<!--Get Point-->
-		<cpu:CopyOperandToRegister/>
-		<op:SI-BPAddressPlusImmediate8/>
-		<byte>0</byte>
-
-		<obj:GetData/>
-
-		<cpu:CopyOperandToRegister/>
-		<op:AX-SIAddressPlusImmediate8/>
-		<byte>4</byte>
-
-		<cpu:ArithmeticDXAXOperandFunction/>
-		<ari:MultiplyByBXRegister/>
-
-		<cpu:AddOperandToRegister/>
-		<op:AX-SIAddress/>
-
-		<cpu:ShiftRegisterByImmediate8Function/>
-		<shift:ShiftAXRegisterLeft/>
-		<byte>2</byte>
-
-		<cpu:AddImmediateToAX/>
-		<int>8</int>
-
-		<cpu:AddRegisterToOperand/>
-		<op:AX-DIRegister/>
-
 		<!--Get Image-->
 		<cpu:CopyOperandToRegister/>
 		<op:SI-BPAddressPlusImmediate8/>
@@ -1125,34 +1086,65 @@
 
 		<obj:GetData/>
 
-		<cpu:CopyOperandToRegister/>
-		<op:CX-SIAddress/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:PushAXToStack/>
+		
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:PushSIToStack/>
+		
+		<!--Get Size-->
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:PushAXToStack/>
+		
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
 
 		<cpu:CopyOperandToRegister/>
-		<op:DX-SIAddressPlusImmediate8/>
-		<byte>4</byte>
-
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToSIRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
 		<byte>8</byte>
 
-		<cpu:ShiftRegisterByImmediate8Function/>
-		<shift:ShiftBXRegisterLeft/>
-		<byte>2</byte>
+		<cpu:PushImmediateToStack/>
+		<int>0</int>
 
+
+		
+		<cpu:CopyOperandToRegister/>
+		<op:CX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:DX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+		
+		
+		
 		<label id="forEachRow"/>
-
+		
 		<cpu:PushCXToStack/>
-		<cpu:PushDIToStack/>
+		<cpu:PushDXToStack/>
 
 		<cpu:Repeat/>
 		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
 
-		<cpu:PullDIFromStack/>
+		<cpu:PullDXFromStack/>
 		<cpu:PullCXFromStack/>
-
-		<cpu:AddRegisterToOperand/>
-		<op:BX-DIRegister/>
 
 		<cpu:DecrementDX/>
 
@@ -1162,6 +1154,10 @@
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
 		<byte>4</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSPRegister/>
+		<byte>24</byte>
 
 		<cpu:PullDIFromStack/>
 
