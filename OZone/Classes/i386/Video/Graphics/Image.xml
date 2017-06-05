@@ -1121,32 +1121,110 @@
 		<cpu:PushImmediateToStack/>
 		<int>0</int>
 
-
-		
 		<cpu:CopyOperandToRegister/>
 		<op:CX-IndexAddressPlusImmediate8/>
 		<index:SP/>
 		<byte>8</byte>
 		
 		<cpu:CopyOperandToRegister/>
-		<op:DX-IndexAddressPlusImmediate8/>
+		<op:BX-IndexAddressPlusImmediate8/>
 		<index:SP/>
 		<byte>4</byte>
 		
-		
-		
 		<label id="forEachRow"/>
 		
+		<cpu:PushBXToStack/>
 		<cpu:PushCXToStack/>
-		<cpu:PushDXToStack/>
 
-		<cpu:Repeat/>
-		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+		<label id="forEachPixel"/>
+		
+		<!--Calculate Source X-->
+		
+		<!--AX = this.Width-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>16</byte>
+		
+		<!--AX -= CX-->
+		<cpu:SubtractRegisterFromOperand/>
+		<op:CX-AXRegister/>
+		
+		<!--AX *= image.Width-->
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:DX-DXRegister/>
+		
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>28</byte>
+		
+		<!--AX /= this.Width-->
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:DivideByIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>16</byte>
 
-		<cpu:PullDXFromStack/>
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BXRegister/>
+		
+		<!--Calculate Source Y-->
+		
+		<!--AX = this.Height-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>12</byte>
+		
+		<!--AX -= BX-->
+		<cpu:SubtractOperandFromRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+		
+		<!--AX *= image.Height-->
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:DX-DXRegister/>
+		
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>24</byte>
+		
+		<!--AX /= this.Height-->
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:DivideByIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>12</byte>
+		
+		<!--Calculate Source Address-->
+		<!--AX *= image.Width-->
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:DX-DXRegister/>
+		
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>28</byte>
+		
+		<!--AX += BX-->
+		<cpu:AddRegisterToOperand/>
+		<op:BX-AXRegister/>
+		
+		<!--Copy Pixel-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddress/>
+		<index:AXTimesFourPlusSI/>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachPixel" type="Relative8"/>
+
 		<cpu:PullCXFromStack/>
+		<cpu:PullBXFromStack/>
 
-		<cpu:DecrementDX/>
+		<cpu:DecrementBX/>
 
 		<cpu:BranchToRelative8IfNotZero/>
 		<addressOf ref="forEachRow" type="Relative8"/>
