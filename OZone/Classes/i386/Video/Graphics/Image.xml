@@ -437,11 +437,15 @@
 
 		<obj:GetData/>
 
-		<cpu:CopyRegisterToOperand/>
-		<op:SI-DIRegister/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
 
-		<cpu:CopyOperandToRegister/>
-		<op:BX-SIAddress/>
+		<cpu:PushAXToStack/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:PushSIToStack/>
 
 		<!--Get Point-->
 		<cpu:CopyOperandToRegister/>
@@ -450,25 +454,13 @@
 
 		<obj:GetData/>
 
-		<cpu:CopyOperandToRegister/>
-		<op:AX-SIAddressPlusImmediate8/>
-		<byte>4</byte>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
 
-		<cpu:ArithmeticDXAXOperandFunction/>
-		<ari:MultiplyByBXRegister/>
+		<cpu:PushAXToStack/>
 
-		<cpu:AddOperandToRegister/>
-		<op:AX-SIAddress/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
 
-		<cpu:ShiftRegisterByImmediate8Function/>
-		<shift:ShiftAXRegisterLeft/>
-		<byte>2</byte>
-
-		<cpu:AddImmediateToAX/>
-		<int>8</int>
-
-		<cpu:AddRegisterToOperand/>
-		<op:AX-DIRegister/>
+		<cpu:PushAXToStack/>
 
 		<!--Get Image-->
 		<cpu:CopyOperandToRegister/>
@@ -477,20 +469,155 @@
 
 		<obj:GetData/>
 
-		<cpu:CopyOperandToRegister/>
-		<op:CX-SIAddress/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
 
-		<cpu:CopyOperandToRegister/>
-		<op:DX-SIAddressPlusImmediate8/>
-		<byte>4</byte>
+		<cpu:PushAXToStack/>
 
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToSIRegister/>
-		<byte>8</byte>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:PushSIToStack/>
+
+		<!--Calculate Stride-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>28</byte>
 
 		<cpu:ShiftRegisterByImmediate8Function/>
-		<shift:ShiftBXRegisterLeft/>
+		<shift:ShiftAXRegisterLeft/>
 		<byte>2</byte>
+
+		<cpu:PushAXToStack/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>12</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:PushAXToStack/>
+
+		<!--Calculate Width-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>36</byte>
+
+		<cpu:SubtractOperandFromRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>24</byte>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>16</byte>
+
+		<cpu:BranchToRelative8IfLessOrEqual/>
+		<addressOf ref="skipWidth" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>16</byte>
+
+		<label id="skipWidth"/>
+
+		<cpu:PushAXToStack/>
+		
+		<!--Calculate Height-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>36</byte>
+
+		<cpu:SubtractOperandFromRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>24</byte>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>16</byte>
+
+		<cpu:BranchToRelative8IfLessOrEqual/>
+		<addressOf ref="skipHeight" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>16</byte>
+
+		<label id="skipHeight"/>
+
+		<cpu:PushAXToStack/>
+
+		<!--Calculate Source-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>28</byte>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:DX-DXRegister/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>44</byte>
+
+		<cpu:AddImmediateToAX/>
+		<int>2</int>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddressPlusImmediate8/>
+		<byte>36</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<!--Calculate Destination-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>28</byte>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:DX-DXRegister/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>44</byte>
+
+		<cpu:AddOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>32</byte>
+
+		<cpu:AddImmediateToAX/>
+		<int>2</int>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddressPlusImmediate8/>
+		<byte>36</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-DIRegister/>
 
 		<label id="forEachRow"/>
 
