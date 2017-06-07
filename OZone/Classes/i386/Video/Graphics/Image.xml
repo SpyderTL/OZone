@@ -560,31 +560,9 @@
 
 		<!--Calculate Source-->
 		<cpu:CopyOperandToRegister/>
-		<op:AX-IndexAddressPlusImmediate8/>
+		<op:SI-IndexAddressPlusImmediate8/>
 		<index:SP/>
-		<byte>28</byte>
-
-		<cpu:ExclusiveOrRegisterWithOperand/>
-		<op:DX-DXRegister/>
-
-		<cpu:ArithmeticDXAXOperandFunction/>
-		<ari:MultiplyByIndexAddressPlusImmediate8/>
-		<index:SP/>
-		<byte>44</byte>
-
-		<cpu:AddImmediateToAX/>
-		<int>2</int>
-
-		<cpu:ShiftRegisterByImmediate8Function/>
-		<shift:ShiftAXRegisterLeft/>
-		<byte>2</byte>
-
-		<cpu:CopyOperandToRegister/>
-		<op:DI-IndexAddressPlusImmediate8/>
-		<byte>36</byte>
-
-		<cpu:AddRegisterToOperand/>
-		<op:AX-DIRegister/>
+		<byte>16</byte>
 
 		<!--Calculate Destination-->
 		<cpu:CopyOperandToRegister/>
@@ -605,35 +583,52 @@
 		<index:SP/>
 		<byte>32</byte>
 
-		<cpu:AddImmediateToAX/>
-		<int>2</int>
-
 		<cpu:ShiftRegisterByImmediate8Function/>
 		<shift:ShiftAXRegisterLeft/>
 		<byte>2</byte>
 
 		<cpu:CopyOperandToRegister/>
 		<op:DI-IndexAddressPlusImmediate8/>
+		<index:SP/>
 		<byte>36</byte>
 
 		<cpu:AddRegisterToOperand/>
 		<op:AX-DIRegister/>
 
+		<cpu:CopyOperandToRegister/>
+		<op:CX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>0</byte>
+
 		<label id="forEachRow"/>
 
 		<cpu:PushCXToStack/>
+		<cpu:PushSIToStack/>
 		<cpu:PushDIToStack/>
 
 		<cpu:Repeat/>
 		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
 
 		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
 		<cpu:PullCXFromStack/>
 
-		<cpu:AddRegisterToOperand/>
-		<op:BX-DIRegister/>
+		<cpu:AddOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
 
-		<cpu:DecrementDX/>
+		<cpu:AddOperandToRegister/>
+		<op:DI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>12</byte>
+
+		<cpu:DecrementBX/>
 
 		<cpu:BranchToRelative8IfNotZero/>
 		<addressOf ref="forEachRow" type="Relative8"/>
@@ -642,9 +637,13 @@
 		<math:AddToBPRegister/>
 		<byte>8</byte>
 
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSPRegister/>
+		<byte>48</byte>
+
 		<cpu:PullDIFromStack/>
 
-		<cpu:ReturnToNearCaller/>
+		<cls:return/>
 	</cls:method>
 
 	<cls:method name="BlendImage" type="http://metalx.org/Video/Graphics/Image">
