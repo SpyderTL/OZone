@@ -431,6 +431,417 @@
 
 		<cpu:PushDIToStack/>
 
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromSPRegister/>
+		<hex>80</hex>
+
+		<!--Get Size-->
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>20</hex>
+		
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>28</hex>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>24</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>2c</hex>
+
+		<!--Get Point-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>30</hex>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>34</hex>
+
+		<!--Get Image-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>10</hex>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>18</hex>
+
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>14</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>1c</hex>
+		
+		<!--TODO: Check For Off Screen-->
+		
+		<!--Calculate Source Start X-->
+		<cpu:CopyOperandToRegister/>
+		<op:BX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>30</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-BXRegister/>
+		
+		<cpu:BranchToRelative8IfNotLess/>
+		<addressOf ref="sourceStartXNotLess" type="Relative8"/>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:BX-AXRegister/>
+		
+		<label id="sourceStartXNotLess"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>50</hex>
+
+		<!--Calculate Source Start Y-->
+		<cpu:CopyOperandToRegister/>
+		<op:BX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>34</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-BXRegister/>
+		
+		<cpu:BranchToRelative8IfNotLess/>
+		<addressOf ref="sourceStartYNotLess" type="Relative8"/>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:BX-AXRegister/>
+		
+		<label id="sourceStartYNotLess"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>54</hex>
+
+		<!--Calculate Source Max Width-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>10</hex>
+
+		<cpu:SubtractOperandFromRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>50</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>58</hex>
+
+		<!--Calculate Source Max Height-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>14</hex>
+
+		<cpu:SubtractOperandFromRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>54</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>5c</hex>
+
+		<!--Calculate Destination Start X-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>30</hex>
+
+		<cpu:CopyImmediateToBX/>
+		<int>0</int>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-BXRegister/>
+		
+		<cpu:BranchToRelative8IfNotLess/>
+		<addressOf ref="destinationStartXNotLess" type="Relative8"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-AXRegister/>
+		
+		<label id="destinationStartXNotLess"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>60</hex>
+
+		<!--Calculate Destination Start Y-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>34</hex>
+
+		<cpu:CopyImmediateToBX/>
+		<int>0</int>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-BXRegister/>
+		
+		<cpu:BranchToRelative8IfNotLess/>
+		<addressOf ref="destinationStartYNotLess" type="Relative8"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-AXRegister/>
+		
+		<label id="destinationStartYNotLess"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>64</hex>
+
+		<!--Calculate Destination Max Width-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>20</hex>
+
+		<cpu:SubtractOperandFromRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>60</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>68</hex>
+
+		<!--Calculate Destination Max Height-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>24</hex>
+
+		<cpu:SubtractOperandFromRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>64</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>6c</hex>
+
+		<!--Calculate Width-->
+		<cpu:CopyOperandToRegister/>
+		<op:CX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>50</hex>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:CX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>60</hex>
+
+		<cpu:BranchToRelative8IfLessOrEqual/>
+		<addressOf ref="skipWidth" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>60</hex>
+
+		<label id="skipWidth"/>
+
+		<!--Calculate Height-->
+		<cpu:CopyOperandToRegister/>
+		<op:BX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>54</hex>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:BX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>64</hex>
+
+		<cpu:BranchToRelative8IfLessOrEqual/>
+		<addressOf ref="skipHeight" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>64</hex>
+
+		<label id="skipHeight"/>
+
+		<!--Calculate Source Start-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>54</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:DX-DXRegister/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>10</hex>
+		
+		<cpu:AddOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>50</hex>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>1c</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<!--Calculate Destination Start-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>64</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:DX-DXRegister/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>20</hex>
+		
+		<cpu:AddOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>60</hex>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>2c</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<label id="forEachRow"/>
+
+		<cpu:PushCXToStack/>
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+
+		<cpu:Repeat/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+		<cpu:PullCXFromStack/>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>18</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:DI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>28</hex>
+
+		<cpu:DecrementBX/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="forEachRow" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>8</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSPRegister/>
+		<hex>80</hex>
+
+		<cpu:PullDIFromStack/>
+
+		<cls:return/>
+	</cls:method>
+
+	<cls:method name="DrawImage2" type="http://metalx.org/Video/Graphics/Image">
+		<cls:parameter name="Image" type="http://metalx.org/Video/Graphics/Image"/>
+		<cls:parameter name="Point" type="http://metalx.org/Video/Graphics/Point"/>
+
+		<cpu:PushDIToStack/>
+
 		<!--Get Size-->
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
