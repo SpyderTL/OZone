@@ -34,7 +34,7 @@
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:SubtractFromSPRegister/>
-		<hex>80</hex>
+		<hex>40</hex>
 
 		<!--Get Pixel Renderer-->
 		<cpu:CopyOperandToRegister/>
@@ -180,15 +180,15 @@
 		<label id="loop"/>
 
 		<cpu:CopyImmediateToCX/>
-		<int>8</int>
+		<int>1024</int>
 
 		<label id="zoomIn"/>
 
 		<cpu:CopyImmediateToAX/>
-		<int>16</int>
+		<int>-512</int>
 
-		<cpu:SubtractOperandFromRegister/>
-		<op:AX-CXRegister/>
+		<cpu:AddRegisterToOperand/>
+		<op:CX-AXRegister/>
 
 		<cpu:CallRelative/>
 		<addressOf ref="drawFrame" type="Relative32"/>
@@ -197,17 +197,15 @@
 		<addressOf ref="zoomIn" type="Relative8"/>
 
 		<cpu:CopyImmediateToCX/>
-		<int>8</int>
+		<int>1024</int>
 
 		<label id="zoomOut"/>
 
 		<cpu:CopyImmediateToAX/>
-		<int>8</int>
+		<int>512</int>
 		
-		<cpu:AddRegisterToOperand/>
+		<cpu:SubtractRegisterFromOperand/>
 		<op:CX-AXRegister/>
-
-		<cpu:IncrementAX/>
 
 		<cpu:CallRelative/>
 		<addressOf ref="drawFrame" type="Relative32"/>
@@ -259,8 +257,12 @@
 
 			<obj:GetData/>
 
+			<!--<cpu:CopyRegisterToOperand/>
+			<op:AX-SIAddress/>-->
+
 			<cpu:CopyRegisterToOperand/>
-			<op:AX-SIAddress/>
+			<op:AX-SIAddressPlusImmediate8/>
+			<byte>4</byte>
 
 			<!--Call Draw Image Method (Image)-->
 			<cpu:CopyOperandToRegister/>
