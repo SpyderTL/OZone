@@ -880,40 +880,90 @@
 	</label>
 
 	<label id="drawTriangle">
-		<!--Sort Verteces-->
-	
-		<!--Get Direction-->
-	
-		<!--Calculate Long Delta-->
-	
-		<!--Get Upper Length-->
+		<!--if(VertexShader != null)-->
+			<!--TransformVertices-->
 		
-		<!--Calculate Short Delta-->
-	
-		<label id="forEachUpperRow"/>
+		<!--SortVertices-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>0c</hex>
 		
-		<cpu:JumpToRelative/>
-		<addressOf ref="drawLine" type="Relative32"/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>10</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-IndexAddressPlusImmediate8/>
+		<index:SIPlusAX/>
+		<byte>1</byte>
 		
-		<!--Add Deltas-->
-	
-		<cpu:LoopToRelative8/>
-		<addressOf ref="forEachUpperRow" type="Relative8"/>
-	
-		<!--Get Lower Length-->
-	
-		<!--Calculate Short Delta-->
-	
-		<label id="forEachLowerRow"/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>14</hex>
+
+		<cpu:CopyRegisterToOperand/>
 		
-		<cpu:JumpToRelative/>
-		<addressOf ref="drawLine" type="Relative32"/>
+		<!--Height = index3.y - index1.y-->
 		
-		<!--Add Deltas-->
-	
-		<cpu:LoopToRelative8/>
-		<addressOf ref="forEachLowerRow" type="Relative8"/>
+		<!--if(Height != 0)-->
+			<!--Top = index2.y - index1.y-->
+			<!--Bottom = index3.y - index2.y-->
+			<!--RightHanded = CalculateArea() > 0-->
 		
+			<!--if(RightHanded)-->
+				<!--Left = index1.x-->
+				<!--DeltaLeft = (index3.x - index1.x) / Height-->
+		
+				<!--if(Top != 0)-->
+					<!--Right = index1.x-->
+					<!--DeltaRight = (index2.x - index1.x) / Top-->
+		
+					<!--for row = index1.y to index2.y - 1-->
+						<!--FillTriangleRow(row, Left, Right)-->
+						<!--Left += DeltaLeft;-->
+						<!--Right += DeltaRight;-->				
+
+				<!--if(Top == 0)-->
+					<!--Right = index2.x-->
+
+				<!--FillTriangleRow(index2.y, Left, Right)-->
+
+				<!--if(Bottom != 0)-->
+					<!--DeltaRight = (index3.x - index2.x) / Bottom-->
+					<!--for row = index2.y + 1 to index3.y-->
+						<!--Left += DeltaLeft;-->
+						<!--Right += DeltaRight;-->
+						<!--FillTriangleRow(row, Left, Right)-->
+
+			<!--else-->
+				<!--Right = index1.x-->
+		
+				<!--DeltaRight = (index3.x - index1.x) / Height-->
+		
+				<!--if(Top != 0)-->
+					<!--Left = index1.x-->
+					<!--DeltaLeft = (index2.x - index1.x) / Top-->
+		
+					<!--for row = index1.y to index2.y - 1-->
+						<!--FillTriangleRow(row, Left, Right)-->
+						<!--Left += DeltaLeft;-->
+						<!--Right += DeltaRight;-->				
+
+				<!--if(Top == 0)-->
+					<!--Left = index2.x-->
+
+				<!--FillTriangleRow(index2.y, Left, Right)-->
+
+				<!--if(Bottom != 0)-->
+					<!--DeltaLeft = (index3.x - index2.x) / Bottom-->
+		
+					<!--for row = index2.y + 1 to index3.y-->
+						<!--Left += DeltaLeft;-->
+						<!--Right += DeltaRight;-->
+						<!--FillTriangleRow(row, Left, Right)-->
 	</label>
 	
 	<label id="drawLine">
