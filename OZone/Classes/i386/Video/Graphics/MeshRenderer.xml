@@ -236,14 +236,14 @@
 		<addressOf ref="drawTriangle" type="Relative32"/>
 
 
-		<cpu:CopyOperandToRegister/>
+		<!--<cpu:CopyOperandToRegister/>
 		<op:AX-BPAddressPlusImmediate8/>
 		<hex>18</hex>
 
-		<int:CreateObject/>
+		<int:CreateObject/>-->
 		
 
-		<!--<fpu:ResetFpu/>
+		<fpu:ResetFpu/>
 
 		<fpu:PushFloatAtIndexAddressToST0/>
 		<index:BPPlusImmediate32/>
@@ -251,7 +251,7 @@
 
 		<cpu:WaitForFloatingPointUnit/>
 		
-		<float:CreateObject/>-->
+		<float:CreateObject/>
 
 		<cpu:PullAXFromStack/>
 		
@@ -279,14 +279,16 @@
 			<hex>ffff0000</hex>
 			<float>0.5</float>
 			<float>0.0</float>
+			<hex>00000000</hex>
 			
 			<float>200.0</float>
-			<float>125.0</float>
+			<float>100.0</float>
 			<float>0.0</float>
 			<float>0.0</float>
 			<hex>ff00ff00</hex>
 			<float>1.0</float>
 			<float>1.0</float>
+			<hex>00000000</hex>
 			
 			<float>50.0</float>
 			<float>125.0</float>
@@ -295,6 +297,7 @@
 			<hex>ff0000ff</hex>
 			<float>0.0</float>
 			<float>1.0</float>
+			<hex>00000000</hex>
 		</label>
 	</cls:method>
 
@@ -1012,7 +1015,7 @@
 
 		<cpu:WaitForFloatingPointUnit/>
 
-		<cpu:BranchToRelative8IfNotLess/>
+		<cpu:BranchToRelative8IfNotGreater/>
 		<addressOf ref="skipSwap1" type="Relative8"/>
 
 		<cpu:CopyOperandToRegister/>
@@ -1060,7 +1063,7 @@
 
 		<cpu:WaitForFloatingPointUnit/>
 
-		<cpu:BranchToRelative8IfNotLess/>
+		<cpu:BranchToRelative8IfNotGreater/>
 		<addressOf ref="skipSwap2" type="Relative8"/>
 
 		<cpu:CopyOperandToRegister/>
@@ -1108,7 +1111,7 @@
 
 		<cpu:WaitForFloatingPointUnit/>
 
-		<cpu:BranchToRelative8IfNotLess/>
+		<cpu:BranchToRelative8IfNotGreater/>
 		<addressOf ref="skipSwap3" type="Relative8"/>
 
 		<cpu:CopyOperandToRegister/>
@@ -1129,6 +1132,37 @@
 
 		<label id="skipSwap3"/>
 
+		<!--Width = index3.x - index1.x-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>0c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>18</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>0</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>0c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>10</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>0</byte>
+
+		<fpu:SubtractST0FromST1AndIncrementST/>
+
+		<fpu:PullFloatAtIndexAddressFromST0/>
+		<index:BPPlusImmediate32/>
+		<hex>00000020</hex>
+
+		<cpu:WaitForFloatingPointUnit/>
+		
 		<!--Height = index3.y - index1.y-->
 		<cpu:CopyOperandToRegister/>
 		<op:SI-BPAddressPlusImmediate8/>
@@ -1156,11 +1190,44 @@
 
 		<fpu:PullFloatAtIndexAddressFromST0/>
 		<index:BPPlusImmediate32/>
-		<hex>00000020</hex>
+		<hex>00000024</hex>
+
+		<cpu:WaitForFloatingPointUnit/>
 		
 		<!--if(Height != 0)-->
 		
-			<!--Top = index2.y - index1.y-->
+			<!--TopWidth = index2.x - index1.x-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>0c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>14</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>0</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>0c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>10</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>0</byte>
+
+		<fpu:SubtractST0FromST1AndIncrementST/>
+
+		<fpu:PullFloatAtIndexAddressFromST0/>
+		<index:BPPlusImmediate32/>
+		<hex>00000030</hex>
+		
+		<cpu:WaitForFloatingPointUnit/>
+		
+			<!--TopHeight = index2.y - index1.y-->
 		<cpu:CopyOperandToRegister/>
 		<op:SI-BPAddressPlusImmediate8/>
 		<hex>0c</hex>
@@ -1187,9 +1254,42 @@
 
 		<fpu:PullFloatAtIndexAddressFromST0/>
 		<index:BPPlusImmediate32/>
-		<hex>00000024</hex>
+		<hex>00000034</hex>
 		
-			<!--Bottom = index3.y - index2.y-->
+		<cpu:WaitForFloatingPointUnit/>
+		
+			<!--BottomWidth = index3.x - index2.x-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>0c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>18</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>0</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>0c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>14</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>0</byte>
+
+		<fpu:SubtractST0FromST1AndIncrementST/>
+
+		<fpu:PullFloatAtIndexAddressFromST0/>
+		<index:BPPlusImmediate32/>
+		<hex>00000038</hex>
+
+		<cpu:WaitForFloatingPointUnit/>
+		
+			<!--BottomHeight = index3.y - index2.y-->
 		<cpu:CopyOperandToRegister/>
 		<op:SI-BPAddressPlusImmediate8/>
 		<hex>0c</hex>
@@ -1216,11 +1316,44 @@
 
 		<fpu:PullFloatAtIndexAddressFromST0/>
 		<index:BPPlusImmediate32/>
-		<hex>00000028</hex>
+		<hex>0000003c</hex>
 
-		<!--RightHanded = CalculateArea() > 0-->
+		<cpu:WaitForFloatingPointUnit/>
+		
+		<!--RightHanded = (TopWidth * Height) > (Width * TopHeight)-->
+		<fpu:PushFloatAtIndexAddressToST0/>
+		<index:BPPlusImmediate32/>
+		<hex>00000030</hex>
+
+		<fpu:PushFloatAtIndexAddressToST0/>
+		<index:BPPlusImmediate32/>
+		<hex>00000024</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+		
+		<fpu:PushFloatAtIndexAddressToST0/>
+		<index:BPPlusImmediate32/>
+		<hex>00000034</hex>
+
+		<fpu:PushFloatAtIndexAddressToST0/>
+		<index:BPPlusImmediate32/>
+		<hex>00000020</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:CompareST1ToST0AndSetCpuFlags/>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:BranchToRelative8IfGreater/>
+		<addressOf ref="rightHanded" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="leftHanded" type="Relative32"/>
 		
 			<!--if(RightHanded)-->
+		<label id="rightHanded"/>
+		
 				<!--Left = index1.x-->
 				<!--DeltaLeft = (index3.x - index1.x) / Height-->
 		
@@ -1246,6 +1379,7 @@
 						<!--FillTriangleRow(row, Left, Right)-->
 
 			<!--else-->
+		<label id="leftHanded"/>
 				<!--Right = index1.x-->
 		
 				<!--DeltaRight = (index3.x - index1.x) / Height-->
