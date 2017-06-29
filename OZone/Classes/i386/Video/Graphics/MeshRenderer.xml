@@ -36,15 +36,19 @@
 	<cls:field name="IndexBuffer" type="http://metalx.org/Reference" offset="16"/>
 	<cls:field name="VertexShader" type="http://metalx.org/Reference" offset="20"/>
 	<cls:field name="PixelShader" type="http://metalx.org/Reference" offset="24"/>
-	<cls:field name="DrawImage" type="http://metalx.org/Hexadecimal" offset="28"/>
-	<cls:field name="SetColor" type="http://metalx.org/Hexadecimal" offset="32"/>
-	<cls:field name="Point" type="http://metalx.org/Reference" offset="36"/>
-	<cls:field name="Viewport" type="http://metalx.org/Video/Graphics/Viewport" offset="40"/>
+	<cls:field name="RenderTarget_DrawImage" type="http://metalx.org/Hexadecimal" offset="28"/>
+	<cls:field name="PixelBuffer_SetColor" type="http://metalx.org/Hexadecimal" offset="32"/>
+	<cls:field name="RenderTarget_DrawImage_Point" type="http://metalx.org/Reference" offset="36"/>
+	<cls:field name="GeometryShader" type="http://metalx.org/Reference" offset="40"/>
+	<cls:field name="VertexShader_VertexBuffer" type="http://metalx.org/Reference" offset="44"/>
+	<cls:field name="Offset" type="http://metalx.org/Reference" offset="48"/>
+	<cls:field name="Count" type="http://metalx.org/Reference" offset="52"/>
+	<cls:field name="Viewport" type="http://metalx.org/Video/Graphics/Viewport" offset="56"/>
 
 	<cls:method name="Create" type="http://metalx.org/Video/Graphics/MeshRenderer" static="true">
 		<cls:parameter name="PixelRenderer" type="http://metalx.org/Video/Graphics/PixelRenderer"/>
 
-		<mm:CheckOut length="64"/>
+		<mm:CheckOut length="80"/>
 		
 		<cpu:PushDIToStack/>
 
@@ -56,7 +60,7 @@
 		<cpu:CopyRegisterToOperand/>
 		<op:SI-DIAddress/>
 
-		<obj:Create length="64"/>
+		<obj:Create length="80"/>
 
 		<cpu:PushDIToStack/>
 		
@@ -161,7 +165,7 @@
 		<cpu:CopyRegisterToOperand/>
 		<op:SI-DIAddressPlusImmediate8/>
 		<byte>32</byte>
-		
+
 		<!--Create Point Object-->
 		<mm:CheckOut length="8"/>
 
@@ -175,15 +179,59 @@
 		<int>0</int>
 
 		<obj:Create length="8" type="http://metalx.org/Video/Graphics/Point"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>36</byte>
+
+		<!--Create VertexBuffer Object-->
+		<mm:CheckOut length="96"/>
+
+		<obj:Create length="96" type="http://metalx.org/Video/Graphics/VertexBuffer"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>44</byte>
+
+		<!--Create Index Object-->
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
+		
+		<int:CreateObject/>
 		
 		<cpu:CopyOperandToRegister/>
 		<op:SI-IndexAddressPlusImmediate8/>
 		<index:SP/>
 		<byte>4</byte>
-		
+
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIAddressPlusImmediate8/>
-		<byte>36</byte>
+		<byte>48</byte>
+
+		<!--Create Count Object-->
+		<cpu:CopyImmediateToAX/>
+		<int>3</int>
+
+		<int:CreateObject/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>52</byte>
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
@@ -204,9 +252,9 @@
 	<cls:method name="Test" type="http://metalx.org/Video/Graphics/MeshRenderer">		
 		<cpu:PushDIToStack/>
 
-		<cpu:MathImmediate8ToOperandFunction/>
+		<cpu:MathImmediateToOperandFunction/>
 		<math:SubtractFromBPRegister/>
-		<hex>80</hex>
+		<hex>00000100</hex>
 		
 		<!--Get PixelBuffer-->
 		<cpu:CopyRegisterToOperand/>
@@ -222,10 +270,10 @@
 		
 		<cpu:CopyOperandToRegister/>
 		<op:AX-SIAddress/>
-				
+		
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-BPAddressPlusImmediate8/>
-		<hex>74</hex>
+		<hex>f4</hex>
 		
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToSIRegister/>
@@ -233,7 +281,21 @@
 		
 		<cpu:CopyRegisterToOperand/>
 		<op:SI-BPAddressPlusImmediate8/>
-		<hex>70</hex>
+		<hex>f0</hex>
+
+		<!--Get VertexShader-->
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>20</byte>
+		
+		
+
+		<!--Transform Verteces-->
 
 		<!--Get VertexBuffer-->
 		<cpu:CopyImmediateToOperandFunction/>
@@ -246,7 +308,7 @@
 		<imm:CopyImmediateToIndexAddress/>
 		<index:BPPlusImmediate32/>
 		<hex>00000010</hex>
-		<int>64</int>
+		<int>0</int>
 		
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToIndexAddress/>
@@ -258,49 +320,22 @@
 		<imm:CopyImmediateToIndexAddress/>
 		<index:BPPlusImmediate32/>
 		<hex>00000018</hex>
-		<int>0</int>
+		<int>64</int>
 
 		<cpu:CallRelative/>
-		<addressOf ref="drawTriangle" type="Relative32"/>
-
-		<!--<cpu:CopyOperandToRegister/>
-		<op:AX-BPAddressPlusImmediate8/>
-		<hex>18</hex>-->
-
-		<!--<int:CreateObject/>-->
+		<addressOf ref="renderTriangle" type="Relative32"/>		
 		
-
-		<!--<fpu:ResetFpu/>
-
-		<fpu:PushFloatAtIndexAddressToST0/>
-		<index:BPPlusImmediate32/>
-		<hex>00000028</hex>
-
-		<cpu:WaitForFloatingPointUnit/>
-		
-		<float:CreateObject/>-->
-
-		<!--<cpu:PullAXFromStack/>
-		
-		<cpu:MathImmediate8ToOperandFunction/>
+		<cpu:MathImmediateToOperandFunction/>
 		<math:AddToBPRegister/>
-		<hex>40</hex>
-
-		<cls:return/>-->
-		
-		
-		
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToBPRegister/>
-		<hex>40</hex>
+		<hex>00000100</hex>
 		
 		<cpu:PullDIFromStack/>
 
 		<cls:return/>
 
 		<label id="verteces">
-			<float>5.0</float>
-			<float>5.0</float>
+			<float>40</float>
+			<float>0</float>
 			<float>0.0</float>
 			<float>0.0</float>
 			<hex>ffff0000</hex>
@@ -308,8 +343,8 @@
 			<float>0.0</float>
 			<hex>00000000</hex>
 			
-			<float>0.0</float>
-			<float>10.0</float>
+			<float>79</float>
+			<float>24</float>
 			<float>0.0</float>
 			<float>0.0</float>
 			<hex>ff00ff00</hex>
@@ -317,14 +352,18 @@
 			<float>1.0</float>
 			<hex>00000000</hex>
 			
-			<float>5.0</float>
-			<float>15.0</float>
+			<float>0</float>
+			<float>24</float>
 			<float>0.0</float>
 			<float>0.0</float>
 			<hex>ff0000ff</hex>
 			<float>0.0</float>
 			<float>1.0</float>
 			<hex>00000000</hex>
+		</label>
+
+		<label id="transformedVerteces">
+			<empty length="96"/>
 		</label>
 	</cls:method>
 
@@ -445,6 +484,19 @@
 
 		<cpu:PushDIToStack/>
 
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData />
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>12</byte>
+
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
 		<byte>4</byte>
@@ -473,6 +525,19 @@
 
 		<cpu:PushDIToStack/>
 
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData />
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
 		<byte>4</byte>
@@ -500,6 +565,19 @@
 		<cls:parameter name="geometryShader" type="http://metalx.org/Video/Graphics/VertexShader"/>
 
 		<cpu:PushDIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData />
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>40</byte>
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
@@ -544,6 +622,19 @@
 
 		<cpu:PushDIToStack/>
 
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData />
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>20</byte>
+
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
 		<byte>4</byte>
@@ -587,6 +678,19 @@
 
 		<cpu:PushDIToStack/>
 
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData />
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>24</byte>
+
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
 		<byte>4</byte>
@@ -611,7 +715,7 @@
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
 
-	<cls:method name="DrawTriangles" type="http://metalx.org/Video/Graphics/MeshRenderer">
+	<cls:method name="RenderTriangles" type="http://metalx.org/Video/Graphics/MeshRenderer">
 		<cls:parameter name="Offset" type="http://metalx.org/Integer"/>
 		<cls:parameter name="Count" type="http://metalx.org/Integer"/>
 
@@ -619,7 +723,7 @@
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
-		<byte>4</byte>
+		<byte>8</byte>
 
 		<cpu:PullDIFromStack/>
 
@@ -747,269 +851,7 @@
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
 
-	<label id="renderMeshes">
-		<cpu:PushSIToStack/>
-
-		<!--Get SetPixel Method-->
-		<cpu:CopyOperandToRegister/>
-		<op:SI-IndexAddressPlusImmediate8/>
-		<index:SP/>
-		<byte>8</byte>
-
-		<obj:GetData/>
-
-		<cpu:CopyOperandToRegister/>
-		<op:SI-SIAddress/>
-
-		<obj:GetType/>
-
-		<cpu:CopyImmediateToDI/>
-		<addressOf ref="drawPixel" type="Absolute32"/>
-
-		<clsf:FindMethod/>
-
-		<clsf:GetMethodEntryPoint/>
-
-		<cpu:PushSIToStack/>
-
-		<mm:CheckOut length="12"/>
-
-		<obj:Create type="http://metalx.org/Video/Graphics/Pixel" length="12"/>
-
-		<cpu:PushDIToStack/>
-
-		<!--Get Mesh Count-->
-		<cpu:CopyOperandToRegister/>
-		<op:SI-IndexAddressPlusImmediate8/>
-		<index:SP/>
-		<byte>8</byte>
-
-		<cpu:CopyOperandToRegister/>
-		<op:CX-SIAddressPlusImmediate8/>
-		<byte>4</byte>
-
-		<cpu:BranchToRelative8IfCXIsZero/>
-		<addressOf ref="empty" type="Relative8"/>
-
-		<cpu:JumpToRelative8/>
-		<addressOf ref="notEmpty" type="Relative8"/>
-
-		<label id="empty"/>
-
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToSPRegister/>
-		<byte>12</byte>
-
-		<cpu:ReturnToNearCaller/>
-
-		<label id="notEmpty"/>
-
-		<cpu:CopyOperandToRegister/>
-		<op:AX-SIAddress/>
-
-		<cpu:ArithmeticDXAXOperandFunction/>
-		<ari:MultiplyByImmediateAddress/>
-		<addressOf ref="vertexFormatLength" type="Absolute32"/>
-
-		<cpu:AddImmediateToAX/>
-		<int>12</int>
-
-		<cpu:CopyRegisterToOperand/>
-		<op:AX-SIRegister/>
-
-		<!--Draw Meshes-->
-		<label id="nextMesh"/>
-
-		<cpu:PushCXToStack/>
-
-		<cpu:CallRelative/>
-		<addressOf ref="renderMesh" type="Relative32"/>
-
-		<cpu:PullCXFromStack/>
-
-		<cpu:LoopToRelative8/>
-		<addressOf ref="nextMesh" type="Relative8"/>
-
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToSPRegister/>
-		<byte>12</byte>
-
-		<cpu:ReturnToNearCaller/>
-
-		<var:string id="drawPixel">DrawPixel</var:string>
-		<var:integer id="vertexFormatLength">36</var:integer>
-	</label>
-
-	<label id="renderMesh">
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:CompareWithSIAddress/>
-		<byte>1</byte>
-
-		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="notTriangleList" type="Relative8"/>
-
-		<cpu:JumpToRelative/>
-		<addressOf ref="renderTriangleListMesh" type="Relative32"/>
-
-		<label id="notTriangleList"/>
-
-		<cpu:ReturnToNearCaller/>
-	</label>
-
-	<label id="renderTriangleListMesh">
-		<!--Get Primitive Count-->
-		<cpu:CopyOperandToRegister/>
-		<op:CX-SIAddressPlusImmediate8/>
-		<byte>4</byte>
-
-		<!--Get Index Stride-->
-		<cpu:CopyOperandToRegister/>
-		<op:BX-SIAddressPlusImmediate8/>
-		<byte>16</byte>
-
-		<!--Get Index Buffer-->
-		<cpu:CopyOperandToRegister/>
-		<op:SI-SIAddressPlusImmediate8/>
-		<byte>8</byte>
-
-		<label id="nextPrimitive"/>
-
-		<cpu:PushCXToStack/>
-
-		<!--Get Vertex Formats-->
-		<cpu:CopyOperandToRegister/>
-		<op:DI-IndexAddressPlusImmediate8/>
-		<index:SP/>
-		<byte>24</byte>
-
-		<cpu:CopyOperandToRegister/>
-		<op:CX-DIAddress/>
-
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToDIRegister/>
-		<byte>12</byte>
-
-		<label id="nextVertexElement"/>
-
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:CompareWithDIAddressPlusImmediate8/>
-		<byte>8</byte>
-		<byte>0</byte>
-
-		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="notPosition" type="Relative8"/>
-
-		<cpu:CallRelative/>
-		<addressOf ref="readPosition" type="Relative32"/>
-
-		<label id="notPosition"/>
-
-		<cpu:LoopToRelative8/>
-		<addressOf ref="nextVertexElement" type="Relative8"/>
-
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToDIRegister/>
-		<byte>36</byte>
-
-		<cpu:PullCXFromStack/>
-
-		<cpu:LoopToRelative8/>
-		<addressOf ref="nextPrimitive" type="Relative8"/>
-
-		<cpu:ReturnToNearCaller/>
-
-		<label id="readPosition"/>
-
-		<cpu:PushSIToStack/>
-		
-		<!--Find Vertex 1-->
-		<cpu:CopyOperandToRegister/>
-		<op:AX-SIAddress/>
-		
-		
-		
-		<cpu:AddRegisterToOperand/>
-		<op:BX-SIRegister/>
-
-		<cpu:PullSIFromStack/>
-
-		<cpu:ReturnToNearCaller/>
-
-		<label id="TriangleBuffer"/>
-		<float>0.0</float>
-		<float>0.0</float>
-		<float>0.0</float>
-		<float>1.0</float>
-
-		<float>0.0</float>
-		<float>0.0</float>
-		<float>0.0</float>
-		<float>1.0</float>
-
-		<float>0.0</float>
-		<float>0.0</float>
-		<float>0.0</float>
-		<float>1.0</float>
-	</label>
-
 	<label id="renderTriangle">
-		<cpu:CopyOperandToRegister/>
-		<op:SI-IndexAddressPlusImmediate8/>
-		<index:SP/>
-		<byte>8</byte>
-
-		<obj:GetData/>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToSIAddress/>
-		<int>512</int>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToSIAddressPlusImmediate8/>
-		<byte>4</byte>
-		<int>384</int>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToSIAddressPlusImmediate8/>
-		<byte>8</byte>
-		<hex>ff0000ff</hex>
-
-		<cpu:CopyOperandToRegister/>
-		<op:SI-IndexAddressPlusImmediate8/>
-		<index:SP/>
-		<byte>8</byte>
-
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:SubtractFromBPRegister/>
-		<byte>4</byte>
-
-		<cpu:CopyRegisterToOperand/>
-		<op:SI-BPAddressPlusImmediate8/>
-		<byte>0</byte>
-
-		<!--Call Method-->
-		<cpu:CopyOperandToRegister/>
-		<op:SI-IndexAddressPlusImmediate8/>
-		<index:SP/>
-		<byte>24</byte>
-
-		<obj:GetData/>
-
-		<cpu:CopyOperandToRegister/>
-		<op:DI-SIAddress/>
-
-		<cpu:CopyOperandToRegister/>
-		<op:SI-IndexAddressPlusImmediate8/>
-		<index:SP/>
-		<byte>12</byte>
-
-		<cpu:LogicFunction/>
-		<logic:CallSIRegister/>
-
-		<cpu:ReturnToNearCaller/>
-	</label>
-
-	<label id="drawTriangle">
 		<!--if(VertexShader != null)-->
 			<!--TransformVertices-->
 		<fpu:ResetFpu/>
@@ -1188,7 +1030,7 @@
 		<hex>00000020</hex>
 
 		<cpu:WaitForFloatingPointUnit/>
-		
+
 		<!--Height = index3.y - index1.y-->
 		<cpu:CopyOperandToRegister/>
 		<op:SI-BPAddressPlusImmediate8/>
@@ -1219,7 +1061,161 @@
 		<hex>00000024</hex>
 
 		<cpu:WaitForFloatingPointUnit/>
+
+		<!--Depth = index3.z - index1.z-->
+
+		<!--Blue = index3.b - index1.b-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>18</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>10</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:BX-BXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:BL-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:BX-AXRegister/>
 		
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<hex>50</hex>
+
+		<!--Green = index3.g - index1.g-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>18</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>17</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>10</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:BX-BXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:BL-SIAddressPlusImmediate8/>
+		<byte>17</byte>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<hex>54</hex>
+
+		<!--Red = index3.r - index1.r-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>18</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>18</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>10</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:BX-BXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:BL-SIAddressPlusImmediate8/>
+		<byte>18</byte>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<hex>58</hex>
+
+		<!--Alpha = index3.a - index1.a-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>18</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>19</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>10</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:BX-BXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:BL-SIAddressPlusImmediate8/>
+		<byte>19</byte>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<hex>5c</hex>
+
 		<!--if(Height != 0)-->
 		
 			<!--TopWidth = index2.x - index1.x-->
@@ -1283,8 +1279,160 @@
 		<hex>00000034</hex>
 		
 		<cpu:WaitForFloatingPointUnit/>
+
+		<!--TopBlue = index2.b - index1.b-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>14</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>10</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:BX-BXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:BL-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<hex>60</hex>
+
+		<!--TopGreen = index2.g - index1.g-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>14</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>17</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>10</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:BX-BXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:BL-SIAddressPlusImmediate8/>
+		<byte>17</byte>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<hex>64</hex>
+
+		<!--TopRed = index2.r - index1.r-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>14</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>18</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>10</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:BX-BXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:BL-SIAddressPlusImmediate8/>
+		<byte>18</byte>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<hex>68</hex>
+
+		<!--TopAlpha = index2.a - index1.a-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>14</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>19</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>10</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:BX-BXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:BL-SIAddressPlusImmediate8/>
+		<byte>19</byte>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<hex>6c</hex>
 		
-			<!--BottomWidth = index3.x - index2.x-->
+		<!--BottomWidth = index3.x - index2.x-->
 		<cpu:CopyOperandToRegister/>
 		<op:SI-BPAddressPlusImmediate8/>
 		<hex>1c</hex>
@@ -1345,6 +1493,158 @@
 		<hex>0000003c</hex>
 
 		<cpu:WaitForFloatingPointUnit/>
+
+		<!--BottomBlue = index3.b - index2.b-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>18</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>14</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:BX-BXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:BL-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<hex>70</hex>
+
+		<!--BottomGreen = index3.g - index2.g-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>18</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>17</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>14</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:BX-BXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:BL-SIAddressPlusImmediate8/>
+		<byte>17</byte>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<hex>74</hex>
+
+		<!--BottomRed = index3.r - index2.r-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>18</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>18</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>14</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:BX-BXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:BL-SIAddressPlusImmediate8/>
+		<byte>18</byte>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<hex>78</hex>
+
+		<!--BottomAlpha = index3.a - index2.a-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>18</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>19</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>14</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:BX-BXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:BL-SIAddressPlusImmediate8/>
+		<byte>19</byte>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<hex>7c</hex>
 		
 		<!--RightHanded = (TopWidth * Height) > (Width * TopHeight)-->		
 		<fpu:ResetFpu/>
@@ -1384,73 +1684,176 @@
 
 				<!--Left = index1.x-->
 		<cpu:CopyOperandToRegister/>
-		<op:AX-BPAddressPlusImmediate8/>
+		<op:SI-BPAddressPlusImmediate8/>
 		<hex>1c</hex>
 
 		<cpu:AddOperandToRegister/>
-		<op:AX-BPAddressPlusImmediate8/>
+		<op:SI-BPAddressPlusImmediate8/>
 		<hex>10</hex>
 
 		<cpu:CopyOperandToRegister/>
-		<op:AX-AXAddressPlusImmediate8/>
+		<op:AX-SIAddressPlusImmediate8/>
 		<byte>0</byte>
 
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-BPAddressPlusImmediate8/>
 		<hex>40</hex>
 		
+				<!--LeftBGRA = index1.bgra-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:BX-BXRegister/>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-BLRegister/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-BPAddressPlusImmediate8/>
+		<hex>80</hex>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-BLRegister/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-BPAddressPlusImmediate8/>
+		<hex>84</hex>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-BLRegister/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-BPAddressPlusImmediate8/>
+		<hex>88</hex>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-BLRegister/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-BPAddressPlusImmediate8/>
+		<hex>8c</hex>
+
+		<fpu:ResetFpu/>
+
+		<fpu:PushIntegerAtSIAddressPlusImmediate8ToST0/>
+		<hex>80</hex>
+
+		<fpu:PullFloatAtSIAddressPlusImmediate8FromST0/>
+		<hex>80</hex>
+		
+		<fpu:PushIntegerAtSIAddressPlusImmediate8ToST0/>
+		<hex>84</hex>
+
+		<fpu:PullFloatAtSIAddressPlusImmediate8FromST0/>
+		<hex>84</hex>
+		
+		<fpu:PushIntegerAtSIAddressPlusImmediate8ToST0/>
+		<hex>88</hex>
+
+		<fpu:PullFloatAtSIAddressPlusImmediate8FromST0/>
+		<hex>88</hex>
+		
+		<fpu:PushIntegerAtSIAddressPlusImmediate8ToST0/>
+		<hex>8c</hex>
+
+		<fpu:PullFloatAtSIAddressPlusImmediate8FromST0/>
+		<hex>8c</hex>
+		
 				<!--DeltaLeft = Width / Height-->
 		<fpu:ResetFpu/>
 		
 		<fpu:PushFloatAtIndexAddressToST0/>
 		<index:BPPlusImmediate32/>
-		<hex>00000020</hex>
+		<hex>00000024</hex>
 		
 		<fpu:PushFloatAtIndexAddressToST0/>
 		<index:BPPlusImmediate32/>
-		<hex>00000024</hex>
+		<hex>00000020</hex>
 		
-		<fpu:DivideST1ByST0AndIncrementST/>
+		<fpu:DivideST0ByST1/>
 		
 		<fpu:PullFloatAtIndexAddressFromST0/>
 		<index:BPPlusImmediate32/>
 		<hex>00000048</hex>
 		
-		<cpu:WaitForFloatingPointUnit/>
+				<!--DeltaLeftBlue = Blue / Height-->
+		<fpu:PushFloatAtIndexAddressToST0/>
+		<index:BPPlusImmediate32/>
+		<hex>00000050</hex>
+		
+		<fpu:DivideST0ByST1/>
+		
+		<fpu:PullFloatAtIndexAddressFromST0/>
+		<index:BPPlusImmediate32/>
+		<hex>000000a0</hex>
+		
+				<!--DeltaLeftGreen = Green / Height-->
+		<fpu:PushFloatAtIndexAddressToST0/>
+		<index:BPPlusImmediate32/>
+		<hex>00000054</hex>
+		
+		<fpu:DivideST0ByST1/>
+		
+		<fpu:PullFloatAtIndexAddressFromST0/>
+		<index:BPPlusImmediate32/>
+		<hex>000000a4</hex>
+		
+				<!--DeltaLeftRed = Red / Height-->
+		<fpu:PushFloatAtIndexAddressToST0/>
+		<index:BPPlusImmediate32/>
+		<hex>00000058</hex>
+		
+		<fpu:DivideST0ByST1/>
+		
+		<fpu:PullFloatAtIndexAddressFromST0/>
+		<index:BPPlusImmediate32/>
+		<hex>000000a8</hex>
+		
+				<!--DeltaLeftAlpha = Alpha / Height-->
+		<fpu:PushFloatAtIndexAddressToST0/>
+		<index:BPPlusImmediate32/>
+		<hex>0000005c</hex>
+		
+		<fpu:DivideST0ByST1/>
+		
+		<fpu:PullFloatAtIndexAddressFromST0/>
+		<index:BPPlusImmediate32/>
+		<hex>000000ac</hex>
 		
 				<!--if(Top != 0)-->
 					<!--DeltaRight = TopWidth / TopHeight + 1-->
-		<fpu:ResetFpu/>
-		
-		<fpu:PushFloatAtIndexAddressToST0/>
-		<index:BPPlusImmediate32/>
-		<hex>00000030</hex>
-		
 		<fpu:One/>
-
+		
 		<fpu:AddFloatAtIndexAddressToST0/>
 		<index:BPPlusImmediate32/>
 		<hex>00000034</hex>
 
-		<fpu:DivideST1ByST0AndIncrementST/>
-		
-		<!--<fpu:PullFloatAtIndexAddressFromST0/>
+		<fpu:PushFloatAtIndexAddressToST0/>
 		<index:BPPlusImmediate32/>
-		<hex>0000004c</hex>-->
+		<hex>00000030</hex>
+		
 
+		<fpu:DivideST0ByST1/>
+		
 		<fpu:CopyST0ToFloatAtIndexAddress/>
 		<index:BPPlusImmediate32/>
 		<hex>0000004c</hex>
 		
-					<!--Right = Left + DeltaRight-->
-		<!--<cpu:CopyOperandToRegister/>
-		<op:AX-BPAddressPlusImmediate8/>
-		<hex>40</hex>
-
-		<cpu:CopyRegisterToOperand/>
-		<op:AX-BPAddressPlusImmediate8/>
-		<hex>44</hex>-->
-		
+					<!--Right = Left + DeltaRight-->		
 		<fpu:AddFloatAtIndexAddressToST0/>
 		<index:BPPlusImmediate32/>
 		<hex>00000040</hex>
@@ -1458,6 +1861,9 @@
 		<fpu:PullFloatAtIndexAddressFromST0/>
 		<index:BPPlusImmediate32/>
 		<hex>00000044</hex>
+		
+					<!--DeltaRightBlue = TopBlue / TopHeight + 1-->
+		
 		
 		<cpu:WaitForFloatingPointUnit/>
 		
@@ -2082,11 +2488,11 @@
 		<!--Get Start-->
 		<cpu:CopyOperandToRegister/>
 		<op:DI-BPAddressPlusImmediate8/>
-		<hex>70</hex>
+		<hex>f0</hex>
 		
 		<cpu:CopyOperandToRegister/>
 		<op:AX-BPAddressPlusImmediate8/>
-		<hex>74</hex>
+		<hex>f4</hex>
 		
 		<cpu:ExclusiveOrRegisterWithOperand/>
 		<op:DX-DXRegister/>
@@ -2116,48 +2522,5 @@
 		<cpu:PullCXFromStack/>
 		
 		<cpu:ReturnToNearCaller/>
-	</label>
-	
-	<label id="drawLine">
-		<!--Get Start-->
-	
-		<!--Get End-->
-	
-		<!--Get Length-->
-		<cpu:CopyImmediateToCX/>
-		<int>100</int>
-	
-		<!--Calculate Deltas-->
-
-		<cpu:PushSIToStack/>
-		
-		<cpu:CopyRegisterToOperand/>
-		<op:SI-DIRegister/>
-
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToDIRegister/>
-		<byte>28</byte>
-		
-		<label id="forEachPixel"/>
-		
-		<!--Add Deltas-->
-		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
-		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
-		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
-		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
-
-		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
-
-		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
-		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
-
-		<cpu:LoopToRelative8/>
-		<addressOf ref="forEachPixel" type="Relative8"/>
-
-		<cpu:PullSIFromStack/>
-
-		<!--Get Pixel Shader-->
-
-		<!--Call Draw Pixels-->
 	</label>
 </cls:class>
