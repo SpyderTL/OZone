@@ -338,7 +338,7 @@
 			<float>0</float>
 			<float>0.0</float>
 			<float>0.0</float>
-			<hex>ffff0000</hex>
+			<hex>ffffffff</hex>
 			<float>0.5</float>
 			<float>0.0</float>
 			<hex>00000000</hex>
@@ -347,7 +347,7 @@
 			<float>24</float>
 			<float>0.0</float>
 			<float>0.0</float>
-			<hex>ff00ff00</hex>
+			<hex>ffffffff</hex>
 			<float>1.0</float>
 			<float>1.0</float>
 			<hex>00000000</hex>
@@ -356,7 +356,7 @@
 			<float>24</float>
 			<float>0.0</float>
 			<float>0.0</float>
-			<hex>ff0000ff</hex>
+			<hex>ffffffff</hex>
 			<float>0.0</float>
 			<float>1.0</float>
 			<hex>00000000</hex>
@@ -1709,6 +1709,14 @@
 		<op:AX-SIAddressPlusImmediate8/>
 		<byte>16</byte>
 
+		
+		
+		
+		<cpu:CopyImmediateToAX/>
+		<hex>ff0000ff</hex>
+		
+		
+
 		<cpu:ExclusiveOrRegisterWithOperand/>
 		<op:BX-BXRegister/>
 
@@ -1717,7 +1725,7 @@
 		
 		<cpu:CopyRegisterToOperand/>
 		<op:BX-BPAddressPlusImmediate8/>
-		<hex>80</hex>
+		<hex>80</hex>		
 
 		<cpu:ShiftRegisterByImmediate8Function/>
 		<shift:ShiftAXRegisterRight/>
@@ -1751,34 +1759,72 @@
 		<cpu:CopyRegisterToOperand/>
 		<op:BX-BPAddressPlusImmediate8/>
 		<hex>8c</hex>
-
+		
 		<fpu:ResetFpu/>
 
-		<fpu:PushIntegerAtSIAddressPlusImmediate8ToST0/>
-		<hex>80</hex>
+		<fpu:PushIntegerAtIndexAddressToST0/>
+		<index:BPPlusImmediate32/>
+		<hex>00000080</hex>
 
-		<fpu:PullFloatAtSIAddressPlusImmediate8FromST0/>
-		<hex>80</hex>
 		
-		<fpu:PushIntegerAtSIAddressPlusImmediate8ToST0/>
-		<hex>84</hex>
+		
+		
+		<float:CreateObject/>
 
-		<fpu:PullFloatAtSIAddressPlusImmediate8FromST0/>
-		<hex>84</hex>
-		
-		<fpu:PushIntegerAtSIAddressPlusImmediate8ToST0/>
-		<hex>88</hex>
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSPRegister/>
+		<byte>8</byte>
 
-		<fpu:PullFloatAtSIAddressPlusImmediate8FromST0/>
-		<hex>88</hex>
-		
-		<fpu:PushIntegerAtSIAddressPlusImmediate8ToST0/>
-		<hex>8c</hex>
+		<cpu:ReturnToNearCaller/>
 
-		<fpu:PullFloatAtSIAddressPlusImmediate8FromST0/>
-		<hex>8c</hex>
+
 		
-				<!--DeltaLeft = Width / Height-->
+		
+		<fpu:PullFloatAtIndexAddressFromST0/>
+		<index:BPPlusImmediate32/>
+		<hex>00000080</hex>
+
+		<fpu:PushIntegerAtIndexAddressToST0/>
+		<index:BPPlusImmediate32/>
+		<hex>00000084</hex>
+
+		<fpu:PullFloatAtIndexAddressFromST0/>
+		<index:BPPlusImmediate32/>
+		<hex>00000084</hex>
+
+		<fpu:PushIntegerAtIndexAddressToST0/>
+		<index:BPPlusImmediate32/>
+		<hex>00000088</hex>
+
+		<fpu:PullFloatAtIndexAddressFromST0/>
+		<index:BPPlusImmediate32/>
+		<hex>00000088</hex>
+
+		<fpu:PushIntegerAtIndexAddressToST0/>
+		<index:BPPlusImmediate32/>
+		<hex>0000008c</hex>
+
+		<fpu:PullFloatAtIndexAddressFromST0/>
+		<index:BPPlusImmediate32/>
+		<hex>0000008c</hex>
+
+
+		
+		<fpu:PushFloatAtIndexAddressToST0/>
+		<index:BPPlusImmediate32/>
+		<hex>0000008c</hex>
+
+		<float:CreateObject/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSPRegister/>
+		<byte>8</byte>
+
+		<cpu:ReturnToNearCaller/>
+		
+		
+
+		<!--DeltaLeft = Width / Height-->
 		<fpu:ResetFpu/>
 		
 		<fpu:PushFloatAtIndexAddressToST0/>
@@ -2452,7 +2498,7 @@
 		<op:CX-BPAddressPlusImmediate8/>
 		<hex>08</hex>
 
-		<cpu:PushCSToStack/>
+		<cpu:PushCXToStack/>
 
 		<cpu:BranchToRelative8IfZero/>
 		<addressOf ref="skipDrawTop2" type="Relative8"/>
@@ -2776,7 +2822,7 @@
 		<cpu:CopyOperandToRegister/>
 		<op:AX-BPAddressPlusImmediate8/>
 		<hex>cc</hex>
-
+		
 		<cpu:CopyALToDIAddressAndIncrementDI/>
 
 		<cpu:LoopToRelative8/>
