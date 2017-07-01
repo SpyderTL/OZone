@@ -272,16 +272,16 @@
 		<op:AX-SIAddress/>
 		
 		<cpu:CopyRegisterToOperand/>
-		<op:AX-BPAddressPlusImmediate8/>
-		<hex>f4</hex>
+		<op:AX-BPAddressPlusImmediate/>
+		<hex>000000f4</hex>
 		
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToSIRegister/>
 		<byte>8</byte>
 		
 		<cpu:CopyRegisterToOperand/>
-		<op:SI-BPAddressPlusImmediate8/>
-		<hex>f0</hex>
+		<op:SI-BPAddressPlusImmediate/>
+		<hex>000000f0</hex>
 
 		<!--Get VertexShader-->
 		<cpu:CopyRegisterToOperand/>
@@ -338,7 +338,7 @@
 			<float>0</float>
 			<float>0.0</float>
 			<float>0.0</float>
-			<hex>ffffffff</hex>
+			<hex>ffff0000</hex>
 			<float>0.5</float>
 			<float>0.0</float>
 			<hex>00000000</hex>
@@ -347,7 +347,7 @@
 			<float>24</float>
 			<float>0.0</float>
 			<float>0.0</float>
-			<hex>ffffffff</hex>
+			<hex>ff00ff00</hex>
 			<float>1.0</float>
 			<float>1.0</float>
 			<hex>00000000</hex>
@@ -356,7 +356,7 @@
 			<float>24</float>
 			<float>0.0</float>
 			<float>0.0</float>
-			<hex>ffffffff</hex>
+			<hex>ff0000ff</hex>
 			<float>0.0</float>
 			<float>1.0</float>
 			<hex>00000000</hex>
@@ -1707,15 +1707,7 @@
 				<!--LeftBGRA = index1.bgra-->
 		<cpu:CopyOperandToRegister/>
 		<op:AX-SIAddressPlusImmediate8/>
-		<byte>16</byte>
-
-		
-		
-		
-		<cpu:CopyImmediateToAX/>
-		<hex>ff0000ff</hex>
-		
-		
+		<byte>16</byte>	
 
 		<cpu:ExclusiveOrRegisterWithOperand/>
 		<op:BX-BXRegister/>
@@ -1724,8 +1716,8 @@
 		<op:AL-BLRegister/>
 		
 		<cpu:CopyRegisterToOperand/>
-		<op:BX-BPAddressPlusImmediate8/>
-		<hex>80</hex>		
+		<op:BX-BPAddressPlusImmediate/>
+		<hex>00000080</hex>
 
 		<cpu:ShiftRegisterByImmediate8Function/>
 		<shift:ShiftAXRegisterRight/>
@@ -1735,8 +1727,8 @@
 		<op:AL-BLRegister/>
 		
 		<cpu:CopyRegisterToOperand/>
-		<op:BX-BPAddressPlusImmediate8/>
-		<hex>84</hex>
+		<op:BX-BPAddressPlusImmediate/>
+		<hex>00000084</hex>
 
 		<cpu:ShiftRegisterByImmediate8Function/>
 		<shift:ShiftAXRegisterRight/>
@@ -1746,8 +1738,8 @@
 		<op:AL-BLRegister/>
 		
 		<cpu:CopyRegisterToOperand/>
-		<op:BX-BPAddressPlusImmediate8/>
-		<hex>88</hex>
+		<op:BX-BPAddressPlusImmediate/>
+		<hex>00000088</hex>
 
 		<cpu:ShiftRegisterByImmediate8Function/>
 		<shift:ShiftAXRegisterRight/>
@@ -1757,28 +1749,14 @@
 		<op:AL-BLRegister/>
 		
 		<cpu:CopyRegisterToOperand/>
-		<op:BX-BPAddressPlusImmediate8/>
-		<hex>8c</hex>
+		<op:BX-BPAddressPlusImmediate/>
+		<hex>0000008c</hex>
 		
 		<fpu:ResetFpu/>
 
 		<fpu:PushIntegerAtIndexAddressToST0/>
 		<index:BPPlusImmediate32/>
 		<hex>00000080</hex>
-
-		
-		
-		
-		<float:CreateObject/>
-
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToSPRegister/>
-		<byte>8</byte>
-
-		<cpu:ReturnToNearCaller/>
-
-
-		
 		
 		<fpu:PullFloatAtIndexAddressFromST0/>
 		<index:BPPlusImmediate32/>
@@ -1807,22 +1785,6 @@
 		<fpu:PullFloatAtIndexAddressFromST0/>
 		<index:BPPlusImmediate32/>
 		<hex>0000008c</hex>
-
-
-		
-		<fpu:PushFloatAtIndexAddressToST0/>
-		<index:BPPlusImmediate32/>
-		<hex>0000008c</hex>
-
-		<float:CreateObject/>
-
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToSPRegister/>
-		<byte>8</byte>
-
-		<cpu:ReturnToNearCaller/>
-		
-		
 
 		<!--DeltaLeft = Width / Height-->
 		<fpu:ResetFpu/>
@@ -2729,12 +2691,12 @@
 		
 		<!--Get Start-->
 		<cpu:CopyOperandToRegister/>
-		<op:DI-BPAddressPlusImmediate8/>
-		<hex>f0</hex>
+		<op:DI-BPAddressPlusImmediate/>
+		<hex>000000f0</hex>
 		
 		<cpu:CopyOperandToRegister/>
-		<op:AX-BPAddressPlusImmediate8/>
-		<hex>f4</hex>
+		<op:AX-BPAddressPlusImmediate/>
+		<hex>000000f4</hex>
 		
 		<cpu:ExclusiveOrRegisterWithOperand/>
 		<op:DX-DXRegister/>
@@ -2762,6 +2724,8 @@
 		<cpu:CopyAXToDIAddressAndIncrementDI/>-->
 		
 		<!--Blue-->
+		<fpu:ResetFpu/>
+		
 		<fpu:PushFloatAtIndexAddressToST0/>
 		<index:BPPlusImmediate32/>
 		<hex>00000080</hex>
@@ -2802,26 +2766,26 @@
 		<label id="drawPixel"/>
 		
 		<cpu:CopyOperandToRegister/>
-		<op:AX-BPAddressPlusImmediate8/>
-		<hex>c0</hex>
+		<op:AX-BPAddressPlusImmediate/>
+		<hex>000000c0</hex>
 
 		<cpu:CopyALToDIAddressAndIncrementDI/>
 		
 		<cpu:CopyOperandToRegister/>
-		<op:AX-BPAddressPlusImmediate8/>
-		<hex>c4</hex>
+		<op:AX-BPAddressPlusImmediate/>
+		<hex>000000c4</hex>
 
 		<cpu:CopyALToDIAddressAndIncrementDI/>
 		
 		<cpu:CopyOperandToRegister/>
-		<op:AX-BPAddressPlusImmediate8/>
-		<hex>c8</hex>
+		<op:AX-BPAddressPlusImmediate/>
+		<hex>000000c8</hex>
 
 		<cpu:CopyALToDIAddressAndIncrementDI/>
 		
 		<cpu:CopyOperandToRegister/>
-		<op:AX-BPAddressPlusImmediate8/>
-		<hex>cc</hex>
+		<op:AX-BPAddressPlusImmediate/>
+		<hex>000000cc</hex>
 		
 		<cpu:CopyALToDIAddressAndIncrementDI/>
 

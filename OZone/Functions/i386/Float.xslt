@@ -32,6 +32,8 @@
 
 	<xsl:template match="float:CreateObject">
 		<scope>
+			<cpu:WaitForFloatingPointUnit/>
+			
 			<cpu:PushSIToStack/>
 
 			<mm:CheckOut length="4"/>
