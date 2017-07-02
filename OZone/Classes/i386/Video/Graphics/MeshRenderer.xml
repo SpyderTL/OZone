@@ -40,15 +40,16 @@
 	<cls:field name="PixelBuffer_SetColor" type="http://metalx.org/Hexadecimal" offset="32"/>
 	<cls:field name="RenderTarget_DrawImage_Point" type="http://metalx.org/Reference" offset="36"/>
 	<cls:field name="GeometryShader" type="http://metalx.org/Reference" offset="40"/>
-	<cls:field name="VertexShader_VertexBuffer" type="http://metalx.org/Reference" offset="44"/>
-	<cls:field name="Offset" type="http://metalx.org/Reference" offset="48"/>
-	<cls:field name="Count" type="http://metalx.org/Reference" offset="52"/>
-	<cls:field name="Viewport" type="http://metalx.org/Video/Graphics/Viewport" offset="56"/>
+	<cls:field name="VertexShader_GetVerteces" type="http://metalx.org/Hexadecimal" offset="44"/>
+	<cls:field name="VertexShader_GetVerteces_Destination" type="http://metalx.org/Reference" offset="48"/>
+	<cls:field name="Index" type="http://metalx.org/Reference" offset="52"/>
+	<cls:field name="Count" type="http://metalx.org/Reference" offset="56"/>
+	<cls:field name="Viewport" type="http://metalx.org/Video/Graphics/Viewport" offset="60"/>
 
 	<cls:method name="Create" type="http://metalx.org/Video/Graphics/MeshRenderer" static="true">
 		<cls:parameter name="PixelRenderer" type="http://metalx.org/Video/Graphics/PixelRenderer"/>
 
-		<mm:CheckOut length="80"/>
+		<mm:CheckOut length="128"/>
 		
 		<cpu:PushDIToStack/>
 
@@ -60,7 +61,7 @@
 		<cpu:CopyRegisterToOperand/>
 		<op:SI-DIAddress/>
 
-		<obj:Create length="80"/>
+		<obj:Create length="128"/>
 
 		<cpu:PushDIToStack/>
 		
@@ -192,7 +193,7 @@
 		<!--Create VertexBuffer Object-->
 		<mm:CheckOut length="96"/>
 
-		<obj:Create length="96" type="http://metalx.org/Video/Graphics/VertexBuffer"/>
+		<obj:Create length="96" type="http://metalx.org/Object"/>
 
 		<cpu:CopyOperandToRegister/>
 		<op:SI-IndexAddressPlusImmediate8/>
@@ -201,7 +202,7 @@
 
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIAddressPlusImmediate8/>
-		<byte>44</byte>
+		<byte>48</byte>
 
 		<!--Create Index Object-->
 		<cpu:CopyImmediateToAX/>
@@ -216,7 +217,7 @@
 
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIAddressPlusImmediate8/>
-		<byte>48</byte>
+		<byte>52</byte>
 
 		<!--Create Count Object-->
 		<cpu:CopyImmediateToAX/>
@@ -231,7 +232,7 @@
 
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIAddressPlusImmediate8/>
-		<byte>52</byte>
+		<byte>56</byte>
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
@@ -251,12 +252,137 @@
 
 	<cls:method name="Test" type="http://metalx.org/Video/Graphics/MeshRenderer">		
 		<cpu:PushDIToStack/>
+		
+		<!--Create Vertex Shader-->
+		<mm:CheckOut length="32"/>
+		
+		<obj:Create length="32" type="http://metalx.org/Video/Graphics/VertexShader"/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+		
+		<obj:GetData/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>20</byte>
+		
+		<!--Find GetVerteces Method-->		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+		
+		<obj:GetType/>
+		
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="getVerteces" type="Absolute32"/>
+		
+		<clsf:FindMethod/>
+		
+		<clsf:GetMethodEntryPoint/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
 
+		<obj:GetData/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>44</byte>
+		
+		<!--Create Vertex Buffer-->
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="verteces" type="Absolute32"/>
+		
+		<obj:Create length="96" type="http://metalx.org/Object"/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+		
+		<obj:GetData/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>12</byte>
+		
+		<!--Get Source-->
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+		
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<byte>16</byte>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>12</byte>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<byte>12</byte>
+		
+		<!--Get Destination-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>48</byte>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<byte>8</byte>
+		
+		<!--Get Index-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>52</byte>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<byte>4</byte>
+		
+		<!--Get Count-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>56</byte>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+		
+		<!--Get Entry Point-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>44</byte>
+
+		<!--Get VertexShader-->
+		<cpu:CopyOperandToRegister/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>20</byte>
+		
+		<!--Transform Verteces-->
+		<cpu:LogicFunction/>
+		<logic:CallAXRegister/>
+		
+		<!--Draw Triangles-->
 		<cpu:MathImmediateToOperandFunction/>
 		<math:SubtractFromBPRegister/>
 		<hex>00000100</hex>
 		
 		<!--Get PixelBuffer-->
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>
+		
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
 		
@@ -283,26 +409,21 @@
 		<op:SI-BPAddressPlusImmediate/>
 		<hex>000000f0</hex>
 
-		<!--Get VertexShader-->
+		<!--Get VertexBuffer-->
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
-
+		
+		<obj:GetData/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddressPlusImmediate8/>
+		<byte>48</byte>
+		
 		<obj:GetData/>
 
-		<cpu:CopyOperandToRegister/>
-		<op:DI-SIAddressPlusImmediate8/>
-		<byte>20</byte>
-		
-		
-
-		<!--Transform Verteces-->
-
-		<!--Get VertexBuffer-->
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToIndexAddress/>
-		<index:BPPlusImmediate32/>
-		<hex>0000001c</hex>
-		<addressOf ref="verteces" type="Absolute32"/>
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<hex>1c</hex>
 
 		<cpu:CopyImmediateToOperandFunction/>
 		<imm:CopyImmediateToIndexAddress/>
@@ -334,7 +455,7 @@
 		<cls:return/>
 
 		<label id="verteces">
-			<float>79</float>
+			<float>40</float>
 			<float>0</float>
 			<float>0.0</float>
 			<float>0.0</float>
@@ -343,28 +464,27 @@
 			<float>0.0</float>
 			<hex>00000000</hex>
 			
-			<float>0</float>
-			<float>0</float>
+			<float>79</float>
+			<float>24</float>
 			<float>0.0</float>
 			<float>0.0</float>
-			<hex>ff00ff00</hex>
+			<hex>0000ff00</hex>
 			<float>1.0</float>
 			<float>1.0</float>
 			<hex>00000000</hex>
 			
-			<float>40</float>
+			<float>0</float>
 			<float>24</float>
 			<float>0.0</float>
 			<float>0.0</float>
-			<hex>ff0000ff</hex>
+			<hex>000000ff</hex>
 			<float>0.0</float>
 			<float>1.0</float>
 			<hex>00000000</hex>
 		</label>
+	
+		<var:string id="getVerteces">GetVerteces</var:string>
 
-		<label id="transformedVerteces">
-			<empty length="96"/>
-		</label>
 	</cls:method>
 
 	<cls:method name="SetViewport" type="http://metalx.org/Video/Graphics/MeshRenderer">
@@ -466,7 +586,7 @@
 	</cls:method>
 
 	<cls:method name="LoadVertexBuffer" type="http://metalx.org/Video/Graphics/MeshRenderer">
-		<cls:parameter name="vertexBuffer" type="http://metalx.org/Video/Graphics/VertexBuffer"/>
+		<cls:parameter name="vertexBuffer" type="http://metalx.org/Object"/>
 
 		<cpu:PushDIToStack/>
 
@@ -480,7 +600,7 @@
 	</cls:method>
 
 	<cls:method name="SetVertexBuffer" type="http://metalx.org/Video/Graphics/MeshRenderer">
-		<cls:parameter name="vertexBuffer" type="http://metalx.org/Video/Graphics/VertexBuffer"/>
+		<cls:parameter name="vertexBuffer" type="http://metalx.org/Object"/>
 
 		<cpu:PushDIToStack/>
 
@@ -507,7 +627,7 @@
 	</cls:method>
 
 	<cls:method name="LoadIndexBuffer" type="http://metalx.org/Video/Graphics/MeshRenderer">
-		<cls:parameter name="indexBuffer" type="http://metalx.org/Video/Graphics/IndexBuffer"/>
+		<cls:parameter name="indexBuffer" type="http://metalx.org/Object"/>
 
 		<cpu:PushDIToStack/>
 
@@ -521,7 +641,7 @@
 	</cls:method>
 
 	<cls:method name="SetIndexBuffer" type="http://metalx.org/Video/Graphics/MeshRenderer">
-		<cls:parameter name="indexBuffer" type="http://metalx.org/Video/Graphics/IndexBuffer"/>
+		<cls:parameter name="indexBuffer" type="http://metalx.org/Object"/>
 
 		<cpu:PushDIToStack/>
 
@@ -562,7 +682,7 @@
 	</cls:method>
 
 	<cls:method name="SetGeometryShader" type="http://metalx.org/Video/Graphics/MeshRenderer">
-		<cls:parameter name="geometryShader" type="http://metalx.org/Video/Graphics/VertexShader"/>
+		<cls:parameter name="geometryShader" type="http://metalx.org/Video/Graphics/GeometryShader"/>
 
 		<cpu:PushDIToStack/>
 
@@ -634,6 +754,28 @@
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-SIAddressPlusImmediate8/>
 		<byte>20</byte>
+		
+		<!--Find GetVerteces Method-->
+		<cpu:PushSIToStack/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+		
+		<obj:GetType/>
+		
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="getVerteces" type="Absolute32"/>
+		
+		<clsf:FindMethod/>
+		
+		<clsf:GetMethodEntryPoint/>
+
+		<cpu:PullDIFromStack/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIAddressPlusImmediate8/>
+		<byte>44</byte>
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
@@ -642,6 +784,8 @@
 		<cpu:PullDIFromStack/>
 
 		<cpu:ReturnToNearCaller/>
+
+		<var:string id="getVerteces">GetVerteces</var:string>
 	</cls:method>
 
 	<cls:method name="SetVertexShaderRegister" type="http://metalx.org/Video/Graphics/MeshRenderer">

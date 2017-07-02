@@ -24,15 +24,76 @@
 	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
 	xmlns:op="http://metalx.org/Intel/80386/Operands">
 
+	<cls:method name="Create" type="http://metalx.org/Video/Graphics/VertexShader" static="true">
+		<mm:CheckOut length="32"/>
+
+		<obj:Create length="32"/>
+		
+		<cls:return/>
+	</cls:method>
+
 	<cls:method name="GetVerteces" type="http://metalx.org/Video/Graphics/VertexShader">
 		<cls:parameter name="Source" type="http://metalx.org/Video/Graphics/VertexBuffer"/>
 		<cls:parameter name="Destination" type="http://metalx.org/Video/Graphics/VertexBuffer"/>
 		<cls:parameter name="Index" type="http://metalx.org/Integer"/>
 		<cls:parameter name="Count" type="http://metalx.org/Integer"/>
 
+		<cpu:PushDIToStack/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:CX-SIAddress/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<obj:GetData/>
+
+		<!--Find Start-->
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>5</byte>
+
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+
+		<!--Copy Verteces-->
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftCXRegisterLeft/>
+		<byte>3</byte>
+
+		<cpu:Repeat/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
 		<byte>16</byte>
+
+		<cpu:PullDIFromStack/>
 
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
