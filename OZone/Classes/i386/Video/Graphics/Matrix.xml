@@ -388,7 +388,7 @@
 		<op:SP-BPRegister/>
 
 		<cpu:PullSIFromStack/>
-		
+
 		<cpu:ExchangeOperandWithRegister/>
 		<op:SP-BPRegister/>
 
@@ -476,6 +476,110 @@
 		<op:DI-SIRegister/>
 
 		<matrix:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="RotateZ" type="http://metalx.org/Video/Graphics/Matrix">
+		<cls:parameter name="Value" type="http://metalx.org/Float"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:ExchangeOperandWithRegister/>
+		<op:SP-BPRegister/>
+
+		<obj:GetData/>
+
+		<fpu:ResetFpu/>
+
+		<fpu:Zero/>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:Cosine/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>0</byte>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:Sine/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>4</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:Sine/>
+
+		<fpu:ChangeSign/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>16</byte>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:Cosine/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>20</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>24</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>28</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>32</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>36</byte>
+
+		<fpu:One/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>40</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>44</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>48</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>52</byte>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>56</byte>
+
+		<fpu:One/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>60</byte>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:PullDIFromStack/>
 
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
@@ -1465,6 +1569,744 @@
 		<op:AX-SIRegister/>
 
 		<matrix:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="Multiply" type="http://metalx.org/Video/Graphics/Matrix" static="true">
+		<cls:parameter name="Value1" type="http://metalx.org/Video/Graphics/Matrix"/>
+		<cls:parameter name="Value2" type="http://metalx.org/Video/Graphics/Matrix"/>
+		<cls:parameter name="Output" type="http://metalx.org/Video/Graphics/Matrix"/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<hex>00000080</hex>
+
+		<!--Get Output-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate/>
+		<hex>00000080</hex>
+
+		<cpu:PushSIToStack/>
+
+		<obj:GetData/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<!--Get Value2-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate/>
+		<hex>00000084</hex>
+
+		<obj:GetData/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-AXRegister/>
+
+		<!--Get Value1-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate/>
+		<hex>00000080</hex>
+
+		<obj:GetData/>
+
+		<fpu:ResetFpu/>
+
+		<!--M11-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>00</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>00</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>04</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>10</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>08</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>20</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>0c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>30</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>00</hex>
+
+
+		<!--M12-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>00</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>04</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>04</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>14</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>08</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>24</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>0c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>34</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>04</hex>
+
+
+		<!--M13-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>00</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>08</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>04</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>18</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>08</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>28</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>0c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>38</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>08</hex>
+
+
+		<!--M14-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>00</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>0c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>04</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>1c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>08</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>2c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>0c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>3c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>0c</hex>
+
+
+		<!--M21-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>10</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>00</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>14</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>10</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>18</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>20</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>1c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>30</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>10</hex>
+
+
+		<!--M22-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>10</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>04</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>14</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>14</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>18</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>24</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>1c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>34</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>14</hex>
+
+
+		<!--M23-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>10</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>08</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>14</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>18</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>18</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>28</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>1c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>38</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>18</hex>
+
+
+		<!--M24-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>10</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>0c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>14</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>1c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>18</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>2c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>1c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>3c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>1c</hex>
+
+
+		<!--M31-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>20</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>00</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>24</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>10</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>28</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>20</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>2c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>30</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>20</hex>
+
+
+		<!--M32-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>20</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>04</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>24</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>14</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>28</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>24</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>2c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>34</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>24</hex>
+
+
+		<!--M33-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>20</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>08</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>24</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>18</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>28</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>28</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>2c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>38</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>28</hex>
+
+
+		<!--M34-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>20</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>0c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>24</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>1c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>28</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>2c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>2c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>3c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>2c</hex>
+
+
+		<!--M41-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>30</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>00</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>34</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>10</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>38</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>20</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>3c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>30</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>30</hex>
+
+
+		<!--M42-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>30</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>04</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>34</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>14</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>38</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>24</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>3c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>34</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>34</hex>
+
+
+		<!--M43-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>30</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>08</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>34</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>18</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>38</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>28</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>3c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>38</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>38</hex>
+
+
+		<!--M44-->
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>30</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>0c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>34</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>1c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>38</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>2c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<hex>3c</hex>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<hex>3c</hex>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>3c</hex>
+
+		<cpu:WaitForFloatingPointUnit/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToBPRegister/>
+		<hex>0000008c</hex>
+
+		<cpu:PullDIFromStack/>
 
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
