@@ -754,39 +754,144 @@
 			<cpu:WaitForFloatingPointUnit/>
 		</scope>
 	</xsl:template>
+	
+	<xsl:template match="matrix:Identity">
+		<fpu:ResetFpu/>
+		
+		<fpu:One/>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>20</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>40</byte>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>60</byte>
+
+		<fpu:Zero/>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>24</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>28</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>32</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>36</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>44</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>48</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>52</byte>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>56</byte>
+		
+		<cpu:WaitForFloatingPointUnit/>
+	</xsl:template>
+
+
+	<xsl:template match="matrix:RotateX">
+		<fpu:PushST0/>
+
+		<fpu:Cosine/>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>20</byte>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>40</byte>
+
+		<fpu:PushST0/>
+
+		<fpu:Sine/>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>24</byte>
+
+		<fpu:ChangeSign/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>36</byte>
+
+		<cpu:WaitForFloatingPointUnit/>
+	</xsl:template>
+
+	<xsl:template match="matrix:RotateY">
+		<fpu:PushST0/>
+
+		<fpu:Cosine/>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>40</byte>
+
+		<fpu:PushST0/>
+
+		<fpu:Sine/>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>32</byte>
+
+		<fpu:ChangeSign/>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>8</byte>
+
+		<cpu:WaitForFloatingPointUnit/>
+	</xsl:template>
 
 	<xsl:template match="matrix:RotateZ">
 		<fpu:PushST0/>
 
 		<fpu:Cosine/>
 
-		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
 		<byte>0</byte>
 
-		<fpu:PushST0/>
-
-		<fpu:Sine/>
-
 		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
-		<byte>4</byte>
+		<byte>20</byte>
 
 		<fpu:PushST0/>
 
 		<fpu:Sine/>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>4</byte>
 
 		<fpu:ChangeSign/>
 
 		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
 		<byte>16</byte>
 
-		<fpu:Cosine/>
-
-		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
-		<byte>20</byte>
-
 		<cpu:WaitForFloatingPointUnit/>
 	</xsl:template>
-	
+
 	<xsl:template match="matrix:ToString">
 		<scope>
 			<str:Create length="40"/>

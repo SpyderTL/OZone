@@ -15,6 +15,7 @@
 	xmlns:str="http://metalx.org/i386/Functions/String"
 	xmlns:int="http://metalx.org/i386/Functions/Integer"
 	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:vec="http://metalx.org/i386/Functions/Vector4"
 	xmlns:math="http://metalx.org/Intel/80386/Math"
 	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
 	xmlns:shift="http://metalx.org/Intel/80386/Shift"
@@ -24,12 +25,12 @@
 	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
 	xmlns:op="http://metalx.org/Intel/80386/Operands">
 
-	<cls:field name="Transform" type="http://metalx.org/Video/Graphics/Matrix" offset="0"/>
+	<cls:field name="Matrix" type="http://metalx.org/Video/Graphics/Matrix" offset="0"/>
 
 	<cls:method name="Create" type="http://metalx.org/Video/Graphics/VertexShader" static="true">
-		<mm:CheckOut length="32"/>
+		<mm:CheckOut length="64"/>
 
-		<obj:Create length="32"/>
+		<obj:Create length="64"/>
 		
 		<cls:return/>
 	</cls:method>
@@ -41,7 +42,16 @@
 		<cls:parameter name="Count" type="http://metalx.org/Integer"/>
 
 		<cpu:PushDIToStack/>
+
+		<!--Get Matrix-->
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:PushSIToStack/>
 		
+		<!--Get Destination-->
 		<cpu:CopyOperandToRegister/>
 		<op:SI-BPAddressPlusImmediate8/>
 		<byte>8</byte>
@@ -51,6 +61,7 @@
 		<cpu:CopyRegisterToOperand/>
 		<op:SI-DIRegister/>
 
+		<!--Get Index-->
 		<cpu:CopyOperandToRegister/>
 		<op:SI-BPAddressPlusImmediate8/>
 		<byte>4</byte>
@@ -60,6 +71,7 @@
 		<cpu:CopyOperandToRegister/>
 		<op:AX-SIAddress/>
 
+		<!--Get Count-->
 		<cpu:CopyOperandToRegister/>
 		<op:SI-BPAddressPlusImmediate8/>
 		<byte>0</byte>
@@ -69,6 +81,7 @@
 		<cpu:CopyOperandToRegister/>
 		<op:CX-SIAddress/>
 
+		<!--Get Source-->
 		<cpu:CopyOperandToRegister/>
 		<op:SI-BPAddressPlusImmediate8/>
 		<byte>12</byte>
@@ -84,12 +97,40 @@
 		<op:AX-SIRegister/>
 
 		<!--Copy Verteces-->
-		<cpu:ShiftRegisterByImmediate8Function/>
+		<!--<cpu:ShiftRegisterByImmediate8Function/>
 		<shift:ShiftCXRegisterLeft/>
 		<byte>3</byte>
 
 		<cpu:Repeat/>
-		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>
+		<cpu:CopySIAddressToDIAddressAndIncrementSIAndDI/>-->
+
+		<cpu:PullAXFromStack/>
+
+		<label id="forEachVertex"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="transformVertex" type="Relative32"/>
+
+		<label id="nextVertex"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-SIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>32</byte>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIRegister/>
+		<byte>32</byte>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachVertex" type="Relative8"/>
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
@@ -98,6 +139,13 @@
 		<cpu:PullDIFromStack/>
 
 		<cpu:ReturnToNearCaller/>
+
+		<label id="transformVertex"/>
+
+		<vec:Transform/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="nextVertex" type="Relative32"/>
 	</cls:method>
 
 	<cls:method name="ToString" type="http://metalx.org/String">

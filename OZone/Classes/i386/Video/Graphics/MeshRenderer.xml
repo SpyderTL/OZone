@@ -17,7 +17,7 @@
 	xmlns:int="http://metalx.org/i386/Functions/Integer"
 	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
 	xmlns:float="http://metalx.org/i386/Functions/Float"
-	xmlns:con="http://metalx.org/i386/Functions/Console"
+	xmlns:matrix="http://metalx.org/i386/Functions/Matrix"
 	xmlns:math="http://metalx.org/Intel/80386/Math"
 	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
 	xmlns:shift="http://metalx.org/Intel/80386/Shift"
@@ -254,9 +254,16 @@
 		<cpu:PushDIToStack/>
 		
 		<!--Create Vertex Shader-->
-		<mm:CheckOut length="32"/>
+		<mm:CheckOut length="64"/>
+
+		<matrix:Identity/>
+
+		<fpu:PushFloatAtImmediateAddressToST0/>
+		<addressOf ref="rotation" type="Absolute32"/>
+
+		<matrix:RotateZ/>
 		
-		<obj:Create length="32" type="http://metalx.org/Video/Graphics/VertexShader"/>
+		<obj:Create length="64" type="http://metalx.org/Video/Graphics/VertexShader"/>
 		
 		<cpu:CopyOperandToRegister/>
 		<op:SI-IndexAddress/>
@@ -455,8 +462,8 @@
 		<cls:return/>
 
 		<label id="verteces">
-			<float>40</float>
-			<float>0</float>
+			<float>320</float>
+			<float>230</float>
 			<float>0.0</float>
 			<float>0.0</float>
 			<hex>ffff0000</hex>
@@ -464,8 +471,8 @@
 			<float>0.0</float>
 			<hex>00000000</hex>
 			
-			<float>79</float>
-			<float>24</float>
+			<float>330</float>
+			<float>250</float>
 			<float>0.0</float>
 			<float>0.0</float>
 			<hex>0000ff00</hex>
@@ -473,8 +480,8 @@
 			<float>1.0</float>
 			<hex>00000000</hex>
 			
-			<float>0</float>
-			<float>24</float>
+			<float>310</float>
+			<float>250</float>
 			<float>0.0</float>
 			<float>0.0</float>
 			<hex>000000ff</hex>
@@ -484,6 +491,7 @@
 		</label>
 	
 		<var:string id="getVerteces">GetVerteces</var:string>
+		<var:float id="rotation">0.2</var:float>
 
 	</cls:method>
 

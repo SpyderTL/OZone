@@ -78,6 +78,121 @@
 		</scope>
 	</xsl:template>
 
+	<xsl:template match="vector:Transform">
+		<fpu:ResetFpu/>
+
+		<fpu:PushFloatAtAXAddressToST0/>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<byte>16</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>4</byte>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<byte>32</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>8</byte>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<byte>48</byte>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<byte>4</byte>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<byte>20</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>4</byte>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<byte>36</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>8</byte>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<byte>52</byte>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<byte>8</byte>
+
+		<fpu:PushFloatAtSIAddressToST0/>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<byte>24</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>4</byte>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<byte>40</byte>
+
+		<fpu:PushFloatAtSIAddressPlusImmediate8ToST0/>
+		<byte>8</byte>
+
+		<fpu:MultiplyST1ByST0AndIncrementST/>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+		<fpu:PushFloatAtAXAddressPlusImmediate8ToST0/>
+		<byte>56</byte>
+
+		<fpu:AddST0ToST1AndIncrementST/>
+
+
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>8</byte>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>4</byte>
+
+		<fpu:PullFloatAtDIAddressFromST0/>
+
+		<cpu:WaitForFloatingPointUnit/>
+	</xsl:template>
+	
 	<xsl:template match="vector:ToString">
 		<scope>
 			<fpu:ResetFpu/>
