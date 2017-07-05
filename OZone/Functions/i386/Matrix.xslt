@@ -813,7 +813,6 @@
 		<cpu:WaitForFloatingPointUnit/>
 	</xsl:template>
 
-
 	<xsl:template match="matrix:RotateX">
 		<fpu:PushST0/>
 
@@ -888,6 +887,19 @@
 
 		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
 		<byte>16</byte>
+
+		<cpu:WaitForFloatingPointUnit/>
+	</xsl:template>
+
+	<xsl:template match="matrix:Translate">
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>38</hex>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>34</hex>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<hex>30</hex>
 
 		<cpu:WaitForFloatingPointUnit/>
 	</xsl:template>

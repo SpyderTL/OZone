@@ -254,14 +254,27 @@
 		<cpu:PushDIToStack/>
 		
 		<!--Create Vertex Shader-->
-		<mm:CheckOut length="64"/>
+		<!--<mm:CheckOut length="64"/>
 
 		<matrix:Identity/>
 
 		<fpu:PushFloatAtImmediateAddressToST0/>
 		<addressOf ref="rotation" type="Absolute32"/>
 
-		<matrix:RotateZ/>
+		<matrix:RotateZ/>-->
+		
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<hex>00000200</hex>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:BP-DIRegister/>
+		
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDIRegister/>
+		<hex>00000100</hex>
+		
+		<matrix:Identity/>
 		
 		<obj:Create length="64" type="http://metalx.org/Video/Graphics/VertexShader"/>
 		
@@ -301,6 +314,36 @@
 		<op:DI-SIAddressPlusImmediate8/>
 		<byte>44</byte>
 		
+		<!--Create World Matrix-->
+		<cpu:CopyRegisterToOperand/>
+		<op:BP-DIRegister/>
+		
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDIRegister/>
+		<hex>00000140</hex>
+		
+		<matrix:Identity/>
+		
+		<!--Create View Matrix-->
+		<cpu:CopyRegisterToOperand/>
+		<op:BP-DIRegister/>
+		
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDIRegister/>
+		<hex>00000180</hex>
+		
+		<matrix:Identity/>
+		
+		<fpu:PushFloatAtImmediateAddressToST0/>
+		<addressOf ref="centerX" type="Absolute32"/>
+		
+		<fpu:PushFloatAtImmediateAddressToST0/>
+		<addressOf ref="centerY" type="Absolute32"/>
+		
+		<fpu:Zero/>
+		
+		<matrix:Translate/>
+
 		<!--Create Vertex Buffer-->
 		<cpu:CopyImmediateToDI/>
 		<addressOf ref="verteces" type="Absolute32"/>
@@ -381,10 +424,7 @@
 		<logic:CallAXRegister/>
 		
 		<!--Draw Triangles-->
-		<cpu:MathImmediateToOperandFunction/>
-		<math:SubtractFromBPRegister/>
-		<hex>00000100</hex>
-		
+
 		<!--Get PixelBuffer-->
 		<cpu:CopyOperandToRegister/>
 		<op:DI-IndexAddress/>
@@ -450,20 +490,62 @@
 		<hex>00000018</hex>
 		<int>64</int>
 
+		<label id="forEachFrame"/>
+		
+		<!--Update Rotation-->
+		<!--<fpu:PushFloatAtImmediateAddressToST0/>
+		<addressOf ref="rotation" type="Absolute32"/>
+		
+		<fpu:AddFloatAtImmediateAddressToST0/>
+		<addressOf ref="speed" type="Absolute32"/>
+		
+		<fpu:CopyST0ToFloatAtImmediateAddress/>
+		<addressOf ref="rotation" type="Absolute32"/>-->
+		
+		<!--Update World-->
+		<cpu:CopyRegisterToOperand/>
+		<op:BP-DIRegister/>
+		
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDIRegister/>
+		<hex>00000140</hex>
+		
+		<!--<matrix:RotateZ/>-->
+		
+		<!--Multply View-->
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+		
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDIRegister/>
+		<hex>00000040</hex>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-AXRegister/>
+		
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDIRegister/>
+		<hex>00000080</hex>
+		
+		<matrix:Multiply/>
+		
 		<cpu:CallRelative/>
-		<addressOf ref="renderTriangle" type="Relative32"/>		
+		<addressOf ref="renderTriangle" type="Relative32"/>	
+
+		<!--<cpu:JumpToRelative/>
+		<addressOf ref="forEachFrame" type="Relative32"/>-->
 		
 		<cpu:MathImmediateToOperandFunction/>
 		<math:AddToBPRegister/>
-		<hex>00000100</hex>
+		<hex>00000200</hex>
 		
 		<cpu:PullDIFromStack/>
 
 		<cls:return/>
 
 		<label id="verteces">
-			<float>320</float>
-			<float>230</float>
+			<float>10</float>
+			<float>0</float>
 			<float>0.0</float>
 			<float>0.0</float>
 			<hex>ffff0000</hex>
@@ -471,8 +553,8 @@
 			<float>0.0</float>
 			<hex>00000000</hex>
 			
-			<float>330</float>
-			<float>250</float>
+			<float>20</float>
+			<float>10</float>
 			<float>0.0</float>
 			<float>0.0</float>
 			<hex>0000ff00</hex>
@@ -480,8 +562,8 @@
 			<float>1.0</float>
 			<hex>00000000</hex>
 			
-			<float>310</float>
-			<float>250</float>
+			<float>0</float>
+			<float>10</float>
 			<float>0.0</float>
 			<float>0.0</float>
 			<hex>000000ff</hex>
@@ -491,7 +573,10 @@
 		</label>
 	
 		<var:string id="getVerteces">GetVerteces</var:string>
-		<var:float id="rotation">0.2</var:float>
+		<var:float id="rotation">0.0</var:float>
+		<var:float id="speed">0.01</var:float>
+		<var:float id="centerX">10</var:float>
+		<var:float id="centerY">10</var:float>
 
 	</cls:method>
 
