@@ -274,8 +274,8 @@
 		<math:AddToDIRegister/>
 		<hex>00000100</hex>
 		
-		<matrix:Identity/>
-		
+		<matrix:Zero/>
+
 		<obj:Create length="64" type="http://metalx.org/Video/Graphics/VertexShader"/>
 		
 		<cpu:CopyOperandToRegister/>
@@ -359,6 +359,54 @@
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIAddressPlusImmediate8/>
 		<byte>12</byte>
+		
+		<label id="forEachFrame"/>
+		
+		<!--Update Rotation-->
+		<fpu:PushFloatAtImmediateAddressToST0/>
+		<addressOf ref="rotation" type="Absolute32"/>
+		
+		<fpu:AddFloatAtImmediateAddressToST0/>
+		<addressOf ref="speed" type="Absolute32"/>
+		
+		<fpu:CopyST0ToFloatAtImmediateAddress/>
+		<addressOf ref="rotation" type="Absolute32"/>
+		
+		<!--Update World-->
+		<cpu:CopyRegisterToOperand/>
+		<op:BP-DIRegister/>
+		
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDIRegister/>
+		<hex>00000140</hex>
+		
+		<matrix:RotateZ/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-AXRegister/>
+		
+		<!--Multply View-->
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDIRegister/>
+		<hex>00000040</hex>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+		
+		<cpu:MathImmediateToOperandFunction/>
+		<math:SubtractFromDIRegister/>
+		<hex>00000080</hex>
+
+		<matrix:Multiply/>
+
+		<!--<cpu:CopyRegisterToOperand/>
+		<op:BP-DIRegister/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AddToDIRegister/>
+		<hex>00000100</hex>
+		
+		<matrix:Identity/>-->
 		
 		<!--Get Source-->
 		<cpu:CopyOperandToRegister/>
@@ -490,45 +538,6 @@
 		<hex>00000018</hex>
 		<int>64</int>
 
-		<label id="forEachFrame"/>
-		
-		<!--Update Rotation-->
-		<!--<fpu:PushFloatAtImmediateAddressToST0/>
-		<addressOf ref="rotation" type="Absolute32"/>
-		
-		<fpu:AddFloatAtImmediateAddressToST0/>
-		<addressOf ref="speed" type="Absolute32"/>
-		
-		<fpu:CopyST0ToFloatAtImmediateAddress/>
-		<addressOf ref="rotation" type="Absolute32"/>-->
-		
-		<!--Update World-->
-		<cpu:CopyRegisterToOperand/>
-		<op:BP-DIRegister/>
-		
-		<cpu:MathImmediateToOperandFunction/>
-		<math:AddToDIRegister/>
-		<hex>00000140</hex>
-		
-		<!--<matrix:RotateZ/>-->
-		
-		<!--Multply View-->
-		<cpu:CopyRegisterToOperand/>
-		<op:DI-SIRegister/>
-		
-		<cpu:MathImmediateToOperandFunction/>
-		<math:AddToDIRegister/>
-		<hex>00000040</hex>
-		
-		<cpu:CopyRegisterToOperand/>
-		<op:DI-AXRegister/>
-		
-		<cpu:MathImmediateToOperandFunction/>
-		<math:SubtractFromDIRegister/>
-		<hex>00000080</hex>
-		
-		<matrix:Multiply/>
-		
 		<cpu:CallRelative/>
 		<addressOf ref="renderTriangle" type="Relative32"/>	
 
@@ -544,8 +553,8 @@
 		<cls:return/>
 
 		<label id="verteces">
-			<float>10</float>
 			<float>0</float>
+			<float>-5</float>
 			<float>0.0</float>
 			<float>0.0</float>
 			<hex>ffff0000</hex>
@@ -553,8 +562,8 @@
 			<float>0.0</float>
 			<hex>00000000</hex>
 			
-			<float>20</float>
-			<float>10</float>
+			<float>5</float>
+			<float>5</float>
 			<float>0.0</float>
 			<float>0.0</float>
 			<hex>0000ff00</hex>
@@ -562,8 +571,8 @@
 			<float>1.0</float>
 			<hex>00000000</hex>
 			
-			<float>0</float>
-			<float>10</float>
+			<float>-5</float>
+			<float>5</float>
 			<float>0.0</float>
 			<float>0.0</float>
 			<hex>000000ff</hex>
@@ -573,10 +582,10 @@
 		</label>
 	
 		<var:string id="getVerteces">GetVerteces</var:string>
-		<var:float id="rotation">0.0</var:float>
-		<var:float id="speed">0.01</var:float>
-		<var:float id="centerX">10</var:float>
-		<var:float id="centerY">10</var:float>
+		<var:float id="rotation">3.1415</var:float>
+		<var:float id="speed">0.0</var:float>
+		<var:float id="centerX">40</var:float>
+		<var:float id="centerY">12</var:float>
 
 	</cls:method>
 

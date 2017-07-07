@@ -754,10 +754,66 @@
 			<cpu:WaitForFloatingPointUnit/>
 		</scope>
 	</xsl:template>
-	
+
+	<xsl:template match="matrix:Zero">
+		<fpu:ResetFpu/>
+
+		<fpu:Zero/>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>20</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>40</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>60</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>16</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>24</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>28</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>32</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>36</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>44</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>48</byte>
+
+		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
+		<byte>52</byte>
+
+		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
+		<byte>56</byte>
+
+		<cpu:WaitForFloatingPointUnit/>
+	</xsl:template>
+
 	<xsl:template match="matrix:Identity">
 		<fpu:ResetFpu/>
-		
+
 		<fpu:One/>
 
 		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
@@ -809,7 +865,7 @@
 
 		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
 		<byte>56</byte>
-		
+
 		<cpu:WaitForFloatingPointUnit/>
 	</xsl:template>
 
