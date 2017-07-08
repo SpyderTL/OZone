@@ -359,10 +359,19 @@
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIAddressPlusImmediate8/>
 		<byte>12</byte>
+
+		<cpu:CopyImmediateToCX/>
+		<int>2000</int>
 		
 		<label id="forEachFrame"/>
+
+		<bochs:Break xmlns:bochs="http://metalx.org/i386/Functions/Bochs"/>
+		
+		<cpu:PushCXToStack/>
 		
 		<!--Update Rotation-->
+		<fpu:ResetFpu/>
+		
 		<fpu:PushFloatAtImmediateAddressToST0/>
 		<addressOf ref="rotation" type="Absolute32"/>
 		
@@ -371,6 +380,8 @@
 		
 		<fpu:CopyST0ToFloatAtImmediateAddress/>
 		<addressOf ref="rotation" type="Absolute32"/>
+
+		<cpu:WaitForFloatingPointUnit/>
 		
 		<!--Update World-->
 		<cpu:CopyRegisterToOperand/>
@@ -381,6 +392,8 @@
 		<hex>00000140</hex>
 		
 		<matrix:RotateZ/>
+
+		<fpu:ResetFpu/>
 		
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-AXRegister/>
@@ -399,6 +412,8 @@
 
 		<matrix:Multiply/>
 
+		<fpu:ResetFpu/>
+
 		<!--<cpu:CopyRegisterToOperand/>
 		<op:BP-DIRegister/>
 
@@ -410,8 +425,13 @@
 		
 		<!--Get Source-->
 		<cpu:CopyOperandToRegister/>
-		<op:DI-IndexAddress/>
+		<op:DI-IndexAddressPlusImmediate8/>
 		<index:SP/>
+		<byte>4</byte>
+		
+		<!--<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>-->
 		
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:SubtractFromBPRegister/>
@@ -471,12 +491,15 @@
 		<cpu:LogicFunction/>
 		<logic:CallAXRegister/>
 		
-		<!--Draw Triangles-->
-
 		<!--Get PixelBuffer-->
 		<cpu:CopyOperandToRegister/>
-		<op:DI-IndexAddress/>
+		<op:DI-IndexAddressPlusImmediate8/>
 		<index:SP/>
+		<byte>4</byte>
+		
+		<!--<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddress/>
+		<index:SP/>-->
 		
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
@@ -539,10 +562,30 @@
 		<int>64</int>
 
 		<cpu:CallRelative/>
-		<addressOf ref="renderTriangle" type="Relative32"/>	
+		<addressOf ref="renderTriangle" type="Relative32"/>
 
-		<!--<cpu:JumpToRelative/>
-		<addressOf ref="forEachFrame" type="Relative32"/>-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<!--<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>-->
+
+		<obj:ExecuteMethod name="Update"/>
+
+		<cpu:PullCXFromStack/>
+
+		<!--<cpu:DecrementCX/>-->
+
+		<!--<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="done" type="Relative8"/>-->
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="forEachFrame" type="Relative32"/>
+		
+		<label id="done"/>
 		
 		<cpu:MathImmediateToOperandFunction/>
 		<math:AddToBPRegister/>
@@ -554,7 +597,7 @@
 
 		<label id="verteces">
 			<float>0</float>
-			<float>-5</float>
+			<float>-50</float>
 			<float>0.0</float>
 			<float>0.0</float>
 			<hex>ffff0000</hex>
@@ -562,8 +605,8 @@
 			<float>0.0</float>
 			<hex>00000000</hex>
 			
-			<float>5</float>
-			<float>5</float>
+			<float>50</float>
+			<float>50</float>
 			<float>0.0</float>
 			<float>0.0</float>
 			<hex>0000ff00</hex>
@@ -571,8 +614,8 @@
 			<float>1.0</float>
 			<hex>00000000</hex>
 			
-			<float>-5</float>
-			<float>5</float>
+			<float>-50</float>
+			<float>50</float>
 			<float>0.0</float>
 			<float>0.0</float>
 			<hex>000000ff</hex>
@@ -582,10 +625,10 @@
 		</label>
 	
 		<var:string id="getVerteces">GetVerteces</var:string>
-		<var:float id="rotation">3.1415</var:float>
-		<var:float id="speed">0.0</var:float>
-		<var:float id="centerX">40</var:float>
-		<var:float id="centerY">12</var:float>
+		<var:float id="rotation">0</var:float>
+		<var:float id="speed">0.001</var:float>
+		<var:float id="centerX">160</var:float>
+		<var:float id="centerY">100</var:float>
 
 	</cls:method>
 
@@ -1098,9 +1141,6 @@
 	</cls:method>
 
 	<label id="renderTriangle">
-		<!--if(VertexShader != null)-->
-			<!--TransformVertices-->
-		
 		<!--SortVertices (Index1, Index2)-->
 		<cpu:CopyOperandToRegister/>
 		<op:SI-BPAddressPlusImmediate8/>
@@ -3532,6 +3572,19 @@
 		<hex>00</hex>
 
 		<cpu:IncrementCX/>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:CompareWithCXRegister/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfGreater/>
+		<addressOf ref="notEmpty" type="Relative8"/>
+		
+		<cpu:PullCXFromStack/>
+		
+		<cpu:ReturnToNearCaller/>
+		
+		<label id="notEmpty"/>
 
 		<cpu:CopyRegisterToOperand/>
 		<op:CX-BPAddressPlusImmediate/>

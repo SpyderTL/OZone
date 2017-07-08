@@ -880,8 +880,6 @@
 		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
 		<byte>40</byte>
 
-		<fpu:PushST0/>
-
 		<fpu:Sine/>
 
 		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
@@ -906,8 +904,6 @@
 		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
 		<byte>40</byte>
 
-		<fpu:PushST0/>
-
 		<fpu:Sine/>
 
 		<fpu:CopyST0ToFloatAtDIAddressPlusImmediate8/>
@@ -931,8 +927,6 @@
 
 		<fpu:PullFloatAtDIAddressPlusImmediate8FromST0/>
 		<byte>20</byte>
-
-		<fpu:PushST0/>
 
 		<fpu:Sine/>
 
