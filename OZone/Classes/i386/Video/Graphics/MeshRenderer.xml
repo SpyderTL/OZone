@@ -44,7 +44,8 @@
 	<cls:field name="VertexShader_GetVerteces_Destination" type="http://metalx.org/Reference" offset="48"/>
 	<cls:field name="Index" type="http://metalx.org/Reference" offset="52"/>
 	<cls:field name="Count" type="http://metalx.org/Reference" offset="56"/>
-	<cls:field name="Viewport" type="http://metalx.org/Video/Graphics/Viewport" offset="60"/>
+	<cls:field name="PixelBuffer_SetColor_Black" type="http://metalx.org/Hexadecimal" offset="60"/>
+	<cls:field name="Viewport" type="http://metalx.org/Video/Graphics/Viewport" offset="64"/>
 
 	<cls:method name="Create" type="http://metalx.org/Video/Graphics/MeshRenderer" static="true">
 		<cls:parameter name="PixelRenderer" type="http://metalx.org/Video/Graphics/PixelRenderer"/>
@@ -234,6 +235,21 @@
 		<op:DI-SIAddressPlusImmediate8/>
 		<byte>56</byte>
 
+		<!--Create Color Object-->
+		<cpu:CopyImmediateToAX/>
+		<hex>ff000000</hex>
+
+		<hex:CreateObject/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>60</byte>
+
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
 		<byte>4</byte>
@@ -254,15 +270,6 @@
 		<cpu:PushDIToStack/>
 		
 		<!--Create Vertex Shader-->
-		<!--<mm:CheckOut length="64"/>
-
-		<matrix:Identity/>
-
-		<fpu:PushFloatAtImmediateAddressToST0/>
-		<addressOf ref="rotation" type="Absolute32"/>
-
-		<matrix:RotateZ/>-->
-		
 		<cpu:MathImmediateToOperandFunction/>
 		<math:SubtractFromBPRegister/>
 		<hex>00000200</hex>
@@ -364,10 +371,36 @@
 		<int>2000</int>
 		
 		<label id="forEachFrame"/>
-
-		<!--<bochs:Break xmlns:bochs="http://metalx.org/i386/Functions/Bochs"/>-->
 		
 		<cpu:PushCXToStack/>
+		
+		<!--Clear Pixel Buffer-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<byte>4</byte>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>60</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:LogicFunction/>
+		<logic:CallSIAddressPlusImmediate8/>
+		<byte>32</byte>
 		
 		<!--Update Rotation-->
 		<fpu:ResetFpu/>
@@ -597,7 +630,7 @@
 
 		<label id="verteces">
 			<float>0</float>
-			<float>-50</float>
+			<float>-5</float>
 			<float>0.0</float>
 			<float>0.0</float>
 			<hex>ffff0000</hex>
@@ -605,8 +638,8 @@
 			<float>0.0</float>
 			<hex>00000000</hex>
 			
-			<float>50</float>
-			<float>50</float>
+			<float>5</float>
+			<float>5</float>
 			<float>0.0</float>
 			<float>0.0</float>
 			<hex>0000ff00</hex>
@@ -614,8 +647,8 @@
 			<float>1.0</float>
 			<hex>00000000</hex>
 			
-			<float>-50</float>
-			<float>50</float>
+			<float>-5</float>
+			<float>5</float>
 			<float>0.0</float>
 			<float>0.0</float>
 			<hex>000000ff</hex>
@@ -628,8 +661,8 @@
 		<!--<var:float id="rotation">1.0499993563</var:float>-->
 		<var:float id="rotation">1.1099992990</var:float>
 		<var:float id="speed">0.001</var:float>
-		<var:float id="centerX">160</var:float>
-		<var:float id="centerY">100</var:float>
+		<var:float id="centerX">40</var:float>
+		<var:float id="centerY">12</var:float>
 
 	</cls:method>
 
