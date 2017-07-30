@@ -9,7 +9,9 @@
 	xmlns:kernel="http://metalx.org/Commodore64/Kernel"
 	xmlns:mm="http://metalx.org/C64/Functions/MemoryManager"
 	xmlns:str="http://metalx.org/C64/Functions/String"
-	xmlns:cls="http://metalx.org/C64/Functions/Class">
+	xmlns:cls="http://metalx.org/C64/Functions/Class"
+	xmlns:scr="http://metalx.org/C64Console/Functions/Screen"
+	>
 	
 	<!--Define Memory Address Labels-->
 	<sys:CpuPortDirectionControl id="cpuPortDirectionControl"/>
@@ -251,35 +253,34 @@
 	<hex>00</hex>
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
-	<hex>fb</hex>
+	<hex>02</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>03</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>04</hex>
 
 	<cpu:CopyImmediate8ToAccumulator/>
 	<hex>04</hex>
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
-	<hex>fc</hex>
+	<hex>05</hex>
 
 	<!--Enable Interrupts-->
 	<cpu:ClearInterruptDisableFlag/>
 	
-	<!--Show Prompt-->
-	<label id="showPrompt"/>
+	<!--Draw Prompt-->
+	<label id="drawPrompt"/>
 
 	<cpu:CopyImmediate8ToAccumulator/>
 	<string>&gt;</string>
 
-	<cpu:CopyImmediate8ToYIndex/>
-	<byte>0</byte>
-
-	<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-	<hex>fb</hex>
-
-	<cpu:IncrementImmediate8Address/>
-	<hex>fb</hex>
+	<scr:DrawCharacter/>
 
 	<label id="waitForKeypress"/>
 
-	<!--Store Keys-->
+	<!--Store Previous Key States-->
 	<cpu:CopyImmediate8ToXIndex/>
 	<byte>7</byte>
 
@@ -337,9 +338,9 @@
 
 	<cpu:ClearInterruptDisableFlag/>
 
-	<!--Find Keys-->
+	<!--Check Alpha Numeric Keys-->
 	<cpu:CopyImmediate8ToXIndex/>
-	<byte>32</byte>
+	<byte>48</byte>
 
 	<label id="findKeys"/>
 	
@@ -370,36 +371,110 @@
 
 	<cpu:BranchToRelative8IfPositive/>
 	<addressOf ref="findKeys" type="Relative8"/>
+	
+	<!--Check Return Key-->
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>0200</hex>
+
+	<cpu:AndAccumulatorWithImmediate8/>
+	<binary>00000010</binary>
+	
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="returnNotPressed" type="Relative8"/>
+
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>0208</hex>
+
+	<cpu:AndAccumulatorWithImmediate8/>
+	<binary>00000010</binary>
+	
+	<cpu:BranchToRelative8IfZero/>
+	<addressOf ref="returnNotPressed" type="Relative8"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="returnPressed" type="Absolute16"/>
+	
+	<label id="returnNotPressed"/>
+
+	<!--Check Backspace Key-->
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>0200</hex>
+
+	<cpu:AndAccumulatorWithImmediate8/>
+	<binary>00000001</binary>
+	
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="backspaceNotPressed" type="Relative8"/>
+
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>0208</hex>
+
+	<cpu:AndAccumulatorWithImmediate8/>
+	<binary>00000001</binary>
+	
+	<cpu:BranchToRelative8IfZero/>
+	<addressOf ref="backspaceNotPressed" type="Relative8"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="backspacePressed" type="Absolute16"/>
+	
+	<label id="backspaceNotPressed"/>
 
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="waitForKeypress" type="Absolute16"/>
 	
 	<label id="keyPressed"/>
 
-	<cpu:CopyXIndexToAccumulator/>
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>0201</hex>
 
-	<cpu:CopyImmediate8ToYIndex/>
-	<byte>0</byte>
+	<cpu:AndAccumulatorWithImmediate8/>
+	<binary>10000000</binary>
 
-	<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-	<hex>fb</hex>
+	<cpu:BranchToRelative8IfZero/>
+	<addressOf ref="shiftPressed" type="Relative8"/>
 
-	<cpu:IncrementImmediate8Address/>
-	<hex>fb</hex>
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>0206</hex>
+
+	<cpu:AndAccumulatorWithImmediate8/>
+	<binary>00010000</binary>
 
 	<cpu:BranchToRelative8IfNotZero/>
-	<addressOf ref="notCarry" type="Relative8"/>
+	<addressOf ref="shiftNotPressed" type="Relative8"/>
 
-	<cpu:IncrementImmediate8Address/>
-	<hex>fc</hex>
+	<label id="shiftPressed"/>
+	
+	<cpu:CopyXIndexToAccumulator/>
+	
+	<cpu:AddImmediate8ToAccumulator/>
+	<hex>3f</hex>
 
-	<label id="notCarry"/>
+	<cpu:CopyAccumulatorToXIndex/>
+		
+	<label id="shiftNotPressed"/>
+	
+	<cpu:CopyXIndexToAccumulator/>
+
+	<scr:DrawCharacter/>
 
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="waitForKeypress" type="Absolute16"/>
 
-	<cpu:NoOperation/>
+	<label id="returnPressed"/>
+
+	<scr:NewLine/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="drawPrompt" type="Absolute16"/>
 	
+	<label id="backspacePressed"/>
+
+	<scr:DeleteCharacter/>
+	
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="waitForKeypress" type="Absolute16"/>
+
 	<!--Reset Handler-->
 	<label id="resetHandler"/>
 
@@ -583,9 +658,9 @@
 	<binary>00000000</binary>
 	<binary>00000000</binary>
 	<binary>00000000</binary>
+	<binary>10000000</binary>
 	<binary>00000000</binary>
-	<binary>00000000</binary>
-	<binary>00000000</binary>
+	<binary>00010000</binary>
 	<binary>00000000</binary>
 
 	<binary>00000000</binary>

@@ -26,15 +26,17 @@ namespace C64Console
 
 				program = ProgramBuilder.Build(
 					"../../C64Console.xml",
-					"../../../OZone/Functions/C64/Class.xslt",
-					"../../../OZone/Functions/C64/String.xslt",
-					"../../../OZone/Functions/C64/MemoryManager.xslt",
+					"../../Functions/Screen.xslt",
+					"../../../OZone/Functions/6502/Class.xslt",
+					"../../../OZone/Functions/6502/String.xslt",
+					"../../../OZone/Functions/6502/MemoryManager.xslt",
 					"../../../OZone/Platforms/Commodore/C64/Kernel.xslt",
 					"../../../OZone/Platforms/Commodore/C64/Keyboard.xslt",
 					"../../../OZone/Platforms/Commodore/C64/System.xslt",
 					"../../../OZone/Platforms/Commodore/C64/Video.xslt",
 					"../../../OZone/Platforms/Mos/6502/Operators.xslt");
 
+				//address.Offset = (uint)binaryWriter.BaseStream.Position + 0x8000;
 				address.Offset = (uint)binaryWriter.BaseStream.Position + 0x1000;
 
 				compiler.Compile(program, address, binaryWriter);
