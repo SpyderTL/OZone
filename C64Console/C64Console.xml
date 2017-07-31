@@ -340,7 +340,7 @@
 
 	<!--Check Alpha Numeric Keys-->
 	<cpu:CopyImmediate8ToXIndex/>
-	<byte>48</byte>
+	<byte>63</byte>
 
 	<label id="findKeys"/>
 	
@@ -420,6 +420,54 @@
 	
 	<label id="backspaceNotPressed"/>
 
+	<!--Check Escape (Run/Stop) Key-->
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>0207</hex>
+
+	<cpu:AndAccumulatorWithImmediate8/>
+	<binary>10000000</binary>
+	
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="escapeNotPressed" type="Relative8"/>
+
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>020f</hex>
+
+	<cpu:AndAccumulatorWithImmediate8/>
+	<binary>10000000</binary>
+	
+	<cpu:BranchToRelative8IfZero/>
+	<addressOf ref="escapeNotPressed" type="Relative8"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="escapePressed" type="Absolute16"/>
+	
+	<label id="escapeNotPressed"/>
+
+	<!--Check Tab (Control) Key-->
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>0207</hex>
+
+	<cpu:AndAccumulatorWithImmediate8/>
+	<binary>00000100</binary>
+	
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="tabNotPressed" type="Relative8"/>
+
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>020f</hex>
+
+	<cpu:AndAccumulatorWithImmediate8/>
+	<binary>00000100</binary>
+	
+	<cpu:BranchToRelative8IfZero/>
+	<addressOf ref="tabNotPressed" type="Relative8"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="escapePressed" type="Absolute16"/>
+	
+	<label id="tabNotPressed"/>
+
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="waitForKeypress" type="Absolute16"/>
 	
@@ -458,12 +506,40 @@
 
 	<scr:DrawCharacter/>
 
+	<!--Check For Scroll-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<byte>25</byte>
+
+	<cpu:CompareAccumulatorToImmediate8Address/>
+	<hex>03</hex>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="skipScroll" type="Relative8"/>
+
+	<scr:Scroll/>
+	
+	<label id="skipScroll"/>
+
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="waitForKeypress" type="Absolute16"/>
 
 	<label id="returnPressed"/>
 
 	<scr:NewLine/>
+
+	<!--Check For Scroll-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<byte>25</byte>
+
+	<cpu:CompareAccumulatorToImmediate8Address/>
+	<hex>03</hex>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="skipScroll2" type="Relative8"/>
+
+	<scr:Scroll/>
+	
+	<label id="skipScroll2"/>
 
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="drawPrompt" type="Absolute16"/>
@@ -474,6 +550,27 @@
 	
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="waitForKeypress" type="Absolute16"/>
+
+	<label id="escapePressed"/>
+
+	<scr:NewLine/>
+	
+	<!--Check For Scroll-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<byte>25</byte>
+
+	<cpu:CompareAccumulatorToImmediate8Address/>
+	<hex>03</hex>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="skipScroll3" type="Relative8"/>
+
+	<scr:Scroll/>
+	
+	<label id="skipScroll3"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="drawPrompt" type="Absolute16"/>
 
 	<!--Reset Handler-->
 	<label id="resetHandler"/>
@@ -589,17 +686,17 @@
 	<byte>5</byte>
 	<byte>5</byte>
 
-	<byte>5</byte>
-	<byte>5</byte>
-	<byte>5</byte>
-	<byte>5</byte>
-	<byte>5</byte>
-	<byte>5</byte>
-	<byte>5</byte>
-	<byte>5</byte>
+	<byte>4</byte>
+	<byte>7</byte>
+	<byte>7</byte>
+	<byte>1</byte>
+	<byte>1</byte>
+	<byte>2</byte>
+	<byte>2</byte>
+	<byte>3</byte>
 
-	<byte>5</byte>
-	<byte>5</byte>
+	<byte>3</byte>
+	<byte>4</byte>
 	<byte>5</byte>
 	<byte>5</byte>
 	<byte>5</byte>
@@ -663,17 +760,17 @@
 	<binary>00010000</binary>
 	<binary>00000000</binary>
 
-	<binary>00000000</binary>
-	<binary>00000000</binary>
-	<binary>00000000</binary>
-	<binary>00000000</binary>
-	<binary>00000000</binary>
-	<binary>00000000</binary>
-	<binary>00000000</binary>
-	<binary>00000000</binary>
+	<binary>00001000</binary>
+	<binary>00000001</binary>
+	<binary>00001000</binary>
+	<binary>00000001</binary>
+	<binary>00001000</binary>
+	<binary>00000001</binary>
+	<binary>00001000</binary>
+	<binary>00000001</binary>
 
-	<binary>00000000</binary>
-	<binary>00000000</binary>
+	<binary>00001000</binary>
+	<binary>00000001</binary>
 	<binary>00000000</binary>
 	<binary>00000000</binary>
 	<binary>00000000</binary>

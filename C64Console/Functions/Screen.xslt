@@ -37,6 +37,7 @@
 			<cpu:BranchToRelative8IfNotEqual/>
 			<addressOf ref="skipNewLine" type="Relative8"/>
 
+			<!--Increment Row-->
 			<cpu:IncrementImmediate8Address/>
 			<hex>03</hex>
 
@@ -105,12 +106,12 @@
 
 			<cpu:BranchToRelative8IfNotCarry/>
 			<addressOf ref="notCarry" type="Relative8"/>
-			
+
 			<cpu:IncrementImmediate8Address/>
 			<hex>05</hex>
-			
+
 			<label id="notCarry"/>
-			
+
 			<cpu:IncrementImmediate8Address/>
 			<hex>03</hex>
 
@@ -118,7 +119,227 @@
 			<byte>0</byte>
 
 			<cpu:CopyAccumulatorToImmediate8Address/>
-			<hex>02</hex>			
+			<hex>02</hex>
+		</scope>
+	</xsl:template>
+
+	<xsl:template match="scr:Scroll">
+		<scope>
+			<cpu:DecrementImmediate8Address/>
+			<hex>03</hex>
+
+			<cpu:CopyImmediate8AddressToAccumulator/>
+			<hex>04</hex>
+			
+			<cpu:SubtractImmediate8FromAccumulator/>
+			<byte>40</byte>
+
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>04</hex>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>40</byte>
+
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>06</hex>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>04</hex>
+
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>07</hex>
+
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>09</hex>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
+
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>08</hex>
+			
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>0</byte>
+
+			<cpu:CopyImmediate8ToXIndex/>
+			<byte>240</byte>
+
+			<label id="forEachPixel"/>
+
+			<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+			<hex>06</hex>
+
+			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+			<hex>08</hex>
+
+			<!--Increment Source-->
+			<cpu:IncrementImmediate8Address/>
+			<hex>06</hex>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="notCarry" type="Relative8"/>
+
+			<cpu:IncrementImmediate8Address/>
+			<hex>07</hex>
+
+			<label id="notCarry"/>
+
+			<!--Increment Destination-->
+			<cpu:IncrementImmediate8Address/>
+			<hex>08</hex>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="notCarry1" type="Relative8"/>
+
+			<cpu:IncrementImmediate8Address/>
+			<hex>09</hex>
+
+			<label id="notCarry1"/>
+
+			<cpu:DecrementXIndex/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="forEachPixel" type="Relative8"/>
+
+			<cpu:CopyImmediate8ToXIndex/>
+			<byte>240</byte>
+
+			<label id="forEachPixel2"/>
+
+			<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+			<hex>06</hex>
+
+			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+			<hex>08</hex>
+
+			<!--Increment Source-->
+			<cpu:IncrementImmediate8Address/>
+			<hex>06</hex>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="notCarry2" type="Relative8"/>
+
+			<cpu:IncrementImmediate8Address/>
+			<hex>07</hex>
+
+			<label id="notCarry2"/>
+
+			<!--Increment Destination-->
+			<cpu:IncrementImmediate8Address/>
+			<hex>08</hex>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="notCarry3" type="Relative8"/>
+
+			<cpu:IncrementImmediate8Address/>
+			<hex>09</hex>
+
+			<label id="notCarry3"/>
+
+			<cpu:DecrementXIndex/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="forEachPixel2" type="Relative8"/>
+
+			<cpu:CopyImmediate8ToXIndex/>
+			<byte>240</byte>
+
+			<label id="forEachPixel3"/>
+
+			<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+			<hex>06</hex>
+
+			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+			<hex>08</hex>
+
+			<!--Increment Source-->
+			<cpu:IncrementImmediate8Address/>
+			<hex>06</hex>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="notCarry4" type="Relative8"/>
+
+			<cpu:IncrementImmediate8Address/>
+			<hex>07</hex>
+
+			<label id="notCarry4"/>
+
+			<!--Increment Destination-->
+			<cpu:IncrementImmediate8Address/>
+			<hex>08</hex>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="notCarry5" type="Relative8"/>
+
+			<cpu:IncrementImmediate8Address/>
+			<hex>09</hex>
+
+			<label id="notCarry5"/>
+
+			<cpu:DecrementXIndex/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="forEachPixel3" type="Relative8"/>
+
+			<cpu:CopyImmediate8ToXIndex/>
+			<byte>240</byte>
+
+			<label id="forEachPixel4"/>
+
+			<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+			<hex>06</hex>
+
+			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+			<hex>08</hex>
+
+			<!--Increment Source-->
+			<cpu:IncrementImmediate8Address/>
+			<hex>06</hex>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="notCarry6" type="Relative8"/>
+
+			<cpu:IncrementImmediate8Address/>
+			<hex>07</hex>
+
+			<label id="notCarry6"/>
+
+			<!--Increment Destination-->
+			<cpu:IncrementImmediate8Address/>
+			<hex>08</hex>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="notCarry7" type="Relative8"/>
+
+			<cpu:IncrementImmediate8Address/>
+			<hex>09</hex>
+
+			<label id="notCarry7"/>
+
+			<cpu:DecrementXIndex/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="forEachPixel4" type="Relative8"/>
+
+			<cpu:CopyImmediate8ToXIndex/>
+			<byte>40</byte>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<string xml:space="preserve"> </string>
+			
+			<label id="forEachPixel5"/>
+
+			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+			<hex>08</hex>
+
+			<cpu:IncrementImmediate8Address/>
+			<hex>08</hex>
+
+			<cpu:DecrementXIndex/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="forEachPixel5" type="Relative8"/>
+
 		</scope>
 	</xsl:template>
 
