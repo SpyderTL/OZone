@@ -141,22 +141,22 @@
 			<byte>40</byte>
 
 			<cpu:CopyAccumulatorToImmediate8Address/>
-			<hex>06</hex>
+			<hex>80</hex>
 
 			<cpu:CopyImmediate8ToAccumulator/>
 			<hex>04</hex>
 
 			<cpu:CopyAccumulatorToImmediate8Address/>
-			<hex>07</hex>
+			<hex>81</hex>
 
 			<cpu:CopyAccumulatorToImmediate8Address/>
-			<hex>09</hex>
+			<hex>83</hex>
 
 			<cpu:CopyImmediate8ToAccumulator/>
 			<byte>0</byte>
 
 			<cpu:CopyAccumulatorToImmediate8Address/>
-			<hex>08</hex>
+			<hex>82</hex>
 			
 			<cpu:CopyImmediate8ToYIndex/>
 			<byte>0</byte>
@@ -167,32 +167,32 @@
 			<label id="forEachPixel"/>
 
 			<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
-			<hex>06</hex>
+			<hex>80</hex>
 
 			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-			<hex>08</hex>
+			<hex>82</hex>
 
 			<!--Increment Source-->
 			<cpu:IncrementImmediate8Address/>
-			<hex>06</hex>
+			<hex>80</hex>
 
 			<cpu:BranchToRelative8IfNotZero/>
 			<addressOf ref="notCarry" type="Relative8"/>
 
 			<cpu:IncrementImmediate8Address/>
-			<hex>07</hex>
+			<hex>81</hex>
 
 			<label id="notCarry"/>
 
 			<!--Increment Destination-->
 			<cpu:IncrementImmediate8Address/>
-			<hex>08</hex>
+			<hex>82</hex>
 
 			<cpu:BranchToRelative8IfNotZero/>
 			<addressOf ref="notCarry1" type="Relative8"/>
 
 			<cpu:IncrementImmediate8Address/>
-			<hex>09</hex>
+			<hex>83</hex>
 
 			<label id="notCarry1"/>
 
@@ -207,32 +207,32 @@
 			<label id="forEachPixel2"/>
 
 			<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
-			<hex>06</hex>
+			<hex>80</hex>
 
 			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-			<hex>08</hex>
+			<hex>82</hex>
 
 			<!--Increment Source-->
 			<cpu:IncrementImmediate8Address/>
-			<hex>06</hex>
+			<hex>80</hex>
 
 			<cpu:BranchToRelative8IfNotZero/>
 			<addressOf ref="notCarry2" type="Relative8"/>
 
 			<cpu:IncrementImmediate8Address/>
-			<hex>07</hex>
+			<hex>81</hex>
 
 			<label id="notCarry2"/>
 
 			<!--Increment Destination-->
 			<cpu:IncrementImmediate8Address/>
-			<hex>08</hex>
+			<hex>82</hex>
 
 			<cpu:BranchToRelative8IfNotZero/>
 			<addressOf ref="notCarry3" type="Relative8"/>
 
 			<cpu:IncrementImmediate8Address/>
-			<hex>09</hex>
+			<hex>83</hex>
 
 			<label id="notCarry3"/>
 
@@ -247,32 +247,32 @@
 			<label id="forEachPixel3"/>
 
 			<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
-			<hex>06</hex>
+			<hex>80</hex>
 
 			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-			<hex>08</hex>
+			<hex>82</hex>
 
 			<!--Increment Source-->
 			<cpu:IncrementImmediate8Address/>
-			<hex>06</hex>
+			<hex>80</hex>
 
 			<cpu:BranchToRelative8IfNotZero/>
 			<addressOf ref="notCarry4" type="Relative8"/>
 
 			<cpu:IncrementImmediate8Address/>
-			<hex>07</hex>
+			<hex>81</hex>
 
 			<label id="notCarry4"/>
 
 			<!--Increment Destination-->
 			<cpu:IncrementImmediate8Address/>
-			<hex>08</hex>
+			<hex>82</hex>
 
 			<cpu:BranchToRelative8IfNotZero/>
 			<addressOf ref="notCarry5" type="Relative8"/>
 
 			<cpu:IncrementImmediate8Address/>
-			<hex>09</hex>
+			<hex>83</hex>
 
 			<label id="notCarry5"/>
 
@@ -287,32 +287,32 @@
 			<label id="forEachPixel4"/>
 
 			<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
-			<hex>06</hex>
+			<hex>80</hex>
 
 			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-			<hex>08</hex>
+			<hex>82</hex>
 
 			<!--Increment Source-->
 			<cpu:IncrementImmediate8Address/>
-			<hex>06</hex>
+			<hex>80</hex>
 
 			<cpu:BranchToRelative8IfNotZero/>
 			<addressOf ref="notCarry6" type="Relative8"/>
 
 			<cpu:IncrementImmediate8Address/>
-			<hex>07</hex>
+			<hex>81</hex>
 
 			<label id="notCarry6"/>
 
 			<!--Increment Destination-->
 			<cpu:IncrementImmediate8Address/>
-			<hex>08</hex>
+			<hex>82</hex>
 
 			<cpu:BranchToRelative8IfNotZero/>
 			<addressOf ref="notCarry7" type="Relative8"/>
 
 			<cpu:IncrementImmediate8Address/>
-			<hex>09</hex>
+			<hex>83</hex>
 
 			<label id="notCarry7"/>
 
@@ -330,10 +330,10 @@
 			<label id="forEachPixel5"/>
 
 			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-			<hex>08</hex>
+			<hex>82</hex>
 
 			<cpu:IncrementImmediate8Address/>
-			<hex>08</hex>
+			<hex>82</hex>
 
 			<cpu:DecrementXIndex/>
 

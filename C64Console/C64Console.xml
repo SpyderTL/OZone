@@ -52,6 +52,30 @@
 	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
 	<hex>1300</hex>
 
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<hex>8400</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>1400</hex>
+
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<hex>8500</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>1500</hex>
+
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<hex>8600</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>1600</hex>
+
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<hex>8700</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>1700</hex>
+
 	<cpu:IncrementXIndex/>
 
 	<cpu:BranchToRelative8IfNotZero/>
@@ -266,6 +290,21 @@
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
 	<hex>05</hex>
+	
+	<!--Initialize Memory Manager-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>00</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>06</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>20</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>07</hex>
+	
+	<!--Create Command String-->
 
 	<!--Enable Interrupts-->
 	<cpu:ClearInterruptDisableFlag/>
@@ -464,7 +503,7 @@
 	<addressOf ref="tabNotPressed" type="Relative8"/>
 
 	<cpu:JumpToImmediate16Address/>
-	<addressOf ref="escapePressed" type="Absolute16"/>
+	<addressOf ref="tabPressed" type="Absolute16"/>
 	
 	<label id="tabNotPressed"/>
 
@@ -568,6 +607,27 @@
 	<scr:Scroll/>
 	
 	<label id="skipScroll3"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="drawPrompt" type="Absolute16"/>
+
+	<label id="tabPressed"/>
+
+	<scr:NewLine/>
+	
+	<!--Check For Scroll-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<byte>25</byte>
+
+	<cpu:CompareAccumulatorToImmediate8Address/>
+	<hex>03</hex>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="skipScroll4" type="Relative8"/>
+
+	<scr:Scroll/>
+	
+	<label id="skipScroll4"/>
 
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="drawPrompt" type="Absolute16"/>
