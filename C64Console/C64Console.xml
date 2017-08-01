@@ -12,7 +12,7 @@
 	xmlns:cls="http://metalx.org/C64/Functions/Class"
 	xmlns:scr="http://metalx.org/C64Console/Functions/Screen"
 	>
-	
+
 	<!--Define Memory Address Labels-->
 	<sys:CpuPortDirectionControl id="cpuPortDirectionControl"/>
 	<sys:CpuRomBankControl id="cpuRomBankControl"/>
@@ -21,6 +21,11 @@
 	
 	<!--Disable CPU Interrupts-->
 	<cpu:SetInterruptDisableFlag/>
+	
+	<!--Reset CPU State-->
+	<cpu:ClearDecimalFlag/>
+	<cpu:ClearCarryFlag/>
+	<cpu:ClearOverflowFlag/>
 	
 	<!--Copy ROM to RAM-->
 	<cpu:CopyImmediate8ToXIndex/>
@@ -305,9 +310,46 @@
 	<hex>07</hex>
 	
 	<!--Create Command String-->
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>06</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>08</hex>
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>07</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>09</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>01</hex>
+
+	<cpu:AddImmediate8AddressToAccumulator/>
+	<hex>07</hex>
+	
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>07</hex>
 
 	<!--Enable Interrupts-->
 	<cpu:ClearInterruptDisableFlag/>
+	
+	<!--Reset Command-->
+	<label id="resetCommand"/>
+	
+	<cpu:CopyImmediate8ToAccumulator/>
+	<byte>0</byte>
+
+	<cpu:CopyImmediate8ToYIndex/>
+	<byte>0</byte>
+
+	<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+	<hex>08</hex>
+
+	<cpu:IncrementYIndex/>
+
+	<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+	<hex>08</hex>
 	
 	<!--Draw Prompt-->
 	<label id="drawPrompt"/>
@@ -544,6 +586,94 @@
 	<cpu:CopyXIndexToAccumulator/>
 
 	<scr:DrawCharacter/>
+	
+	<!--Append Character-->
+	<cpu:ClearCarryFlag/>
+	
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>08</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>80</hex>
+	
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>09</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>81</hex>
+
+	<cpu:CopyImmediate8ToYIndex/>
+	<byte>1</byte>
+
+	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+	<hex>80</hex>
+
+	<cpu:PushAccumulatorToStack/>
+
+	<cpu:DecrementYIndex/>
+	
+	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+	<hex>80</hex>
+
+	<cpu:AddImmediate8AddressToAccumulator/>
+	<hex>80</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>80</hex>
+
+	<cpu:PullAccumulatorFromStack/>
+
+	<cpu:AddImmediate8AddressToAccumulator/>
+	<hex>81</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>81</hex>
+
+	<cpu:ClearCarryFlag/>
+	
+	<cpu:CopyImmediate8ToAccumulator/>
+	<byte>2</byte>
+	
+	<cpu:AddImmediate8AddressToAccumulator/>
+	<hex>80</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>80</hex>
+	
+	<cpu:CopyImmediate8ToAccumulator/>
+	<byte>0</byte>
+	
+	<cpu:AddImmediate8AddressToAccumulator/>
+	<hex>81</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>81</hex>
+	
+	<cpu:CopyXIndexToAccumulator/>
+	
+	<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+	<hex>80</hex>
+	
+	<!--Increment String Length-->
+	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+	<hex>08</hex>
+
+	<cpu:AddImmediate8ToAccumulator/>
+	<byte>1</byte>
+
+	<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+	<hex>08</hex>
+
+	<cpu:IncrementYIndex/>
+
+	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+	<hex>08</hex>
+
+	<cpu:AddImmediate8ToAccumulator/>
+	<byte>0</byte>
+
+	<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+	<hex>08</hex>
 
 	<!--Check For Scroll-->
 	<cpu:CopyImmediate8ToAccumulator/>
@@ -581,7 +711,7 @@
 	<label id="skipScroll2"/>
 
 	<cpu:JumpToImmediate16Address/>
-	<addressOf ref="drawPrompt" type="Absolute16"/>
+	<addressOf ref="resetCommand" type="Absolute16"/>
 	
 	<label id="backspacePressed"/>
 
@@ -609,7 +739,7 @@
 	<label id="skipScroll3"/>
 
 	<cpu:JumpToImmediate16Address/>
-	<addressOf ref="drawPrompt" type="Absolute16"/>
+	<addressOf ref="resetCommand" type="Absolute16"/>
 
 	<label id="tabPressed"/>
 
@@ -630,7 +760,7 @@
 	<label id="skipScroll4"/>
 
 	<cpu:JumpToImmediate16Address/>
-	<addressOf ref="drawPrompt" type="Absolute16"/>
+	<addressOf ref="resetCommand" type="Absolute16"/>
 
 	<!--Reset Handler-->
 	<label id="resetHandler"/>

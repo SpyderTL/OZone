@@ -93,24 +93,29 @@
 	<xsl:template match="scr:NewLine">
 		<scope>
 			<cpu:CopyImmediate8ToAccumulator/>
-			<byte>39</byte>
+			<byte>40</byte>
 
+			<cpu:SetCarryFlag/>
+			
 			<cpu:SubtractImmediate8AddressFromAccumulator/>
 			<hex>02</hex>
 
+			<cpu:ClearCarryFlag/>
+			
 			<cpu:AddImmediate8AddressToAccumulator/>
 			<hex>04</hex>
 
 			<cpu:CopyAccumulatorToImmediate8Address/>
 			<hex>04</hex>
 
-			<cpu:BranchToRelative8IfNotCarry/>
-			<addressOf ref="notCarry" type="Relative8"/>
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
 
-			<cpu:IncrementImmediate8Address/>
+			<cpu:AddImmediate8AddressToAccumulator/>
 			<hex>05</hex>
 
-			<label id="notCarry"/>
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>05</hex>
 
 			<cpu:IncrementImmediate8Address/>
 			<hex>03</hex>
@@ -130,6 +135,8 @@
 
 			<cpu:CopyImmediate8AddressToAccumulator/>
 			<hex>04</hex>
+
+			<cpu:SetCarryFlag/>
 			
 			<cpu:SubtractImmediate8FromAccumulator/>
 			<byte>40</byte>
@@ -339,6 +346,8 @@
 
 			<cpu:BranchToRelative8IfNotZero/>
 			<addressOf ref="forEachPixel5" type="Relative8"/>
+
+			<cpu:ClearCarryFlag/>
 
 		</scope>
 	</xsl:template>

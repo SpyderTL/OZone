@@ -168,14 +168,20 @@
 	<xsl:template match="ns:ClearCarryFlag">
 		<xsl:element name="prg:hex">18</xsl:element>
 	</xsl:template>
+	<xsl:template match="ns:SetCarryFlag">
+		<xsl:element name="prg:hex">38</xsl:element>
+	</xsl:template>
 	<xsl:template match="ns:ClearDecimalFlag">
 		<xsl:element name="prg:hex">D8</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:SetInterruptDisableFlag">
-		<xsl:element name="prg:hex">78</xsl:element>
+	<xsl:template match="ns:SetDecimalFlag">
+		<xsl:element name="prg:hex">F8</xsl:element>
 	</xsl:template>
 	<xsl:template match="ns:ClearInterruptDisableFlag">
 		<xsl:element name="prg:hex">58</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:SetInterruptDisableFlag">
+		<xsl:element name="prg:hex">78</xsl:element>
 	</xsl:template>
 	<xsl:template match="ns:ClearOverflowFlag">
 		<xsl:element name="prg:hex">B8</xsl:element>
