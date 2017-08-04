@@ -34,6 +34,7 @@ namespace C64Console
 					"../../../OZone/Platforms/Commodore/C64/Keyboard.xslt",
 					"../../../OZone/Platforms/Commodore/C64/System.xslt",
 					"../../../OZone/Platforms/Commodore/C64/Video.xslt",
+					"../../../OZone/Platforms/Commodore/C64/Petscii.xslt",
 					"../../../OZone/Platforms/Mos/6502/Operators.xslt");
 
 				//address.Offset = (uint)binaryWriter.BaseStream.Position + 0x8000;

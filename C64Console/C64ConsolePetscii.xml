@@ -11,7 +11,7 @@
 	xmlns:str="http://metalx.org/C64/Functions/String"
 	xmlns:cls="http://metalx.org/C64/Functions/Class"
 	xmlns:scr="http://metalx.org/C64Console/Functions/Screen"
-	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
 	>
 
 	<!--Define Memory Address Labels-->
@@ -422,7 +422,7 @@
 
 	<!--Check Alpha Numeric Keys-->
 	<cpu:CopyImmediate8ToXIndex/>
-	<byte>51</byte>
+	<byte>59</byte>
 
 	<label id="forEachKey"/>
 	
@@ -453,78 +453,6 @@
 
 	<cpu:BranchToRelative8IfPositive/>
 	<addressOf ref="forEachKey" type="Relative8"/>
-
-	<!--Check Return Key-->
-	<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0200</hex>
-
-	<cpu:AndAccumulatorWithImmediate8/>
-	<binary>00000010</binary>
-
-	<cpu:BranchToRelative8IfNotZero/>
-	<addressOf ref="returnNotPressed" type="Relative8"/>
-
-	<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0208</hex>
-
-	<cpu:AndAccumulatorWithImmediate8/>
-	<binary>00000010</binary>
-
-	<cpu:BranchToRelative8IfZero/>
-	<addressOf ref="returnNotPressed" type="Relative8"/>
-
-	<cpu:JumpToImmediate16Address/>
-	<addressOf ref="returnPressed" type="Absolute16"/>
-
-	<label id="returnNotPressed"/>
-
-	<!--Check Backspace Key-->
-	<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0200</hex>
-
-	<cpu:AndAccumulatorWithImmediate8/>
-	<binary>00000001</binary>
-
-	<cpu:BranchToRelative8IfNotZero/>
-	<addressOf ref="backspaceNotPressed" type="Relative8"/>
-
-	<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0208</hex>
-
-	<cpu:AndAccumulatorWithImmediate8/>
-	<binary>00000001</binary>
-
-	<cpu:BranchToRelative8IfZero/>
-	<addressOf ref="backspaceNotPressed" type="Relative8"/>
-
-	<cpu:JumpToImmediate16Address/>
-	<addressOf ref="backspacePressed" type="Absolute16"/>
-
-	<label id="backspaceNotPressed"/>
-
-	<!--Check Escape (Run/Stop) Key-->
-	<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0207</hex>
-
-	<cpu:AndAccumulatorWithImmediate8/>
-	<binary>10000000</binary>
-
-	<cpu:BranchToRelative8IfNotZero/>
-	<addressOf ref="escapeNotPressed" type="Relative8"/>
-
-	<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>020f</hex>
-
-	<cpu:AndAccumulatorWithImmediate8/>
-	<binary>10000000</binary>
-
-	<cpu:BranchToRelative8IfZero/>
-	<addressOf ref="escapeNotPressed" type="Relative8"/>
-
-	<cpu:JumpToImmediate16Address/>
-	<addressOf ref="escapePressed" type="Absolute16"/>
-
-	<label id="escapeNotPressed"/>
 
 	<!--Check Tab (Control) Key-->
 	<cpu:CopyImmediate16AddressToAccumulator/>
@@ -588,6 +516,42 @@
 	<addressOf ref="keyCodes" type="Absolute16"/>
 
 	<label id="drawCharacter"/>
+
+	<!--Check Return Key-->
+	<cpu:CompareAccumulatorToImmediate8/>
+	<petscii:Return/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="returnNotPressed" type="Relative8"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="returnPressed" type="Absolute16"/>
+
+	<label id="returnNotPressed"/>
+
+	<!--Check Backspace Key-->
+	<cpu:CompareAccumulatorToImmediate8/>
+	<petscii:Delete/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="backspaceNotPressed" type="Relative8"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="backspacePressed" type="Absolute16"/>
+
+	<label id="backspaceNotPressed"/>
+
+	<!--Check Escape (Run/Stop) Key-->
+	<cpu:CompareAccumulatorToImmediate8/>
+	<petscii:Stop/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="escapeNotPressed" type="Relative8"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="escapePressed" type="Absolute16"/>
+
+	<label id="escapeNotPressed"/>
 	
 	<cpu:CopyAccumulatorToXIndex/>
 
@@ -835,6 +799,15 @@
 	</label>
 
 	<label id="keyboardColumns">
+		<byte>0</byte>
+		<byte>0</byte>
+		<byte>0</byte>
+		<byte>0</byte>
+		<byte>0</byte>
+		<byte>0</byte>
+		<byte>0</byte>
+		<byte>0</byte>
+
 		<byte>1</byte>
 		<byte>1</byte>
 		<byte>1</byte>
@@ -884,7 +857,11 @@
 		<byte>6</byte>
 		<byte>6</byte>
 		<byte>6</byte>
+		<byte>6</byte>
+		<byte>6</byte>
 
+		<byte>7</byte>
+		<byte>7</byte>
 		<byte>7</byte>
 		<byte>7</byte>
 		<byte>7</byte>
@@ -899,6 +876,15 @@
 		<binary>00010000</binary>
 		<binary>00100000</binary>
 		<binary>01000000</binary>
+		<binary>10000000</binary>
+
+		<binary>00000001</binary>
+		<binary>00000010</binary>
+		<binary>00000100</binary>
+		<binary>00001000</binary>
+		<binary>00010000</binary>
+		<binary>00100000</binary>
+		<binary>01000000</binary>
 
 		<binary>00000001</binary>
 		<binary>00000010</binary>
@@ -939,127 +925,157 @@
 		<binary>00000001</binary>
 		<binary>00000010</binary>
 		<binary>00000100</binary>
+		<binary>00001000</binary>
 		<binary>00100000</binary>
+		<binary>01000000</binary>
 		<binary>10000000</binary>
 
 		<binary>00000001</binary>
+		<binary>00000010</binary>
 		<binary>00001000</binary>
 		<binary>00010000</binary>
 		<binary>01000000</binary>
+		<binary>10000000</binary>
 	</label>
 
 	<label id="keyCodes">
-		<ascii:Three/>
-		<ascii:w/>
-		<ascii:a/>
-		<ascii:Four/>
-		<ascii:z/>
-		<ascii:s/>
-		<ascii:e/>
+		<petscii:Delete/>
+		<petscii:Return/>
+		<petscii:CursorRight/>
+		<petscii:F7/>
+		<petscii:F1/>
+		<petscii:F3/>
+		<petscii:F5/>
+		<petscii:CursorDown/>
 
-		<ascii:Five/>
-		<ascii:r/>
-		<ascii:d/>
-		<ascii:Six/>
-		<ascii:c/>
-		<ascii:f/>
-		<ascii:t/>
-		<ascii:x/>
+		<petscii:Three/>
+		<petscii:w/>
+		<petscii:a/>
+		<petscii:Four/>
+		<petscii:z/>
+		<petscii:s/>
+		<petscii:e/>
 
-		<ascii:Seven/>
-		<ascii:y/>
-		<ascii:g/>
-		<ascii:Eight/>
-		<ascii:b/>
-		<ascii:h/>
-		<ascii:u/>
-		<ascii:v/>
+		<petscii:Five/>
+		<petscii:r/>
+		<petscii:d/>
+		<petscii:Six/>
+		<petscii:c/>
+		<petscii:f/>
+		<petscii:t/>
+		<petscii:x/>
 
-		<ascii:Nine/>
-		<ascii:i/>
-		<ascii:j/>
-		<ascii:Zero/>
-		<ascii:m/>
-		<ascii:k/>
-		<ascii:o/>
-		<ascii:n/>
+		<petscii:Seven/>
+		<petscii:y/>
+		<petscii:g/>
+		<petscii:Eight/>
+		<petscii:b/>
+		<petscii:h/>
+		<petscii:u/>
+		<petscii:v/>
 
-		<ascii:Plus/>
-		<ascii:p/>
-		<ascii:l/>
-		<ascii:Minus/>
-		<ascii:Period/>
-		<ascii:Colon/>
-		<ascii:At/>
-		<ascii:Comma/>
+		<petscii:Nine/>
+		<petscii:i/>
+		<petscii:j/>
+		<petscii:Zero/>
+		<petscii:m/>
+		<petscii:k/>
+		<petscii:o/>
+		<petscii:n/>
 
-		<ascii:Pound/>
-		<ascii:Asterisk/>
-		<ascii:Simicolon/>
-		<ascii:Equal/>
-		<ascii:Slash/>
+		<petscii:Plus/>
+		<petscii:p/>
+		<petscii:l/>
+		<petscii:Minus/>
+		<petscii:Period/>
+		<petscii:Colon/>
+		<petscii:At/>
+		<petscii:Comma/>
 
-		<ascii:One/>
-		<ascii:Two/>
-		<ascii:Space/>
-		<ascii:q/>
+		<petscii:Pound/>
+		<petscii:Asterisk/>
+		<petscii:Semicolon/>
+		<petscii:Home/>
+		<petscii:Equals/>
+		<petscii:ArrowUp/>
+		<petscii:Slash/>
+
+		<petscii:One/>
+		<petscii:ArrowLeft/>
+		<petscii:Two/>
+		<petscii:Space/>
+		<petscii:q/>
+		<petscii:Stop/>
 	</label>
 
 	<label id="shiftKeyCodes">
-		<ascii:Pound/>
-		<ascii:W/>
-		<ascii:A/>
-		<ascii:Dollar/>
-		<ascii:Z/>
-		<ascii:S/>
-		<ascii:E/>
+		<petscii:Insert/>
+		<petscii:Return/>
+		<petscii:CursorLeft/>
+		<petscii:F8/>
+		<petscii:F2/>
+		<petscii:F4/>
+		<petscii:F6/>
+		<petscii:CursorUp/>
 
-		<ascii:Percent/>
-		<ascii:R/>
-		<ascii:D/>
-		<ascii:Ampersand/>
-		<ascii:C/>
-		<ascii:F/>
-		<ascii:T/>
-		<ascii:X/>
+		<petscii:Hash/>
+		<petscii:W/>
+		<petscii:A/>
+		<petscii:Dollar/>
+		<petscii:Z/>
+		<petscii:S/>
+		<petscii:E/>
 
-		<ascii:Apostrophe/>
-		<ascii:Y/>
-		<ascii:G/>
-		<ascii:LeftParenthesis/>
-		<ascii:B/>
-		<ascii:H/>
-		<ascii:U/>
-		<ascii:V/>
+		<petscii:Percent/>
+		<petscii:R/>
+		<petscii:D/>
+		<petscii:Ampersand/>
+		<petscii:C/>
+		<petscii:F/>
+		<petscii:T/>
+		<petscii:X/>
 
-		<ascii:RightParenthesis/>
-		<ascii:I/>
-		<ascii:J/>
-		<ascii:Zero/>
-		<ascii:M/>
-		<ascii:K/>
-		<ascii:O/>
-		<ascii:N/>
+		<petscii:Apostrophe/>
+		<petscii:Y/>
+		<petscii:G/>
+		<petscii:LeftParenthesis/>
+		<petscii:B/>
+		<petscii:H/>
+		<petscii:U/>
+		<petscii:V/>
 
-		<ascii:Plus/>
-		<ascii:P/>
-		<ascii:L/>
-		<ascii:Minus/>
-		<ascii:Period/>
-		<ascii:LeftBracket/>
-		<ascii:At/>
-		<ascii:Comma/>
+		<petscii:RightParenthesis/>
+		<petscii:I/>
+		<petscii:J/>
+		<petscii:Zero/>
+		<petscii:M/>
+		<petscii:K/>
+		<petscii:O/>
+		<petscii:N/>
 
-		<ascii:Pound/>
-		<ascii:Asterisk/>
-		<ascii:RightBracket/>
-		<ascii:Equal/>
-		<ascii:Question/>
+		<petscii:Plus/>
+		<petscii:P/>
+		<petscii:L/>
+		<petscii:Minus/>
+		<petscii:Period/>
+		<petscii:LeftBracket/>
+		<petscii:At/>
+		<petscii:Comma/>
 
-		<ascii:Exclamation/>
-		<ascii:Quote/>
-		<ascii:Space/>
-		<ascii:Q/>
+		<petscii:Pound/>
+		<petscii:Asterisk/>
+		<petscii:RightBracket/>
+		<petscii:Clear/>
+		<petscii:Equals/>
+		<petscii:ArrowUp/>
+		<petscii:Question/>
+
+		<petscii:Exclamation/>
+		<petscii:ArrowLeft/>
+		<petscii:DoubleQuote/>
+		<petscii:Space/>
+		<petscii:Q/>
+		<petscii:Run/>
 	</label>
 
 	<label id="vicCodes">
