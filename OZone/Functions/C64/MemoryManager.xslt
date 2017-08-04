@@ -4,7 +4,7 @@
 	xmlns="http://metalx.org/Program"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
-	xmlns:mm="http://metalx.org/6502/Functions/MemoryManager">
+	xmlns:mm="http://metalx.org/C64/Functions/MemoryManager">
 	<xsl:output method="xml" indent="yes"/>
 
 	<xsl:template match="@* | node()">

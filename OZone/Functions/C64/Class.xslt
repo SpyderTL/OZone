@@ -3,8 +3,8 @@
 	version="1.0"
 	xmlns="http://metalx.org/Program"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:cls="http://metalx.org/6502/Functions/Class"
-	xmlns:mm="http://metalx.org/6502/Functions/MemoryManager"
+	xmlns:cls="http://metalx.org/C64/Functions/Class"
+	xmlns:mm="http://metalx.org/C64/Functions/MemoryManager"
 	xmlns:cpu="http://metalx.org/Mos/6502/Operators">
 
 	<xsl:output method="xml" indent="yes"/>

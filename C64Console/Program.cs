@@ -26,6 +26,7 @@ namespace C64Console
 				program = ProgramBuilder.Build(
 					"../../C64Console.xml",
 					"../../Functions/Screen.xslt",
+					"../../Functions/System.xslt",
 					"../../../OZone/Functions/6502/Class.xslt",
 					"../../../OZone/Functions/6502/String.xslt",
 					"../../../OZone/Functions/6502/MemoryManager.xslt",
