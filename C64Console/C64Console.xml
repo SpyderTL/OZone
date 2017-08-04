@@ -688,40 +688,37 @@
 	<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 	<hex>08</hex>
 
-	<!--Check For Scroll-->
-	<cpu:CopyImmediate8ToAccumulator/>
-	<byte>25</byte>
-
-	<cpu:CompareAccumulatorToImmediate8Address/>
-	<hex>03</hex>
-
-	<cpu:BranchToRelative8IfNotEqual/>
-	<addressOf ref="skipScroll" type="Relative8"/>
-
-	<scr:Scroll/>
-	
-	<label id="skipScroll"/>
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="scroll" type="Absolute16"/>
 
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="waitForKeypress" type="Absolute16"/>
 
 	<label id="returnPressed"/>
 
-	<scr:NewLine/>
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="newLine" type="Absolute16"/>
 
-	<!--Check For Scroll-->
-	<cpu:CopyImmediate8ToAccumulator/>
-	<byte>25</byte>
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="scroll" type="Absolute16"/>
 
-	<cpu:CompareAccumulatorToImmediate8Address/>
-	<hex>03</hex>
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="drawString" type="Absolute16"/>
 
-	<cpu:BranchToRelative8IfNotEqual/>
-	<addressOf ref="skipScroll2" type="Relative8"/>
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>08</hex>
 
-	<scr:Scroll/>
-	
-	<label id="skipScroll2"/>
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>0a</hex>
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>09</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>0b</hex>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="newLine" type="Absolute16"/>
 
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="resetCommand" type="Absolute16"/>
@@ -735,30 +732,68 @@
 
 	<label id="escapePressed"/>
 
-	<scr:NewLine/>
-	
-	<!--Check For Scroll-->
-	<cpu:CopyImmediate8ToAccumulator/>
-	<byte>25</byte>
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="newLine" type="Absolute16"/>
 
-	<cpu:CompareAccumulatorToImmediate8Address/>
-	<hex>03</hex>
-
-	<cpu:BranchToRelative8IfNotEqual/>
-	<addressOf ref="skipScroll3" type="Relative8"/>
-
-	<scr:Scroll/>
-	
-	<label id="skipScroll3"/>
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="scroll" type="Absolute16"/>
 
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="resetCommand" type="Absolute16"/>
 
 	<label id="tabPressed"/>
 
-	<scr:NewLine/>
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="newLine" type="Absolute16"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="scroll" type="Absolute16"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="resetCommand" type="Absolute16"/>
+
+	<!--Draw String-->
+	<label id="drawString"/>
+
+	<cpu:CopyImmediate8ToYIndex/>
+	<byte>0</byte>
+
+	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+	<hex>0a</hex>
+
+	<cpu:CopyAccumulatorToXIndex/>
+
+	<cpu:CopyImmediate8ToYIndex/>
+	<byte>2</byte>
+
+	<label id="forEachCharacter"/>
+
+	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+	<hex>0a</hex>
+
+	<cpu:CopyYIndexToImmediate8Address/>
+	<hex>0c</hex>
+
+	<scr:DrawCharacter/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="scroll" type="Absolute16"/>
+
+	<cpu:CopyImmediate8AddressToYIndex/>
+	<hex>0c</hex>
+
+	<cpu:IncrementYIndex/>
+
+	<cpu:DecrementXIndex/>
+
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="forEachCharacter" type="Relative8"/>
+
+	<cpu:ReturnFromSubroutine/>
 	
 	<!--Check For Scroll-->
+	<label id="scroll"/>
+
 	<cpu:CopyImmediate8ToAccumulator/>
 	<byte>25</byte>
 
@@ -766,14 +801,20 @@
 	<hex>03</hex>
 
 	<cpu:BranchToRelative8IfNotEqual/>
-	<addressOf ref="skipScroll4" type="Relative8"/>
+	<addressOf ref="skipScroll" type="Relative8"/>
 
 	<scr:Scroll/>
-	
-	<label id="skipScroll4"/>
 
-	<cpu:JumpToImmediate16Address/>
-	<addressOf ref="resetCommand" type="Absolute16"/>
+	<label id="skipScroll"/>
+
+	<cpu:ReturnFromSubroutine/>
+	
+	<!--Move To Next Line-->
+	<label id="newLine"/>
+	
+	<scr:NewLine/>
+
+	<cpu:ReturnFromSubroutine/>
 
 	<!--Reset Handler-->
 	<label id="resetHandler"/>

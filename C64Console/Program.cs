@@ -14,8 +14,7 @@ namespace C64Console
 		{
 			var compiler = new BinaryCompiler();
 
-			var program = ProgramBuilder.Build(
-				"../../C64Cartridge.xml");
+			var program = ProgramBuilder.Build("../../C64Cartridge.xml");
 
 			var address = new MemoryAddress { Offset = 0x8000 };
 
