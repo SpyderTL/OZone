@@ -22,42 +22,42 @@
 			<byte>0</byte>
 
 			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-			<hex>04</hex>
+			<hex>06</hex>
 
 			<!--Increment Column-->
 			<cpu:IncrementImmediate8Address/>
-			<hex>02</hex>
+			<hex>04</hex>
 
 			<cpu:CopyImmediate8ToAccumulator/>
 			<byte>40</byte>
 
 			<cpu:CompareAccumulatorToImmediate8Address/>
-			<hex>02</hex>
+			<hex>04</hex>
 
 			<cpu:BranchToRelative8IfNotEqual/>
 			<addressOf ref="skipNewLine" type="Relative8"/>
 
 			<!--Increment Row-->
 			<cpu:IncrementImmediate8Address/>
-			<hex>03</hex>
+			<hex>05</hex>
 
 			<cpu:CopyImmediate8ToAccumulator/>
 			<byte>0</byte>
 
 			<cpu:CopyAccumulatorToImmediate8Address/>
-			<hex>02</hex>
+			<hex>04</hex>
 
 			<label id="skipNewLine"/>
 			
 			<!--Move Cursor-->
 			<cpu:IncrementImmediate8Address/>
-			<hex>04</hex>
+			<hex>06</hex>
 
 			<cpu:BranchToRelative8IfNotZero/>
 			<addressOf ref="notCarry" type="Relative8"/>
 
 			<cpu:IncrementImmediate8Address/>
-			<hex>05</hex>
+			<hex>07</hex>
 
 			<label id="notCarry"/>
 		</scope>
@@ -66,16 +66,16 @@
 	<xsl:template match="scr:DeleteCharacter">
 		<scope>
 			<cpu:DecrementImmediate8Address/>
-			<hex>02</hex>
+			<hex>04</hex>
 
 			<cpu:DecrementImmediate8Address/>
-			<hex>04</hex>
+			<hex>06</hex>
 
 			<cpu:BranchToRelative8IfNotZero/>
 			<addressOf ref="notCarry" type="Relative8"/>
 
 			<cpu:DecrementImmediate8Address/>
-			<hex>05</hex>
+			<hex>07</hex>
 
 			<label id="notCarry"/>
 
@@ -86,7 +86,7 @@
 			<byte>0</byte>
 
 			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-			<hex>04</hex>
+			<hex>06</hex>
 		</scope>
 	</xsl:template>
 
@@ -98,43 +98,43 @@
 			<cpu:SetCarryFlag/>
 			
 			<cpu:SubtractImmediate8AddressFromAccumulator/>
-			<hex>02</hex>
+			<hex>04</hex>
 
 			<cpu:ClearCarryFlag/>
 			
 			<cpu:AddImmediate8AddressToAccumulator/>
-			<hex>04</hex>
+			<hex>06</hex>
 
 			<cpu:CopyAccumulatorToImmediate8Address/>
-			<hex>04</hex>
+			<hex>06</hex>
 
 			<cpu:CopyImmediate8ToAccumulator/>
 			<byte>0</byte>
 
 			<cpu:AddImmediate8AddressToAccumulator/>
-			<hex>05</hex>
+			<hex>07</hex>
 
 			<cpu:CopyAccumulatorToImmediate8Address/>
-			<hex>05</hex>
+			<hex>07</hex>
 
 			<cpu:IncrementImmediate8Address/>
-			<hex>03</hex>
+			<hex>05</hex>
 
 			<cpu:CopyImmediate8ToAccumulator/>
 			<byte>0</byte>
 
 			<cpu:CopyAccumulatorToImmediate8Address/>
-			<hex>02</hex>
+			<hex>04</hex>
 		</scope>
 	</xsl:template>
 
 	<xsl:template match="scr:Scroll">
 		<scope>
 			<cpu:DecrementImmediate8Address/>
-			<hex>03</hex>
+			<hex>05</hex>
 
 			<cpu:CopyImmediate8AddressToAccumulator/>
-			<hex>04</hex>
+			<hex>06</hex>
 
 			<cpu:SetCarryFlag/>
 			
@@ -142,7 +142,7 @@
 			<byte>40</byte>
 
 			<cpu:CopyAccumulatorToImmediate8Address/>
-			<hex>04</hex>
+			<hex>06</hex>
 
 			<cpu:CopyImmediate8ToAccumulator/>
 			<byte>40</byte>
