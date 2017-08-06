@@ -1,0 +1,49 @@
+﻿Parse
+	End		ThrowError
+	"			String
+	0-9		AppendNumber, Number
+	A-Z		AppendCharacter, Class
+	Space	Parse
+	*			ThrowError
+
+String
+	End		ThrowError
+	"			EndString, Object
+	*			AppendCharacter. String
+
+Number
+	End		EndInteger, Done
+	.			EndInteger, CheckDecimal
+	0-9		AppendNumber, Number
+	)			EndInteger	, EndMethod, Object
+	,			EndInteger, EndParameter, Parse
+	*			ThrowError
+
+CheckDecimal
+	End		ThrowError
+	0-9		AppendDecimal, Decimal
+	A-Z		EndInteger, AppendCharacter, Member
+	*			ThrowError
+
+Decimal
+	End		EndDecimal, Done
+	0-9		AppendDecimal, Decimal
+	.			EndDecimal, Member
+	)			EndDecimal, EndMethod, Object
+	,			EndDecimal, EndParameter, Parse
+	*			ThrowError
+
+Member
+	End		EndMember, Done
+	.			EndMember, Member
+	(			EndMember, StartMethod, Parse
+	)			EndMember, EndMethod, Object
+	,			EndMember, EndParameter, Parse
+	*			AppendCharacter
+
+Object
+	End		Done	
+	.			Member
+	,			EndParameter, Parse
+	)			EndMethod, Object
+	*			ThrowError
