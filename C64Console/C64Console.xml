@@ -361,12 +361,6 @@
 
 	<label id="storeKeys"/>
 
-	<!--<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
-	<hex>0200</hex>
-
-	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-	<hex>0208</hex>-->
-
 	<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
 	<hex>a0</hex>
 
@@ -402,9 +396,6 @@
 	<cpu:CopyImmediate16AddressToAccumulator/>
 	<hex>dc01</hex>
 
-	<!--<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-	<hex>0200</hex>-->
-
 	<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
 	<hex>a0</hex>
 
@@ -431,9 +422,6 @@
 	<cpu:CopyImmediate16PlusXIndexAddressToYIndex/>
 	<addressOf ref="keyboardColumns" type="Absolute16"/>
 
-	<!--<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
-	<hex>0200</hex>-->
-
 	<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
 	<hex>00a0</hex>
 
@@ -442,9 +430,6 @@
 
 	<cpu:BranchToRelative8IfNotZero/>
 	<addressOf ref="notPressed" type="Relative8"/>
-
-	<!--<cpu:ExclusiveOrAccumulatorWithImmediate16PlusYIndexAddress/>
-	<hex>0208</hex>-->
 
 	<cpu:ExclusiveOrAccumulatorWithImmediate16PlusYIndexAddress/>
 	<hex>00a8</hex>
@@ -463,9 +448,6 @@
 	<addressOf ref="forEachKey" type="Relative8"/>
 
 	<!--Check Return Key-->
-	<!--<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0200</hex>-->
-
 	<cpu:CopyImmediate8AddressToAccumulator/>
 	<hex>a0</hex>
 
@@ -474,9 +456,6 @@
 
 	<cpu:BranchToRelative8IfNotZero/>
 	<addressOf ref="returnNotPressed" type="Relative8"/>
-
-	<!--<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0208</hex>-->
 
 	<cpu:CopyImmediate8AddressToAccumulator/>
 	<hex>a8</hex>
@@ -493,9 +472,6 @@
 	<label id="returnNotPressed"/>
 
 	<!--Check Backspace Key-->
-	<!--<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0200</hex>-->
-
 	<cpu:CopyImmediate8AddressToAccumulator/>
 	<hex>a0</hex>
 
@@ -504,9 +480,6 @@
 
 	<cpu:BranchToRelative8IfNotZero/>
 	<addressOf ref="backspaceNotPressed" type="Relative8"/>
-
-	<!--<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0208</hex>-->
 
 	<cpu:CopyImmediate8AddressToAccumulator/>
 	<hex>a8</hex>
@@ -523,9 +496,6 @@
 	<label id="backspaceNotPressed"/>
 
 	<!--Check Escape (Run/Stop) Key-->
-	<!--<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0207</hex>-->
-
 	<cpu:CopyImmediate8AddressToAccumulator/>
 	<hex>a7</hex>
 
@@ -534,9 +504,6 @@
 
 	<cpu:BranchToRelative8IfNotZero/>
 	<addressOf ref="escapeNotPressed" type="Relative8"/>
-
-	<!--<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>020f</hex>-->
 
 	<cpu:CopyImmediate8AddressToAccumulator/>
 	<hex>af</hex>
@@ -553,9 +520,6 @@
 	<label id="escapeNotPressed"/>
 
 	<!--Check Tab (Control) Key-->
-	<!--<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0207</hex>-->
-
 	<cpu:CopyImmediate8AddressToAccumulator/>
 	<hex>a7</hex>
 
@@ -564,9 +528,6 @@
 
 	<cpu:BranchToRelative8IfNotZero/>
 	<addressOf ref="tabNotPressed" type="Relative8"/>
-
-	<!--<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>020f</hex>-->
 
 	<cpu:CopyImmediate8AddressToAccumulator/>
 	<hex>af</hex>
@@ -588,9 +549,6 @@
 	<!--Key Pressed-->
 	<label id="keyPressed"/>
 
-	<!--<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0201</hex>-->
-
 	<cpu:CopyImmediate8AddressToAccumulator/>
 	<hex>a1</hex>
 
@@ -599,9 +557,6 @@
 
 	<cpu:BranchToRelative8IfZero/>
 	<addressOf ref="shiftPressed" type="Relative8"/>
-
-	<!--<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0206</hex>-->
 
 	<cpu:CopyImmediate8AddressToAccumulator/>
 	<hex>a6</hex>
@@ -751,51 +706,15 @@
 
 	<cpu:BranchToRelative8IfEqual/>
 	<addressOf ref="empty" type="Relative8"/>
+	
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="parse" type="Absolute16"/>
 
-	<label id="TESTING">
-		<cpu:CopyImmediate8AddressToAccumulator/>
-		<hex>b4</hex>
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="execute" type="Absolute16"/>
 
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<hex>02</hex>
-
-		<cpu:CopyImmediate8AddressToAccumulator/>
-		<hex>b5</hex>
-
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<hex>03</hex>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<addressOf ref="toString" type="Absolute16Low8"/>
-
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<hex>04</hex>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<addressOf ref="toString" type="Absolute16High8"/>
-
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<hex>05</hex>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="compareStrings" type="Absolute16"/>
-
-		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="notToString" type="Relative8"/>
-
-		<!--Disable CPU Interrupts-->
-		<cpu:SetInterruptDisableFlag/>
-
-		<!--Reset CPU State-->
-		<cpu:ClearDecimalFlag/>
-		<cpu:ClearCarryFlag/>
-		<cpu:ClearOverflowFlag/>
-
-		<cpu:JumpToImmediate16Address/>
-		<addressOf ref="start" type="Absolute16"/>
-
-		<label id="notToString"/>
-	</label>
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="convert" type="Absolute16"/>
 
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="drawString" type="Absolute16"/>
@@ -940,6 +859,33 @@
 	<scr:NewLine/>
 
 	<cpu:ReturnFromSubroutine/>
+	
+	<!--Parse Command-->
+	<label id="parse"/>
+
+	<cpu:ReturnFromSubroutine/>
+
+	<!--Execute Command-->
+	<label id="execute"/>
+
+	<cpu:ReturnFromSubroutine/>
+
+	<!--Convert Object To String-->
+	<label id="convert"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<addressOf ref="toString" type="Absolute16Low8"/>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>02</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<addressOf ref="toString" type="Absolute16High8"/>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>03</hex>
+
+	<cpu:ReturnFromSubroutine/>
 
 	<!--Compare Strings-->
 	<label id="compareStrings"/>
@@ -979,7 +925,6 @@
 		<label id="done"/>
 
 		<cpu:ReturnFromSubroutine/>
-
 	</scope>
 
 	<!--Reset Handler-->
@@ -1041,13 +986,13 @@
 			<cls:method name="ToString" static="true" type="http://metalx.org/String">
 				<cpu:ReturnFromSubroutine/>
 
-				<var:string id="object">Object</var:string>
+				<var:string id="className">Object</var:string>
 			</cls:method>
 
 			<cls:method name="ToString" type="http://metalx.org/String">
 				<cpu:ReturnFromSubroutine/>
 
-				<var:string id="object2">Object</var:string>
+				<var:string id="objectName">Object</var:string>
 			</cls:method>
 		</cls:class>
 	</label>
