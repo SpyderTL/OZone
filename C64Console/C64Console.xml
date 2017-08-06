@@ -272,8 +272,8 @@
 
 	<label id="initializeKeyboard"/>
 
-	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-	<hex>0200</hex>
+	<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+	<hex>a0</hex>
 
 	<cpu:DecrementXIndex/>
 
@@ -285,46 +285,32 @@
 	<hex>00</hex>
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
-	<hex>04</hex>
+	<hex>b0</hex>
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
-	<hex>05</hex>
+	<hex>b1</hex>
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
-	<hex>06</hex>
+	<hex>b2</hex>
 
 	<cpu:CopyImmediate8ToAccumulator/>
 	<hex>04</hex>
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
-	<hex>07</hex>
+	<hex>b3</hex>
 
 	<!--Create Command String-->
 	<cpu:CopyImmediate8ToAccumulator/>
 	<hex>02</hex>
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
-	<hex>08</hex>
+	<hex>b4</hex>
 
 	<cpu:CopyImmediate8ToAccumulator/>
 	<hex>20</hex>
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
-	<hex>09</hex>
-
-	<!--Initialize Zero Page Free Pointer-->
-	<cpu:CopyImmediate8ToAccumulator/>
-	<hex>0a</hex>
-
-	<cpu:CopyAccumulatorToImmediate8Address/>
-	<hex>02</hex>
-
-	<!--Initialize Zero Page Frame Pointer-->
-	<cpu:CopyImmediate8ToAccumulator/>
-	<hex>00</hex>
-
-	<cpu:CopyAccumulatorToImmediate8Address/>
-	<hex>03</hex>
+	<hex>b5</hex>
 
 	<!--Initialize RAM Free Pointer-->
 	<cpu:CopyImmediate8ToAccumulator/>
@@ -352,12 +338,12 @@
 	<byte>0</byte>
 
 	<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-	<hex>08</hex>
+	<hex>b4</hex>
 
 	<cpu:IncrementYIndex/>
 
 	<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-	<hex>08</hex>
+	<hex>b4</hex>
 
 	<!--Draw Prompt-->
 	<label id="drawPrompt"/>
@@ -375,11 +361,17 @@
 
 	<label id="storeKeys"/>
 
-	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<!--<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
 	<hex>0200</hex>
 
 	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-	<hex>0208</hex>
+	<hex>0208</hex>-->
+
+	<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
+	<hex>a0</hex>
+
+	<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+	<hex>a8</hex>
 
 	<cpu:DecrementXIndex/>
 
@@ -410,8 +402,11 @@
 	<cpu:CopyImmediate16AddressToAccumulator/>
 	<hex>dc01</hex>
 
-	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-	<hex>0200</hex>
+	<!--<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>0200</hex>-->
+
+	<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+	<hex>a0</hex>
 
 	<cpu:DecrementXIndex/>
 
@@ -436,8 +431,11 @@
 	<cpu:CopyImmediate16PlusXIndexAddressToYIndex/>
 	<addressOf ref="keyboardColumns" type="Absolute16"/>
 
+	<!--<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+	<hex>0200</hex>-->
+
 	<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
-	<hex>0200</hex>
+	<hex>00a0</hex>
 
 	<cpu:AndAccumulatorWithImmediate16PlusXIndexAddress/>
 	<addressOf ref="keyboardRows" type="Absolute16"/>
@@ -445,8 +443,11 @@
 	<cpu:BranchToRelative8IfNotZero/>
 	<addressOf ref="notPressed" type="Relative8"/>
 
+	<!--<cpu:ExclusiveOrAccumulatorWithImmediate16PlusYIndexAddress/>
+	<hex>0208</hex>-->
+
 	<cpu:ExclusiveOrAccumulatorWithImmediate16PlusYIndexAddress/>
-	<hex>0208</hex>
+	<hex>00a8</hex>
 
 	<cpu:AndAccumulatorWithImmediate16PlusXIndexAddress/>
 	<addressOf ref="keyboardRows" type="Absolute16"/>
@@ -462,8 +463,11 @@
 	<addressOf ref="forEachKey" type="Relative8"/>
 
 	<!--Check Return Key-->
-	<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0200</hex>
+	<!--<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>0200</hex>-->
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>a0</hex>
 
 	<cpu:AndAccumulatorWithImmediate8/>
 	<binary>00000010</binary>
@@ -471,8 +475,11 @@
 	<cpu:BranchToRelative8IfNotZero/>
 	<addressOf ref="returnNotPressed" type="Relative8"/>
 
-	<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0208</hex>
+	<!--<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>0208</hex>-->
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>a8</hex>
 
 	<cpu:AndAccumulatorWithImmediate8/>
 	<binary>00000010</binary>
@@ -486,8 +493,11 @@
 	<label id="returnNotPressed"/>
 
 	<!--Check Backspace Key-->
-	<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0200</hex>
+	<!--<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>0200</hex>-->
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>a0</hex>
 
 	<cpu:AndAccumulatorWithImmediate8/>
 	<binary>00000001</binary>
@@ -495,8 +505,11 @@
 	<cpu:BranchToRelative8IfNotZero/>
 	<addressOf ref="backspaceNotPressed" type="Relative8"/>
 
-	<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0208</hex>
+	<!--<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>0208</hex>-->
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>a8</hex>
 
 	<cpu:AndAccumulatorWithImmediate8/>
 	<binary>00000001</binary>
@@ -510,8 +523,11 @@
 	<label id="backspaceNotPressed"/>
 
 	<!--Check Escape (Run/Stop) Key-->
-	<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0207</hex>
+	<!--<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>0207</hex>-->
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>a7</hex>
 
 	<cpu:AndAccumulatorWithImmediate8/>
 	<binary>10000000</binary>
@@ -519,8 +535,11 @@
 	<cpu:BranchToRelative8IfNotZero/>
 	<addressOf ref="escapeNotPressed" type="Relative8"/>
 
-	<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>020f</hex>
+	<!--<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>020f</hex>-->
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>af</hex>
 
 	<cpu:AndAccumulatorWithImmediate8/>
 	<binary>10000000</binary>
@@ -534,8 +553,11 @@
 	<label id="escapeNotPressed"/>
 
 	<!--Check Tab (Control) Key-->
-	<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0207</hex>
+	<!--<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>0207</hex>-->
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>a7</hex>
 
 	<cpu:AndAccumulatorWithImmediate8/>
 	<binary>00000100</binary>
@@ -543,8 +565,11 @@
 	<cpu:BranchToRelative8IfNotZero/>
 	<addressOf ref="tabNotPressed" type="Relative8"/>
 
-	<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>020f</hex>
+	<!--<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>020f</hex>-->
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>af</hex>
 
 	<cpu:AndAccumulatorWithImmediate8/>
 	<binary>00000100</binary>
@@ -563,8 +588,11 @@
 	<!--Key Pressed-->
 	<label id="keyPressed"/>
 
-	<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0201</hex>
+	<!--<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>0201</hex>-->
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>a1</hex>
 
 	<cpu:AndAccumulatorWithImmediate8/>
 	<binary>10000000</binary>
@@ -572,8 +600,11 @@
 	<cpu:BranchToRelative8IfZero/>
 	<addressOf ref="shiftPressed" type="Relative8"/>
 
-	<cpu:CopyImmediate16AddressToAccumulator/>
-	<hex>0206</hex>
+	<!--<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>0206</hex>-->
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>a6</hex>
 
 	<cpu:AndAccumulatorWithImmediate8/>
 	<binary>00010000</binary>
@@ -609,43 +640,43 @@
 	<cpu:ClearCarryFlag/>
 
 	<cpu:CopyImmediate8AddressToAccumulator/>
-	<hex>08</hex>
+	<hex>b4</hex>
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
-	<hex>80</hex>
+	<hex>02</hex>
 
 	<cpu:CopyImmediate8AddressToAccumulator/>
-	<hex>09</hex>
+	<hex>b5</hex>
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
-	<hex>81</hex>
+	<hex>03</hex>
 
 	<cpu:CopyImmediate8ToYIndex/>
 	<byte>1</byte>
 
 	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
-	<hex>80</hex>
+	<hex>02</hex>
 
 	<cpu:PushAccumulatorToStack/>
 
 	<cpu:DecrementYIndex/>
 
 	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
-	<hex>80</hex>
+	<hex>02</hex>
 
 	<cpu:AddImmediate8AddressToAccumulator/>
-	<hex>80</hex>
+	<hex>02</hex>
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
-	<hex>80</hex>
+	<hex>02</hex>
 
 	<cpu:PullAccumulatorFromStack/>
 
 	<cpu:AddImmediate8AddressToAccumulator/>
-	<hex>81</hex>
+	<hex>03</hex>
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
-	<hex>81</hex>
+	<hex>03</hex>
 
 	<cpu:ClearCarryFlag/>
 
@@ -653,45 +684,45 @@
 	<byte>2</byte>
 
 	<cpu:AddImmediate8AddressToAccumulator/>
-	<hex>80</hex>
+	<hex>02</hex>
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
-	<hex>80</hex>
+	<hex>02</hex>
 
 	<cpu:CopyImmediate8ToAccumulator/>
 	<byte>0</byte>
 
 	<cpu:AddImmediate8AddressToAccumulator/>
-	<hex>81</hex>
+	<hex>03</hex>
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
-	<hex>81</hex>
+	<hex>03</hex>
 
 	<cpu:PullAccumulatorFromStack/>
 
 	<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-	<hex>80</hex>
+	<hex>02</hex>
 
 	<!--Increment String Length-->
 	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
-	<hex>08</hex>
+	<hex>b4</hex>
 
 	<cpu:AddImmediate8ToAccumulator/>
 	<byte>1</byte>
 
 	<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-	<hex>08</hex>
+	<hex>b4</hex>
 
 	<cpu:IncrementYIndex/>
 
 	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
-	<hex>08</hex>
+	<hex>b4</hex>
 
 	<cpu:AddImmediate8ToAccumulator/>
 	<byte>0</byte>
 
 	<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-	<hex>08</hex>
+	<hex>b4</hex>
 
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="scroll" type="Absolute16"/>
@@ -711,7 +742,7 @@
 	<byte>0</byte>
 
 	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
-	<hex>08</hex>
+	<hex>b4</hex>
 
 	<cpu:CompareAccumulatorToImmediate8/>
 	<byte>0</byte>
@@ -723,28 +754,28 @@
 
 	<label id="TESTING">
 		<cpu:CopyImmediate8AddressToAccumulator/>
-		<hex>08</hex>
+		<hex>b4</hex>
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
-		<hex>0a</hex>
+		<hex>02</hex>
 
 		<cpu:CopyImmediate8AddressToAccumulator/>
-		<hex>09</hex>
+		<hex>b5</hex>
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
-		<hex>0b</hex>
+		<hex>03</hex>
 
 		<cpu:CopyImmediate8ToAccumulator/>
 		<addressOf ref="toString" type="Absolute16Low8"/>
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
-		<hex>0c</hex>
+		<hex>04</hex>
 
 		<cpu:CopyImmediate8ToAccumulator/>
 		<addressOf ref="toString" type="Absolute16High8"/>
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
-		<hex>0d</hex>
+		<hex>05</hex>
 
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="compareStrings" type="Absolute16"/>
@@ -786,7 +817,7 @@
 	<byte>0</byte>
 
 	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
-	<hex>08</hex>
+	<hex>b4</hex>
 
 	<cpu:BranchToRelative8IfNotEqual/>
 	<addressOf ref="notEmpty" type="Relative8"/>
@@ -802,7 +833,7 @@
 	<byte>0</byte>
 
 	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
-	<hex>08</hex>
+	<hex>b4</hex>
 
 	<cpu:SetCarryFlag/>
 	
@@ -812,7 +843,7 @@
 	<cpu:ClearCarryFlag/>
 
 	<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-	<hex>08</hex>
+	<hex>b4</hex>
 
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="waitForKeypress" type="Absolute16"/>
@@ -846,7 +877,7 @@
 	<byte>0</byte>
 
 	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
-	<hex>0a</hex>
+	<hex>02</hex>
 
 	<cpu:CopyAccumulatorToXIndex/>
 
@@ -856,10 +887,10 @@
 	<label id="forEachCharacter"/>
 
 	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
-	<hex>0a</hex>
+	<hex>02</hex>
 
 	<cpu:CopyYIndexToImmediate8Address/>
-	<hex>0c</hex>
+	<hex>04</hex>
 
 	<cpu:CopyAccumulatorToYIndex/>
 
@@ -872,7 +903,7 @@
 	<addressOf ref="scroll" type="Absolute16"/>
 
 	<cpu:CopyImmediate8AddressToYIndex/>
-	<hex>0c</hex>
+	<hex>04</hex>
 
 	<cpu:IncrementYIndex/>
 
@@ -890,7 +921,7 @@
 	<byte>25</byte>
 
 	<cpu:CompareAccumulatorToImmediate8Address/>
-	<hex>05</hex>
+	<hex>b1</hex>
 
 	<cpu:ClearCarryFlag/>
 
@@ -921,17 +952,17 @@
 		<byte>2</byte>
 
 		<cpu:AddImmediate8PointerPlusYIndexAddressToAccumulator/>
-		<hex>0a</hex>
+		<hex>02</hex>
 
 		<cpu:CopyAccumulatorToXIndex/>
 
 		<label id="forEachCharacter"/>
 
 		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
-		<hex>0a</hex>
+		<hex>02</hex>
 
 		<cpu:CompareAccumulatorToImmediate8PointerPlusYIndexAddress/>
-		<hex>0c</hex>
+		<hex>04</hex>
 
 		<cpu:ClearCarryFlag/>
 
@@ -1004,6 +1035,9 @@
 			name="Object"
 			type="http://metalx.org/Object"
 			static="true">
+			<cls:method name="Create" static="true" type="http://metalx.org/Object">
+				<cpu:ReturnFromSubroutine/>
+			</cls:method>
 			<cls:method name="ToString" static="true" type="http://metalx.org/String">
 				<cpu:ReturnFromSubroutine/>
 
@@ -1018,6 +1052,22 @@
 		</cls:class>
 	</label>
 
+	<label id="classClass">
+		<cls:class
+			name="Class"
+			type="http://metalx.org/Class">
+			<cls:method name="ToString" static="true" type="http://metalx.org/String">
+				<cpu:ReturnFromSubroutine/>
+
+				<var:string id="className">Class</var:string>
+			</cls:method>
+
+			<cls:method name="ToString" type="http://metalx.org/String">
+				<cpu:ReturnFromSubroutine/>
+			</cls:method>
+		</cls:class>
+	</label>
+
 	<label id="stringClass">
 		<cls:class
 			name="String"
@@ -1026,7 +1076,7 @@
 			<cls:method name="ToString" static="true" type="http://metalx.org/String">
 				<cpu:ReturnFromSubroutine/>
 
-				<var:string id="string">String</var:string>
+				<var:string id="className">String</var:string>
 			</cls:method>
 
 			<cls:method name="ToString" type="http://metalx.org/String">
