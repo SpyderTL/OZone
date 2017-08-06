@@ -9,9 +9,11 @@
 	xmlns:kernel="http://metalx.org/Commodore64/Kernel"
 	xmlns:mm="http://metalx.org/C64/Functions/MemoryManager"
 	xmlns:str="http://metalx.org/C64/Functions/String"
-	xmlns:cls="http://metalx.org/C64/Functions/Class"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
 	xmlns:scr="http://metalx.org/C64Console/Functions/Screen"
 	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:var="http://metalx.org/Variable"
 	>
 
 	<!--Define Memory Address Labels-->
@@ -19,21 +21,21 @@
 	<sys:CpuRomBankControl id="cpuRomBankControl"/>
 	<vid:BorderColor id="borderColor"/>
 	<vid:CharacterSettings id="characterSettings"/>
-	
+
 	<!--Disable CPU Interrupts-->
 	<cpu:SetInterruptDisableFlag/>
-	
+
 	<!--Reset CPU State-->
 	<cpu:ClearDecimalFlag/>
 	<cpu:ClearCarryFlag/>
 	<cpu:ClearOverflowFlag/>
-	
+
 	<!--Copy ROM to RAM-->
 	<cpu:CopyImmediate8ToXIndex/>
 	<hex>00</hex>
 
 	<label id="copyRom"/>
-	
+
 	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
 	<hex>8000</hex>
 
@@ -89,19 +91,19 @@
 
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="start" type="Absolute16"/>
-	
+
 	<label id="start"/>
-	
+
 	<!--Disable CIA Interrupts-->
 	<cpu:CopyImmediate8ToAccumulator/>
 	<hex>7f</hex>
 
 	<cpu:CopyAccumulatorToImmediate16Address/>
 	<hex>dc0d</hex>
-	
+
 	<cpu:CopyAccumulatorToImmediate16Address/>
 	<hex>dd0d</hex>
-	
+
 	<!--Setup CIA 1 Chip (Keyboard)-->
 	<cpu:CopyImmediate8ToAccumulator/>
 	<binary>11111111</binary>
@@ -145,7 +147,7 @@
 
 	<cpu:CopyAccumulatorToImmediate16Address/>
 	<hex>d018</hex>
-	
+
 	<!--Clear Interrupts-->
 	<cpu:CopyImmediate16AddressToAccumulator/>
 	<hex>dc0d</hex>
@@ -212,7 +214,7 @@
 
 	<cpu:BranchToRelative8IfNotZero/>
 	<addressOf ref="nextCharacter2" type="Relative8"/>
-	
+
 	<!--Enable Lower Case Characters-->
 	<cpu:CopyImmediate16AddressToAccumulator/>
 	<addressOf ref="characterSettings" type="Absolute16"/>
@@ -266,7 +268,7 @@
 	<byte>15</byte>
 
 	<cpu:CopyImmediate8ToAccumulator/>
-	<hex>ff</hex>
+	<hex>00</hex>
 
 	<label id="initializeKeyboard"/>
 
@@ -277,7 +279,7 @@
 
 	<cpu:BranchToRelative8IfPositive/>
 	<addressOf ref="initializeKeyboard" type="Relative8"/>
-	
+
 	<!--Set Cursor Position-->
 	<cpu:CopyImmediate8ToAccumulator/>
 	<hex>00</hex>
@@ -296,7 +298,7 @@
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
 	<hex>07</hex>
-	
+
 	<!--Create Command String-->
 	<cpu:CopyImmediate8ToAccumulator/>
 	<hex>02</hex>
@@ -339,10 +341,10 @@
 
 	<!--Enable Interrupts-->
 	<cpu:ClearInterruptDisableFlag/>
-	
+
 	<!--Reset Command-->
 	<label id="resetCommand"/>
-	
+
 	<cpu:CopyImmediate8ToAccumulator/>
 	<byte>0</byte>
 
@@ -356,7 +358,7 @@
 
 	<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 	<hex>08</hex>
-	
+
 	<!--Draw Prompt-->
 	<label id="drawPrompt"/>
 
@@ -410,12 +412,12 @@
 
 	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
 	<hex>0200</hex>
-	
+
 	<cpu:DecrementXIndex/>
 
 	<cpu:BranchToRelative8IfPositive/>
 	<addressOf ref="readKeys" type="Relative8"/>
-	
+
 	<!--Disable I/O Access-->
 	<cpu:CopyImmediate8ToAccumulator/>
 	<binary>00100000</binary>
@@ -430,7 +432,7 @@
 	<byte>51</byte>
 
 	<label id="forEachKey"/>
-	
+
 	<cpu:CopyImmediate16PlusXIndexAddressToYIndex/>
 	<addressOf ref="keyboardColumns" type="Absolute16"/>
 
@@ -537,7 +539,7 @@
 
 	<cpu:AndAccumulatorWithImmediate8/>
 	<binary>00000100</binary>
-	
+
 	<cpu:BranchToRelative8IfNotZero/>
 	<addressOf ref="tabNotPressed" type="Relative8"/>
 
@@ -546,21 +548,21 @@
 
 	<cpu:AndAccumulatorWithImmediate8/>
 	<binary>00000100</binary>
-	
+
 	<cpu:BranchToRelative8IfZero/>
 	<addressOf ref="tabNotPressed" type="Relative8"/>
 
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="tabPressed" type="Absolute16"/>
-	
+
 	<label id="tabNotPressed"/>
 
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="waitForKeypress" type="Absolute16"/>
-	
+
 	<!--Key Pressed-->
 	<label id="keyPressed"/>
-	
+
 	<cpu:CopyImmediate16AddressToAccumulator/>
 	<hex>0201</hex>
 
@@ -588,12 +590,12 @@
 	<addressOf ref="drawCharacter" type="Absolute16"/>
 
 	<label id="shiftNotPressed"/>
-	
+
 	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
 	<addressOf ref="keyCodes" type="Absolute16"/>
 
 	<label id="drawCharacter"/>
-	
+
 	<cpu:CopyAccumulatorToXIndex/>
 
 	<cpu:PushAccumulatorToStack/>
@@ -602,16 +604,16 @@
 	<addressOf ref="vicCodes" type="Absolute16"/>
 
 	<scr:DrawCharacter/>
-	
+
 	<!--Append Character-->
 	<cpu:ClearCarryFlag/>
-	
+
 	<cpu:CopyImmediate8AddressToAccumulator/>
 	<hex>08</hex>
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
 	<hex>80</hex>
-	
+
 	<cpu:CopyImmediate8AddressToAccumulator/>
 	<hex>09</hex>
 
@@ -627,7 +629,7 @@
 	<cpu:PushAccumulatorToStack/>
 
 	<cpu:DecrementYIndex/>
-	
+
 	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 	<hex>80</hex>
 
@@ -646,30 +648,30 @@
 	<hex>81</hex>
 
 	<cpu:ClearCarryFlag/>
-	
+
 	<cpu:CopyImmediate8ToAccumulator/>
 	<byte>2</byte>
-	
+
 	<cpu:AddImmediate8AddressToAccumulator/>
 	<hex>80</hex>
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
 	<hex>80</hex>
-	
+
 	<cpu:CopyImmediate8ToAccumulator/>
 	<byte>0</byte>
-	
+
 	<cpu:AddImmediate8AddressToAccumulator/>
 	<hex>81</hex>
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
 	<hex>81</hex>
-	
+
 	<cpu:PullAccumulatorFromStack/>
-	
+
 	<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 	<hex>80</hex>
-	
+
 	<!--Increment String Length-->
 	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 	<hex>08</hex>
@@ -705,17 +707,50 @@
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="scroll" type="Absolute16"/>
 
-	<cpu:CopyImmediate8AddressToAccumulator/>
-	<hex>08</hex>
+	<label id="TESTING">
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>08</hex>
 
-	<cpu:CopyAccumulatorToImmediate8Address/>
-	<hex>0a</hex>
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>0a</hex>
 
-	<cpu:CopyImmediate8AddressToAccumulator/>
-	<hex>09</hex>
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>09</hex>
 
-	<cpu:CopyAccumulatorToImmediate8Address/>
-	<hex>0b</hex>
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>0b</hex>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="toString" type="Absolute16Low8"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>0c</hex>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="toString" type="Absolute16High8"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>0d</hex>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="compareStrings" type="Absolute16"/>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notToString" type="Relative8"/>
+
+		<!--Disable CPU Interrupts-->
+		<cpu:SetInterruptDisableFlag/>
+
+		<!--Reset CPU State-->
+		<cpu:ClearDecimalFlag/>
+		<cpu:ClearCarryFlag/>
+		<cpu:ClearOverflowFlag/>
+
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="start" type="Absolute16"/>
+
+		<label id="notToString"/>
+	</label>
 
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="drawString" type="Absolute16"/>
@@ -728,11 +763,41 @@
 
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="resetCommand" type="Absolute16"/>
-	
+
 	<label id="backspacePressed"/>
 
-	<scr:DeleteCharacter/>
+	<cpu:CopyImmediate8ToYIndex/>
+	<byte>0</byte>
+
+	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+	<hex>08</hex>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notEmpty" type="Relative8"/>
 	
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="waitForKeypress" type="Absolute16"/>
+	
+	<label id="notEmpty"/>
+
+	<scr:DeleteCharacter/>
+
+	<cpu:CopyImmediate8ToYIndex/>
+	<byte>0</byte>
+
+	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+	<hex>08</hex>
+
+	<cpu:SetCarryFlag/>
+	
+	<cpu:SubtractImmediate8FromAccumulator/>
+	<byte>1</byte>
+
+	<cpu:ClearCarryFlag/>
+
+	<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+	<hex>08</hex>
+
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="waitForKeypress" type="Absolute16"/>
 
@@ -781,7 +846,7 @@
 	<hex>0c</hex>
 
 	<cpu:CopyAccumulatorToYIndex/>
-	
+
 	<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
 	<addressOf ref="vicCodes" type="Absolute16"/>
 
@@ -801,7 +866,7 @@
 	<addressOf ref="forEachCharacter" type="Relative8"/>
 
 	<cpu:ReturnFromSubroutine/>
-	
+
 	<!--Check For Scroll-->
 	<label id="scroll"/>
 
@@ -811,6 +876,8 @@
 	<cpu:CompareAccumulatorToImmediate8Address/>
 	<hex>05</hex>
 
+	<cpu:ClearCarryFlag/>
+
 	<cpu:BranchToRelative8IfNotEqual/>
 	<addressOf ref="skipScroll" type="Relative8"/>
 
@@ -819,13 +886,54 @@
 	<label id="skipScroll"/>
 
 	<cpu:ReturnFromSubroutine/>
-	
+
 	<!--Move To Next Line-->
 	<label id="newLine"/>
-	
+
 	<scr:NewLine/>
 
 	<cpu:ReturnFromSubroutine/>
+
+	<!--Compare Strings-->
+	<label id="compareStrings"/>
+
+	<scope>
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
+	
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>2</byte>
+
+		<cpu:AddImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>0a</hex>
+
+		<cpu:CopyAccumulatorToXIndex/>
+
+		<label id="forEachCharacter"/>
+
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>0a</hex>
+
+		<cpu:CompareAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<hex>0c</hex>
+
+		<cpu:ClearCarryFlag/>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="done" type="Relative8"/>
+
+		<cpu:IncrementYIndex/>
+
+		<cpu:DecrementXIndex/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="forEachCharacter" type="Relative8"/>
+
+		<label id="done"/>
+
+		<cpu:ReturnFromSubroutine/>
+
+	</scope>
 
 	<!--Reset Handler-->
 	<label id="resetHandler"/>
@@ -857,10 +965,10 @@
 
 	<cpu:BranchToRelative8IfZero/>
 	<addressOf ref="returnFromInterrupt" type="Relative8"/>
-	
+
 	<cpu:CopyAccumulatorToImmediate16Address/>
 	<hex>d019</hex>
-	
+
 	<label id="returnFromInterrupt"/>
 
 	<!--Disable ROM Banks-->
@@ -871,8 +979,53 @@
 	<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
 
 	<cpu:PullAccumulatorFromStack/>
-	
+
 	<cpu:ReturnFromInterrupt/>
+
+	<!--Classes-->
+	<label id="objectClass">
+		<cls:class
+			name="Object"
+			type="http://metalx.org/Object"
+			static="true">
+			<cls:method name="ToString" static="true" type="http://metalx.org/String">
+				<cpu:ReturnFromSubroutine/>
+
+				<var:string id="object">Object</var:string>
+			</cls:method>
+
+			<cls:method name="ToString" type="http://metalx.org/String">
+				<cpu:ReturnFromSubroutine/>
+
+				<var:string id="object2">Object</var:string>
+			</cls:method>
+		</cls:class>
+	</label>
+
+	<label id="stringClass">
+		<cls:class
+			name="String"
+			type="http://metalx.org/String"
+			static="true">
+			<cls:method name="ToString" static="true" type="http://metalx.org/String">
+				<cpu:ReturnFromSubroutine/>
+
+				<var:string id="string">String</var:string>
+			</cls:method>
+
+			<cls:method name="ToString" type="http://metalx.org/String">
+				<cpu:ReturnFromSubroutine/>
+			</cls:method>
+		</cls:class>
+	</label>
+
+	<!--Catalog-->
+	<var:short id="catalog">2</var:short>
+	<addressOf ref="objectClass" type="Absolute16"/>
+	<addressOf ref="stringClass" type="Absolute16"/>
+
+	<!--Constants-->
+	<var:string id="toString">ToString</var:string>
 
 	<!--Character Tables-->
 	<label id="keyboardRowMasks">

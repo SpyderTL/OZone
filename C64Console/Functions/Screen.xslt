@@ -141,6 +141,8 @@
 			<cpu:SubtractImmediate8FromAccumulator/>
 			<byte>40</byte>
 
+			<cpu:ClearCarryFlag/>
+
 			<cpu:CopyAccumulatorToImmediate8Address/>
 			<hex>06</hex>
 
@@ -346,9 +348,6 @@
 
 			<cpu:BranchToRelative8IfNotZero/>
 			<addressOf ref="forEachPixel5" type="Relative8"/>
-
-			<cpu:ClearCarryFlag/>
-
 		</scope>
 	</xsl:template>
 
