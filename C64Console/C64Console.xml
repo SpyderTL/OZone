@@ -21,6 +21,8 @@
 	<sys:CpuRomBankControl id="cpuRomBankControl"/>
 	<vid:BorderColor id="borderColor"/>
 	<vid:CharacterSettings id="characterSettings"/>
+	
+	<label id="commandString" offset="2002"/>
 
 	<!--Disable CPU Interrupts-->
 	<cpu:SetInterruptDisableFlag/>
@@ -706,7 +708,7 @@
 
 	<cpu:BranchToRelative8IfEqual/>
 	<addressOf ref="empty" type="Relative8"/>
-	
+
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="parse" type="Absolute16"/>
 
@@ -726,7 +728,7 @@
 	<addressOf ref="scroll" type="Absolute16"/>
 
 	<label id="empty"/>
-	
+
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="resetCommand" type="Absolute16"/>
 
@@ -740,10 +742,10 @@
 
 	<cpu:BranchToRelative8IfNotEqual/>
 	<addressOf ref="notEmpty" type="Relative8"/>
-	
+
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="waitForKeypress" type="Absolute16"/>
-	
+
 	<label id="notEmpty"/>
 
 	<scr:DeleteCharacter/>
@@ -755,7 +757,7 @@
 	<hex>b4</hex>
 
 	<cpu:SetCarryFlag/>
-	
+
 	<cpu:SubtractImmediate8FromAccumulator/>
 	<byte>1</byte>
 
@@ -859,11 +861,176 @@
 	<scr:NewLine/>
 
 	<cpu:ReturnFromSubroutine/>
-	
-	<!--Parse Command-->
-	<label id="parse"/>
 
-	<cpu:ReturnFromSubroutine/>
+	<!--Parse Command-->
+	<label id="parse">
+		<label id="count" offset="06"/>
+		<label id="character" offset="08"/>
+		<label id="stringValue" offset="0a"/>
+		<label id="integerValue" offset="0c"/>
+		<label id="decmalValue" offset="0e"/>
+		
+		<!--Get  Count-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="commandString" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="count" type="Absolute16Low8"/>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="commandString" type="Absolute16" offset="1"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="count" type="Absolute16Low8" offset="1"/>
+		
+		<!--Get First Character-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="character" type="Absolute16Low8"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>20</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="character" type="Absolute16Low8" offset="1"/>
+		
+		<label id="token"/>
+		
+		<!--End-->
+		
+		<!--Whitespace-->
+		
+		<!--Quote-->
+		
+		<!--Number-->
+		
+		<!--Class-->
+		
+		<!--Error-->
+		
+		<label id="string"/>
+		
+		<!--End-->
+		
+		<!--Quote-->
+		
+		<!--Character-->
+
+		<label id="number"/>
+		
+		<!--End-->
+			
+		<!--Period-->
+		
+		<!--Number-->
+		
+		<!--Right Parenthesis-->
+		
+		<!--Comma-->
+		
+		<!--Error-->
+
+		<label id="checkDecimal"/>
+		
+		<!--End-->
+		
+		<!--Number-->
+		
+		<!--Letter-->
+		
+		<!--Error-->
+
+		<label id="decmal"/>
+		
+		<!--End-->
+		
+		<!--Number-->
+		
+		<!--Period-->
+		
+		<!--Right Parenthesis-->
+		
+		<!--Comma-->
+		
+		<!--Error-->
+
+		<label id="class"/>
+		
+		<!--End-->
+		
+		<!--Period-->
+		
+		<!--Character-->
+		
+		<!--Right Parenthesis-->
+		
+		<!--Comma-->
+		
+		<label id="member"/>
+		
+		<!--End-->
+		
+		<!--Period-->
+		
+		<!--Left Parenthesis-->
+		
+		<!--Right Parenthesis-->
+		
+		<!--Comma-->
+		
+		<!--Character-->
+
+		<label id="object"/>
+		
+		<!--End-->
+		
+		<!--Period-->
+		
+		<!--Comma-->
+		
+		<!--Right Parenthesis-->
+		
+		<!--Error-->
+
+		<label id="done"/>
+
+		<cpu:ReturnFromSubroutine/>
+		
+		<label id="appendCharacter"/>
+		
+		<label id="appendNumber"/>
+		
+		<label id="appendDecimal"/>
+		
+		<label id="startString"/>
+		
+		<label id="startNumber"/>
+		
+		<label id="startDecimal"/>
+		
+		<label id="startClass"/>
+		
+		<label id="startMember"/>
+		
+		<label id="startMethod"/>
+		
+		<label id="endString"/>
+		
+		<label id="endInteger"/>
+		
+		<label id="endClass"/>
+		
+		<label id="endMember"/>
+		
+		<label id="endMethod"/>
+		
+		<label id="endParameter"/>
+				
+		<label id="throwError"/>
+
+	</label>
 
 	<!--Execute Command-->
 	<label id="execute"/>
@@ -893,7 +1060,7 @@
 	<scope>
 		<cpu:CopyImmediate8ToYIndex/>
 		<byte>0</byte>
-	
+
 		<cpu:CopyImmediate8ToAccumulator/>
 		<byte>2</byte>
 
