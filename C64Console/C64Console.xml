@@ -837,8 +837,29 @@
 	<!--Draw String-->
 	<label id="drawString"/>
 
+	<!--Get Data Address-->
 	<cpu:CopyImmediate8ToYIndex/>
 	<byte>0</byte>
+
+	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+	<hex>02</hex>
+
+	<cpu:PushAccumulatorToStack/>
+
+	<cpu:IncrementYIndex/>
+
+	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+	<hex>02</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>03</hex>
+
+	<cpu:PullAccumulatorFromStack/>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>02</hex>
+
+	<cpu:DecrementYIndex/>
 
 	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 	<hex>02</hex>
@@ -909,10 +930,10 @@
 	<label id="parse">
 		<scope>
 			<label id="result" offset="02"/>
-			<label id="count" offset="06"/>
-			<label id="character" offset="08"/>
-			<label id="tokenCount" offset="0a"/>
-			<label id="tokenCharacter" offset="0c"/>
+			<label id="count" offset="08"/>
+			<label id="character" offset="0a"/>
+			<label id="tokenCount" offset="0c"/>
+			<label id="tokenCharacter" offset="0e"/>
 			<label id="token" offset="2102"/>
 
 			<!--Default Value-->
@@ -1496,7 +1517,22 @@
 
 			<cpu:CopyAccumulatorToImmediate8Address/>
 			<addressOf ref="result" type="Absolute16Low8"/>
-			
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<addressOf ref="stringClass" type="Absolute16Low8"/>
+
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>04</hex>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<addressOf ref="stringClass" type="Absolute16High8"/>
+
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>05</hex>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="createObject" type="Absolute16"/>
+
 			<cpu:ReturnFromSubroutine/>
 
 			<label id="endInteger"/>
@@ -1583,6 +1619,90 @@
 		<addressOf ref="forEachCharacter" type="Relative8"/>
 
 		<label id="done"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</scope>
+
+	<!--Create Object-->
+	<label id="createObject"/>
+
+	<scope>
+		<!--Push Data Pointer-->
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<addressOf ref="result" type="Absolute16Low8" offset="1"/>
+
+		<cpu:PushAccumulatorToStack/>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<addressOf ref="result" type="Absolute16Low8"/>
+
+		<cpu:PushAccumulatorToStack/>
+
+		<!--Get Free Ram Pointer-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="freeRamPointer" type="Absolute16Low8"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="result" type="Absolute16Low8"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="freeRamPointer" type="Absolute16High8"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="result" type="Absolute16Low8" offset="1"/>
+
+		<!--Update Free Ram Pointer-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>8</byte>
+
+		<cpu:AddImmediate16AddressToAccumulator/>
+		<addressOf ref="freeRamPointer" type="Absolute16Low8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="freeRamPointer" type="Absolute16Low8"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+ 
+		<cpu:AddImmediate16AddressToAccumulator/>
+		<addressOf ref="freeRamPointer" type="Absolute16Low8" offset="1"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="freeRamPointer" type="Absolute16Low8" offset="1"/>
+
+		<cpu:ClearCarryFlag/>
+
+		<!--Write Object-->
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
+
+		<cpu:PullAccumulatorFromStack/>
+
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<addressOf ref="result" type="Absolute16Low8"/>
+
+		<cpu:IncrementYIndex/>
+		
+		<cpu:PullAccumulatorFromStack/>
+
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<addressOf ref="result" type="Absolute16Low8"/>
+
+		<cpu:IncrementYIndex/>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<addressOf ref="result" type="Absolute16Low8"/>
+
+		<cpu:IncrementYIndex/>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>05</hex>
+
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<addressOf ref="result" type="Absolute16Low8"/>
 
 		<cpu:ReturnFromSubroutine/>
 	</scope>
