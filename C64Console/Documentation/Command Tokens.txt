@@ -1,4 +1,4 @@
-﻿Parse
+﻿Token
 	End		ThrowError
 	"			String
 	0-9		AppendNumber, Number
@@ -16,7 +16,7 @@ Number
 	.			EndInteger, CheckDecimal
 	0-9		AppendNumber, Number
 	)			EndInteger	, EndMethod, Object
-	,			EndInteger, EndParameter, Parse
+	,			EndInteger, EndParameter, Token
 	*			ThrowError
 
 CheckDecimal
@@ -30,25 +30,27 @@ Decimal
 	0-9		AppendDecimal, Decimal
 	.			EndDecimal, Member
 	)			EndDecimal, EndMethod, Object
-	,			EndDecimal, EndParameter, Parse
+	,			EndDecimal, EndParameter, Token
 	*			ThrowError
 
 Class
 	End		EndClass, Done
 	.			EndClass, Method
+	)			EndClass, EndMethod, Object
+	,			EndClass, EndParameter, Token
 	*			AppendCharacter, Class
 
 Member
 	End		EndMember, Done
 	.			EndMember, Member
-	(			EndMember, StartMethod, Parse
+	(			EndMember, StartMethod, Token
 	)			EndMember, EndMethod, Object
-	,			EndMember, EndParameter, Parse
+	,			EndMember, EndParameter, Token
 	*			AppendCharacter
 
 Object
 	End		Done	
 	.			Member
-	,			EndParameter, Parse
+	,			EndParameter, Token
 	)			EndMethod, Object
 	*			ThrowError
