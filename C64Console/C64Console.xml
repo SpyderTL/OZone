@@ -22,6 +22,7 @@
 	<vid:BorderColor id="borderColor"/>
 	<vid:CharacterSettings id="characterSettings"/>
 
+	<label id="nullPointer" offset="0000"/>
 	<label id="freeRamPointer" offset="2000"/>
 	<label id="commandString" offset="2002"/>
 
@@ -728,12 +729,41 @@
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="execute" type="Absolute16"/>
 
+	<cpu:CopyImmediate8ToAccumulator/>
+	<addressOf ref="nullPointer" type="Absolute16Low8"/>
+
+	<cpu:CompareAccumulatorToImmediate8Address/>
+	<hex>02</hex>
+
+	<cpu:ClearCarryFlag/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notNull" type="Relative8"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<addressOf ref="nullPointer" type="Absolute16High8"/>
+
+	<cpu:CompareAccumulatorToImmediate8Address/>
+	<hex>03</hex>
+
+	<cpu:ClearCarryFlag/>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notNull" type="Relative8"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="null" type="Absolute16"/>
+	
+	<label id="notNull"/>
+	
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="convert" type="Absolute16"/>
 
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="drawString" type="Absolute16"/>
 
+	<label id="null"/>
+	
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="newLine" type="Absolute16"/>
 
