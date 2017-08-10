@@ -1471,7 +1471,8 @@
 			<cpu:CopyAccumulatorToImmediate8Address/>
 			<addressOf ref="result" type="Absolute16Low8"/>
 
-			<cpu:PushAccumulatorToStack/>
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>80</hex>
 
 			<cpu:CopyImmediate16AddressToAccumulator/>
 			<addressOf ref="freeRamPointer" type="Absolute16" offset="1"/>
@@ -1479,7 +1480,8 @@
 			<cpu:CopyAccumulatorToImmediate8Address/>
 			<addressOf ref="result" type="Absolute16Low8" offset="1"/>
 
-			<cpu:PushAccumulatorToStack/>
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>81</hex>
 
 			<cpu:CopyImmediate8AddressToAccumulator/>
 			<addressOf ref="tokenCount" type="Absolute16Low8"/>
@@ -1492,6 +1494,26 @@
 
 			<cpu:CopyImmediate8AddressToAccumulator/>
 			<addressOf ref="tokenCount" type="Absolute16Low8" offset="1"/>
+
+			<cpu:AddImmediate16AddressToAccumulator/>
+			<addressOf ref="freeRamPointer" type="Absolute16" offset="1"/>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="freeRamPointer" type="Absolute16" offset="1"/>
+
+			<cpu:ClearCarryFlag/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>2</byte>
+
+			<cpu:AddImmediate16AddressToAccumulator/>
+			<addressOf ref="freeRamPointer" type="Absolute16"/>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="freeRamPointer" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
 
 			<cpu:AddImmediate16AddressToAccumulator/>
 			<addressOf ref="freeRamPointer" type="Absolute16" offset="1"/>
@@ -1555,15 +1577,17 @@
 			<addressOf ref="forEachCharacter" type="Relative8"/>
 
 			<!--Restore Result-->
-			<cpu:PullAccumulatorFromStack/>
-
-			<cpu:CopyAccumulatorToImmediate8Address/>
-			<addressOf ref="result" type="Absolute16Low8" offset="1"/>
-
-			<cpu:PullAccumulatorFromStack/>
+			<cpu:CopyImmediate8AddressToAccumulator/>
+			<hex>80</hex>
 
 			<cpu:CopyAccumulatorToImmediate8Address/>
 			<addressOf ref="result" type="Absolute16Low8"/>
+
+			<cpu:CopyImmediate8AddressToAccumulator/>
+			<hex>81</hex>
+
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<addressOf ref="result" type="Absolute16Low8" offset="1"/>
 
 			<cpu:CopyImmediate8ToAccumulator/>
 			<addressOf ref="stringClass" type="Absolute16Low8"/>
@@ -1882,26 +1906,28 @@
 	<scope>
 		<label id="result" offset="02"/>
 
-		<!--Push Data Pointer-->
-		<cpu:CopyImmediate8AddressToAccumulator/>
-		<addressOf ref="result" type="Absolute16Low8" offset="1"/>
-
-		<cpu:PushAccumulatorToStack/>
-
+		<!--Save Data Pointer-->
 		<cpu:CopyImmediate8AddressToAccumulator/>
 		<addressOf ref="result" type="Absolute16Low8"/>
 
-		<cpu:PushAccumulatorToStack/>
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>80</hex>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<addressOf ref="result" type="Absolute16Low8" offset="1"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>81</hex>
 
 		<!--Get Free Ram Pointer-->
 		<cpu:CopyImmediate16AddressToAccumulator/>
-		<addressOf ref="freeRamPointer" type="Absolute16Low8"/>
+		<addressOf ref="freeRamPointer" type="Absolute16"/>
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<addressOf ref="result" type="Absolute16Low8"/>
 
 		<cpu:CopyImmediate16AddressToAccumulator/>
-		<addressOf ref="freeRamPointer" type="Absolute16High8"/>
+		<addressOf ref="freeRamPointer" type="Absolute16" offset="1"/>
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<addressOf ref="result" type="Absolute16Low8" offset="1"/>
@@ -1911,19 +1937,19 @@
 		<byte>8</byte>
 
 		<cpu:AddImmediate16AddressToAccumulator/>
-		<addressOf ref="freeRamPointer" type="Absolute16Low8"/>
+		<addressOf ref="freeRamPointer" type="Absolute16"/>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="freeRamPointer" type="Absolute16Low8"/>
+		<addressOf ref="freeRamPointer" type="Absolute16"/>
 
 		<cpu:CopyImmediate8ToAccumulator/>
 		<byte>0</byte>
 
 		<cpu:AddImmediate16AddressToAccumulator/>
-		<addressOf ref="freeRamPointer" type="Absolute16Low8" offset="1"/>
+		<addressOf ref="freeRamPointer" type="Absolute16" offset="1"/>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="freeRamPointer" type="Absolute16Low8" offset="1"/>
+		<addressOf ref="freeRamPointer" type="Absolute16" offset="1"/>
 
 		<cpu:ClearCarryFlag/>
 
@@ -1931,14 +1957,16 @@
 		<cpu:CopyImmediate8ToYIndex/>
 		<byte>0</byte>
 
-		<cpu:PullAccumulatorFromStack/>
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>80</hex>
 
 		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 		<addressOf ref="result" type="Absolute16Low8"/>
 
 		<cpu:IncrementYIndex/>
 
-		<cpu:PullAccumulatorFromStack/>
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>81</hex>
 
 		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 		<addressOf ref="result" type="Absolute16Low8"/>
