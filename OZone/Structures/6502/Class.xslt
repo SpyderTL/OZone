@@ -31,13 +31,16 @@
 					<short>0</short>
 				</xsl:otherwise>
 			</xsl:choose>
-			<addressOf ref="classMembers" type="Absolute16"/>
+			<addressOf ref="classFields" type="Absolute16"/>
+			<addressOf ref="classMethods" type="Absolute16"/>
+			<addressOf ref="classStaticMethods" type="Absolute16"/>
 			<short>
 				<xsl:choose>
 					<xsl:when test="@static='true'">1</xsl:when>
 					<xsl:otherwise>0</xsl:otherwise>
 				</xsl:choose>
 			</short>
+			<addressOf ref="classStaticFields" type="Absolute16"/>
 
 			<label id="className"/>
 			<short>
@@ -65,8 +68,17 @@
 				</string>
 			</xsl:if>
 
-			<label id="classMembers"/>
-			<xsl:call-template name="classMembers"/>
+			<label id="classFields"/>
+			<xsl:call-template name="classFields"/>
+
+			<label id="classMethods"/>
+			<xsl:call-template name="classMethods"/>
+
+			<label id="classStaticMethods"/>
+			<xsl:call-template name="classStaticMethods"/>
+
+			<label id="classStaticFields"/>
+			<xsl:call-template name="classStaticFields"/>
 
 			<xsl:apply-templates select="node()"/>
 		</scope>
@@ -95,65 +107,28 @@
 		<xsl:copy-of select="*"/>
 	</xsl:template>
 
-	<xsl:template name="classMembers">
+	<xsl:template name="classFields">
 		<short>
-			<xsl:value-of select="count(cls:method) + count(cls:field)"/>
+			<xsl:value-of select="count(cls:field)"/>
 		</short>
 		<xsl:for-each select="cls:field">
 			<xsl:sort select="@name"/>
 			<xsl:element name="addressOf">
 				<xsl:attribute name="ref">
 					<xsl:value-of select="@name"/>
-					<xsl:text>_member</xsl:text>
+					<xsl:text>_field</xsl:text>
 				</xsl:attribute>
 				<xsl:attribute name="type">Absolute16</xsl:attribute>
 			</xsl:element>
 		</xsl:for-each>
-		<xsl:for-each select="cls:method">
-			<xsl:sort select="@name"/>
-			<xsl:element name="addressOf">
-				<xsl:attribute name="ref">
-					<xsl:value-of select="@name"/>
-					<xsl:text>_member</xsl:text>
-				</xsl:attribute>
-				<xsl:attribute name="type">Absolute16</xsl:attribute>
-			</xsl:element>
-		</xsl:for-each>
-		<xsl:for-each select="cls:field[@static = 'true']">
+		<xsl:for-each select="cls:field">
 			<xsl:element name="label">
 				<xsl:attribute name="id">
 					<xsl:value-of select="@name"/>
-					<xsl:text>_member</xsl:text>
+					<xsl:text>_field</xsl:text>
 				</xsl:attribute>
 			</xsl:element>
 			<xsl:call-template name="classField"/>
-		</xsl:for-each>
-		<xsl:for-each select="cls:field[not(@static = 'true')]">
-			<xsl:element name="label">
-				<xsl:attribute name="id">
-					<xsl:value-of select="@name"/>
-					<xsl:text>_member</xsl:text>
-				</xsl:attribute>
-			</xsl:element>
-			<xsl:call-template name="classField"/>
-		</xsl:for-each>
-		<xsl:for-each select="cls:method[@static = 'true']">
-			<xsl:element name="label">
-				<xsl:attribute name="id">
-					<xsl:value-of select="@name"/>
-					<xsl:text>_member</xsl:text>
-				</xsl:attribute>
-			</xsl:element>
-			<xsl:call-template name="classStaticMethod"/>
-		</xsl:for-each>
-		<xsl:for-each select="cls:method[not(@static = 'true')]">
-			<xsl:element name="label">
-				<xsl:attribute name="id">
-					<xsl:value-of select="@name"/>
-					<xsl:text>_member</xsl:text>
-				</xsl:attribute>
-			</xsl:element>
-			<xsl:call-template name="classMethod"/>
 		</xsl:for-each>
 	</xsl:template>
 
@@ -201,6 +176,31 @@
 		<string>
 			<xsl:value-of select="@type"/>
 		</string>
+	</xsl:template>
+
+	<xsl:template name="classMethods">
+		<short>
+			<xsl:value-of select="count(cls:method[not(@static = 'true')])"/>
+		</short>
+		<xsl:for-each select="cls:method[not(@static = 'true')]">
+			<xsl:sort select="@name"/>
+			<xsl:element name="addressOf">
+				<xsl:attribute name="ref">
+					<xsl:value-of select="@name"/>
+					<xsl:text>_method</xsl:text>
+				</xsl:attribute>
+				<xsl:attribute name="type">Absolute16</xsl:attribute>
+			</xsl:element>
+		</xsl:for-each>
+		<xsl:for-each select="cls:method[not(@static = 'true')]">
+			<xsl:element name="label">
+				<xsl:attribute name="id">
+					<xsl:value-of select="@name"/>
+					<xsl:text>_method</xsl:text>
+				</xsl:attribute>
+			</xsl:element>
+			<xsl:call-template name="classMethod"/>
+		</xsl:for-each>
 	</xsl:template>
 
 	<xsl:template name="classMethod">
@@ -347,6 +347,46 @@
 		</string>
 	</xsl:template>
 
+	<xsl:template name="classStaticFields">
+		<short>
+			<xsl:value-of select="count(cls:field[@static = 'true'])"/>
+		</short>
+		<xsl:for-each select="cls:field[@static = 'true']">
+			<xsl:sort select="@name"/>
+			<xsl:element name="addressOf">
+				<xsl:attribute name="ref">
+					<xsl:value-of select="@ref"/>
+				</xsl:attribute>
+				<xsl:attribute name="type">Absolute16</xsl:attribute>
+			</xsl:element>
+		</xsl:for-each>
+	</xsl:template>
+
+	<xsl:template name="classStaticMethods">
+		<short>
+			<xsl:value-of select="count(cls:method[@static = 'true'])"/>
+		</short>
+		<xsl:for-each select="cls:method[@static = 'true']">
+			<xsl:sort select="@name"/>
+			<xsl:element name="addressOf">
+				<xsl:attribute name="ref">
+					<xsl:value-of select="@name"/>
+					<xsl:text>_staticMethod</xsl:text>
+				</xsl:attribute>
+				<xsl:attribute name="type">Absolute16</xsl:attribute>
+			</xsl:element>
+		</xsl:for-each>
+		<xsl:for-each select="cls:method[@static = 'true']">
+			<xsl:element name="label">
+				<xsl:attribute name="id">
+					<xsl:value-of select="@name"/>
+					<xsl:text>_staticMethod</xsl:text>
+				</xsl:attribute>
+			</xsl:element>
+			<xsl:call-template name="classStaticMethod"/>
+		</xsl:for-each>
+	</xsl:template>
+
 	<xsl:template name="classStaticMethod">
 		<xsl:element name="addressOf">
 			<xsl:attribute name="ref">
@@ -408,7 +448,7 @@
 		<string>
 			<xsl:value-of select="@type"/>
 		</string>
-		
+
 		<xsl:element name="label">
 			<xsl:attribute name="id">
 				<xsl:value-of select="@name"/>
@@ -441,7 +481,7 @@
 			<xsl:call-template name="classStaticMethodParameter"/>
 		</xsl:for-each>
 	</xsl:template>
-	
+
 	<xsl:template name="classStaticMethodParameter">
 		<xsl:element name="addressOf">
 			<xsl:attribute name="ref">
