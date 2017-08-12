@@ -100,6 +100,18 @@
 	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
 	<hex>1900</hex>
 
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<hex>8a00</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>1a00</hex>
+
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<hex>8b00</hex>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<hex>1b00</hex>
+
 	<cpu:IncrementXIndex/>
 
 	<cpu:BranchToRelative8IfNotZero/>
@@ -1879,20 +1891,181 @@
 	<!--Convert Object To String-->
 	<label id="convert"/>
 
-	<!--<cpu:CopyImmediate8ToAccumulator/>
+	<cpu:CopyImmediate8ToAccumulator/>
 	<addressOf ref="toString" type="Absolute16Low8"/>
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
-	<hex>02</hex>
+	<hex>04</hex>
 
 	<cpu:CopyImmediate8ToAccumulator/>
 	<addressOf ref="toString" type="Absolute16High8"/>
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
-	<hex>03</hex>-->
+	<hex>05</hex>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="findMethod" type="Absolute16"/>
+
+	<!--<cpu:JumpToImmediate16Address/>
+	<addressOf ref="stop" type="Absolute16"/>-->
+
+	<!--Get Entry Point-->
+	<cpu:CopyImmediate8ToYIndex/>
+	<byte>6</byte>
+
+	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+	<hex>02</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="entryPoint" type="Absolute16"/>
+
+	<cpu:IncrementYIndex/>
+
+	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+	<hex>02</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="entryPoint" type="Absolute16" offset="1"/>
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>80</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>02</hex>
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>81</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>03</hex>
+
+	<cpu:CallImmediate16Address/>
+	<label id="entryPoint"/>
+	<hex>0000</hex>
 
 	<cpu:ReturnFromSubroutine/>
+	
+	<!--Find Method-->
+	<label id="findMethod"/>
 
+	<!--Save Object-->
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>02</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>80</hex>
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>03</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>81</hex>
+
+	<!--Get Class-->
+	<cpu:CopyImmediate8ToYIndex/>
+	<byte>2</byte>
+
+	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+	<hex>02</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>82</hex>
+
+	<cpu:IncrementYIndex/>
+
+	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+	<hex>02</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>03</hex>
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>82</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>02</hex>
+
+	<!--Get Methods-->
+	<cpu:CopyImmediate8ToYIndex/>
+	<byte>8</byte>
+
+	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+	<hex>02</hex>
+	
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>82</hex>
+
+	<cpu:IncrementYIndex/>
+
+	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+	<hex>02</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>03</hex>
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>82</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>02</hex>
+	
+	<!--Get Count-->
+	<cpu:CopyImmediate8ToYIndex/>
+	<byte>0</byte>
+	
+	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+	<hex>02</hex>
+
+	<cpu:CopyAccumulatorToXIndex/>
+	
+	<label id="forEachMethod"/>
+
+	<cpu:IncrementYIndex/>
+	<cpu:IncrementYIndex/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="methodFound" type="Absolute16"/>
+
+	<cpu:DecrementXIndex/>
+
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="forEachMethod" type="Relative8"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<byte>0</byte>
+	
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>02</hex>
+	
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>03</hex>
+	
+	<cpu:ReturnFromSubroutine/>
+	
+	<label id="methodFound"/>
+
+	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+	<hex>02</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>82</hex>
+
+	<cpu:IncrementYIndex/>
+	
+	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+	<hex>02</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>03</hex>
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>82</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>02</hex>
+
+	<cpu:ReturnFromSubroutine/>
+	
 	<!--Compare Strings-->
 	<label id="compareStrings"/>
 
@@ -2070,6 +2243,13 @@
 
 	<cpu:ReturnFromInterrupt/>
 
+	<!--Catalog-->
+	<var:short id="catalog">4</var:short>
+	<addressOf ref="objectClass" type="Absolute16"/>
+	<addressOf ref="classClass" type="Absolute16"/>
+	<addressOf ref="stringClass" type="Absolute16"/>
+	<addressOf ref="shortClass" type="Absolute16"/>
+
 	<!--Classes-->
 	<label id="objectClass">
 		<cls:class
@@ -2120,6 +2300,10 @@
 			</cls:method>
 
 			<cls:method name="ToString" type="http://metalx.org/String">
+
+				<!--<cpu:JumpToImmediate16Address/>
+				<addressOf ref="stop" type="Absolute16"/>-->
+				
 				<cpu:ReturnFromSubroutine/>
 			</cls:method>
 		</cls:class>
@@ -2136,17 +2320,37 @@
 			</cls:method>
 
 			<cls:method name="ToString" type="http://metalx.org/String">
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="toString" type="Absolute16Low8"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>02</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="toString" type="Absolute16High8"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>03</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="stringClass" type="Absolute16Low8"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>04</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="stringClass" type="Absolute16High8"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>05</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="createObject" type="Absolute16"/>
+
 				<cpu:ReturnFromSubroutine/>
 			</cls:method>
 		</cls:class>
 	</label>
-
-	<!--Catalog-->
-	<var:short id="catalog">4</var:short>
-	<addressOf ref="objectClass" type="Absolute16"/>
-	<addressOf ref="classClass" type="Absolute16"/>
-	<addressOf ref="stringClass" type="Absolute16"/>
-	<addressOf ref="shortClass" type="Absolute16"/>
 
 	<!--Constants-->
 	<var:string id="toString">ToString</var:string>
