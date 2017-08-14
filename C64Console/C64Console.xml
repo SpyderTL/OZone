@@ -965,9 +965,9 @@
 			<label id="result" offset="02"/>
 			<label id="count" offset="08"/>
 			<label id="character" offset="0a"/>
-			<label id="tokenCount" offset="0c"/>
 			<label id="tokenCharacter" offset="0e"/>
-			<label id="tokenCharacters" offset="2102"/>
+			<label id="tokenCount" offset="2102"/>
+			<label id="tokenCharacters" offset="2104"/>
 			<label id="type" offset="0a"/>
 
 			<!--Default Value-->
@@ -1655,8 +1655,8 @@
 				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 				<addressOf ref="tokenCharacter" type="Absolute16Low8"/>
 
-				<cpu:IncrementImmediate8Address/>
-				<addressOf ref="tokenCount" type="Absolute16Low8"/>
+				<cpu:IncrementImmediate16Address/>
+				<addressOf ref="tokenCount" type="Absolute16"/>
 
 				<cpu:IncrementImmediate8Address/>
 				<addressOf ref="tokenCharacter" type="Absolute16Low8"/>
@@ -1676,11 +1676,11 @@
 				<cpu:CopyImmediate8ToAccumulator/>
 				<byte>0</byte>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<addressOf ref="tokenCount" type="Absolute16Low8"/>
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<addressOf ref="tokenCount" type="Absolute16"/>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<addressOf ref="tokenCount" type="Absolute16Low8" offset="1"/>
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<addressOf ref="tokenCount" type="Absolute16" offset="1"/>
 
 				<cpu:CopyImmediate8ToAccumulator/>
 				<addressOf ref="tokenCharacters" type="Absolute16Low8"/>
@@ -1741,8 +1741,8 @@
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>81</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<addressOf ref="tokenCount" type="Absolute16Low8"/>
+				<cpu:CopyImmediate16AddressToAccumulator/>
+				<addressOf ref="tokenCount" type="Absolute16"/>
 
 				<cpu:AddImmediate16AddressToAccumulator/>
 				<addressOf ref="freeRamPointer" type="Absolute16"/>
@@ -1750,8 +1750,8 @@
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<addressOf ref="freeRamPointer" type="Absolute16"/>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<addressOf ref="tokenCount" type="Absolute16Low8" offset="1"/>
+				<cpu:CopyImmediate16AddressToAccumulator/>
+				<addressOf ref="tokenCount" type="Absolute16" offset="1"/>
 
 				<cpu:AddImmediate16AddressToAccumulator/>
 				<addressOf ref="freeRamPointer" type="Absolute16" offset="1"/>
@@ -1785,16 +1785,16 @@
 				<cpu:CopyImmediate8ToYIndex/>
 				<byte>0</byte>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<addressOf ref="tokenCount" type="Absolute16Low8"/>
+				<cpu:CopyImmediate16AddressToAccumulator/>
+				<addressOf ref="tokenCount" type="Absolute16"/>
 
 				<cpu:CopyAccumulatorToXIndex/>
 
 				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 				<addressOf ref="result" type="Absolute16Low8"/>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<addressOf ref="tokenCount" type="Absolute16Low8" offset="1"/>
+				<cpu:CopyImmediate16AddressToAccumulator/>
+				<addressOf ref="tokenCount" type="Absolute16" offset="1"/>
 
 				<cpu:IncrementYIndex/>
 
@@ -1909,8 +1909,8 @@
 				<cpu:CopyImmediate8ToYIndex/>
 				<byte>0</byte>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<addressOf ref="tokenCount" type="Absolute16Low8"/>
+				<cpu:CopyImmediate16AddressToAccumulator/>
+				<addressOf ref="tokenCount" type="Absolute16"/>
 
 				<cpu:CopyAccumulatorToXIndex/>
 
@@ -2084,8 +2084,8 @@
 			</label>
 
 			<label id="endClass">
-				<!--Restore Result-->
-				<cpu:CopyImmediate8ToAccumulator/>
+				<!--Find Class-->
+				<!--<cpu:CopyImmediate8ToAccumulator/>
 				<addressOf ref="classClass" type="Absolute16Low8"/>
 
 				<cpu:CopyAccumulatorToImmediate8Address/>
@@ -2095,8 +2095,108 @@
 				<addressOf ref="classClass" type="Absolute16High8"/>
 
 				<cpu:CopyAccumulatorToImmediate8Address/>
-				<addressOf ref="result" type="Absolute16Low8" offset="1"/>
+				<addressOf ref="result" type="Absolute16Low8" offset="1"/>-->
 
+				<cpu:CopyImmediate16AddressToAccumulator/>
+				<addressOf ref="catalog" type="Absolute16"/>
+
+				<cpu:CopyAccumulatorToXIndex/>
+
+				<cpu:CopyImmediate8ToYIndex/>
+				<byte>2</byte>
+
+				<label id="forEachClass"/>
+				
+				<cpu:CopyXIndexToImmediate8Address/>
+				<hex>82</hex>
+
+				<cpu:CopyYIndexToImmediate8Address/>
+				<hex>83</hex>
+
+				<!--Get Class-->
+				<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+				<addressOf ref="catalog" type="Absolute16"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>80</hex>
+
+				<cpu:IncrementYIndex/>
+				
+				<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+				<addressOf ref="catalog" type="Absolute16"/>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>81</hex>
+				
+				<!--Get Class Name-->
+				<cpu:CopyImmediate8ToYIndex/>
+				<byte>0</byte>
+
+				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+				<hex>80</hex>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>02</hex>
+
+				<cpu:IncrementYIndex/>
+
+				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+				<hex>80</hex>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>03</hex>
+				
+				<!--Compare Class Name-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="tokenCount" type="Absolute16Low8"/>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>04</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="tokenCount" type="Absolute16High8"/>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>05</hex>
+				
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="compareStrings" type="Absolute16"/>
+				
+				<cpu:CopyImmediate8AddressToXIndex/>
+				<hex>82</hex>
+
+				<cpu:CopyImmediate8AddressToYIndex/>
+				<hex>83</hex>
+				
+				<cpu:BranchToRelative8IfEqual/>
+				<addressOf ref="classFound" type="Relative8"/>
+				
+				<cpu:IncrementYIndex/>
+				<cpu:IncrementYIndex/>
+				
+				<cpu:DecrementXIndex/>
+				
+				<cpu:BranchToRelative8IfNotZero/>
+				<addressOf ref="forEachClass" type="Relative8"/>
+
+				<cpu:ReturnFromSubroutine/>
+				
+				<label id="classFound"/>
+			
+				<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+				<addressOf ref="catalog" type="Absolute16"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<addressOf ref="result" type="Absolute16Low8"/>
+
+				<cpu:IncrementYIndex/>
+				
+				<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+				<addressOf ref="catalog" type="Absolute16"/>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<addressOf ref="result" type="Absolute16Low8" offset="1"/>
+			
 				<cpu:ReturnFromSubroutine/>
 			</label>
 
