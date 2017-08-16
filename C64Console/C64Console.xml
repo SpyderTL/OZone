@@ -2499,13 +2499,30 @@
 
 					<!--Find Static Member-->
 					<cpu:CopyImmediate8ToYIndex/>
-					<byte>2</byte>
+					<byte>0</byte>
 
 					<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 					<addressOf ref="result" type="Absolute16Low8"/>
 
-					<cpu:CopyAccumulatorToImmediate8Address/>
+					<cpu:CopyAccumulatorToXIndex/>
+
+					<cpu:CopyImmediate8ToYIndex/>
+					<byte>2</byte>
+
+					<label id="forEachMember"/>
+
+					<cpu:CopyXIndexToImmediate8Address/>
 					<hex>82</hex>
+
+					<cpu:CopyYIndexToImmediate8Address/>
+					<hex>83</hex>
+
+					<!--Get Member-->
+					<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+					<addressOf ref="result" type="Absolute16Low8"/>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>84</hex>
 
 					<cpu:IncrementYIndex/>
 
@@ -2513,14 +2530,84 @@
 					<addressOf ref="result" type="Absolute16Low8"/>
 
 					<cpu:CopyAccumulatorToImmediate8Address/>
-					<addressOf ref="result" type="Absolute16Low8" offset="1"/>
+					<hex>85</hex>
 
-					<cpu:CopyImmediate8AddressToAccumulator/>
+					<!--Get Member Name-->
+					<cpu:CopyImmediate8ToYIndex/>
+					<byte>0</byte>
+
+					<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+					<hex>84</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
+
+					<cpu:IncrementYIndex/>
+
+					<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+					<hex>84</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
+
+					<!--Compare Member Name-->
+					<cpu:CopyImmediate8ToAccumulator/>
+					<addressOf ref="tokenCount" type="Absolute16Low8"/>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
+
+					<cpu:CopyImmediate8ToAccumulator/>
+					<addressOf ref="tokenCount" type="Absolute16High8"/>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="compareStrings" type="Absolute16"/>
+
+					<cpu:BranchToRelative8IfEqual/>
+					<addressOf ref="memberFound" type="Relative8"/>
+
+					<cpu:CopyImmediate8AddressToXIndex/>
 					<hex>82</hex>
+
+					<cpu:CopyImmediate8AddressToYIndex/>
+					<hex>83</hex>
+
+					<cpu:IncrementYIndex/>
+					<cpu:IncrementYIndex/>
+
+					<cpu:DecrementXIndex/>
+
+					<cpu:BranchToRelative8IfNotZero/>
+					<addressOf ref="forEachMember" type="Relative8"/>
+
+					<cpu:CopyImmediate8ToAccumulator/>
+					<byte>0</byte>
 
 					<cpu:CopyAccumulatorToImmediate8Address/>
 					<addressOf ref="result" type="Absolute16Low8"/>
 
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<addressOf ref="result" type="Absolute16Low8" offset="1"/>
+
+					<cpu:ReturnFromSubroutine/>
+
+					<label id="memberFound"/>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>84</hex>
+					
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<addressOf ref="result" type="Absolute16Low8"/>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>85</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<addressOf ref="result" type="Absolute16Low8" offset="1"/>
+					
 					<!--Find Entry Point-->
 					<cpu:CopyImmediate8ToYIndex/>
 					<byte>6</byte>
