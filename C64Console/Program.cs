@@ -35,13 +35,14 @@ namespace C64Console
 					"../../../OZone/Platforms/Commodore/C64/System.xslt",
 					"../../../OZone/Platforms/Commodore/C64/Video.xslt",
 					"../../../OZone/Platforms/Commodore/C64/Petscii.xslt",
+					"../../../OZone/Platforms/Commodore/C64/Color.xslt",
 					"../../../OZone/Platforms/Ansi/Ascii/Ascii.xslt",
 					"../../../OZone/Structures/6502/Variable.xslt",
 					"../../../OZone/Structures/6502/Class.xslt",
 					"../../../OZone/Platforms/Mos/6502/Operators.xslt");
 
 				//address.Offset = (uint)binaryWriter.BaseStream.Position + 0x8000;
-				address.Offset = (uint)binaryWriter.BaseStream.Position + 0x0800;
+				address.Offset = (uint)binaryWriter.BaseStream.Position + 0x4000;
 
 				compiler.Compile(program, address, binaryWriter);
 
