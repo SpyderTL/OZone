@@ -93,9 +93,61 @@ VIC Video Controller
 	0xD026	Sprite Multicolor 1							1
 	0xD027	Sprite Colors[8]								1
 
+SID Sound Controller
+	0xd400			Voices[3]						7 bytes					// 0xd400, 0xd407, 0xd40e
+		Frequency											2
+		Pulse	Wave Duty Cycle							2						// 0 - 4095
+		Control Register									1
+			Noise												1 bit
+			Pulse													1 bit
+			Sawtooth											1 bit
+			Triangle												1 bit
+			Test													1 bit
+			Ring Modulation								1 bit				// Voice 1 -> Voice 3, Voice 2 -> Voice 1, Voice 3 -> Voice 2
+			Synchronize										1 bit				// Voice 1 -> Voice 3, Voice 2 -> Voice 1, Voice 3 -> Voice 2
+			Gate													1 bit
+		Attack Decay										1
+			Attack Duration									4 bits
+			Decay Duration									4 bits
+		Sustain Release									1
+			Sustain Level										4 bits
+			Release Duration								4 bits
+	0xd415			Filter Cutoff Frequency	2 bytes
+	0xd417			Filter Control					1 byte
+		Filter Resonance										4 bits
+		Filter External Input									1 bit
+		Filter Voice 3											1 bit
+		Filter Voice 2											1 bit
+		Filter Voice 1											1 bit
+	0xd418			Volume / Filter Bands		1 byte
+		Mute Voice 3											1 bit
+		High Pass												1 bit
+		Band Pass												1 bit
+		Low Pass												1 bit
+		Main Volume											4 bits
+	0xd419			Paddle X						1 byte
+	0xd41a			Paddle Y						1 byte
+	0xd41b			Voice 3 Output				1 byte
+	0xd41c			Voice 3 Envelope			1 byte
+
 CIA 1 I/O Controller
 	0xDC00	Data Port A									1		// Keyboard Column
+		Paddle Selector											2 bits	//	1 - Paddle A, 2 - Paddle B
+		Reserved													1 bit
+		Joystick 2 Fire / Lightpen								1 bit		// 0 - Pressed, 1 - Not Pressed
+		Joystick 2 Right / Paddle 2 Fire					1 bit		// 0 - Pressed, 1 - Not Pressed
+		Joystick 2 Left / Paddle 1 Fire						1 bit		// 0 - Pressed, 1 - Not Pressed
+		Joystick 2 Down											1 bit		// 0 - Pressed, 1 - Not Pressed
+		Joystick 2 Up												1 bit		// 0 - Pressed, 1 - Not Pressed
 	0xDC01	Data Port B									1		// Keyboard Row
+		Timer B														1 bit
+		Timer A														1 bit
+		Reserved													1 bit
+		Joystick 1 Fire											1 bit		// 0 - Pressed, 1 - Not Pressed
+		Joystick 1 Right											1 bit		// 0 - Pressed, 1 - Not Pressed
+		Joystick 1 Left											1 bit		// 0 - Pressed, 1 - Not Pressed
+		Joystick 1 Down											1 bit		// 0 - Pressed, 1 - Not Pressed
+		Joystick 1 Up												1 bit		// 0 - Pressed, 1 - Not Pressed
 	0xDC02	Data Direction Port A						1		// 0 - Input, 1 - Output
 	0xDC03	Data Direction Port B						1		// 0 - Input, 1 - Output
 	0xDC04 Timer A											2		
