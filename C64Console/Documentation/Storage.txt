@@ -1,0 +1,78 @@
+﻿Serial IEC Cable Pins
+	1	Service Request
+	2	Ground
+	3	Attention
+	4	Clock
+	5	Data
+	6	Reset
+
+CIA2 Registers
+	0xDD00	Data Port A									1
+		Serial Bus Data Input									1 bit
+		Serial Bus Clock Input									1 bit
+		Serial Bus Data Output								1 bit
+		Serial Bus Clock Output								1 bit
+		Serial Bus Attention Output							1 bit
+		User Port Pin M											1 bit
+		VIC Memory Bank Select								2 bits	// 0 = 0xC000, 1 = 0x8000, 2 = 0x4000, 3 = 0x0000
+	0xDD01	Data Port B									1				// User Port, RS-232
+	0xDD02	Data Direction Port A						1
+	0xDD03	Data Direction Port B						1
+
+Commands
+	0x2x		Listen(device)
+	0x3f		Unlisten
+	0x4x		Talk(device)
+	0x5f		Untalk
+	0x6x		Data(channel)
+	0xex		Close(channel)
+	0xfx		Open(channel)
+
+Command Sequence
+	Load
+		0x2x	Listen(x)
+		0xf0	Open Channel 0 (PRG File)
+		Filename
+		0x3f	Unlisten
+
+		0x4x	Talk(x)
+		0x60	Open Data Channel 0
+		Data
+		0x5f	Untalk
+
+		0x2x	Listen(x)
+		0xe0	Close Channel 0
+		0x3f	Unlisten
+
+	Save
+		0x2x	Listen(x)
+		0xf0	Open Channel 0 (PRG File)
+		Filename
+		0x3f	Unlisten
+
+		0x2x	Listen(x)
+		0x60	Open Data Channel 0
+		Data
+		0x3f	Unlisten
+
+		0x2x	Listen(x)
+		0xe0	Close Channel 0
+		0x3f	Unlisten
+		
+
+Communication Sequence
+	Idle
+		Clock Output = 1
+		Data Input = 1
+	Ready To Send
+		Clock Output = 0
+	Ready To Recieve
+		Data Input = 0
+	Send Bits
+		Clock Output = 1
+		Data Output = bit
+		Clock Output = 0
+		Data Output = 0
+	Acknowledge Byte
+		Clock Output = 1
+		Data Input = 1
