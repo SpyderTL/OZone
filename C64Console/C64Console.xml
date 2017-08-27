@@ -251,7 +251,7 @@
 
 	<label id="start"/>
 
-	<!--Disable CIA Interrupts-->
+	<!--Enable CIA Interrupts-->
 	<cpu:CopyImmediate8ToAccumulator/>
 	<hex>7f</hex>
 
@@ -3483,6 +3483,13 @@
 	<!--Interrupt Handler-->
 	<label id="interruptHandler">
 		<cpu:PushAccumulatorToStack/>
+		
+		<cpu:PushStatusToStack/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+		
+		<cpu:PushAccumulatorToStack/>
 
 		<!--Enable I/O Access-->
 		<cpu:CopyImmediate8ToAccumulator/>
@@ -3505,20 +3512,21 @@
 
 		<label id="returnFromInterrupt"/>
 
-		<!--Disable ROM Banks-->
-		<cpu:CopyImmediate8ToAccumulator/>
-		<binary>00100000</binary>
+		<!--Restore CPU State-->
+		<cpu:PullAccumulatorFromStack/>
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
 
+		<cpu:PullStatusFromStack/>
+		
 		<cpu:PullAccumulatorFromStack/>
 
 		<cpu:ReturnFromInterrupt/>
 	</label>
 
 	<!--Catalog-->
-	<var:short id="catalog">11</var:short>
+	<var:short id="catalog">12</var:short>
 	<addressOf ref="objectClass" type="Absolute16"/>
 	<addressOf ref="classClass" type="Absolute16"/>
 	<addressOf ref="stringClass" type="Absolute16"/>
@@ -3527,9 +3535,10 @@
 	<addressOf ref="errorClass" type="Absolute16"/>
 	<addressOf ref="systemClass" type="Absolute16"/>
 	<addressOf ref="audioClass" type="Absolute16"/>
-	<addressOf ref="videoClass" type="Absolute16"/>
-	<addressOf ref="storageClass" type="Absolute16"/>
+	<!--<addressOf ref="videoClass" type="Absolute16"/>
+	<addressOf ref="storageClass" type="Absolute16"/>-->
 	<addressOf ref="inputClass" type="Absolute16"/>
+	<addressOf ref="timerClass" type="Absolute16"/>
 
 	<!--Classes-->
 	<label id="objectClass">
@@ -5144,21 +5153,21 @@
 		</cls:class>
 	</label>
 
-	<label id="videoClass">
+	<!--<label id="videoClass">
 		<cls:class
 			name="Video"
 			static="true"
 			type="http://metalx.org/Video">
 
 			<cls:method name="Test" static="true" type="http://metalx.org/String">
-				<!--Enable I/O Access-->
+				--><!--Enable I/O Access--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00100101</binary>
 
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
 
-				<!--Set Sprite Address-->
+				--><!--Set Sprite Address--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<hex>08</hex>
 
@@ -5186,7 +5195,7 @@
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>07ff</hex>
 
-				<!--Set Sprite Color-->
+				--><!--Set Sprite Color--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<color:White/>
 
@@ -5214,21 +5223,21 @@
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>d02e</hex>
 
-				<!--Set Sprite Width-->
-				<!--<cpu:CopyImmediate8ToAccumulator/>
+				--><!--Set Sprite Width--><!--
+				--><!--<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00000001</binary>
 
 				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>d01d</hex>-->
+				<hex>d01d</hex>--><!--
 
-				<!--Set Sprite Height-->
-				<!--<cpu:CopyImmediate8ToAccumulator/>
+				--><!--Set Sprite Height--><!--
+				--><!--<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00000001</binary>
 
 				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>d017</hex>-->
+				<hex>d017</hex>--><!--
 
-				<!--Set Sprite Position-->
+				--><!--Set Sprite Position--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<byte>23</byte>
 
@@ -5304,7 +5313,7 @@
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>d00f</hex>
 
-				<!--Set Sprite Pixels-->
+				--><!--Set Sprite Pixels--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>10101010</binary>
 
@@ -5321,14 +5330,14 @@
 				<cpu:BranchToRelative8IfPositive/>
 				<addressOf ref="forEachByte" type="Relative8"/>
 
-				<!--Enable Sprite-->
+				--><!--Enable Sprite--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>11111111</binary>
 
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>d015</hex>
 
-				<!--Disable I/O Access-->
+				--><!--Disable I/O Access--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00100000</binary>
 
@@ -5348,35 +5357,35 @@
 			</cls:method>
 
 			<cls:method name="Test2" static="true" type="http://metalx.org/String">
-				<!--Enable I/O Access-->
+				--><!--Enable I/O Access--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00100101</binary>
 
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
 				
-				<!--Disable Video-->
-				<!--<cpu:CopyImmediate8ToAccumulator/>
+				--><!--Disable Video--><!--
+				--><!--<cpu:CopyImmediate8ToAccumulator/>
 				<binary>01100011</binary>
 				
 				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>d011</hex>-->
+				<hex>d011</hex>--><!--
 				
-				<!--Set Bitmap Address-->
+				--><!--Set Bitmap Address--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00011000</binary>
 
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>d018</hex>
 
-				<!--Enable Graphics Mode-->
+				--><!--Enable Graphics Mode--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00110011</binary>
 
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>d011</hex>
 
-				<!--Set Screen Color-->
+				--><!--Set Screen Color--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00010000</binary>
 
@@ -5402,7 +5411,7 @@
 				<cpu:BranchToRelative8IfNotZero/>
 				<addressOf ref="forEachCharacter" type="Relative8"/>
 				
-				<!--Draw Bitmap-->
+				--><!--Draw Bitmap--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>10101010</binary>
 
@@ -5522,7 +5531,7 @@
 				<cpu:JumpToImmediate16Address/>
 				<addressOf ref="stop" type="Absolute16"/>
 
-				<!--Disable I/O Access-->
+				--><!--Disable I/O Access--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00100000</binary>
 
@@ -5608,7 +5617,7 @@
 			<cls:method name="GetClass" type="http://metalx.org/Class">
 				<label id="result" offset="02"/>
 
-				<!--Get Data-->
+				--><!--Get Data--><!--
 				<cpu:CopyImmediate8ToYIndex/>
 				<byte>2</byte>
 
@@ -5632,7 +5641,7 @@
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<addressOf ref="result" type="Absolute16Low8"/>
 
-				<!--Create Object-->
+				--><!--Create Object--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<addressOf ref="classClass" type="Absolute16Low8"/>
 
@@ -5660,28 +5669,28 @@
 			type="http://metalx.org/Storage">
 
 			<cls:method name="Test" static="true" type="http://metalx.org/String">
-				<!--Enable I/O Access-->
+				--><!--Enable I/O Access--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00100101</binary>
 
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
 				
-				<!--Set Port Direction-->
+				--><!--Set Port Direction--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00111111</binary>
 
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>dd02</hex>
 
-				<!--Select Device-->
+				--><!--Select Device--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00001111</binary>
 				
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>dd00</hex>
 				
-				<!--Wait For Ready-->
+				--><!--Wait For Ready--><!--
 				<label id="waitForReady"/>
 
 				<cpu:CopyImmediate8ToAccumulator/>
@@ -5693,19 +5702,19 @@
 				<cpu:BranchToRelative8IfNotZero/>
 				<addressOf ref="waitForReady" type="Relative8"/>
 				
-				<!--Send Data-->
+				--><!--Send Data--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00011111</binary>
 
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>dd00</hex>
 
-				<!--Send Listen Device 8-->
-				<!--<cpu:CopyImmediate8ToAccumulator/>
+				--><!--Send Listen Device 8--><!--
+				--><!--<cpu:CopyImmediate8ToAccumulator/>
 				<hex>28</hex>
 				<binary>00101000</hex>
 				<cpu:CallImmediate16Address/>
-				<addressOf ref="sendByte" type="Absolute16"/>-->
+				<addressOf ref="sendByte" type="Absolute16"/>--><!--
 
 
 				<cpu:CopyImmediate8ToAccumulator/>
@@ -5811,7 +5820,7 @@
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>dd00</hex>
 
-				<!--Wait For Acknowledge-->
+				--><!--Wait For Acknowledge--><!--
 				<label id="waitForAcknowledge"/>
 				
 				<cpu:CopyImmediate8ToAccumulator/>
@@ -5823,10 +5832,10 @@
 				<cpu:BranchToRelative8IfNotZero/>
 				<addressOf ref="waitForAcknowledge" type="Relative8"/>
 
-				<!--<cpu:JumpToImmediate16Address/>
-				<addressOf ref="stop" type="Absolute16"/>-->
+				--><!--<cpu:JumpToImmediate16Address/>
+				<addressOf ref="stop" type="Absolute16"/>--><!--
 
-				<!--Disable I/O Access-->
+				--><!--Disable I/O Access--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00100000</binary>
 
@@ -5856,28 +5865,28 @@
 			</cls:method>
 
 			<cls:method name="ReadTape" static="true" type="http://metalx.org/Hex">
-				<!--Enable I/O Access-->
+				--><!--Enable I/O Access--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00100101</binary>
 
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
 				
-				<!--Set Port Direction-->
+				--><!--Set Port Direction--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00111111</binary>
 
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>dd02</hex>
 
-				<!--Select Device-->
+				--><!--Select Device--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00001111</binary>
 				
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>dd00</hex>
 				
-				<!--Wait For Ready-->
+				--><!--Wait For Ready--><!--
 				<label id="waitForReady"/>
 
 				<cpu:CopyImmediate8ToAccumulator/>
@@ -5889,19 +5898,19 @@
 				<cpu:BranchToRelative8IfNotZero/>
 				<addressOf ref="waitForReady" type="Relative8"/>
 				
-				<!--Send Data-->
+				--><!--Send Data--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00011111</binary>
 
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>dd00</hex>
 
-				<!--Send Listen Device 8-->
-				<!--<cpu:CopyImmediate8ToAccumulator/>
+				--><!--Send Listen Device 8--><!--
+				--><!--<cpu:CopyImmediate8ToAccumulator/>
 				<hex>28</hex>
 				<binary>00101000</hex>
 				<cpu:CallImmediate16Address/>
-				<addressOf ref="sendByte" type="Absolute16"/>-->
+				<addressOf ref="sendByte" type="Absolute16"/>--><!--
 
 
 				<cpu:CopyImmediate8ToAccumulator/>
@@ -6007,7 +6016,7 @@
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>dd00</hex>
 
-				<!--Wait For Acknowledge-->
+				--><!--Wait For Acknowledge--><!--
 				<label id="waitForAcknowledge"/>
 				
 				<cpu:CopyImmediate8ToAccumulator/>
@@ -6019,10 +6028,10 @@
 				<cpu:BranchToRelative8IfNotZero/>
 				<addressOf ref="waitForAcknowledge" type="Relative8"/>
 
-				<!--<cpu:JumpToImmediate16Address/>
-				<addressOf ref="stop" type="Absolute16"/>-->
+				--><!--<cpu:JumpToImmediate16Address/>
+				<addressOf ref="stop" type="Absolute16"/>--><!--
 
-				<!--Disable I/O Access-->
+				--><!--Disable I/O Access--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00100000</binary>
 
@@ -6118,7 +6127,7 @@
 			<cls:method name="GetClass" type="http://metalx.org/Class">
 				<label id="result" offset="02"/>
 
-				<!--Get Data-->
+				--><!--Get Data--><!--
 				<cpu:CopyImmediate8ToYIndex/>
 				<byte>2</byte>
 
@@ -6142,7 +6151,7 @@
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<addressOf ref="result" type="Absolute16Low8"/>
 
-				<!--Create Object-->
+				--><!--Create Object--><!--
 				<cpu:CopyImmediate8ToAccumulator/>
 				<addressOf ref="classClass" type="Absolute16Low8"/>
 
@@ -6161,7 +6170,7 @@
 				<cpu:ReturnFromSubroutine/>
 			</cls:method>
 		</cls:class>
-	</label>
+	</label>-->
 
 	<label id="inputClass">
 		<cls:class
@@ -6265,6 +6274,390 @@
 				<cpu:ReturnFromSubroutine/>
 
 				<var:string id="className">Input</var:string>
+			</cls:method>
+
+			<cls:method name="ToString" type="http://metalx.org/String">
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="toString" type="Absolute16Low8"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>02</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="toString" type="Absolute16High8"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>03</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="stringClass" type="Absolute16Low8"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>04</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="stringClass" type="Absolute16High8"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>05</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="createObject" type="Absolute16"/>
+
+				<cpu:ReturnFromSubroutine/>
+			</cls:method>
+
+			<cls:method name="GetClass" type="http://metalx.org/Class">
+				<label id="result" offset="02"/>
+
+				<!--Get Data-->
+				<cpu:CopyImmediate8ToYIndex/>
+				<byte>2</byte>
+
+				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+				<addressOf ref="result" type="Absolute16Low8"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>82</hex>
+
+				<cpu:IncrementYIndex/>
+
+				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+				<addressOf ref="result" type="Absolute16Low8"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<addressOf ref="result" type="Absolute16Low8" offset="1"/>
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>82</hex>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<addressOf ref="result" type="Absolute16Low8"/>
+
+				<!--Create Object-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="classClass" type="Absolute16Low8"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>04</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="classClass" type="Absolute16High8"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>05</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="createObject" type="Absolute16"/>
+
+				<cpu:ReturnFromSubroutine/>
+			</cls:method>
+		</cls:class>
+	</label>
+
+	<label id="timerClass">
+		<cls:class
+			name="Timer"
+			static="true"
+			type="http://metalx.org/Timer">
+
+			<cls:method name="Start" static="true" type="http://metalx.org/String">
+				<!--Enable I/O Access-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>00100101</binary>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+				
+				<!--Set Timer A Value-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>ff</hex>
+
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>dc04</hex>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>dc05</hex>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>dc06</hex>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>dc07</hex>
+				
+				<!--Set Timer B Mode-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>01000001</binary>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>dc0f</hex>
+				
+				<!--Start Timer-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>00000001</binary>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>dc0e</hex>
+				
+				<!--Disable I/O Access-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>00100000</binary>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<byte>0</byte>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>02</hex>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>03</hex>
+
+				<cpu:ReturnFromSubroutine/>
+			</cls:method>
+
+			<cls:method name="Wait" static="true" type="http://metalx.org/String">
+				<!--Enable I/O Access-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>00100101</binary>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+				
+				<!--Set Timer A Value-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>ff</hex>
+
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>dc04</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>ff</hex>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>dc05</hex>
+				
+				<!--Set Timer B Value-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>a0</hex>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>dc06</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>00</hex>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>dc07</hex>
+				
+				<!--Set Timer B Mode-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>01010001</binary>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>dc0f</hex>
+				
+				<!--Start Timer A-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>00010001</binary>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>dc0e</hex>
+								
+				<!--Wait For Timer-->
+				<label id="waitForTimer"/>
+				
+				<cpu:CopyImmediate16AddressToAccumulator/>
+				<hex>dc06</hex>
+				
+				<cpu:CompareAccumulatorToImmediate8/>
+				<byte>0</byte>
+				
+				<cpu:ClearCarryFlag/>
+				
+				<cpu:BranchToRelative8IfNotEqual/>
+				<addressOf ref="waitForTimer" type="Relative8"/>
+				
+				<!--Disable I/O Access-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>00100000</binary>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<byte>0</byte>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>02</hex>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>03</hex>
+
+				<cpu:ReturnFromSubroutine/>
+			</cls:method>
+
+			<cls:method name="GetTimerA" static="true" type="http://metalx.org/String">
+				<!--Enable I/O Access-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>00100101</binary>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+				
+				<!--Get Timer A Value-->
+				<!--<cpu:CopyImmediate16AddressToAccumulator/>
+				<hex>dc04</hex>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>0200</hex>
+				
+				<cpu:CopyImmediate16AddressToAccumulator/>
+				<hex>dc05</hex>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>0201</hex>-->
+				
+				<cpu:CopyImmediate16AddressToAccumulator/>
+				<hex>dc05</hex>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>0200</hex>
+				
+				<cpu:CopyImmediate16AddressToAccumulator/>
+				<hex>dc05</hex>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>0201</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>00</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>02</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>02</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>03</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="hexClass" type="Absolute16Low8"/>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>04</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="hexClass" type="Absolute16High8"/>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>05</hex>
+				
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="createObject" type="Absolute16"/>
+
+				<!--Disable I/O Access-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>00100000</binary>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+
+				<cpu:ReturnFromSubroutine/>
+			</cls:method>
+
+			<cls:method name="GetTimerB" static="true" type="http://metalx.org/String">
+				<!--Enable I/O Access-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>00100101</binary>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+				
+				<!--Get Timer A Value-->
+				<cpu:CopyImmediate16AddressToAccumulator/>
+				<hex>dc06</hex>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>0200</hex>
+				
+				<cpu:CopyImmediate16AddressToAccumulator/>
+				<hex>dc07</hex>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>0201</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>00</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>02</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>02</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>03</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="hexClass" type="Absolute16Low8"/>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>04</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="hexClass" type="Absolute16High8"/>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>05</hex>
+				
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="createObject" type="Absolute16"/>
+
+				<!--Disable I/O Access-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>00100000</binary>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+
+				<cpu:ReturnFromSubroutine/>
+			</cls:method>
+
+			<cls:method name="ToString" static="true" type="http://metalx.org/String">
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="className" type="Absolute16Low8"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>02</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="className" type="Absolute16High8"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>03</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="stringClass" type="Absolute16Low8"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>04</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="stringClass" type="Absolute16High8"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>05</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="createObject" type="Absolute16"/>
+
+				<cpu:ReturnFromSubroutine/>
+
+				<var:string id="className">Timer</var:string>
 			</cls:method>
 
 			<cls:method name="ToString" type="http://metalx.org/String">

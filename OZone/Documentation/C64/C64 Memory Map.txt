@@ -159,15 +159,30 @@ CIA 1 I/O Controller
 		Hours														1
 	0xDC0C	Serial Shift Register						1				// Holds a single byte to be sent on the serial port.
 	0xDC0D	Interrupt Status								1
-		Command													1 bit		// 0 = Clear Status Flags, 1 = Set Interrupt Enable Flags
+		Command													1 bit		// Read: Master Interrupt Status,  Write: 0 = Clear Interrupt Disable Flags, 1 = Set Interrupt Disable Flags
 		Reserved													2 bits
-		Serial Flag Interrupt									1 bit		// Set by serial bus or datasette drive
+		Serial Flag Interrupt Status							1 bit		// Set by serial bus or datasette drive
 		Serial Byte Sent Interrupt Status					1 bit
 		Real-Time Clock Alarm Interrupt Status		1 bit
 		Timer B Underflow Interrupt Status				1 bit
 		Timer A Underflow Interrupt Status				1 bit
 	0xDC0E	Timer A Control								1
+		Real Time Clock Speed								1 bit		// 0 - 60 Hz, 1 - 50 Hz
+		Serial Shift Direction									1 bit		// 0 - Input, 2 - Output
+		Source														1 bit		// 0 - System, 1 - CNT Pin
+		Load Timer												1 bit
+		Timer Restart Disable									1 bit
+		Port B Overflow Mode								1 bit		// 0 - Pulse, 1 - Invert
+		Port B Underflow										1 bit		// Bit 6
+		Enable														1 bit
 	0xDC0F	Timer B Control								1
+		Real Time Clock Write Mode						1 bit		// 0 - Clock, 1 - Alarm
+		Source														2 bits	// 0 - System, 1 - CNT Pin, 2 - Timer A Underflow, 3 - Timer A Underflow w/ CNT Pin High
+		Load Timer												1 bit
+		Timer Restart Disable									1 bit
+		Port B Overflow Mode								1 bit		// 0 - Pulse, 1 - Invert
+		Port B Underflow										1 bit		// Bit 7
+		Enable														1 bit
 
 CIA 2 I/O Controller
 	0xDD00	Data Port A									1
@@ -191,5 +206,19 @@ CIA 2 I/O Controller
 		RS-232 Data Received Interrupt Status			1 bit
 		Reserved													4 bits
 	0xDD0E	Timer A Control								1
+		Real Time Clock Speed								1 bit		// 0 - 60 Hz, 1 - 50 Hz
+		Serial Shift Direction									1 bit		// 0 - Input, 2 - Output
+		Source														1 bit		// 0 - System, 1 - CNT Pin
+		Load Timer												1 bit
+		Timer Restart Disable									1 bit
+		Port B Overflow Mode								1 bit		// 0 - Pulse, 1 - Invert
+		Port B Underflow										1 bit		// Bit 6
+		Enable														1 bit
 	0xDD0F	Timer B Control								1
-
+		Real Time Clock Write Mode						1 bit		// 0 - Clock, 1 - Alarm
+		Source														2 bits	// 0 - System, 1 - CNT Pin, 2 - Timer A Underflow, 3 - Timer A Underflow w/ CNT Pin High
+		Load Timer												1 bit
+		Timer Restart Disable									1 bit
+		Port B Overflow Mode								1 bit		// 0 - Pulse, 1 - Invert
+		Port B Underflow										1 bit		// Bit 7
+		Enable														1 bit
