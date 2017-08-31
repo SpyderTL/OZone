@@ -4334,7 +4334,7 @@
 				<hex>81</hex>
 
 				<cpu:CopyImmediate8ToAccumulator/>
-				<byte>8</byte>
+				<byte>6</byte>
 
 				<cpu:AddImmediate16AddressToAccumulator/>
 				<addressOf ref="freeRamPointer" type="Absolute16"/>
@@ -4386,30 +4386,91 @@
 
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>82</hex>
+				
+				<cpu:IncrementYIndex/>
+				
+				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+				<hex>02</hex>
 
-				<!--Digit 5-->
-				<label id="digit5"/>
-
-				<cpu:BranchToRelative8IfCarry/>
-				<addressOf ref="digit4" type="Relative8"/>
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>83</hex>
 
 				<!--Digit 4-->
 				<label id="digit4"/>
 
+				<cpu:CopyImmediate8ToAccumulator/>
+				<byte>15</byte>
+
+				<cpu:CompareAccumulatorToImmediate8Address/>
+				<hex>83</hex>
+
 				<cpu:BranchToRelative8IfCarry/>
-				<addressOf ref="digit3" type="Relative8"/>
+				<addressOf ref="endDigit4" type="Relative8"/>
+
+				<cpu:CopyImmediate8ToYIndex/>
+				<byte>2</byte>
+
+				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+				<hex>80</hex>
+
+				<cpu:ClearCarryFlag/>
+
+				<cpu:AddImmediate8ToAccumulator/>
+				<byte>1</byte>
+
+				<cpu:ClearCarryFlag/>
+
+				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+				<hex>80</hex>
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>83</hex>
+
+				<cpu:SetCarryFlag/>
+
+				<cpu:SubtractImmediate8FromAccumulator/>
+				<byte>16</byte>
+				
+				<cpu:ClearCarryFlag/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>83</hex>
+
+				<cpu:JumpToImmediate16Address/>
+				<addressOf ref="digit4" type="Absolute16"/>
+
+				<label id="endDigit4"/>
+
+				<cpu:CopyImmediate8ToYIndex/>
+				<byte>2</byte>
+
+				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+				<hex>80</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="adjust" type="Absolute16"/>
+
+				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+				<hex>80</hex>
 
 				<!--Digit 3-->
 				<label id="digit3"/>
 
-				<cpu:BranchToRelative8IfCarry/>
-				<addressOf ref="nextDigit" type="Relative8"/>
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>83</hex>
 
-				<!--Digit 2-->
-				<label id="nextDigit"/>
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="adjust" type="Absolute16"/>
 
 				<cpu:CopyImmediate8ToYIndex/>
-				<byte>2</byte>
+				<byte>3</byte>
+				
+				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+				<hex>80</hex>
+				
+				<!--Digit 2-->
+				<cpu:CopyImmediate8ToYIndex/>
+				<byte>4</byte>
 
 				<cpu:CopyImmediate8ToAccumulator/>
 				<byte>0</byte>
@@ -4429,7 +4490,7 @@
 				<addressOf ref="endDigit2" type="Relative8"/>
 
 				<cpu:CopyImmediate8ToYIndex/>
-				<byte>2</byte>
+				<byte>4</byte>
 
 				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 				<hex>80</hex>
@@ -4459,7 +4520,7 @@
 				<label id="endDigit2"/>
 
 				<cpu:CopyImmediate8ToYIndex/>
-				<byte>2</byte>
+				<byte>4</byte>
 
 				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 				<hex>80</hex>
@@ -4478,7 +4539,7 @@
 				<addressOf ref="adjust" type="Absolute16"/>
 
 				<cpu:CopyImmediate8ToYIndex/>
-				<byte>3</byte>
+				<byte>5</byte>
 
 				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 				<hex>80</hex>
@@ -4488,7 +4549,7 @@
 				<byte>0</byte>
 
 				<cpu:CopyImmediate8ToAccumulator/>
-				<byte>2</byte>
+				<byte>4</byte>
 
 				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 				<hex>80</hex>
@@ -6508,20 +6569,8 @@
 				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
 				
 				<!--Get Timer A Value-->
-				<!--<cpu:CopyImmediate16AddressToAccumulator/>
+				<cpu:CopyImmediate16AddressToAccumulator/>
 				<hex>dc04</hex>
-				
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>0200</hex>
-				
-				<cpu:CopyImmediate16AddressToAccumulator/>
-				<hex>dc05</hex>
-				
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>0201</hex>-->
-				
-				<cpu:CopyImmediate16AddressToAccumulator/>
-				<hex>dc05</hex>
 				
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>0200</hex>
