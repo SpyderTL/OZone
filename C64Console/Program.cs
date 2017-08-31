@@ -46,7 +46,9 @@ namespace C64Console
 
 				compiler.Compile(program, address, binaryWriter);
 
-				binaryWriter.BaseStream.SetLength(8192);
+				Console.WriteLine(binaryWriter.BaseStream.Position);
+
+				binaryWriter.BaseStream.SetLength(1024 * 16);
 			}
 		}
 	}
