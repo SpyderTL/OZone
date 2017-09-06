@@ -153,10 +153,10 @@ CIA 1 I/O Controller
 	0xDC04 Timer A											2		
 	0xDC06 Timer B											2
 	0xDC08	Real Time Clock								4		// BCD Format
-		TenthSeconds											1
+		TenthSeconds											1			// Read from this register unlatches all RTC registers; Write to this register starts RTC
 		Seconds													1
 		Minutes														1
-		Hours														1
+		Hours														1			// Read from this register latches all RTC registers; Write to this register stops RTC
 	0xDC0C	Serial Shift Register						1				// Holds a single byte to be sent on the serial port.
 	0xDC0D	Interrupt Status								1
 		Command													1 bit		// Read: Master Interrupt Status,  Write: 0 = Clear Interrupt Disable Flags, 1 = Set Interrupt Disable Flags

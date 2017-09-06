@@ -473,7 +473,7 @@
 	
 	<cpu:CopyAccumulatorToImmediate16Address/>
 	<hex>dc08</hex>
-
+	
 	<!--Start CIA 2 Clock-->
 	<cpu:CopyImmediate8ToAccumulator/>
 	<hex>00</hex>
@@ -4558,7 +4558,7 @@
 				<addressOf ref="freeRamPointer" type="Absolute16" offset="1"/>
 
 				<cpu:ClearCarryFlag/>
-
+				
 				<!--Get Data-->
 				<cpu:CopyImmediate8ToYIndex/>
 				<byte>0</byte>
@@ -4600,12 +4600,52 @@
 
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>83</hex>
+				
+				<!--Clear String-->
+				<cpu:CopyImmediate8ToYIndex/>
+				<byte>0</byte>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<byte>4</byte>
+				
+				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+				<hex>80</hex>
+				
+				<cpu:IncrementYIndex/>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<byte>0</byte>
+				
+				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+				<hex>80</hex>
+				
+				<cpu:IncrementYIndex/>
+				
+				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+				<hex>80</hex>
+				
+				<cpu:IncrementYIndex/>
+				
+				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+				<hex>80</hex>
+				
+				<cpu:IncrementYIndex/>
+				
+				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+				<hex>80</hex>
+				
+				<cpu:IncrementYIndex/>
+				
+				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+				<hex>80</hex>
 
 				<!--Digit 4-->
 				<label id="digit4"/>
 
 				<cpu:CopyImmediate8ToAccumulator/>
 				<byte>15</byte>
+				
+				<cpu:ClearCarryFlag/>
 
 				<cpu:CompareAccumulatorToImmediate8Address/>
 				<hex>83</hex>
@@ -4646,6 +4686,8 @@
 				<addressOf ref="digit4" type="Absolute16"/>
 
 				<label id="endDigit4"/>
+				
+				<cpu:ClearCarryFlag/>
 
 				<cpu:CopyImmediate8ToYIndex/>
 				<byte>2</byte>
@@ -4724,6 +4766,8 @@
 				<addressOf ref="digit2" type="Absolute16"/>
 
 				<label id="endDigit2"/>
+				
+				<cpu:ClearCarryFlag/>
 
 				<cpu:CopyImmediate8ToYIndex/>
 				<byte>4</byte>
@@ -4799,6 +4843,8 @@
 				<cpu:ReturnFromSubroutine/>
 
 				<label id="adjust"/>
+				
+				<cpu:ClearCarryFlag/>
 
 				<cpu:CompareAccumulatorToImmediate8/>
 				<byte>10</byte>
@@ -4812,6 +4858,8 @@
 				<cpu:ReturnFromSubroutine/>
 
 				<label id="adjustHigh"/>
+				
+				<cpu:ClearCarryFlag/>
 
 				<cpu:AddImmediate8ToAccumulator/>
 				<string>6</string>
@@ -4985,17 +5033,23 @@
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
 				
+				<!--Read Hours-->
 				<cpu:CopyImmediate16AddressToAccumulator/>
-				<hex>dc09</hex>
+				<hex>dc0b</hex>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>0201</hex>
+				
+				<!--Read Minutes-->
+				<cpu:CopyImmediate16AddressToAccumulator/>
+				<hex>dc0a</hex>
 				
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>0200</hex>
 				
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
-				
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>0201</hex>
+				<!--Read Fractional Seconds (Clear Latch)-->
+				<cpu:CopyImmediate16AddressToAccumulator/>
+				<hex>dc08</hex>
 				
 				<cpu:CopyImmediate8ToAccumulator/>
 				<hex>00</hex>
