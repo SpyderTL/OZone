@@ -6055,6 +6055,69 @@
 				<cpu:ReturnFromSubroutine/>
 			</cls:method>
 
+			<cls:method name="Test3" static="true" type="http://metalx.org/String">
+				<!--Enable I/O Access-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>00100101</binary>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+				
+				<!--Wait For VSync-->
+				<!--<cpu:CopyImmediate8ToAccumulator/>
+				<binary>10000000</binary>-->
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<byte>20</byte>
+				
+				<label id="waitForVSync"/>
+								
+				<!--<cpu:TestImmediate16AddressWithAccumulator/>
+				<hex>d011</hex>-->
+				
+				<cpu:CompareAccumulatorToImmediate16Address/>
+				<hex>d012</hex>
+				
+				<cpu:BranchToRelative8IfEqual/>
+				<addressOf ref="waitForVSync" type="Relative8"/>
+				
+				<label id="waitForVSyncOff"/>
+				
+				<!--<cpu:TestImmediate16AddressWithAccumulator/>
+				<hex>d011</hex>-->
+				
+				<cpu:CompareAccumulatorToImmediate16Address/>
+				<hex>d012</hex>
+				
+				<cpu:BranchToRelative8IfNotEqual/>
+				<addressOf ref="waitForVSyncOff" type="Relative8"/>
+				
+				<!--Change Border Color-->
+				<cpu:IncrementImmediate16Address/>
+				<hex>d020</hex>
+				
+				<cpu:JumpToImmediate16Address/>
+				<addressOf ref="waitForVSync" type="Absolute16"/>
+
+				<!--Disable I/O Access-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>00100000</binary>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<byte>0</byte>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>02</hex>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>03</hex>
+
+				<cpu:ReturnFromSubroutine/>
+			</cls:method>
+
 			<cls:method name="GetRasterLine" static="true" type="http://metalx.org/Hex">
 				<!--Enable I/O Access-->
 				<cpu:CopyImmediate8ToAccumulator/>
