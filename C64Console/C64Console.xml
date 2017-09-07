@@ -4580,6 +4580,50 @@
 				<cpu:ReturnFromSubroutine/>
 			</cls:method>
 
+			<cls:method name="ToHex" type="http://metalx.org/Hex">
+				<!--Get Data-->
+				<cpu:CopyImmediate8ToYIndex/>
+				<byte>0</byte>
+
+				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+				<hex>02</hex>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>82</hex>
+
+				<cpu:IncrementYIndex/>
+
+				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+				<hex>02</hex>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>03</hex>
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>82</hex>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>02</hex>
+
+				<!--Create Object-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="hexClass" type="Absolute16Low8" />
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>04</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="hexClass" type="Absolute16High8" />
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>05</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="createObject" type="Absolute16"/>
+
+				<cpu:ReturnFromSubroutine/>
+			</cls:method>
+
 			<cls:method name="GetClass" type="http://metalx.org/Class">
 				<label id="result" offset="02"/>
 
@@ -4898,6 +4942,8 @@
 
 				<cpu:SubtractImmediate8FromAccumulator/>
 				<byte>16</byte>
+				
+				<cpu:ClearCarryFlag/>
 
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>82</hex>
@@ -4984,8 +5030,6 @@
 
 				<label id="adjust"/>
 				
-				<cpu:ClearCarryFlag/>
-
 				<cpu:CompareAccumulatorToImmediate8/>
 				<byte>10</byte>
 
@@ -5002,7 +5046,7 @@
 				<cpu:ClearCarryFlag/>
 
 				<cpu:AddImmediate8ToAccumulator/>
-				<string>6</string>
+				<string>7</string>
 
 				<cpu:ReturnFromSubroutine/>
 			</cls:method>
