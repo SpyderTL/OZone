@@ -153,6 +153,51 @@
 	<xsl:template match="ns:ShiftImmediate16PlusXIndexAddressLeft">
 		<xsl:element name="prg:hex">1E</xsl:element>
 	</xsl:template>
+	<xsl:template match="ns:ShiftAccumulatorRight">
+		<xsl:element name="prg:hex">4A</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:ShiftImmediate8AddressRight">
+		<xsl:element name="prg:hex">46</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:ShiftImmediate8PlusXIndexAddressRight">
+		<xsl:element name="prg:hex">56</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:ShiftImmediate16AddressRight">
+		<xsl:element name="prg:hex">4E</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:ShiftImmediate16PlusXIndexAddressRight">
+		<xsl:element name="prg:hex">5E</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:RollAccumulatorLeft">
+		<xsl:element name="prg:hex">2A</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:RollImmediate8AddressLeft">
+		<xsl:element name="prg:hex">26</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:RollImmediate8PlusXIndexAddressLeft">
+		<xsl:element name="prg:hex">36</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:RollImmediate16AddressLeft">
+		<xsl:element name="prg:hex">2E</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:RollImmediate16PlusXIndexAddressLeft">
+		<xsl:element name="prg:hex">3E</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:RollAccumulatorRight">
+		<xsl:element name="prg:hex">6A</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:RollImmediate8AddressRight">
+		<xsl:element name="prg:hex">66</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:RollImmediate8PlusXIndexAddressRight">
+		<xsl:element name="prg:hex">76</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:RollImmediate16AddressRight">
+		<xsl:element name="prg:hex">6E</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:RollImmediate16PlusXIndexAddressRight">
+		<xsl:element name="prg:hex">7E</xsl:element>
+	</xsl:template>
 	<xsl:template match="ns:PullStatusFromStack">
 		<xsl:element name="prg:hex">28</xsl:element>
 	</xsl:template>
