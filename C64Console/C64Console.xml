@@ -6827,13 +6827,7 @@
 				
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>dc05</hex>
-				
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dc06</hex>
-				
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dc07</hex>
-				
+
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00000001</binary>
 				
@@ -6853,13 +6847,34 @@
 				<addressOf ref="waitForData" type="Relative8"/>
 				
 				<!--Get Time-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>ff</hex>
+
+				<cpu:SetCarryFlag/>
+
+				<cpu:SubtractImmediate16AddressFromAccumulator/>
+				<hex>dc04</hex>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>80</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>ff</hex>
+				
+				<cpu:SubtractImmediate16AddressFromAccumulator/>
+				<hex>dc05</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>81</hex>
+				
+				<!--Get Length-->
 				
 				<!--Roll Bit-->
 				
-				<cpu:DecrementXIndex/>
+				<!--<cpu:DecrementXIndex/>
 				
 				<cpu:BranchToRelative8IfNotZero/>
-				<addressOf ref="forEachBit" type="Relative8"/>
+				<addressOf ref="forEachBit" type="Relative8"/>-->
 				
 				<!--Disable Tape Motor-->
 				<cpu:CopyImmediate8AddressToAccumulator/>
@@ -6879,14 +6894,38 @@
 				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
 
 				<!--Create Object-->
+				<!--<cpu:CopyImmediate8ToAccumulator/>
+				<hex>00</hex>-->
+
 				<cpu:CopyImmediate8ToAccumulator/>
-				<byte>0</byte>
+				<hex>80</hex>
 
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>02</hex>
 
+				<!--<cpu:CopyImmediate8ToAccumulator/>
+				<hex>02</hex>-->
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>00</hex>
+
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>03</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="hexClass" type="Absolute16Low8"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>04</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<addressOf ref="hexClass" type="Absolute16High8"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>05</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="createObject" type="Absolute16"/>
 
 				<cpu:ReturnFromSubroutine/>
 			</cls:method>
