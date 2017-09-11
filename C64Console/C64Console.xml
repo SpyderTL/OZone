@@ -6968,6 +6968,11 @@
 				<cpu:CopyImmediate16AddressToAccumulator/>
 				<hex>dc0d</hex>
 				
+				<cpu:CopyImmediate8ToYIndex/>
+				<byte>1</byte>
+				
+				<label id="forEachByte"/>
+				
 				<!--Wait For Start-->
 				<label id="waitForStart"/>
 				
@@ -6990,7 +6995,7 @@
 				<hex>80</hex>
 				
 				<cpu:CompareAccumulatorToImmediate8/>
-				<hex>20</hex>
+				<hex>10</hex>
 				
 				<cpu:BranchToRelative8IfNotCarry/>
 				<addressOf ref="waitForStart" type="Relative8"/>
@@ -7002,11 +7007,11 @@
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="wait" type="Absolute16"/>
 				
-				<!--<cpu:CopyImmediate8AddressToAccumulator/>
+				<cpu:CopyImmediate8AddressToAccumulator/>
 				<hex>81</hex>
 				
 				<cpu:CompareAccumulatorToImmediate8/>
-				<hex>00</hex>
+				<hex>01</hex>
 				
 				<cpu:BranchToRelative8IfNotCarry/>
 				<addressOf ref="waitForStart" type="Relative8"/>
@@ -7018,10 +7023,10 @@
 				<hex>80</hex>
 				
 				<cpu:CompareAccumulatorToImmediate8/>
-				<hex>c8</hex>
+				<hex>80</hex>
 				
 				<cpu:BranchToRelative8IfNotCarry/>
-				<addressOf ref="waitForStart" type="Relative8"/>-->
+				<addressOf ref="waitForStart" type="Relative8"/>
 				
 				<!--Read Byte-->
 				<label id="readByte"/>
@@ -7055,7 +7060,7 @@
 				<hex>80</hex>
 				
 				<cpu:CompareAccumulatorToImmediate8/>
-				<hex>c0</hex>
+				<hex>80</hex>
 				
 				<cpu:BranchToRelative8IfNotCarry/>
 				<addressOf ref="one" type="Relative8"/>
@@ -7091,6 +7096,11 @@
 				
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>0201</hex>
+				
+				<cpu:DecrementYIndex/>
+				
+				<cpu:BranchToRelative8IfNotZero/>
+				<addressOf ref="forEachByte" type="Relative8"/>
 				
 				<!--Disable Tape Motor-->
 				<cpu:CopyImmediate8AddressToAccumulator/>
