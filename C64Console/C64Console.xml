@@ -6559,12 +6559,15 @@
 
 			<cls:method name="Test" static="true" type="http://metalx.org/String">
 				<!--Enable I/O Access-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00100101</binary>
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+				
+				<cpu:OrAccumulatorWithImmediate8/>
+				<binary>00000101</binary>
 
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
-				
+								
 				<!--Set Port Direction-->
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00111111</binary>
@@ -6573,17 +6576,23 @@
 				<hex>dd02</hex>
 
 				<!--Select Device-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00001111</binary>
+				<cpu:CopyImmediate16AddressToAccumulator/>
+				<hex>dd00</hex>
+				
+				<cpu:OrAccumulatorWithImmediate8/>
+				<binary>00101000</binary>
+				
+				<cpu:AndAccumulatorWithImmediate8/>
+				<binary>11101111</binary>
 				
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>dd00</hex>
 				
 				<!--Wait For Ready-->
-				<label id="waitForReady"/>
-
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>10000000</binary>
+
+				<label id="waitForReady"/>
 
 				<cpu:TestImmediate16AddressWithAccumulator/>
 				<hex>dd00</hex>
@@ -6592,9 +6601,15 @@
 				<addressOf ref="waitForReady" type="Relative8"/>
 				
 				<!--Send Data-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00011111</binary>
-
+				<cpu:CopyImmediate16AddressToAccumulator/>
+				<hex>dd00</hex>
+				
+				<cpu:OrAccumulatorWithImmediate8/>
+				<binary>00011000</binary>
+				
+				<cpu:AndAccumulatorWithImmediate8/>
+				<binary>11101111</binary>
+				
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>dd00</hex>
 
