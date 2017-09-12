@@ -6570,20 +6570,27 @@
 								
 				<!--Set Port Direction-->
 				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00111111</binary>
+				<binary>00111100</binary>
 
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>dd02</hex>
-
-				<!--Select Device-->
+				
+				<!--Idle-->
 				<cpu:CopyImmediate16AddressToAccumulator/>
 				<hex>dd00</hex>
 				
 				<cpu:OrAccumulatorWithImmediate8/>
-				<binary>00101000</binary>
+				<binary>00011000</binary>
 				
 				<cpu:AndAccumulatorWithImmediate8/>
-				<binary>11101111</binary>
+				<binary>11011111</binary>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>dd00</hex>
+				
+				<!--Ready To Send-->				
+				<cpu:AndAccumulatorWithImmediate8/>
+				<binary>11001111</binary>
 				
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>dd00</hex>
@@ -6597,7 +6604,7 @@
 				<cpu:TestImmediate16AddressWithAccumulator/>
 				<hex>dd00</hex>
 
-				<cpu:BranchToRelative8IfNotZero/>
+				<cpu:BranchToRelative8IfZero/>
 				<addressOf ref="waitForReady" type="Relative8"/>
 				
 				<!--Send Data-->
@@ -6608,134 +6615,24 @@
 				<binary>00011000</binary>
 				
 				<cpu:AndAccumulatorWithImmediate8/>
-				<binary>11101111</binary>
+				<binary>11011111</binary>
 				
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>dd00</hex>
 
-				<!--Send Listen Device 8-->
+				<!--Send Listen (2) Device (8)-->
 				<cpu:CopyImmediate8ToAccumulator/>
 				<hex>28</hex>
-				<!--<binary>00101000</hex>-->
 				
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="sendByte" type="Absolute16"/>
 
-
+				<!--Send Open (f) Channel (0)-->
 				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00001111</binary>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dd00</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00011111</binary>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dd00</hex>
-
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00001111</binary>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dd00</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00011111</binary>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dd00</hex>
-
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00001111</binary>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dd00</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00011111</binary>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dd00</hex>
-
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00101111</binary>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dd00</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00111111</binary>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dd00</hex>
-
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00001111</binary>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dd00</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00011111</binary>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dd00</hex>
-
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00101111</binary>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dd00</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00111111</binary>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dd00</hex>
-
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00001111</binary>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dd00</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00011111</binary>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dd00</hex>
-
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00001111</binary>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dd00</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00011111</binary>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dd00</hex>
-
-				<!--Wait For Acknowledge-->
-				<label id="waitForAcknowledge"/>
+				<hex>f0</hex>
 				
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>10000000</binary>
-
-				<cpu:TestImmediate16AddressWithAccumulator/>
-				<hex>dd00</hex>
-
-				<cpu:BranchToRelative8IfNotZero/>
-				<addressOf ref="waitForAcknowledge" type="Relative8"/>
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
 
 				<cpu:JumpToImmediate16Address/>
 				<addressOf ref="stop" type="Absolute16"/>
@@ -6759,12 +6656,73 @@
 				<cpu:ReturnFromSubroutine/>
 
 				<label id="sendByte"/>
-
+				
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>80</hex>
 
+				<cpu:CopyImmediate16AddressToAccumulator/>
+				<hex>dd00</hex>
+				
+				<cpu:CopyImmediate8ToXIndex/>
+				<byte>8</byte>
+				
+				<label id="forEachBit"/>
+				
+				<cpu:RollImmediate8AddressRight/>
+				<hex>80</hex>
+				
+				<cpu:BranchToRelative8IfCarry/>
+				<addressOf ref="one" type="Relative8"/>
+				
+				<label id="zero"/>
+												
+				<cpu:OrAccumulatorWithImmediate8/>
+				<binary>00100000</binary>
+				
+				<cpu:AndAccumulatorWithImmediate8/>
+				<binary>11101111</binary>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>dd00</hex>
+
+				<cpu:JumpToImmediate16Address/>
+				<addressOf ref="nextBit" type="Absolute16"/>
+				
+				<label id="one"/>
+				
+				<cpu:AndAccumulatorWithImmediate8/>
+				<binary>11001111</binary>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>dd00</hex>
+				
+				<label id="nextBit"/>
+				
+				<cpu:OrAccumulatorWithImmediate8/>
+				<binary>00010000</binary>
+				
+				<cpu:AndAccumulatorWithImmediate8/>
+				<binary>11011111</binary>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>dd00</hex>
+
+				<cpu:DecrementXIndex/>
+				
+				<cpu:BranchToRelative8IfNotZero/>
+				<addressOf ref="forEachBit" type="Relative8"/>
+				
+				<!--Wait For Acknowledge-->
 				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00000001</binary>
+				<binary>10000000</binary>
+
+				<label id="waitForAcknowledge"/>
+				
+				<cpu:TestImmediate16AddressWithAccumulator/>
+				<hex>dd00</hex>
+
+				<cpu:BranchToRelative8IfNotZero/>
+				<addressOf ref="waitForAcknowledge" type="Relative8"/>
 
 				<cpu:ReturnFromSubroutine/>
 			</cls:method>

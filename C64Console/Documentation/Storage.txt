@@ -8,11 +8,11 @@
 
 CIA2 Registers
 	0xDD00	Data Port A									1
-		Serial Bus Data Input									1 bit
-		Serial Bus Clock Input									1 bit
-		Serial Bus Data Output								1 bit
-		Serial Bus Clock Output								1 bit
-		Serial Bus Attention Output							1 bit
+		Serial Bus Data Input									1 bit		// 0 = Low, 1 = High
+		Serial Bus Clock Input									1 bit		// 0 = Low, 1 = High
+		Serial Bus Data Output								1 bit		// 0 = High, 1 = Low
+		Serial Bus Clock Output								1 bit		// 0 = High, 1 = Low
+		Serial Bus Attention Output							1 bit		// 0 = High, 1 = Low
 		User Port Pin M											1 bit
 		VIC Memory Bank Select								2 bits	// 0 = 0xC000, 1 = 0x8000, 2 = 0x4000, 3 = 0x0000
 	0xDD01	Data Port B									1				// User Port, RS-232
@@ -62,15 +62,15 @@ Command Sequence
 
 Communication Sequence
 	Idle
-		Clock Output = 1
-		Data Input = 1
+		Clock Output = Low
+		Data Input = Low
 	Ready To Send
-		Clock Output = 0
+		Clock Output = High
 	Ready To Recieve
-		Data Input = 0
-	Send Bits
-		Clock Output = 1, Data Output = 0
-		Data Output = bit, Clock Output = 0
+		Data Input = High
+	Send Bits (x8)
+		Clock Output = Low, Data Output = High
+		Clock Output = High, Data Output = bit
 	Acknowledge Byte
-		Clock Output = 1
-		Data Input = 1
+		Clock Output = Low, Data Output = High
+		Data Input = Low
