@@ -1,0 +1,71 @@
+Extended	Bitmap	Multicolor	Description
+0				0			0				Standard Character Mode (default)
+0				0			1				Multicolor Character Mode
+0				1			0				Standard Bitmap Mode
+0				1			1				Multicolor Bitmap Mode
+1				0			0				Extended Background Character Mode
+
+
+Standard Character Mode
+
+0x0400-0x07e8	char[1000]			Characters
+0xd800-0xdbe8	byte[1000]			ForegroundColors
+	Unused										4 bits
+	ForegroundColor						4 bits
+0xd021				byte					BackgroundColor
+0xd000-0xdfff*	Character[128]	CharacterBitmaps
+	Rows	[8]				byte
+		Pixels[8]				bit
+
+
+Multicolor Character Mode
+
+0x0400-0x07e8	char[1000]			Characters
+0xd800-0xdbe8	byte[1000]			ForegroundColors
+	Unused										4 bits
+	MulticolorCharacter					1 bit
+	ForegroundColor						3 bits
+0xd021				byte					BackgroundColor0
+0xd022				byte					BackgroundColor1
+0xd023				byte					BackgroundColor2
+0xd000-0xdfff*	Character[128]	CharacterBitmaps
+	Rows[8]					byte
+		Pixels[4]				2 bits			// 0 - BackgroundColor0, 1 - BackgroundColor1, 2 - BackgroundColor2, 3 - ForegroundColor
+
+
+Standard Bitmap Mode
+
+0x0400-0x07e8	byte[1000]			CharacterColors
+	CharacterColor0							4 bits
+	CharacterColor1							4 bits
+0x2000-0x3fff		Character[1000]	CharacterBitmaps
+	Rows					byte[8]
+
+
+Multicolor Bitmap Mode
+
+0x0400-0x07e8	byte[1000]			CharacterColors
+	CharacterColor0							4 bits
+	CharacterColor1							4 bits
+0x2000-0x3fff		Character[1000]	CharacterBitmaps
+	Rows					byte[8]
+		Pixels[4]				2 bits			// 0 - BackgroundColor, 1 - CharacterColor0, 2 - CharacterColor1, 3 - ForegroundColor
+0xd021				byte					BackgroundColor
+0xd800-0xdbe8	byte[1000]			ForegroundColors
+	Unused										4 bits
+	ForegroundColor						4 bits
+			
+
+Extended Background Standard Character Mode
+
+0x0400-0x07e8	Character[1000]	Characters
+	BackgroundColor						2 bits			// 0 - BackgroundColor0, 1 - BackgroundColor1, 2 - BackgroundColor2, 3 - BackgroundColor3
+0xd800-0xdbe8	byte[1000]			ForegroundColors
+	Unused										4 bits
+	ForegroundColor						4 bits
+0xd021				byte					BackgroundColor0
+0xd022				byte					BackgroundColor1
+0xd023				byte					BackgroundColor2
+0xd024				byte					BackgroundColor3
+0x2000-0x3fff		Character[1000]	CharacterBitmaps
+	Rows					byte[8]

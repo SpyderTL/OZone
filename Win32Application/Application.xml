@@ -13,6 +13,8 @@
 	xmlns:logic="http://metalx.org/Intel/80386/Logic">
 
 	<label id="showMessageBox" segment="0000" offset="00400193"/>
+
+	<label id="loop"/>
 	
 	<cpu:CopyImmediateToAX/>
 	<addressOf ref="helloWorld" type="Absolute32"/>
@@ -28,6 +30,9 @@
 	<cpu:LogicFunction/>
 	<logic:CallImmediateAddress/>
 	<addressOf ref="showMessageBox" type="Absolute32"/>
+
+	<cpu:JumpToRelative8/>
+	<addressOf ref="loop" type="Relative8"/>
 
 	<cpu:ReturnToNearCaller/>
 
