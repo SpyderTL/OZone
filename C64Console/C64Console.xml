@@ -6993,6 +6993,89 @@
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
 				
+				<!--Set Color-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>08</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>02</hex>
+				
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setScreenColor" type="Absolute16"/>
+				
+				<!--Clear Screen-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>00</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>02</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>a0</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>03</hex>
+				
+				<cpu:CopyImmediate8ToYIndex/>
+				<byte>0</byte>
+				
+				<label id="nextScreenByte"/>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>01010101</binary>
+				
+				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+				<hex>02</hex>
+				
+				<cpu:IncrementYIndex/>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>10101010</binary>
+				
+				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+				<hex>02</hex>
+				
+				<cpu:DecrementYIndex/>
+				
+				<!--Loop-->
+				<cpu:ClearCarryFlag/>
+				
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>02</hex>
+				
+				<cpu:AddImmediate8ToAccumulator/>
+				<byte>2</byte>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>02</hex>
+				
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>03</hex>
+				
+				<cpu:AddImmediate8ToAccumulator/>
+				<byte>0</byte>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>03</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>bf</hex>
+				
+				<cpu:CompareAccumulatorToImmediate8Address/>
+				<hex>03</hex>
+				
+				<cpu:BranchToRelative8IfNotEqual/>
+				<addressOf ref="nextScreenByte" type="Relative8"/>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>40</hex>
+				
+				<cpu:CompareAccumulatorToImmediate8Address/>
+				<hex>02</hex>
+				
+				<cpu:BranchToRelative8IfNotEqual/>
+				<addressOf ref="nextScreenByte" type="Relative8"/>
+				
 				<!--Set VIC Memory Bank-->
 				<cpu:CopyImmediate16AddressToAccumulator/>
 				<hex>dd00</hex>
@@ -7031,170 +7114,52 @@
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<hex>d011</hex>
 				
-				<!--Clear Screen-->
-				<cpu:CopyImmediate8ToXIndex/>
-				<byte>0</byte>
-								
-				<label id="nextScreenByte"/>
+				<!--Start Frame-->
+				<label id="nextFrame"/>
 				
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>01010101</binary>
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="waitForVSync" type="Absolute16"/>
 				
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a000</hex>
+				<!--Start Rasterline Timer-->
+				<cpu:IncrementImmediate16Address/>
+				<hex>d020</hex>
 
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a002</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a004</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a006</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a100</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a102</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a104</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a106</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a200</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a202</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a204</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a206</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a300</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a302</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a304</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a306</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a400</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a402</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a404</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a406</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>10101010</binary>
-				
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a001</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a003</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a005</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a007</hex>
-				
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a101</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a103</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a105</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a107</hex>
-				
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a201</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a203</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a205</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a207</hex>
-				
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a301</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a303</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a305</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a307</hex>
-				
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a401</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a403</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a405</hex>
-
-				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-				<hex>a407</hex>
-				
-				<!--Loop-->
-				<cpu:CopyXIndexToAccumulator/>
-
-				<cpu:ClearCarryFlag/>
-
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>8</byte>
-
-				<cpu:CopyAccumulatorToXIndex/>
-
-				<cpu:BranchToRelative8IfZero/>
-				<addressOf ref="clearScreenDone" type="Relative8"/>
-
-				<cpu:JumpToImmediate16Address/>
-				<addressOf ref="nextScreenByte" type="Absolute16"/>
-				
-				<label id="clearScreenDone"/>
-				
-				<!--Set Color-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>23</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
+				<!--Set Screen Color-->
+				<cpu:CopyImmediate8AddressToAccumulator/>
 				<hex>02</hex>
 				
 				<cpu:CallImmediate16Address/>
-				<addressOf ref="setScreenColor" type="Absolute16"/>
-				
-				<label id="stop"/>
-				
+				<addressOf ref="setScreenColor"  type="Absolute16"/>
+
+				<!--Increment Color-->
+				<cpu:IncrementImmediate8Address/>
+				<hex>02</hex>
+
+				<!--Stop Rasterline Timer-->
+				<cpu:DecrementImmediate16Address/>
+				<hex>d020</hex>
+
+				<!--Next Frame-->
 				<cpu:JumpToImmediate16Address/>
-				<addressOf ref="stop" type="Absolute16"/>
+				<addressOf ref="nextFrame" type="Absolute16"/>
+
+				<!--Disable I/O Access-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>00100000</binary>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<byte>0</byte>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>02</hex>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>03</hex>
+
+				<cpu:ReturnFromSubroutine/>
 
 				<!--Wait For VSync-->
 				<label id="waitForVSync"/>
@@ -7217,20 +7182,719 @@
 
 				<cpu:BranchToRelative8IfNotEqual/>
 				<addressOf ref="waitForVSyncOff" type="Relative8"/>
+				
+				<cpu:ReturnFromSubroutine/>
 
+				<!--Set Screen Color-->
+				<label id="setScreenColor"/>
+				
+				<cpu:CopyImmediate8ToXIndex/>
+				<byte>0</byte>
+
+				<label id="nextScreenColor"/>
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>02</hex>
+				
+				<!--Section 1-->
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8400</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8401</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8402</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8403</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8404</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8405</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8406</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8407</hex>
+
+				<!--Section 2-->
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8500</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8501</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8502</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8503</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8504</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8505</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8506</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8507</hex>
+
+				<!--Section 3-->
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8600</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8601</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8602</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8603</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8604</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8605</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8606</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8607</hex>
+
+				<!--Loop-->
+				<cpu:CopyXIndexToAccumulator/>
+
+				<cpu:ClearCarryFlag/>
+
+				<cpu:AddImmediate8ToAccumulator/>
+				<byte>8</byte>
+
+				<cpu:CopyAccumulatorToXIndex/>
+
+				<cpu:BranchToRelative8IfNotZero/>
+				<addressOf ref="nextScreenColor" type="Relative8"/>
+
+				<!--Section 4-->
+				<cpu:CopyImmediate8ToXIndex/>
+				<byte>232</byte>
+
+				<label id="nextScreenColor2"/>
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>02</hex>
+				
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8700</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8701</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8702</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8703</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8704</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8705</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8706</hex>
+
+				<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+				<hex>8707</hex>
+
+				<!--Loop-->
+				<cpu:CopyXIndexToAccumulator/>
+
+				<cpu:SetCarryFlag/>
+
+				<cpu:SubtractImmediate8FromAccumulator/>
+				<byte>8</byte>
+
+				<cpu:CopyAccumulatorToXIndex/>
+
+				<cpu:BranchToRelative8IfCarry/>
+				<addressOf ref="nextScreenColor2" type="Relative8"/>
+			
+				<cpu:ReturnFromSubroutine/>
+			</cls:method>
+
+			<cls:method name="Test7" static="true" type="http://metalx.org/String">
+				<!--Enable I/O Access-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>00100101</binary>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+				
+				<!--Set Color-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>08</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>02</hex>
+				
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setScreenColor" type="Absolute16"/>
+				
+				<!--Clear Screen-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>00</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>02</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>a0</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>03</hex>
+				
+				<cpu:CopyImmediate8ToYIndex/>
+				<byte>0</byte>
+				
+				<label id="nextScreenByte"/>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>01010101</binary>
+				
+				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+				<hex>02</hex>
+				
+				<cpu:IncrementYIndex/>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>10101010</binary>
+				
+				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+				<hex>02</hex>
+				
+				<cpu:DecrementYIndex/>
+				
+				<!--Loop-->
+				<cpu:ClearCarryFlag/>
+				
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>02</hex>
+				
+				<cpu:AddImmediate8ToAccumulator/>
+				<byte>2</byte>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>02</hex>
+				
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>03</hex>
+				
+				<cpu:AddImmediate8ToAccumulator/>
+				<byte>0</byte>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>03</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>bf</hex>
+				
+				<cpu:CompareAccumulatorToImmediate8Address/>
+				<hex>03</hex>
+				
+				<cpu:BranchToRelative8IfNotEqual/>
+				<addressOf ref="nextScreenByte" type="Relative8"/>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>40</hex>
+				
+				<cpu:CompareAccumulatorToImmediate8Address/>
+				<hex>02</hex>
+				
+				<cpu:BranchToRelative8IfNotEqual/>
+				<addressOf ref="nextScreenByte" type="Relative8"/>
+				
+				<!--Set VIC Memory Bank-->
+				<cpu:CopyImmediate16AddressToAccumulator/>
+				<hex>dd00</hex>
+				
+				<cpu:AndAccumulatorWithImmediate8/>
+				<binary>11111100</binary>
+				
+				<cpu:OrAccumulatorWithImmediate8/>
+				<binary>00000001</binary>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>dd00</hex>
+				
+				<!--Enable Bitmap Mode-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>00101011</binary>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>d011</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>00001000</binary>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>d016</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>00011000</binary>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>d018</hex>				
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>00111011</binary>
+				
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>d011</hex>
+				
+				<!--Setup Colors-->
+				<!--<cpu:CopyImmediate8ToAccumulator/>
+				<hex>00</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>80</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>0b</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>81</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>bb</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>82</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>bc</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>83</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>cc</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>84</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>cf</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>85</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>ff</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>86</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>f1</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>87</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>11</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>88</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>1f</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>89</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>ff</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8a</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>fc</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8b</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>cc</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8c</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>cb</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8d</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>bb</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8e</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>b0</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8f</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>00</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>03</hex>-->
+				
+				<!--<cpu:CopyImmediate8ToAccumulator/>
+				<hex>00</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>80</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>0b</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>81</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>bb</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>82</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>b6</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>83</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>66</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>84</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>6e</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>85</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>ee</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>86</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>e3</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>87</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>33</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>88</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>3e</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>89</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>ee</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8a</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>e6</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8b</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>66</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8c</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>6b</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8d</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>bb</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8e</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>b0</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8f</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>00</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>03</hex>-->
+				
+				<!--<cpu:CopyImmediate8ToAccumulator/>
+				<hex>00</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>80</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>0b</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>81</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>bb</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>82</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>b2</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>83</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>22</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>84</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>2a</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>85</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>aa</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>86</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>a1</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>87</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>11</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>88</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>1a</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>89</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>aa</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8a</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>a2</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8b</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>22</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8c</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>2b</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8d</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>bb</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8e</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>b0</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8f</hex>-->
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>00</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>80</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>00</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>81</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>0b</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>82</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>b0</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>83</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>bb</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>84</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>bb</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>85</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>b6</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>86</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>6b</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>87</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>66</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>88</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>66</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>89</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>6e</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8a</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>e6</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8b</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>ee</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8c</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>ee</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8d</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>e1</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8e</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>1e</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8f</hex>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>00</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>03</hex>
+				
+				<!--Start Frame-->
+				<label id="nextFrame"/>
+				
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="waitForVSync" type="Absolute16"/>
+				
 				<!--Start Rasterline Timer-->
 				<cpu:IncrementImmediate16Address/>
 				<hex>d020</hex>
 
-				<!--Set Screen Color-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>02</hex>
-				
+				<!--Set Screen Color-->				
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="setScreenColor"  type="Absolute16"/>
 
 				<!--Increment Color-->
 				<cpu:IncrementImmediate8Address/>
+				<hex>03</hex>
+				
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>03</hex>
+				
+				<cpu:AndAccumulatorWithImmediate8/>
+				<hex>0f</hex>
+				
+				<cpu:CopyAccumulatorToXIndex/>
+				
+				<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
+				<hex>80</hex>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>02</hex>
 
 				<!--Stop Rasterline Timer-->
@@ -7239,7 +7903,7 @@
 
 				<!--Next Frame-->
 				<cpu:JumpToImmediate16Address/>
-				<addressOf ref="waitForVSync" type="Absolute16"/>
+				<addressOf ref="nextFrame" type="Absolute16"/>
 
 				<!--Disable I/O Access-->
 				<cpu:CopyImmediate8ToAccumulator/>
@@ -7257,6 +7921,30 @@
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>03</hex>
 
+				<cpu:ReturnFromSubroutine/>
+
+				<!--Wait For VSync-->
+				<label id="waitForVSync"/>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<byte>20</byte>
+
+				<label id="waitForVSyncOn"/>
+
+				<cpu:CompareAccumulatorToImmediate16Address/>
+				<hex>d012</hex>
+
+				<cpu:BranchToRelative8IfEqual/>
+				<addressOf ref="waitForVSyncOn" type="Relative8"/>
+
+				<label id="waitForVSyncOff"/>
+
+				<cpu:CompareAccumulatorToImmediate16Address/>
+				<hex>d012</hex>
+
+				<cpu:BranchToRelative8IfNotEqual/>
+				<addressOf ref="waitForVSyncOff" type="Relative8"/>
+				
 				<cpu:ReturnFromSubroutine/>
 
 				<!--Set Screen Color-->
