@@ -1,0 +1,80 @@
+OPL3
+	0x388	Address / Status
+		Timer Expired		1 bit
+		Timer 1 Expired		1 bit
+		Timer 2 Expired		1 bit
+		Unused					5 bits
+	0x389	Data
+
+Address	Description
+0x01			Test
+	Unused					2 bits
+	Waveform Control	1 bit
+	Unused					5 bits
+0x02			Timer 1 Value
+0x03			Timer 2 Value
+0x04			Timer Control
+	Reset					1 bit
+	Timer 1 Mask			1 bit			// Ignore Timer 1 Enable Flag
+	Timer 2 Mask			1 bit			// Ignore Timer 2 Enable Flag
+	Unused					3 bits
+	Timer 2 Enable		1 bit
+	Timer 1 Enable		1 bit
+0x08			Speech Mode
+	Speech Mode Enable			1 bit
+	Keyboard Split					1 bit
+	Unused								6 bits
+0x20			Modulation[18]
+	Amplitude			1 bit
+	Vibrato				1 bit
+	Sustain				1 bit
+	KeyboardScale	1 bit
+	Harmonic			4 bits		// 0 - Octave Down, 1 - Normal, 2 - Octave Up
+0x40			Scaling[18]
+	Scaling Level				2 bits
+	24dB Attenuation		1 bit
+	12dB Attenuation		1 bit
+	6dB Attenuation			1 bit
+	3dB Attenuation			1 bit
+	1.5dB Attenuation		1 bit
+	0.75dB Attenuation		1 bit
+0x60			AttackDecay[18]
+	Attack				4 bits
+	Decay				4 bits
+0x80			SustainRelease
+	Sustain				4 bits
+	Release				4 bits
+0xA0			F-NumberLow[9]
+0xB0			KeyOn[9]
+	Unused				2 bits
+	KeyOn				1 bit
+	Octave				3 bits
+	F-Number High	2 bits
+0xBD			Drums					// Uses Channel 6-8
+	AmplitudeDepth		1 bit
+	VibratoDepth			1 bit
+	RhythmEnabled		1 bit
+	Bass						1 bit
+	Snare					1 bit
+	Tom						1 bit
+	Cymbal					1 bit
+	HiHat					1 bit
+0xC0			Feedback[9]
+	Unused				4 bits
+	Feedback			3 bits
+	Decay				1 bit
+0xE0			Waveform[9]
+	Unused				6 bits
+	Waveform			2 bits
+	
+
+Channel				Modulation1		Modulation2		Output1		Output2		AttackDecay1		AttackDecay2			SustainRelease1		SustainRelease2		Frequency		KeyOn	Feedback	Waveform1	Waveform2
+1						0x20					0x23					0x40			0x43			0x60					0x63						0x80						0x83						0xa0				0xb0		0xc0			0xe0				0xe3
+2						0x21					0x24					0x41			0x44			0x61					0x64						0x81						0x84						0xa1				0xb1		0xc1			0xe1				0xe4
+3						0x22					0x25					0x42			0x45			0x62					0x65						0x82						0x85						0xa2				0xb2		0xc2			0xe2				0xe5
+4						0x28					0x2b					0x48			0x4b			0x68					0x6b						0x88						0x8b						0xa3				0xb3		0xc3			0xe8				0xeb
+5						0x29					0x2c					0x49			0x4c			0x69					0x6c						0x89						0x8c						0xa4				0xb4		0xc4			0xe9				0xec
+6						0x2a					0x2d					0x4a			0x4d			0x6a					0x6d						0x8a						0x8d						0xa5				0xb5		0xc5			0xea				0xed
+7						0x30					0x33					0x50			0x53			0x70					0x73						0x90						0x93						0xa6				0xb6		0xc6			0xf0				0xf3
+8						0x31					0x34					0x51			0x54			0x71					0x74						0x91						0x94						0xa7				0xb7		0xc7			0xf1				0xf4
+9						0x32					0x35					0x52			0x55			0x72					0x75						0x92						0x95						0xa8				0xb8		0xc8			0xf2				0xf5
