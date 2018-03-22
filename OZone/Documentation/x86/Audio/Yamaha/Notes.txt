@@ -11,16 +11,22 @@ Address	Description
 	Unused					2 bits
 	Waveform Control	1 bit
 	Unused					5 bits
-0x02			Timer 1 Value
-0x03			Timer 2 Value
-0x04			Timer Control
+0x02			Timer 1 Value				// OPL2 Mode Only
+0x03			Timer 2 Value				// OPL2 Mode Only
+0x04			Timer Control			// OPL2 Mode
 	Reset					1 bit
 	Timer 1 Mask			1 bit			// Ignore Timer 1 Enable Flag
 	Timer 2 Mask			1 bit			// Ignore Timer 2 Enable Flag
 	Unused					3 bits
-	Timer 2 Enable		1 bit
+	Timer 2 Enable		1 bit	
 	Timer 1 Enable		1 bit
-0x08			Speech Mode
+0x04			Connection Select		// OPL3 Mode
+	Unused					2 bits
+	Connection Select	6 bits
+0x05			Operation Mode
+	Unused					7 bits
+	Opl3						1 bit
+0x08			Speech Mode			// OPL2 Mode Only
 	Speech Mode Enable			1 bit
 	Keyboard Split					1 bit
 	Unused								6 bits
@@ -50,7 +56,7 @@ Address	Description
 	KeyOn				1 bit
 	Octave				3 bits
 	F-Number High	2 bits
-0xBD			Drums					// Uses Channel 6-8
+0xBD			Drums					// Uses Channel 6-8, OPL2 Mode Only
 	AmplitudeDepth		1 bit
 	VibratoDepth			1 bit
 	RhythmEnabled		1 bit
@@ -62,7 +68,7 @@ Address	Description
 0xC0			Feedback[9]
 	Unused				4 bits
 	Feedback			3 bits
-	Decay				1 bit
+	Decay				1 bit			// 0 - Combined, 1 - Individual
 0xE0			Waveform[9]
 	Unused				6 bits
 	Waveform			2 bits

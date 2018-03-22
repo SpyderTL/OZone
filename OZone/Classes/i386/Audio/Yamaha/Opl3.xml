@@ -43,11 +43,12 @@
 	<cls:field name="Device" type="http://metalx.org/Pci/PciDevice" offset="0"/>
 	
 	<cls:method name="Test" type="http://metalx.org/Integer" static="true">
+		<!--Feedback[0]: None-->
 		<cpu:CopyImmediateToDX/>
 		<hex>00000388</hex>
 
 		<cpu:CopyImmediateToAL/>
-		<hex>20</hex>
+		<hex>c0</hex>
 		
 		<cpu:WriteALToDXPort/>
 
@@ -59,8 +60,24 @@
 		<cpu:WriteALToDXPort/>
 
 		<cpu:DecrementDX/>
+		
+		<!--Modulation[0]: Normal-->
+		<!--<cpu:CopyImmediateToAL/>
+		<hex>20</hex>
+		
+		<cpu:WriteALToDXPort/>
+
+		<cpu:IncrementDX/>
 
 		<cpu:CopyImmediateToAL/>
+		<binary>00100001</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:DecrementDX/>-->
+
+		<!--Scaling[0]: 0dB Attenuation-->
+		<!--<cpu:CopyImmediateToAL/>
 		<hex>40</hex>
 
 		<cpu:WriteALToDXPort/>
@@ -68,13 +85,14 @@
 		<cpu:IncrementDX/>
 
 		<cpu:CopyImmediateToAL/>
-		<hex>10</hex>
+		<hex>00</hex>
 
 		<cpu:WriteALToDXPort/>
 
-		<cpu:DecrementDX/>
+		<cpu:DecrementDX/>-->
 
-		<cpu:CopyImmediateToAL/>
+		<!--Attack[0]: 0xf Decay[0]: 0x0-->
+		<!--<cpu:CopyImmediateToAL/>
 		<hex>60</hex>
 
 		<cpu:WriteALToDXPort/>
@@ -86,9 +104,10 @@
 
 		<cpu:WriteALToDXPort/>
 
-		<cpu:DecrementDX/>
+		<cpu:DecrementDX/>-->
 
-		<cpu:CopyImmediateToAL/>
+		<!--Sustain[0]: 0x0 Release[0]: 0xf-->
+		<!--<cpu:CopyImmediateToAL/>
 		<hex>80</hex>
 
 		<cpu:WriteALToDXPort/>
@@ -96,26 +115,13 @@
 		<cpu:IncrementDX/>
 
 		<cpu:CopyImmediateToAL/>
-		<hex>77</hex>
+		<hex>0f</hex>
 
 		<cpu:WriteALToDXPort/>
 
-		<cpu:DecrementDX/>
+		<cpu:DecrementDX/>-->
 
-		<cpu:CopyImmediateToAL/>
-		<hex>a0</hex>
-
-		<cpu:WriteALToDXPort/>
-
-		<cpu:IncrementDX/>
-
-		<cpu:CopyImmediateToAL/>
-		<hex>98</hex>
-
-		<cpu:WriteALToDXPort/>
-
-		<cpu:DecrementDX/>
-
+		<!--Modulation[3]: Normal Sustain-->
 		<cpu:CopyImmediateToAL/>
 		<hex>23</hex>
 
@@ -124,12 +130,13 @@
 		<cpu:IncrementDX/>
 
 		<cpu:CopyImmediateToAL/>
-		<hex>01</hex>
+		<binary>00100001</binary>
 
 		<cpu:WriteALToDXPort/>
 
 		<cpu:DecrementDX/>
 
+		<!--Scaling[3]: 0dB Attenuation-->
 		<cpu:CopyImmediateToAL/>
 		<hex>43</hex>
 
@@ -144,6 +151,7 @@
 
 		<cpu:DecrementDX/>
 
+		<!--Attack[3]: 0xf Decay[3]: 0x0-->
 		<cpu:CopyImmediateToAL/>
 		<hex>63</hex>
 
@@ -158,6 +166,7 @@
 
 		<cpu:DecrementDX/>
 
+		<!--Sustain[3]: 0x0 Release[3]: 0xf-->
 		<cpu:CopyImmediateToAL/>
 		<hex>83</hex>
 
@@ -166,12 +175,41 @@
 		<cpu:IncrementDX/>
 
 		<cpu:CopyImmediateToAL/>
-		<hex>77</hex>
+		<hex>0f</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:DecrementDX/>
+		
+		<!--Get Frequency-->
+		<cpu:CopyImmediateToAX/>
+		<int>45</int>
+
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
+		<op:BX-IndexAddress/>
+		<index:AXTimesTwoPlusImmediate32/>
+		<addressOf ref="notes" type="Absolute32"/>
+
+		<!--F-Number[0]: 0x41-->
+		<cpu:CopyImmediateToAL/>
+		<hex>a0</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<!--<cpu:CopyImmediateToAL/>
+		<hex>41</hex>-->
+		
+		<cpu:CopyRegisterToOperand8/>
+		<op:BL-ALRegister/>
 
 		<cpu:WriteALToDXPort/>
 
 		<cpu:DecrementDX/>
 
+		<!--KeyOn[0]: F-Number High: 2 Octave: 4 Key: On-->
 		<cpu:CopyImmediateToAL/>
 		<hex>b0</hex>
 
@@ -179,8 +217,14 @@
 
 		<cpu:IncrementDX/>
 
-		<cpu:CopyImmediateToAL/>
-		<hex>31</hex>
+		<!--<cpu:CopyImmediateToAL/>
+		<hex>32</hex>-->
+		
+		<cpu:CopyRegisterToOperand8/>
+		<op:BH-ALRegister/>
+		
+		<cpu:OrALWithImmediate/>
+		<binary>00100000</binary>
 
 		<cpu:WriteALToDXPort/>
 
@@ -223,4 +267,301 @@
 
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
+
+	<label id="notes">
+		<hex>ab</hex>
+		<hex>00</hex>
+
+		<hex>b5</hex>
+		<hex>00</hex>
+
+		<hex>c0</hex>
+		<hex>00</hex>
+
+		<hex>cc</hex>
+		<hex>00</hex>
+
+		<hex>d8</hex>
+		<hex>00</hex>
+
+		<hex>e5</hex>
+		<hex>00</hex>
+
+		<hex>f2</hex>
+		<hex>00</hex>
+
+		<hex>01</hex>
+		<hex>01</hex>
+
+		<hex>10</hex>
+		<hex>01</hex>
+
+		<hex>20</hex>
+		<hex>01</hex>
+
+		<hex>31</hex>
+		<hex>01</hex>
+
+		<hex>43</hex>
+		<hex>01</hex>
+
+
+		<hex>57</hex>
+		<hex>01</hex>
+
+		<hex>6b</hex>
+		<hex>01</hex>
+
+		<hex>81</hex>
+		<hex>01</hex>
+
+		<hex>98</hex>
+		<hex>01</hex>
+
+		<hex>b0</hex>
+		<hex>01</hex>
+
+		<hex>ca</hex>
+		<hex>01</hex>
+
+		<hex>e5</hex>
+		<hex>01</hex>
+
+		<hex>02</hex>
+		<hex>02</hex>
+
+		<hex>20</hex>
+		<hex>02</hex>
+
+		<hex>41</hex>
+		<hex>02</hex>
+
+		<hex>63</hex>
+		<hex>02</hex>
+
+		<hex>87</hex>
+		<hex>02</hex>
+
+
+		<hex>ae</hex>
+		<hex>02</hex>
+
+		<hex>6b</hex>
+		<hex>05</hex>
+
+		<hex>81</hex>
+		<hex>05</hex>
+
+		<hex>98</hex>
+		<hex>05</hex>
+
+		<hex>b0</hex>
+		<hex>05</hex>
+
+		<hex>ca</hex>
+		<hex>05</hex>
+
+		<hex>e5</hex>
+		<hex>05</hex>
+
+		<hex>02</hex>
+		<hex>06</hex>
+
+		<hex>20</hex>
+		<hex>06</hex>
+
+		<hex>41</hex>
+		<hex>06</hex>
+
+		<hex>63</hex>
+		<hex>06</hex>
+
+		<hex>87</hex>
+		<hex>06</hex>
+
+
+		<hex>ae</hex>
+		<hex>06</hex>
+
+		<hex>6b</hex>
+		<hex>09</hex>
+
+		<hex>81</hex>
+		<hex>09</hex>
+
+		<hex>98</hex>
+		<hex>09</hex>
+
+		<hex>b0</hex>
+		<hex>09</hex>
+
+		<hex>ca</hex>
+		<hex>09</hex>
+
+		<hex>e5</hex>
+		<hex>09</hex>
+
+		<hex>02</hex>
+		<hex>0a</hex>
+
+		<hex>20</hex>
+		<hex>0a</hex>
+
+		<hex>41</hex>
+		<hex>0a</hex>
+
+		<hex>63</hex>
+		<hex>0a</hex>
+
+		<hex>87</hex>
+		<hex>0a</hex>
+
+
+		<hex>ae</hex>
+		<hex>0a</hex>
+
+		<hex>6b</hex>
+		<hex>0d</hex>
+
+		<hex>81</hex>
+		<hex>0d</hex>
+
+		<hex>98</hex>
+		<hex>0d</hex>
+
+		<hex>b0</hex>
+		<hex>0d</hex>
+
+		<hex>ca</hex>
+		<hex>0d</hex>
+
+		<hex>e5</hex>
+		<hex>0d</hex>
+
+		<hex>02</hex>
+		<hex>0e</hex>
+
+		<hex>20</hex>
+		<hex>0e</hex>
+
+		<hex>41</hex>
+		<hex>0e</hex>
+
+		<hex>63</hex>
+		<hex>0e</hex>
+
+		<hex>87</hex>
+		<hex>0e</hex>
+
+
+		<hex>ae</hex>
+		<hex>0e</hex>
+
+		<hex>6b</hex>
+		<hex>11</hex>
+
+		<hex>81</hex>
+		<hex>11</hex>
+
+		<hex>98</hex>
+		<hex>11</hex>
+
+		<hex>b0</hex>
+		<hex>11</hex>
+
+		<hex>ca</hex>
+		<hex>11</hex>
+
+		<hex>e5</hex>
+		<hex>11</hex>
+
+		<hex>02</hex>
+		<hex>12</hex>
+
+		<hex>20</hex>
+		<hex>12</hex>
+
+		<hex>41</hex>
+		<hex>12</hex>
+
+		<hex>63</hex>
+		<hex>12</hex>
+
+		<hex>87</hex>
+		<hex>12</hex>
+
+
+		<hex>ae</hex>
+		<hex>12</hex>
+
+		<hex>6b</hex>
+		<hex>15</hex>
+
+		<hex>81</hex>
+		<hex>15</hex>
+
+		<hex>98</hex>
+		<hex>15</hex>
+
+		<hex>b0</hex>
+		<hex>15</hex>
+
+		<hex>ca</hex>
+		<hex>15</hex>
+
+		<hex>e5</hex>
+		<hex>15</hex>
+
+		<hex>02</hex>
+		<hex>16</hex>
+
+		<hex>20</hex>
+		<hex>16</hex>
+
+		<hex>41</hex>
+		<hex>16</hex>
+
+		<hex>63</hex>
+		<hex>16</hex>
+
+		<hex>87</hex>
+		<hex>16</hex>
+
+
+		<hex>ae</hex>
+		<hex>16</hex>
+
+		<hex>6b</hex>
+		<hex>19</hex>
+
+		<hex>81</hex>
+		<hex>19</hex>
+
+		<hex>98</hex>
+		<hex>19</hex>
+
+		<hex>b0</hex>
+		<hex>19</hex>
+
+		<hex>ca</hex>
+		<hex>19</hex>
+
+		<hex>e5</hex>
+		<hex>19</hex>
+
+		<hex>02</hex>
+		<hex>1a</hex>
+
+		<hex>20</hex>
+		<hex>1a</hex>
+
+		<hex>41</hex>
+		<hex>1a</hex>
+
+		<hex>63</hex>
+		<hex>1a</hex>
+
+		<hex>87</hex>
+		<hex>1a</hex>
+	</label>
 </cls:class>
