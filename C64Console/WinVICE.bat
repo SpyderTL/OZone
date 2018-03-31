@@ -1,0 +1,1 @@
+"C:\Games\Commodore 64\WinVICE-3.1-x64\x64" -cart16 "C:\Users\joshu\source\repos\OZone\C64Console\bin\Debug\C64Console.bin"
