@@ -12,4 +12,29 @@ C64 register  Amiga offset  read/write?  meaning
 0000h  $de08/$de09  $20/$24  read/write  Receive/Transmit Data (Port 0)  
 0002h  $de0a/$de0b  $28/$2c  read/write  Receive/Transmit Data (Port 1)  
 0004h  $de0c/$de0d  $30/$34  write-only  TxCMD (Transmit Command)  
-0006h  $de0e/$de0f  $38/$3c  write-only  TxLength (Transmit Length)  
+0006h  $de0e/$de0f  $38/$3c  write-only  TxLength (Transmit Length)
+
+TxCMD values
+00c0h	Start transmit after all bytes transferred
+
+PacketPage registers
+BusST				0138h
+
+Send Packet
+	TxCMD = 00c0h
+	TxLength = packet length
+	Check BusST.BufferAvailable flag (PacketPage[0138h] & 0x10 = 0x10)
+	Write even bytes to DataPort0
+	Write odd bytes to DataPort0+1
+
+Receive Packet
+	Wait for RxEvent
+	Read Event
+		Read DataPort0+1
+		Read DataPort0
+	Read Packet Length
+		Read DataPort0+1
+		Read DataPort0
+	ReadPacket
+		Read DataPort0
+		Read DataPort0+1
