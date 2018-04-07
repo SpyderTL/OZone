@@ -1,0 +1,136 @@
+WASM File (Module)
+	Preamble				8
+		MagicNumber		4		"\0asm"
+		Version					4		1
+	Sections
+		ID							1		1
+		Length					4
+		Data						Length
+
+
+Sections
+	Types						1
+		Count						4
+		Functions
+			Form							1
+			ParameterCount			4
+			Parameters
+				Type							1
+			ReturnValues				1
+				Type							1
+
+	Imports						2
+		Count						4
+		Imports
+			ModuleNameLength	4
+			ModuleName			ModuleNameLength
+			FieldNameLength		4
+			FieldName					FieldNameLength
+			ExternalType				1
+			ExternalDetails
+
+	Functions					3
+		Count						4
+		Functions
+			Index							4
+
+	Tables						4
+		Count						4
+		Tables
+			table_type
+
+	Memory					5
+		Count						4
+		Memory
+			memory_type
+
+	Globals						6
+		Count						4
+		Globals
+			global_variable
+
+	Exports						7
+		Count						4
+		Exports
+			FieldNameLength		4
+			FieldName					FieldNameLength
+			ExternalType				1
+			Index							4
+
+	Start							8
+		Index							4
+
+	Elements					9
+		Count						4
+		Elements
+			TableIndex					4
+			Offset
+				init_expr
+			Count						4
+			Elements
+				FunctionIndex				4
+
+	Code							10
+		Count						4
+		FunctionBodies
+			Length						4
+			LocalCount				4
+			Locals
+				Count						4
+				Type							1
+			Code	
+
+	Data							11
+		Count						4
+		Data
+			MemoryIndex			4
+			Offset
+				init_expr
+			Length						4
+			Data							Length
+
+	Name						0 (Custom)
+		Type							1				// 0 - Module, 1 - Function, 2 - Local
+		Length						4
+		Data							Length
+
+ModuleName
+	Length						4
+	Name						Length
+
+FunctionNames
+	Count						4
+	FunctionNames
+		Index							4
+		NameLength				4
+		Name						NameLength
+
+LocalNames
+	Count						4
+	LocalNames
+		FunctionIndex				4
+		NameCount				4
+		Names
+			Index							4
+			NameLength				4
+			Name						NameLength
+		
+
+ExternalDetails
+	Function			0
+		Index					4
+	Table					1
+		table_type
+	Memory			2
+		memory_type
+	Global				3
+		global_type
+
+Types
+	Integer			0x7f
+	Long				0x7e
+	Float				0x7d
+	Double			0x7c
+	AnyFunction	0x70
+	Function		0x60
+	EmptyBlock	0x40
