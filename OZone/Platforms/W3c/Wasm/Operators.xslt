@@ -311,13 +311,13 @@
 	<xsl:template match="ns:RotateIntegerRight">
 		<xsl:element name="prg:hex">78</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:CountLeadingClearBits32">
+	<xsl:template match="ns:CountLeadingClearBits64">
 		<xsl:element name="prg:hex">79</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:CountTrailingClearBits32">
+	<xsl:template match="ns:CountTrailingClearBits64">
 		<xsl:element name="prg:hex">7a</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:CountSetBits32">
+	<xsl:template match="ns:CountSetBits64">
 		<xsl:element name="prg:hex">7b</xsl:element>
 	</xsl:template>
 	<xsl:template match="ns:AddLong">

@@ -13,7 +13,7 @@ namespace OZone.Programs
 {
 	public static class ProgramBuilder
 	{
-		[DebuggerHidden]
+		//[DebuggerHidden]
 		public static Program Build(string programFile, params string[] transformFiles)
 		{
 			MemoryStream input;

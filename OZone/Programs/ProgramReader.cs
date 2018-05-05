@@ -216,8 +216,28 @@ namespace OZone.Programs
 						break;
 
 					case "scope":
-						foreach(var programSegment in ReadSegments(element, new Dictionary<string, Label>(labels)))
+						foreach (var programSegment in ReadSegments(element, new Dictionary<string, Label>(labels)))
 							yield return programSegment;
+						break;
+
+					case "length":
+						ProgramSegment start = null;
+						ProgramSegment end = null;
+
+						if (labels.ContainsKey(element.Attribute("start").Value))
+							start = labels[element.Attribute("start").Value];
+						else
+							throw new Exception("Label reference not found.\r\n\r\n" + element.ToString());
+
+						if (labels.ContainsKey(element.Attribute("end").Value))
+							end = labels[element.Attribute("end").Value];
+						else
+							throw new Exception("Label reference not found.\r\n\r\n" + element.ToString());
+
+						var length = new Length { Start = start, End = end };
+
+						yield return length;
+
 						break;
 
 					default:
