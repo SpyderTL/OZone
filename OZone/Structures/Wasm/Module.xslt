@@ -31,9 +31,9 @@
 
 			<!--Types-->
 			<byte>1</byte>
-			<byte>
-				<xsl:value-of select="1 + (count(mod:function) * 4)"/>
-			</byte>
+			<length start="typesStart" end="typesEnd"/>
+
+			<label id="typesStart"/>
 
 			<byte>
 				<xsl:value-of select="count(mod:function)"/>
@@ -64,13 +64,15 @@
 				</xsl:choose>
 			</xsl:for-each>
 
+			<label id="typesEnd"/>
+
 			<!--Imports-->
 
 			<!--Functions-->
 			<byte>3</byte>
-			<byte>
-				<xsl:value-of select="1 + count(mod:function)"/>
-			</byte>
+			<length start="functionsStart" end="functionsEnd"/>
+
+			<label id="functionsStart"/>
 
 			<byte>
 				<xsl:value-of select="count(mod:function)"/>
@@ -81,6 +83,8 @@
 					<xsl:value-of select="position() - 1"/>
 				</byte>
 			</xsl:for-each>
+
+			<label id="functionsEnd"/>
 
 			<!--Tables-->
 
@@ -130,10 +134,36 @@
 
 					<label id="functionStart"/>
 
-					<byte>0</byte>
+					<!--<byte>0</byte>-->
+					<byte>
+						<xsl:value-of select="count(mod:local)"/>
+					</byte>
+
+					<xsl:for-each select="mod:local">
+						<byte>1</byte>
+						<xsl:choose>
+							<xsl:when test="@type='http://metalx.org/Integer'">
+								<hex>7f</hex>
+							</xsl:when>
+							<xsl:when test="@type='http://metalx.org/Long'">
+								<hex>7e</hex>
+							</xsl:when>
+							<xsl:when test="@type='http://metalx.org/Float'">
+								<hex>7d</hex>
+							</xsl:when>
+							<xsl:when test="@type='http://metalx.org/Double'">
+								<hex>7c</hex>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:message terminate="yes">
+									Unknown function type: <xsl:value-of select="@type"/>
+								</xsl:message>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:for-each>
 
 					<scope>
-						<xsl:copy-of select="*[not(self::mod:parameter)]"/>
+						<xsl:copy-of select="*[not(self::mod:parameter) and not(self::mod:local)]"/>
 					</scope>
 
 					<wasm:End/>
