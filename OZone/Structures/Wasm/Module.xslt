@@ -134,7 +134,6 @@
 
 					<label id="functionStart"/>
 
-					<!--<byte>0</byte>-->
 					<byte>
 						<xsl:value-of select="count(mod:local)"/>
 					</byte>
@@ -156,7 +155,7 @@
 							</xsl:when>
 							<xsl:otherwise>
 								<xsl:message terminate="yes">
-									Unknown function type: <xsl:value-of select="@type"/>
+									Unknown local type: <xsl:value-of select="@type"/>
 								</xsl:message>
 							</xsl:otherwise>
 						</xsl:choose>
