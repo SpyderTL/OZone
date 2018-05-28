@@ -67,11 +67,11 @@ namespace OZone.Programs
 					break;
 
 				case ReferenceType.Absolute16High8:
-					writer.Write((byte)(((Segment.Address.Offset & 0xff00) >> 8) + Offset));
+					writer.Write((byte)(((Segment.Address.Offset + Offset) & 0xff00) >> 8));
 					break;
 
 				case ReferenceType.Absolute16Low8:
-					writer.Write((byte)((Segment.Address.Offset & 0x00ff) + Offset));
+					writer.Write((byte)((Segment.Address.Offset + Offset) & 0x00ff));
 					break;
 
 				case ReferenceType.Relative8:

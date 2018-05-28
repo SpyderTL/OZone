@@ -41,8 +41,8 @@ namespace C64Console
 					"../../../OZone/Structures/6502/Class.xslt",
 					"../../../OZone/Platforms/Mos/6502/Operators.xslt");
 
-				//address.Offset = (uint)binaryWriter.BaseStream.Position + 0x8000;
-				address.Offset = (uint)binaryWriter.BaseStream.Position + 0x4000;
+				address.Offset = (uint)binaryWriter.BaseStream.Position + 0x8000;
+				//address.Offset = (uint)binaryWriter.BaseStream.Position + 0x4000;
 
 				compiler.Compile(program, address, binaryWriter);
 
