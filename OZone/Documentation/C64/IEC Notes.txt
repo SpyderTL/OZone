@@ -1,0 +1,79 @@
+﻿IEC Bus
+
+					Talker						Listener
+					Clock			Data			Clock			Data
+
+IDLE				X												X
+SEND															X
+READY
+LAST*
+ACK-LAST*														X
+READY
+BITS[8]
+	START		X
+	BIT							0/1
+WAIT				X
+ACK				X												X
+
+* Only sent with last byte
+
+
+KERNAL Functions
+
+LISTEN			FFB1			ED0C
+LISTEN2			FF93			EDB9
+WRITE			FFA8			EDDD
+UNLISTEN		FFAE			EDFE
+TALK				FFB4			ED09
+TALK2			FF96			EDC7
+READ			FFA5			EE13
+UNTALK			FFAB			EDEF
+
+CLOCK OUT HIGH			EE85
+CLOCK OUT LOW			EE8E
+DATA OUT HIGH				EE97
+DATA OUT LOW				EEA0
+READ CLOCK DATA IN		EEA9
+
+
+IEC Commands
+
+LISTEN		20		0-30 = device, 31 = unlisten
+TALK			40		0-30 = device, 31 = untalk
+CHANNEL	60		0-15 = channel
+CLOSE		E0		0-15 = channel
+OPEN		F0		0-15 = channel
+
+
+Load File Sequence (Device 8)
+
+LISTEN(8)		0x28
+OPEN(0)		0xF0
+FILENAME		*
+UNLISTEN		0x3F
+
+TALK(8)			0x48
+CHANNEL(0)	0x60
+DATA				"?????????"
+UNTALK			0x5F
+
+LISTEN(8)		0x28
+CLOSE(0)		0xE0
+UNLISTEN		0x3F
+
+
+Save File Sequence (Device 8)
+
+LISTEN(8)		0x28
+OPEN(0)		0xF0
+FILENAME		*
+UNLISTEN		0x3F
+
+LISTEN(8)		0x28
+OPEN(0)		0x60
+DATA				"????????"
+UNLISTEN(8)	0x3F
+
+LISTEN(8)		0x28
+CLOSE(0)		0xE0
+UNLISTEN		0x3F
