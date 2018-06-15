@@ -18,12 +18,20 @@ TxCMD values
 00c0h	Start transmit after all bytes transferred
 
 PacketPage registers
+RxCFG				0102h
+RxCTL				0104h
+TxCFG				0106h
+TxCMD				0108h
+BufCFG				010Ah
+LineCTL				0112h
 BusST				0138h
+Logical Address Filter		0150h	
+Individual Address		0158h
 
 Send Packet
 	TxCMD = 00c0h
 	TxLength = packet length
-	Check BusST.BufferAvailable flag (PacketPage[0138h] & 0x10 = 0x10)
+	Check BusST.BufferAvailable flag (PacketPage[0138h] & 0x0100 = 0x0100)
 	Write even bytes to DataPort0
 	Write odd bytes to DataPort0+1
 
