@@ -27,11 +27,19 @@ IPv4 Packet : Ethernet Packet	20					(Plus options)
 		Flags									3 bits		(2 = Don't Fragment, 4 = More Fragments)
 		FragmentOffset					13 bits
 	TimeToLive						1
-	Protocol							1					(6 = TCP, 17 = UDP)
+	Protocol							1					(1 = ICMP, 6 = TCP, 17 = UDP)
 	HeaderChecksum				2
 	SourceIPAddress				4
 	DestinationIPAddress			4
 	Options								*					((HeaderLength - 5) * 4)
+
+ICMP Packet: IPv4 Packet
+	Type									1					(0 = Echo Reply, 8 = Echo Request)
+	Code									1
+	Checksum							2
+	Identifier							2
+	Sequence							2
+	Payload								?
 
 TCP Packet : IPv4 Packet		20						(Plus options)
 	SourcePort						2
