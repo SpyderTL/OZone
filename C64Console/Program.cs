@@ -14,12 +14,15 @@ namespace C64Console
 		{
 			var compiler = new BinaryCompiler();
 
-			var program = ProgramBuilder.Build("../../C64Cartridge.xml");
+			//var program = ProgramBuilder.Build("../../C64Cartridge.xml");
+			var program = ProgramBuilder.Build("../../C64Program.xml");
 
-			var address = new MemoryAddress { Offset = 0x8000 };
+			//var address = new MemoryAddress { Offset = 0x8000 };
+			var address = new MemoryAddress { Offset = 0x07ff };
 
-			using(Stream stream = File.Create("C64Console.bin"))
-			using(BinaryWriter binaryWriter = new BinaryWriter(stream))
+			//using(Stream stream = File.Create("C64Console.bin"))
+			using(Stream stream = File.Create("C64Console.prg"))
+			using (BinaryWriter binaryWriter = new BinaryWriter(stream))
 			{
 				compiler.Compile(program, address, binaryWriter);
 
@@ -41,14 +44,16 @@ namespace C64Console
 					"../../../OZone/Structures/6502/Class.xslt",
 					"../../../OZone/Platforms/Mos/6502/Operators.xslt");
 
-				address.Offset = (uint)binaryWriter.BaseStream.Position + 0x8000;
+				//address.Offset = 0x8000;
+				address.Offset = 0x810;
+				//address.Offset = (uint)binaryWriter.BaseStream.Position + 0x8000;
 				//address.Offset = (uint)binaryWriter.BaseStream.Position + 0x4000;
 
 				compiler.Compile(program, address, binaryWriter);
 
 				Console.WriteLine(binaryWriter.BaseStream.Position);
 
-				binaryWriter.BaseStream.SetLength(1024 * 16);
+				//binaryWriter.BaseStream.SetLength(1024 * 16);
 			}
 		}
 	}

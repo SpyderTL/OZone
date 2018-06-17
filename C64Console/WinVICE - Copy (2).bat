@@ -1,0 +1,1 @@
+"C:\Games\Commodore 64\WinVICE-3.1-x64\x64" -config "C:\Users\joshu\source\repos\OZone\C64Console\WinVICE.settings" -cart16 "C:\Users\joshu\source\repos\OZone\C64Console\bin\Debug\C64Console.bin"
