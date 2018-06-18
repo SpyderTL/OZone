@@ -240,7 +240,13 @@
 	<xsl:template match="ns:BranchToRelative8IfNotCarry">
 		<xsl:element name="prg:hex">90</xsl:element>
 	</xsl:template>
+	<xsl:template match="ns:BranchToRelative8IfLess">
+		<xsl:element name="prg:hex">90</xsl:element>
+	</xsl:template>
 	<xsl:template match="ns:BranchToRelative8IfCarry">
+		<xsl:element name="prg:hex">B0</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:BranchToRelative8IfGreaterOrEqual">
 		<xsl:element name="prg:hex">B0</xsl:element>
 	</xsl:template>
 	<xsl:template match="ns:BranchToRelative8IfEqual">
