@@ -1,0 +1,56 @@
+Send Device Talk
+
+A = Device Number
+A |= 0x20
+
+Value = A
+
+Disable Interrupts
+
+Pull ATN Low
+Pull Clock Low
+Release Data High
+Wait 1ms
+
+Release Data High
+If Data High Then "Device Not Present"
+
+Pull Clock High
+
+If EOI Then
+	Wait For Data High
+	Wait For Data Low
+End If
+
+Wait For Data High
+
+Pull Clock Low
+
+Count = 8
+
+Do
+	Wait For Data Idle
+	
+	If Data Low Then "Timeout"
+
+	Value >>= 1
+
+	If Carry Then
+		Release Data High
+	Else
+		Pull Data Low
+	End If
+	
+	Release Clock High
+
+	NOP (x4)
+	
+	Release Data High (and)
+	Pull Clock Low
+
+	Count = Count - 1
+While Count != 0
+
+Wait For Data Low (1ms)
+
+
