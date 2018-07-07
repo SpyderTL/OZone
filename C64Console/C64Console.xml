@@ -13245,7 +13245,7 @@
 
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
-
+	
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="setAttentionLow" type="Absolute16"/>
 				
@@ -13262,13 +13262,13 @@
 				
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="waitForDataLow" type="Absolute16"/>
-																
+
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="setClockHigh" type="Absolute16"/>
 				
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="waitForDataHigh" type="Absolute16"/>
-																
+
 				<!--<cpu:CallImmediate16Address/>
 				<addressOf ref="sendLastByte" type="Absolute16"/>-->
 
@@ -13277,18 +13277,29 @@
 				
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="sendByte" type="Absolute16"/>
-								
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setDataHigh" type="Absolute16"/>
+				
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setClockLow" type="Absolute16"/>
+				
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="delay" type="Absolute16"/>
+				
+				<!--TODO: If Data High Then Device Not Found-->
+				
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="waitForDataLow" type="Absolute16"/>
+
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="setClockHigh" type="Absolute16"/>
-								
+				
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="waitForDataHigh" type="Absolute16"/>
 
 				<!--<cpu:CallImmediate16Address/>
 				<addressOf ref="sendLastByte" type="Absolute16"/>-->
-
-				<!--<cpu:CallImmediate16Address/>
-				<addressOf ref="delay" type="Absolute16"/>-->
 				
 				<cpu:CopyImmediate8ToAccumulator/>
 				<hex>f0</hex>
@@ -13494,14 +13505,9 @@
 					<cpu:CopyImmediate8ToXIndex/>
 					<byte>8</byte>
 					
-					<label id="sendBit"/>
+					<label id="forEachBit"/>
 					
 					<!--Set Data-->
-					<cpu:NoOperation/>
-					<cpu:NoOperation/>
-					<cpu:NoOperation/>
-					<cpu:NoOperation/>
-
 					<cpu:RollImmediate8AddressRight/>
 					<hex>80</hex>
 					
@@ -13509,7 +13515,7 @@
 					<addressOf ref="bitSet" type="Relative8"/>
 					
 					<cpu:CallImmediate16Address/>
-					<addressOf ref="setDataHigh" type="Absolute16"/>
+					<addressOf ref="setDataLow" type="Absolute16"/>
 					
 					<cpu:JumpToImmediate16Address/>
 					<addressOf ref="sendBit" type="Absolute16"/>
@@ -13517,8 +13523,8 @@
 					<label id="bitSet"/>
 					
 					<cpu:CallImmediate16Address/>
-					<addressOf ref="setDataLow" type="Absolute16"/>
-										
+					<addressOf ref="setDataHigh" type="Absolute16"/>
+
 					<label id="sendBit"/>
 					
 					<cpu:CallImmediate16Address/>
@@ -13538,7 +13544,7 @@
 					<cpu:DecrementXIndex/>
 					
 					<cpu:BranchToRelative8IfNotZero/>
-					<addressOf ref="sendBit" type="Relative8"/>
+					<addressOf ref="forEachBit" type="Relative8"/>
 					
 					<cpu:CallImmediate16Address/>
 					<addressOf ref="waitForDataLow" type="Absolute16"/>
