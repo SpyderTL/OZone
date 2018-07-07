@@ -1,0 +1,91 @@
+NES Memory Map
+	0x0000 - 0x07ff		0x0800		RAM
+	0x0800 - 0x1fff		0x1800		RAM Mirror
+	0x2000 - 0x2007		0x0007		PPU
+	0x2008 - 0x3fff		0x1ff8		PPU Mirror
+	0x4000 - 0x4017		0x0017		APU
+		0x4000 - 0x4003		0x0004		Pulse Channel 1
+			Volume			1
+				Duty								2 bits
+				Loop								1 bit
+				Mode							1 bit			(0 - Envelope, 1 - Volume)
+				Value								4 bits
+			Sweep			1
+				Enable							1 bit
+				Period							3 bits
+				Negative						1 bit
+				Shift								3 bits
+			Timer			1
+				Timer Low
+			Length			1
+				Length							5 bits
+				Timer High					3 bits
+		0x4004 - 0x4007		0x0004		Pulse Channel 2
+			Volume			1
+				Duty								2 bits
+				Loop								1 bit
+				Mode							1 bit			(0 - Envelope, 1 - Volume)
+				Value								4 bits
+			Sweep			1
+				Enable							1 bit
+				Period							3 bits
+				Negative						1 bit
+				Shift								3 bits
+			Timer			1
+				Timer Low
+			Length			1
+				Length							5 bits
+				Timer High					3 bits
+		0x4008 - 0x400b	0x0004		Triangle Channel
+			Volume			1
+				Mode							1 bit			(0 - Length, 1 - Linear)
+				Linear							7 bits
+			Reserved		1
+			Timer			1
+				Timer Low
+			Length			1
+				Length							5 bits
+				Timer High					3 bits
+		0x400c - 0x400f		0x0004		Noise Channel
+			Volume			1
+				Reserved						2 bits
+				Loop								1 bit
+				Mode							1 bit			(0 - Envelope, 1 - Volume)
+				Value								4 bits
+			Reserved		1
+			Loop				1
+				Loop								1 bit
+				Reserved						3 bits
+				Period							4 bits
+			Length			1
+				Length							5 bits
+				Reserved						3 bits
+		0x4010 - 0x4013		0x0004		Delta Channel
+			Loop				1
+				Irq Enable						1 bit
+				Loop								1 bit
+				Reserved						2 bits
+				Frequency						4 bits
+			Direct			1
+			Address		1
+			Length			1
+		0x4015									Control/Status
+			Delta Interrupt						1 bit			(Read Only)
+			Frame Interrupt						1 bit			(Read Only)
+			Reserved								1 bits
+			Delta										1 bit
+			Length									1 bit
+			Noise									1 bit
+			Triangle									1 bit
+			Pulse 2									1 bit
+			Pulse 1									1 bit
+		0x4017									Frame
+			Mode									1 bit			(0 - 4 Step, 1 - 5 Step)
+			Frame Interrupt Disable			1 bit			(Write Only)
+	0x4018 - 0x401f		0x0008		CPU Test Area
+	0x4020 - 0xffff		0xbfe0		Cartridge Area
+		0x6000 - 0x7fff	0x2000			Cartridge RAM
+		0x8000 - 0xffff	0x8000			Cartridge ROM
+		0xfffa - 0xfffb			0x0002		NMI Vector
+		0xfffc - 0xfffd			0x0002		Reset Vector
+		0xfffe - 0xffff			0x0002		IRQ/BRK Vector
