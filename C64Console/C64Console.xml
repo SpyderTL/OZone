@@ -13249,6 +13249,8 @@
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="setAttentionLow" type="Absolute16"/>
 				
+				<!--Send LISTEN(8)-->
+				
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="setDataHigh" type="Absolute16"/>
 				
@@ -13268,16 +13270,14 @@
 				
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="waitForDataHigh" type="Absolute16"/>
-
-				<!--<cpu:CallImmediate16Address/>
-				<addressOf ref="sendLastByte" type="Absolute16"/>-->
 
 				<cpu:CopyImmediate8ToAccumulator/>
 				<hex>28</hex>
 				
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="sendByte" type="Absolute16"/>
-
+				
+				<!--Send OPEN(0)-->
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="setDataHigh" type="Absolute16"/>
 				
@@ -13297,9 +13297,6 @@
 				
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="waitForDataHigh" type="Absolute16"/>
-
-				<!--<cpu:CallImmediate16Address/>
-				<addressOf ref="sendLastByte" type="Absolute16"/>-->
 				
 				<cpu:CopyImmediate8ToAccumulator/>
 				<hex>f0</hex>
@@ -13307,45 +13304,72 @@
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="sendByte" type="Absolute16"/>
 				
-				<!--<cpu:CallImmediate16Address/>
-				<addressOf ref="setClockHigh" type="Absolute16"/>
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setAttentionHigh" type="Absolute16"/>
+				
+				<!--Send Filename ($)-->
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setDataHigh" type="Absolute16"/>
 				
 				<cpu:CallImmediate16Address/>
-				<addressOf ref="waitForIdle" type="Absolute16"/>
+				<addressOf ref="setClockLow" type="Absolute16"/>
 				
 				<cpu:CallImmediate16Address/>
-				<addressOf ref="waitForDataHigh" type="Absolute16"/>-->
+				<addressOf ref="delay" type="Absolute16"/>
+				
+				<!--TODO: If Data High Then Device Not Found-->
+				
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="waitForDataLow" type="Absolute16"/>
 
-				<!--<cpu:CallImmediate16Address/>
-				<addressOf ref="sendLastByte" type="Absolute16"/>-->
-
-				<!--<cpu:CopyImmediate8ToAccumulator/>
-				<hex>2a</hex>
-				
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="sendByte" type="Absolute16"/>
-				
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="setClockHigh" type="Absolute16"/>
-				
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="waitForIdle" type="Absolute16"/>
 				
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="waitForDataHigh" type="Absolute16"/>
 
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="sendLastByte" type="Absolute16"/>
+				
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>24</hex>
+				
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+				
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setAttentionLow" type="Absolute16"/>
+				
+				<!--Send UNLISTEN-->
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setDataHigh" type="Absolute16"/>
+				
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setClockLow" type="Absolute16"/>
+				
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="delay" type="Absolute16"/>
+				
+				<!--TODO: If Data High Then Device Not Found-->
+				
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="waitForDataLow" type="Absolute16"/>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setClockHigh" type="Absolute16"/>
+				
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="waitForDataHigh" type="Absolute16"/>
 
 				<cpu:CopyImmediate8ToAccumulator/>
 				<hex>3f</hex>
 				
 				<cpu:CallImmediate16Address/>
-				<addressOf ref="sendByte" type="Absolute16"/>-->
-								
+				<addressOf ref="sendByte" type="Absolute16"/>
+				
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="setAttentionHigh" type="Absolute16"/>
-
+				
 				<!--Disable I/O Access-->
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00100000</binary>
@@ -13553,7 +13577,6 @@
 				</label>
 				
 				<label id="sendLastByte">					
-					
 					<cpu:CallImmediate16Address/>
 					<addressOf ref="waitForDataLow" type="Absolute16"/>
 					
