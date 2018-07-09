@@ -10,4 +10,36 @@ File
 	Length		Block Count
 
 
-	
+Block Availability Map
+	First Directory Track			1		18
+	First Directory Sector			1		1
+	Format								2		"A",0
+	Reserved							3
+	Tracks[35]							140
+		Free Sector Count				8 bits
+		Free Sectors						21 bits			(0 = Used, 1 = Free)
+		Reserved							3 bits
+	Disk Name							16
+	Reserved							2
+	Disk ID								2
+	Reserved							1
+	Version								2		"2A"
+	Reserved							86
+
+Directory								256
+	Files[8]									32
+		Next Directory Track				1			(0 = Last Directory)
+		Next Directory Sector				1			(255 = Last Directory)
+		File Type								1
+			Closed									1 bit
+			Locked									1 bit
+			Replaced								1 bit
+			Reserved								2 bits
+			Type										3 bits	(0 = Deleted, 1 = Sequential, 2 = Program, 3 = User, 4 = Relative)
+		File Start Track						1
+		File Start Sector						1
+		File Name								16
+		Relative Side Sectors				2
+		Relative Record Size				1
+		Reserved								6
+		File Block Count						2
