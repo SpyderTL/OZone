@@ -29,7 +29,7 @@ namespace OZone.Programs
 				IndentChars = "\t",
 			};
 
-			for(int transform = 0; transform < transformFiles.Length; transform++)
+			for (int transform = 0; transform < transformFiles.Length; transform++)
 			{
 				try
 				{
@@ -44,7 +44,7 @@ namespace OZone.Programs
 
 					reader = XmlReader.Create(input);
 				}
-				catch(Exception e)
+				catch (Exception e)
 				{
 					throw new Exception("Error transforming file: " + transformFiles[transform] + "\r\n" + e.Message, e);
 				}
@@ -55,85 +55,144 @@ namespace OZone.Programs
 			return ProgramReader.Read(document);
 		}
 
-		[DebuggerHidden]
-		public static Program Build(XmlReader reader, IEnumerable<XslCompiledTransform> transforms)
+		private static XslCompiledTransform LoadTransform(string path)
 		{
-			MemoryStream input;
-			MemoryStream output;
+			var compiledTransform = new XslCompiledTransform(false);
 
-			XmlWriter writer;
-			var settings = new XmlWriterSettings
+			compiledTransform.Load(path);
+
+			return compiledTransform;
+		}
+
+		public static Program Build(string programFile, IEnumerable<KeyValuePair<string, string>> transformFiles)
+		{
+			var source = new XmlDocument();
+			source.Load(programFile);
+
+			var transformNamespaces = transformFiles.Select(t => new KeyValuePair<string, XslCompiledTransform>(t.Key, LoadTransform(t.Value))).ToArray();
+
+			var destination = source;
+
+			var namespaces = FindNamespaces(source);
+
+			var pass = 0;
+
+			while (namespaces.Length != 0)
 			{
-				Indent = true,
-				IndentChars = "\t",
-			};
+				if (pass++ == 255)
+					throw new Exception("Unhandled element (<" + FindUnhandledTags(source)[0] + ">)");
 
-			foreach(var transform in transforms)
-			{
-				try
+				foreach (var name in namespaces)
 				{
-					output = new MemoryStream();
-					writer = XmlWriter.Create(output, settings);
+					if (!transformNamespaces.Any(n => string.Equals(n.Key, name)))
+						throw new Exception("Unrecognized namespace (" + name + ")");
 
-					transform.Transform(reader, writer);
+					foreach (var transform in transformNamespaces.Where(n => string.Equals(n.Key, name)))
+					{
+						destination = new XmlDocument();
 
-					input = output;
-					input.Position = 0;
+						using (var writer2 = destination.CreateNavigator().AppendChild())
+						{
+							transform.Value.Transform(source.CreateNavigator(), writer2);
 
-					reader = XmlReader.Create(input);
+							writer2.Flush();
+						}
+
+						source = destination;
+					}
 				}
-				catch(Exception e)
-				{
-					throw new Exception("Error transforming file:\r\n" + e.Message, e);
-				}
+
+				namespaces = FindNamespaces(source);
 			}
 
-			XDocument document = XDocument.Load(reader);
+			//source.Save(writer);
+
+			//XDocument document = XDocument.Load(reader);
+
+			var document = XDocument.Load(source.CreateNavigator().ReadSubtree());
 
 			return ProgramReader.Read(document);
 		}
 
-		[DebuggerHidden]
-		public static void Build(XmlReader reader, XmlWriter writer, IEnumerable<KeyValuePair<string, XslCompiledTransform>> transforms)
-		{
-			MemoryStream input = null;
-			MemoryStream output = null;
+		//[DebuggerHidden]
+		//public static Program Build(XmlReader reader, IEnumerable<XslCompiledTransform> transforms)
+		//{
+		//	MemoryStream input;
+		//	MemoryStream output;
 
-			XmlWriter writer2;
-			var settings = new XmlWriterSettings
-			{
-				Indent = true,
-				IndentChars = "\t",
-			};
+		//	XmlWriter writer;
+		//	var settings = new XmlWriterSettings
+		//	{
+		//		Indent = true,
+		//		IndentChars = "\t",
+		//	};
 
-			foreach(var transform in transforms)
-			{
-				try
-				{
-					output = new MemoryStream();
-					writer2 = XmlWriter.Create(output, settings);
+		//	foreach(var transform in transforms)
+		//	{
+		//		try
+		//		{
+		//			output = new MemoryStream();
+		//			writer = XmlWriter.Create(output, settings);
 
-					transform.Value.Transform(reader, writer2);
+		//			transform.Transform(reader, writer);
 
-					if(input != null)
-						input.Dispose();
+		//			input = output;
+		//			input.Position = 0;
 
-					input = output;
-					input.Position = 0;
+		//			reader = XmlReader.Create(input);
+		//		}
+		//		catch(Exception e)
+		//		{
+		//			throw new Exception("Error transforming file:\r\n" + e.Message, e);
+		//		}
+		//	}
 
-					reader = XmlReader.Create(input);
-				}
-				catch(Exception e)
-				{
-					throw new Exception("Error transforming file: " + transform.Key + "\r\n" + e.Message, e);
-				}
-			}
+		//	XDocument document = XDocument.Load(reader);
 
-			XDocument.Load(reader).Save(writer);
-		}
+		//	return ProgramReader.Read(document);
+		//}
 
 		//[DebuggerHidden]
-		public static void Build(XmlReader reader, XmlWriter writer, ILookup<string, KeyValuePair<string, XslCompiledTransform>> transformNamespaces)
+		//public static void Build(XmlReader reader, XmlWriter writer, IEnumerable<KeyValuePair<string, XslCompiledTransform>> transforms)
+		//{
+		//	MemoryStream input = null;
+		//	MemoryStream output = null;
+
+		//	XmlWriter writer2;
+		//	var settings = new XmlWriterSettings
+		//	{
+		//		Indent = true,
+		//		IndentChars = "\t",
+		//	};
+
+		//	foreach(var transform in transforms)
+		//	{
+		//		try
+		//		{
+		//			output = new MemoryStream();
+		//			writer2 = XmlWriter.Create(output, settings);
+
+		//			transform.Value.Transform(reader, writer2);
+
+		//			if(input != null)
+		//				input.Dispose();
+
+		//			input = output;
+		//			input.Position = 0;
+
+		//			reader = XmlReader.Create(input);
+		//		}
+		//		catch(Exception e)
+		//		{
+		//			throw new Exception("Error transforming file: " + transform.Key + "\r\n" + e.Message, e);
+		//		}
+		//	}
+
+		//	XDocument.Load(reader).Save(writer);
+		//}
+
+		//[DebuggerHidden]
+		public static void Build(XmlReader reader, XmlWriter writer, ILookup<string, XslCompiledTransform> transformNamespaces)
 		{
 			var source = new XmlDocument();
 			source.Load(reader);
@@ -160,7 +219,7 @@ namespace OZone.Programs
 
 						using(var writer2 = destination.CreateNavigator().AppendChild())
 						{
-							transform.Value.Transform(source.CreateNavigator(), writer2);
+							transform.Transform(source.CreateNavigator(), writer2);
 
 							writer2.Flush();
 						}

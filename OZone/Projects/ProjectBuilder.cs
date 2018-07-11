@@ -83,7 +83,7 @@ namespace OZone.Projects
 
 				// Build Files
 				var transforms = project.Transforms.Select(t => new Tuple<ProjectTransform, XslCompiledTransform>(t, LoadTransform(t.Path)))
-					.ToLookup(t => t.Item1.Namespace, t => new KeyValuePair<string, XslCompiledTransform>(t.Item1.Namespace, t.Item2));
+					.ToLookup(t => t.Item1.Namespace, t => t.Item2);
 
 				var buildErrors = new List<Tuple<string, Exception>>();
 
