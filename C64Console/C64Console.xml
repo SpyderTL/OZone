@@ -928,7 +928,6 @@
 	<cpu:DecrementYIndex/>
 
 	<!--Get String Length-->
-
 	<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 	<hex>02</hex>
 
@@ -15763,7 +15762,7 @@
 			name="FloppyDriveReader"
 			static="true"
 			type="http://metalx.org/Storage/FloppyDriveReader">
-			
+
 			<cls:field name="Device" type="http://metalx.org/Byte" offset="0"/>
 			<cls:field name="Position" type="http://metalx.org/Integer" offset="1"/>
 			<cls:field name="Block" type="http://metalx.org/Short" offset="5"/>
@@ -15801,53 +15800,53 @@
 
 				<cpu:CopyAccumulatorToImmediate16Address/>
 				<addressOf ref="freeRamPointer" type="Absolute16" offset="1"/>
-				
+
 				<!--Initialize Data-->
 				<cpu:CopyImmediate8ToYIndex/>
 				<byte>0</byte>
-				
+
 				<cpu:CopyImmediate8ToAccumulator/>
 				<byte>8</byte>
-				
+
 				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 				<hex>02</hex>
-				
+
 				<cpu:IncrementYIndex/>
-				
+
 				<cpu:CopyImmediate8ToAccumulator/>
 				<hex>00</hex>
-				
+
 				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 				<hex>02</hex>
-				
+
 				<cpu:IncrementYIndex/>
-				
+
 				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 				<hex>02</hex>
-				
+
 				<cpu:IncrementYIndex/>
-				
+
 				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 				<hex>02</hex>
-				
+
 				<cpu:IncrementYIndex/>
-				
+
 				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 				<hex>02</hex>
-				
+
 				<cpu:IncrementYIndex/>
-				
+
 				<cpu:CopyImmediate8ToAccumulator/>
 				<hex>ff</hex>
-				
+
 				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 				<hex>02</hex>
-				
+
 				<cpu:IncrementYIndex/>
-				
+
 				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 				<hex>02</hex>
-				
+
 				<cpu:CopyImmediate8ToAccumulator/>
 				<addressOf ref="floppyDriveReaderClass" type="Absolute16Low8"/>
 
@@ -15927,10 +15926,10 @@
 
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="createObject" type="Absolute16"/>
-				
+
 				<cls:return/>
 			</cls:method>
-			
+
 			<cls:method name="ToString" static="true" type="http://metalx.org/String">
 				<cpu:CopyImmediate8ToAccumulator/>
 				<addressOf ref="className" type="Absolute16Low8"/>
@@ -16225,7 +16224,7 @@
 
 			<label id="sendByte">
 				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>80</hex>
+				<hex>90</hex>
 
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="setDataHigh" type="Absolute16"/>
@@ -16257,7 +16256,7 @@
 
 				<!--Set Data-->
 				<cpu:RollImmediate8AddressRight/>
-				<hex>80</hex>
+				<hex>90</hex>
 
 				<cpu:BranchToRelative8IfCarry/>
 				<addressOf ref="bitSet" type="Relative8"/>
@@ -16302,7 +16301,7 @@
 
 			<label id="sendLastByte">
 				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>80</hex>
+				<hex>90</hex>
 
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="setDataHigh" type="Absolute16"/>
@@ -16340,7 +16339,7 @@
 
 				<!--Set Data-->
 				<cpu:RollImmediate8AddressRight/>
-				<hex>80</hex>
+				<hex>90</hex>
 
 				<cpu:BranchToRelative8IfCarry/>
 				<addressOf ref="bitSet" type="Relative8"/>
@@ -16384,256 +16383,438 @@
 			</label>
 
 			<label id="readString">
-				<cpu:CopyImmediate8ToYIndex/>
-				<byte>0</byte>
+				<scope>
+					<cpu:CopyImmediate8ToYIndex/>
+					<byte>0</byte>
 
-				<cpu:ClearCarryFlag/>
+					<cpu:ClearCarryFlag/>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>02</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>02</hex>
 
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>2</byte>
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>2</byte>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>82</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>82</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>03</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>03</hex>
 
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>0</byte>
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>83</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>83</hex>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<byte>0</byte>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<byte>0</byte>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>84</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>84</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>85</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>85</hex>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="setDataLow" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="setDataLow" type="Absolute16"/>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="setClockHigh" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="setClockHigh" type="Absolute16"/>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="waitForClockLow" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="waitForClockLow" type="Absolute16"/>
 
-				<label id="forEachByte"/>
+					<label id="forEachByte"/>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="waitForClockHigh" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="waitForClockHigh" type="Absolute16"/>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="setDataHigh" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="setDataHigh" type="Absolute16"/>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="waitForClockLowWithTimeout" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="waitForClockLowWithTimeout" type="Absolute16"/>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="waitForIdle" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="waitForIdle" type="Absolute16"/>
 
-				<cpu:ShiftAccumulatorLeft/>
-				<cpu:ShiftAccumulatorLeft/>
+					<cpu:ShiftAccumulatorLeft/>
+					<cpu:ShiftAccumulatorLeft/>
 
-				<cpu:BranchToRelative8IfCarry/>
-				<addressOf ref="lastByte" type="Relative8"/>
+					<cpu:BranchToRelative8IfCarry/>
+					<addressOf ref="lastByte" type="Relative8"/>
 
-				<cpu:CopyImmediate8ToXIndex/>
-				<byte>8</byte>
+					<cpu:CopyImmediate8ToXIndex/>
+					<byte>8</byte>
 
-				<label id="forEachBit"/>
+					<label id="forEachBit"/>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="waitForClockHigh" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="waitForClockHigh" type="Absolute16"/>
 
-				<cpu:CopyImmediate16AddressToAccumulator/>
-				<hex>dd00</hex>
+					<cpu:CopyImmediate16AddressToAccumulator/>
+					<hex>dd00</hex>
 
-				<cpu:ShiftAccumulatorLeft/>
+					<cpu:ShiftAccumulatorLeft/>
 
-				<cpu:RollImmediate8AddressRight/>
-				<hex>80</hex>
+					<cpu:RollImmediate8AddressRight/>
+					<hex>80</hex>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="waitForClockLow" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="waitForClockLow" type="Absolute16"/>
 
-				<cpu:DecrementXIndex/>
+					<cpu:DecrementXIndex/>
 
-				<cpu:BranchToRelative8IfNotZero/>
-				<addressOf ref="forEachBit" type="Relative8"/>
+					<cpu:BranchToRelative8IfNotZero/>
+					<addressOf ref="forEachBit" type="Relative8"/>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>80</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>80</hex>
 
-				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-				<hex>82</hex>
+					<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+					<hex>82</hex>
 
-				<cpu:ClearCarryFlag/>
+					<cpu:ClearCarryFlag/>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>82</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>82</hex>
 
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>1</byte>
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>1</byte>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>82</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>82</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>83</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>83</hex>
 
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>0</byte>
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>83</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>83</hex>
 
-				<cpu:ClearCarryFlag/>
+					<cpu:ClearCarryFlag/>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>84</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>84</hex>
 
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>1</byte>
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>1</byte>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>84</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>84</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>85</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>85</hex>
 
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>0</byte>
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>85</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>85</hex>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="setDataLow" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="setDataLow" type="Absolute16"/>
 
-				<cpu:JumpToImmediate16Address/>
-				<addressOf ref="forEachByte" type="Absolute16"/>
+					<cpu:JumpToImmediate16Address/>
+					<addressOf ref="forEachByte" type="Absolute16"/>
 
-				<label id="lastByte"/>
+					<label id="lastByte"/>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="setDataLow" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="setDataLow" type="Absolute16"/>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="delay" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="delay" type="Absolute16"/>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="setDataHigh" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="setDataHigh" type="Absolute16"/>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="waitForClockLow" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="waitForClockLow" type="Absolute16"/>
 
-				<cpu:CopyImmediate8ToXIndex/>
-				<byte>8</byte>
+					<cpu:CopyImmediate8ToXIndex/>
+					<byte>8</byte>
 
-				<label id="forEachBit2"/>
+					<label id="forEachBit2"/>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="waitForClockHigh" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="waitForClockHigh" type="Absolute16"/>
 
-				<cpu:CopyImmediate16AddressToAccumulator/>
-				<hex>dd00</hex>
+					<cpu:CopyImmediate16AddressToAccumulator/>
+					<hex>dd00</hex>
 
-				<cpu:ShiftAccumulatorLeft/>
+					<cpu:ShiftAccumulatorLeft/>
 
-				<cpu:RollImmediate8AddressRight/>
-				<hex>80</hex>
+					<cpu:RollImmediate8AddressRight/>
+					<hex>80</hex>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="waitForClockLow" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="waitForClockLow" type="Absolute16"/>
 
-				<cpu:DecrementXIndex/>
+					<cpu:DecrementXIndex/>
 
-				<cpu:BranchToRelative8IfNotZero/>
-				<addressOf ref="forEachBit2" type="Relative8"/>
+					<cpu:BranchToRelative8IfNotZero/>
+					<addressOf ref="forEachBit2" type="Relative8"/>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>80</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>80</hex>
 
-				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-				<hex>82</hex>
+					<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+					<hex>82</hex>
 
-				<cpu:ClearCarryFlag/>
+					<cpu:ClearCarryFlag/>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>82</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>82</hex>
 
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>1</byte>
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>1</byte>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>82</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>82</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>83</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>83</hex>
 
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>0</byte>
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>83</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>83</hex>
 
-				<cpu:ClearCarryFlag/>
+					<cpu:ClearCarryFlag/>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>84</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>84</hex>
 
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>1</byte>
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>1</byte>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>84</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>84</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>85</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>85</hex>
 
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>0</byte>
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>85</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>85</hex>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="setDataLow" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="setDataLow" type="Absolute16"/>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="waitForClockHigh" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="waitForClockHigh" type="Absolute16"/>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="setDataHigh" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="setDataHigh" type="Absolute16"/>
 
-				<cpu:SetCarryFlag/>
+					<cpu:SetCarryFlag/>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>84</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>84</hex>
 
-				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-				<hex>02</hex>
+					<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+					<hex>02</hex>
 
-				<cpu:IncrementYIndex/>
+					<cpu:IncrementYIndex/>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>85</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>85</hex>
 
-				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-				<hex>02</hex>
+					<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+					<hex>02</hex>
 
-				<cpu:ReturnFromSubroutine/>
+					<cpu:ReturnFromSubroutine/>
+				</scope>
 			</label>
-		
+
+			<label id="readBlock2">
+				<scope>
+					<cpu:CopyImmediate8ToYIndex/>
+					<byte>0</byte>
+
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>92</hex>
+
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>f0</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>93</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="setDataLow" type="Absolute16"/>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="setClockHigh" type="Absolute16"/>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="waitForClockLow" type="Absolute16"/>
+
+					<label id="forEachByte"/>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="waitForClockHigh" type="Absolute16"/>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="setDataHigh" type="Absolute16"/>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="waitForClockLowWithTimeout" type="Absolute16"/>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="waitForIdle" type="Absolute16"/>
+
+					<cpu:ShiftAccumulatorLeft/>
+					<cpu:ShiftAccumulatorLeft/>
+
+					<cpu:BranchToRelative8IfCarry/>
+					<addressOf ref="lastByte" type="Relative8"/>
+
+					<cpu:CopyImmediate8ToXIndex/>
+					<byte>8</byte>
+
+					<label id="forEachBit"/>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="waitForClockHigh" type="Absolute16"/>
+
+					<cpu:CopyImmediate16AddressToAccumulator/>
+					<hex>dd00</hex>
+
+					<cpu:ShiftAccumulatorLeft/>
+
+					<cpu:RollImmediate8AddressRight/>
+					<hex>90</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="waitForClockLow" type="Absolute16"/>
+
+					<cpu:DecrementXIndex/>
+
+					<cpu:BranchToRelative8IfNotZero/>
+					<addressOf ref="forEachBit" type="Relative8"/>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>90</hex>
+
+					<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+					<hex>92</hex>
+
+					<cpu:ClearCarryFlag/>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>92</hex>
+
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>1</byte>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>92</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>93</hex>
+
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>93</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="setDataLow" type="Absolute16"/>
+
+					<cpu:JumpToImmediate16Address/>
+					<addressOf ref="forEachByte" type="Absolute16"/>
+
+					<label id="lastByte"/>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="setDataLow" type="Absolute16"/>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="delay" type="Absolute16"/>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="setDataHigh" type="Absolute16"/>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="waitForClockLow" type="Absolute16"/>
+
+					<cpu:CopyImmediate8ToXIndex/>
+					<byte>8</byte>
+
+					<label id="forEachBit2"/>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="waitForClockHigh" type="Absolute16"/>
+
+					<cpu:CopyImmediate16AddressToAccumulator/>
+					<hex>dd00</hex>
+
+					<cpu:ShiftAccumulatorLeft/>
+
+					<cpu:RollImmediate8AddressRight/>
+					<hex>90</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="waitForClockLow" type="Absolute16"/>
+
+					<cpu:DecrementXIndex/>
+
+					<cpu:BranchToRelative8IfNotZero/>
+					<addressOf ref="forEachBit2" type="Relative8"/>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>90</hex>
+
+					<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+					<hex>92</hex>
+
+					<cpu:ClearCarryFlag/>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>92</hex>
+
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>1</byte>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>92</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>93</hex>
+
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>93</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="setDataLow" type="Absolute16"/>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="waitForClockHigh" type="Absolute16"/>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="setDataHigh" type="Absolute16"/>
+
+					<cpu:ReturnFromSubroutine/>
+				</scope>
+			</label>
+
 			<label id="readByte">
+				<!--Get Data-->
 				<cpu:CopyImmediate8ToYIndex/>
 				<byte>0</byte>
 
@@ -16651,20 +16832,66 @@
 				<hex>81</hex>
 
 				<cpu:PullAccumulatorFromStack/>
-				
+
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>80</hex>
+
+				<!--Get Current Block-->
+				<cpu:CopyImmediate8ToYIndex/>
+				<byte>2</byte>
+
+				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+				<hex>80</hex>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>82</hex>
+
+				<cpu:IncrementYIndex/>
+
+				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+				<hex>80</hex>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>83</hex>
+
+				<!--Check For Block Change-->
+				<cpu:CopyImmediate8ToYIndex/>
+				<byte>5</byte>
+
+				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+				<hex>80</hex>
+
+				<cpu:CompareAccumulatorToImmediate8Address/>
+				<hex>82</hex>
+
+				<cpu:BranchToRelative8IfNotEqual/>
+				<addressOf ref="blockChanged" type="Relative8"/>
+
+				<cpu:IncrementYIndex/>
+
+				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+				<hex>80</hex>
+
+				<cpu:CompareAccumulatorToImmediate8Address/>
+				<hex>83</hex>
+
+				<cpu:BranchToRelative8IfNotEqual/>
+				<addressOf ref="blockChanged" type="Relative8"/>
+
+				<label id="getPosition"/>
+
+				<!--Get Position-->
+				<cpu:CopyImmediate8ToYIndex/>
+				<byte>1</byte>
 
 				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 				<hex>80</hex>
 
 				<cpu:PushAccumulatorToStack/>
-				
-				<!--Check Block-->
-				
+
 				<!--Increment Position-->
 				<cpu:ClearCarryFlag/>
-				
+
 				<cpu:AddImmediate8ToAccumulator/>
 				<byte>1</byte>
 
@@ -16675,7 +16902,7 @@
 
 				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 				<hex>80</hex>
-
+				
 				<cpu:AddImmediate8ToAccumulator/>
 				<byte>0</byte>
 
@@ -16709,8 +16936,283 @@
 				<cpu:CopyAccumulatorToYIndex/>
 
 				<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
-				<hex>a000</hex>
+				<hex>f000</hex>
 
+				<cpu:ReturnFromSubroutine/>
+
+				<label id="blockChanged"/>
+
+				<!--Update Block-->
+				<cpu:CopyImmediate8ToYIndex/>
+				<byte>5</byte>
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>82</hex>
+
+				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+				<hex>80</hex>
+
+				<cpu:IncrementYIndex/>
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>83</hex>
+
+				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+				<hex>80</hex>
+
+				<!--Load Block-->
+				<cpu:IncrementImmediate16Address/>
+				<hex>0400</hex>
+				
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="readBlock" type="Absolute16"/>
+
+				<cpu:JumpToImmediate16Address/>
+				<addressOf ref="getPosition" type="Absolute16"/>
+			</label>
+
+			<label id="readBlock">
+				<cpu:SetInterruptDisableFlag/>
+
+				<!--Enable I/O Access-->
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+
+				<cpu:OrAccumulatorWithImmediate8/>
+				<binary>00000101</binary>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+
+				<!--Send LISTEN(8)-->
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setAttentionLow" type="Absolute16"/>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>28</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<!--Send OPEN(2)-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>f2</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setAttentionHigh" type="Absolute16"/>
+
+				<!--Send Filename (#)-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>23</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendLastByte" type="Absolute16"/>
+
+				<!--Send UNLISTEN-->
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setAttentionLow" type="Absolute16"/>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>3f</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setAttentionHigh" type="Absolute16"/>
+
+				<!--Send LISTEN(8)-->
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setAttentionLow" type="Absolute16"/>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>28</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<!--Send DATA(15)-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>6f</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setAttentionHigh" type="Absolute16"/>
+
+				<!--Send Command (U)-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>55</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<!--Send Command (1)-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>31</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<!--Send Command (,)-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>2c</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<!--Send Command (2)-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>32</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<!--Send Command (,)-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>2c</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<!--Send Command (0)-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>30</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<!--Send Command (,)-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>2c</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<!--Send Command (1)-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>31</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<!--Send Command (8)-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>38</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<!--Send Command (,)-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>2c</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<!--Send Command (0)-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>30</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendLastByte" type="Absolute16"/>
+
+				<!--Send UNLISTEN-->
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setAttentionLow" type="Absolute16"/>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>3f</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setAttentionHigh" type="Absolute16"/>
+
+				<!--Send TALK(8)-->
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setAttentionLow" type="Absolute16"/>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>48</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<!--Send CHANNEL(2)-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>62</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setAttentionHigh" type="Absolute16"/>
+
+				<!--Read Block-->
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="readBlock2" type="Absolute16"/>
+
+				<!--Send UNTALK-->
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setAttentionLow" type="Absolute16"/>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>5f</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setAttentionHigh" type="Absolute16"/>
+
+				<!--Send LISTEN(8)-->
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setAttentionLow" type="Absolute16"/>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>28</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<!--Send CLOSE(2)-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>e2</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setAttentionHigh" type="Absolute16"/>
+
+				<!--Send UNLISTEN-->
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setAttentionLow" type="Absolute16"/>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>3f</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="setAttentionHigh" type="Absolute16"/>
+			
+				<!--Disable I/O Access-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<binary>00100000</binary>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
+
+				<cpu:ClearInterruptDisableFlag/>
+			
 				<cpu:ReturnFromSubroutine/>
 			</label>
 		</cls:class>
@@ -18174,7 +18676,7 @@
 
 				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 				<hex>04</hex>
-				
+
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>02</hex>
 
@@ -18182,7 +18684,7 @@
 				<addressOf ref="object" type="Absolute16"/>
 
 				<cpu:IncrementYIndex/>
-				
+
 				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 				<hex>04</hex>
 
@@ -18198,7 +18700,7 @@
 			<cls:method name="GetObject" static="true" type="http://metalx.org/Object">
 				<cpu:CopyImmediate16AddressToAccumulator/>
 				<addressOf ref="object" type="Absolute16"/>
-				
+
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>02</hex>
 
