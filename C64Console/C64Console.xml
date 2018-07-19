@@ -15821,15 +15821,24 @@
 
 				<cpu:IncrementYIndex/>
 
-				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-				<hex>02</hex>
-
-				<cpu:IncrementYIndex/>
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>65</hex>
 
 				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 				<hex>02</hex>
 
 				<cpu:IncrementYIndex/>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>01</hex>
+
+				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+				<hex>02</hex>
+
+				<cpu:IncrementYIndex/>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<hex>00</hex>
 
 				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 				<hex>02</hex>
@@ -15951,7 +15960,7 @@
 
 				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 				<hex>04</hex>
-				
+
 				<cpu:PushAccumulatorToStack/>
 
 				<cpu:IncrementYIndex/>
@@ -15961,18 +15970,18 @@
 
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>05</hex>
-				
+
 				<cpu:PullAccumulatorFromStack/>
-				
+
 				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>				
+				<hex>04</hex>
 
 				<cpu:DecrementYIndex/>
-				
+
 				<!--Get Data-->
 				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 				<hex>04</hex>
-				
+
 				<cpu:PushAccumulatorToStack/>
 
 				<cpu:IncrementYIndex/>
@@ -15982,14 +15991,14 @@
 
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>05</hex>
-				
+
 				<cpu:PullAccumulatorFromStack/>
-				
+
 				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>				
+				<hex>04</hex>
 
 				<cpu:DecrementYIndex/>
-				
+
 				<!--Get String Length-->
 				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 				<hex>04</hex>
@@ -16008,22 +16017,22 @@
 				<cpu:DecrementYIndex/>
 
 				<cpu:ClearCarryFlag/>
-				
+
 				<cpu:CopyImmediate8AddressToAccumulator/>
 				<hex>12</hex>
-				
+
 				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 				<hex>10</hex>
 
 				<cpu:AddImmediate8ToAccumulator/>
 				<byte>2</byte>
-				
+
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>14</hex>
-				
+
 				<cpu:CopyImmediate8AddressToAccumulator/>
 				<hex>13</hex>
-				
+
 				<cpu:IncrementYIndex/>
 
 				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
@@ -16034,7 +16043,7 @@
 
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>15</hex>
-				
+
 				<!--Increment Free RAM Pointer-->
 				<cpu:ClearCarryFlag/>
 
@@ -16057,114 +16066,111 @@
 
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<addressOf ref="freeRamPointer" type="Absolute16Low8" offset="1"/>
-				
+
 				<!--Get Pointer-->
 				<cpu:ClearCarryFlag/>
-				
+
 				<cpu:CopyImmediate8AddressToAccumulator/>
 				<hex>10</hex>
-				
+
 				<cpu:AddImmediate8ToAccumulator/>
 				<byte>2</byte>
-				
+
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>16</hex>
-				
+
 				<cpu:CopyImmediate8AddressToAccumulator/>
 				<hex>11</hex>
-				
+
 				<cpu:AddImmediate8ToAccumulator/>
 				<byte>0</byte>
-				
+
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>17</hex>
-				
+
 				<!--Read Characters-->
 				<label id="forEachCharacter"/>
-				
+
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="readByte" type="Absolute16"/>
-				
-				<!--<cpu:CopyImmediate8ToAccumulator/>
-				<string>X</string>-->
-				
+
 				<cpu:CopyImmediate8ToYIndex/>
 				<byte>0</byte>
-				
+
 				<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 				<hex>16</hex>
-				
+
 				<!--Increment Pointer-->
 				<cpu:ClearCarryFlag/>
-				
+
 				<cpu:CopyImmediate8AddressToAccumulator/>
 				<hex>16</hex>
-				
+
 				<cpu:AddImmediate8ToAccumulator/>
 				<byte>1</byte>
-				
+
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>16</hex>
-				
+
 				<cpu:CopyImmediate8AddressToAccumulator/>
 				<hex>17</hex>
-				
+
 				<cpu:AddImmediate8ToAccumulator/>
 				<byte>0</byte>
-				
+
 				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>17</hex>				
-				
+				<hex>17</hex>
+
 				<!--Decrement Count-->
 				<cpu:SetCarryFlag/>
-				
+
 				<cpu:CopyImmediate8AddressToAccumulator/>
 				<hex>12</hex>
-				
+
 				<cpu:SubtractImmediate8FromAccumulator/>
 				<byte>1</byte>
-				
+
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>12</hex>
-				
+
 				<cpu:CopyImmediate8AddressToAccumulator/>
 				<hex>13</hex>
-				
+
 				<cpu:SubtractImmediate8FromAccumulator/>
 				<byte>0</byte>
-				
+
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>13</hex>
-				
+
 				<!--Check Count-->
 				<cpu:CopyImmediate8ToAccumulator/>
 				<byte>0</byte>
-				
+
 				<cpu:CompareAccumulatorToImmediate8Address/>
 				<hex>12</hex>
-				
+
 				<cpu:BranchToRelative8IfNotEqual/>
 				<addressOf ref="forEachCharacter" type="Relative8"/>
-				
+
 				<cpu:CompareAccumulatorToImmediate8Address/>
 				<hex>13</hex>
-				
+
 				<cpu:BranchToRelative8IfNotEqual/>
 				<addressOf ref="forEachCharacter" type="Relative8"/>
-				
+
 				<!--Create Object-->
 				<cpu:CopyImmediate8AddressToAccumulator/>
 				<hex>10</hex>
-				
+
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>02</hex>
-				
+
 				<cpu:CopyImmediate8AddressToAccumulator/>
 				<hex>11</hex>
-				
+
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>03</hex>
-				
+
 				<cpu:CopyImmediate8ToAccumulator/>
 				<addressOf ref="stringClass" type="Absolute16Low8"/>
 
@@ -17155,7 +17161,7 @@
 
 				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 				<hex>80</hex>
-				
+
 				<cpu:AddImmediate8ToAccumulator/>
 				<byte>0</byte>
 
@@ -17214,9 +17220,6 @@
 				<hex>80</hex>
 
 				<!--Load Block-->
-				<cpu:IncrementImmediate16Address/>
-				<hex>0400</hex>
-				
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="readBlock" type="Absolute16"/>
 
@@ -17225,6 +17228,9 @@
 			</label>
 
 			<label id="readBlock">
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="getTrackAndSector" type="Absolute16"/>
+				
 				<cpu:SetInterruptDisableFlag/>
 
 				<!--Enable I/O Access-->
@@ -17346,16 +17352,21 @@
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="sendByte" type="Absolute16"/>
 
-				<!--Send Command (1)-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>31</hex>
+				<!--Send Track-->
+				<!--<cpu:CopyImmediate8ToAccumulator/>
+				<hex>31</hex>-->
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>8a</hex>
 
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="sendByte" type="Absolute16"/>
 
-				<!--Send Command (8)-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>38</hex>
+				<!--<cpu:CopyImmediate8ToAccumulator/>
+				<hex>38</hex>-->
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>8b</hex>
 
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="sendByte" type="Absolute16"/>
@@ -17367,9 +17378,15 @@
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="sendByte" type="Absolute16"/>
 
-				<!--Send Command (0)-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>30</hex>
+				<!--Send Sector-->
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>8c</hex>
+
+				<cpu:CallImmediate16Address/>
+				<addressOf ref="sendByte" type="Absolute16"/>
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>8d</hex>
 
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="sendLastByte" type="Absolute16"/>
@@ -17456,7 +17473,7 @@
 
 				<cpu:CallImmediate16Address/>
 				<addressOf ref="setAttentionHigh" type="Absolute16"/>
-			
+
 				<!--Disable I/O Access-->
 				<cpu:CopyImmediate8ToAccumulator/>
 				<binary>00100000</binary>
@@ -17465,8 +17482,228 @@
 				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
 
 				<cpu:ClearInterruptDisableFlag/>
-			
+
 				<cpu:ReturnFromSubroutine/>
+			</label>
+
+			<label id="getTrackAndSector">
+				<!--Find Track-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<byte>34</byte>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8b</hex>
+
+				<cpu:CopyImmediate8ToAccumulator/>
+				<byte>0</byte>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8d</hex>
+
+				<cpu:CopyImmediate8ToXIndex/>
+				<byte>68</byte>
+
+				<label id="findTrack"/>
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>83</hex>
+
+				<cpu:CompareAccumulatorToImmediate16PlusXIndexAddress/>
+				<addressOf ref="tracks" type="Absolute16" offset="1"/>
+
+				<cpu:BranchToRelative8IfLess/>
+				<addressOf ref="trackNotFound" type="Relative8"/>
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>82</hex>
+
+				<cpu:CompareAccumulatorToImmediate16PlusXIndexAddress/>
+				<addressOf ref="tracks" type="Absolute16"/>
+
+				<cpu:BranchToRelative8IfLess/>
+				<addressOf ref="trackNotFound" type="Relative8"/>
+
+				<cpu:JumpToImmediate16Address/>
+				<addressOf ref="trackFound" type="Absolute16"/>
+
+				<label id="trackNotFound"/>
+
+				<cpu:DecrementImmediate8Address/>
+				<hex>8b</hex>
+
+				<cpu:DecrementXIndex/>
+				<cpu:DecrementXIndex/>
+				
+				<cpu:JumpToImmediate16Address/>
+				<addressOf ref="findTrack" type="Absolute16"/>
+
+				<label id="trackFound"/>
+				
+				<!--Adjust Sector-->
+				<cpu:SetCarryFlag/>
+				
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>82</hex>
+
+				<cpu:SubtractImmediate16PlusXIndexAddressFromAccumulator/>
+				<addressOf ref="tracks" type="Absolute16"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8d</hex>
+				
+				<!--Adjust Track-->
+				<cpu:IncrementImmediate8Address/>
+				<hex>8b</hex>
+
+				<!--Convert Track To Decimal-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<byte>0</byte>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8a</hex>
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>8b</hex>
+
+				<label id="whileTrackGreaterThan9"/>
+
+				<cpu:CompareAccumulatorToImmediate8/>
+				<byte>10</byte>
+
+				<cpu:BranchToRelative8IfLess/>
+				<addressOf ref="trackLessThan10" type="Relative8"/>
+
+				<cpu:SetCarryFlag/>
+
+				<cpu:SubtractImmediate8FromAccumulator/>
+				<byte>10</byte>
+
+				<cpu:IncrementImmediate8Address/>
+				<hex>8a</hex>
+
+				<cpu:JumpToImmediate16Address/>
+				<addressOf ref="whileTrackGreaterThan9" type="Absolute16"/>
+
+				<label id="trackLessThan10"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8b</hex>
+
+				<!--Convert Sector To Decimal-->
+				<cpu:CopyImmediate8ToAccumulator/>
+				<byte>0</byte>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8c</hex>
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>8d</hex>
+
+				<label id="whileSectorGreaterThan9"/>
+
+				<cpu:CompareAccumulatorToImmediate8/>
+				<byte>10</byte>
+
+				<cpu:BranchToRelative8IfLess/>
+				<addressOf ref="sectorLessThan10" type="Relative8"/>
+
+				<cpu:SetCarryFlag/>
+
+				<cpu:SubtractImmediate8FromAccumulator/>
+				<byte>10</byte>
+
+				<cpu:IncrementImmediate8Address/>
+				<hex>8c</hex>
+
+				<cpu:JumpToImmediate16Address/>
+				<addressOf ref="whileSectorGreaterThan9" type="Absolute16"/>
+
+				<label id="sectorLessThan10"/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8d</hex>
+
+				<!--Convert To Ascii-->
+				<cpu:ClearCarryFlag/>
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>8a</hex>
+
+				<cpu:AddImmediate8ToAccumulator/>
+				<hex>30</hex>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8a</hex>
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>8b</hex>
+
+				<cpu:AddImmediate8ToAccumulator/>
+				<hex>30</hex>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8b</hex>
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>8c</hex>
+
+				<cpu:AddImmediate8ToAccumulator/>
+				<hex>30</hex>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8c</hex>
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>8d</hex>
+
+				<cpu:AddImmediate8ToAccumulator/>
+				<hex>30</hex>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>8d</hex>
+
+				<cpu:ReturnFromSubroutine/>
+			</label>
+
+			<label id="tracks">
+				<short>0</short>
+				<short>21</short>
+				<short>42</short>
+				<short>63</short>
+				<short>84</short>
+				<short>105</short>
+				<short>126</short>
+				<short>147</short>
+				<short>168</short>
+				<short>189</short>
+				<short>210</short>
+				<short>231</short>
+				<short>252</short>
+				<short>273</short>
+				<short>294</short>
+				<short>315</short>
+				<short>336</short>
+				
+				<short>357</short>
+				<short>376</short>
+				<short>395</short>
+				<short>414</short>
+				<short>433</short>
+				<short>452</short>
+				<short>471</short>
+				
+				<short>490</short>
+				<short>508</short>
+				<short>526</short>
+				<short>544</short>
+				<short>562</short>
+				<short>580</short>
+				
+				<short>598</short>
+				<short>615</short>
+				<short>632</short>
+				<short>649</short>
+				<short>666</short>
 			</label>
 		</cls:class>
 	</label>
