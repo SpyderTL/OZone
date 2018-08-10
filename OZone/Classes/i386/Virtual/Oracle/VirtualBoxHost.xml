@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="VirtualBoxHost"
+	type="http://metalx.org/Virtual/Oracle/VirtualBoxHost"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
+	xmlns:pcic="http://metalx.org/Pc/Pci/Command"
+	xmlns:pcir="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:pcis="http://metalx.org/Pc/Pci/Status"
+	xmlns:pcn="http://metalx.org/Amd/PcNet/Ports"
+	xmlns:pcs="http://metalx.org/Amd/PcNet/ControlStatus"
+	xmlns:pcb="http://metalx.org/Amd/PcNet/BusConfiguration"
+	xmlns:mix="http://metalx.org/Intel/Ac97/Mixer"
+	xmlns:bus="http://metalx.org/Intel/Ac97/BusMaster"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:short="http://metalx.org/i386/Functions/Short"
+	xmlns:con="http://metalx.org/i386/Functions/Console"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:index="http://metalx.org/Intel/80386/Index"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands">
+
+	<cls:field name="Device" type="http://metalx.org/Pci/PciDevice" offset="0"/>
+
+	<cls:method name="Enable" type="http://metalx.org/Virtual/Oracle/VirtualBoxHost">
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffffc</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<addressOf ref="guestInfo" type="Absolute32"/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="guestInfo"/>
+		<int>32</int>
+		<hex>00010001</hex>
+		<int>50</int>
+		<label id="returnValue"/>
+		<hex>ffffffff</hex>
+		<int>0</int>
+		<int>0</int>
+
+		<hex>00010003</hex>
+		<int>0</int>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="deviceName" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="deviceName">VirtualBox Host</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>
