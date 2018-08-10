@@ -1,0 +1,80 @@
+Extended Display Information Data
+
+AX = 0x4f15
+BX = 1
+ES:DI = addressOf(byte[128])
+INT 0x10
+
+AL = 0x4f
+AH = Status			// 0 - Success, 1 - Fail
+
+EDID Record											128
+	Reserved												8
+	ManufacturerID										2
+	EDID ID Code											2
+	Serial Number										4
+	Manufacture Week									1
+	Manufacture Year									1
+	EDID Version											1
+	EDID Revision										1
+	Video Input Type									1
+		Digital													1 bit
+		Voltage													2 bits
+		Reserved												2 bits
+		Sync On Green										1 bit
+		Composite Sync										1 bit
+		Separate Sync										1 bit
+	Horizontal Size										1
+	Vertical Size											1
+	Gamma Factor										1
+	DPMS Flags											1
+		Standby													1 bit
+		Suspend												1 bit
+		Active Off												1 bit
+		Reserved												1 bit
+		Display Type											1 bit				// 1 - RGB
+		Reserved												3 bits
+	Chroma Information								10
+		Green/Red												1
+		White/Blue												1
+		Red Y													1
+		Red X													1
+		Green Y													1
+		Green X													1
+		Blue Y													1
+		Blue X													1
+		White Y													1
+		White X													1
+	Established Timings								1
+	Established Timings 2								1
+	Manufacture Reserved Timings				1
+	Standard Timing Identification					16
+	Detailed Timing Description[4]				18
+		Horizontal Frequency										1
+		Vertical Frequency											1
+		Horizontal Active Time									1
+		Horizontal Blanking Time								1
+		Horizontal Time Ratio										1
+		Vertical Active Time										1
+		Vertical Blanking Time										1
+		Vertical Time Ratio											1
+		Horizontal Sync Offset									1
+		Horizontal Sync Pulse Width							1
+		Vertical Sync Offset / Pulse Width					1
+		Vertical/Horizontal Sync Offset / Pulse Width	1
+		Horizontal Image Size										1
+		Vertical Image Size											1
+		Image Size Ratio											1
+		Horizontal Border											1
+		Vertical Border												1
+		Display Type													1
+			Interlaced														1 bit
+			Stereo Mode													2 bits			// 0 - None, 1 - Right Sync, 2 - Left Sync
+			Sync Type														2 bits			// 0 - Analog, 1 - Bipolar, 2 - Digital, 3 - Digital Separate
+			Interlaced														1 bit
+			Interlaced														1 bit
+			Serrate / Vertical Sync Polarity							1 bit
+			Sync Location / Horizontal Sync Polarity			1 bit
+			Reserved														1 bit
+	Reserved												1
+	Checksum												1
