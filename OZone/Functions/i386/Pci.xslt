@@ -299,7 +299,7 @@
 		<hex>80000000</hex>
 
 		<cpu:OrALWithImmediate/>
-		<cfg:SubsystemDeviceID/>
+		<cfg:SubsystemVendorID/>
 
 		<cpu:WriteAXToDXPort/>
 
