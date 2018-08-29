@@ -6,19 +6,51 @@
     xmlns="http://metalx.org/Berkeley/RiscV/Operators"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
-	<xsd:element name="Call">
+	<xsd:element name="CallAddress">
 		<xsd:complexType>
 			<xsd:attribute name="ref" type="xsd:IDREF"/>
-			<xsd:attribute name="link" type="uint5"/>
+			<xsd:attribute name="linkRegister" type="uint5"/>
 		</xsd:complexType>
 	</xsd:element>
 	<xsd:element name="CallRegisterAddress">
 		<xsd:complexType>
-			<xsd:attribute name="link" type="uint5"/>
-			<xsd:attribute name="base" type="uint5"/>
+			<xsd:attribute name="linkRegister" type="uint5"/>
+			<xsd:attribute name="baseRegister" type="uint5"/>
 			<xsd:attribute name="offset" type="int12"/>
 		</xsd:complexType>
 	</xsd:element>
+	<xsd:element name="CopyAddressToRegister">
+		<xsd:complexType>
+			<xsd:attribute name="destinationRegister" type="uint5"/>
+			<xsd:attribute name="baseRegister" type="uint5"/>
+			<xsd:attribute name="offset" type="int12"/>
+			<xsd:attribute name="type" type="CopyAddressToRegisterType"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:simpleType name="CopyAddressToRegisterType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Byte"/>
+			<xsd:enumeration value="SignedByte"/>
+			<xsd:enumeration value="Short"/>
+			<xsd:enumeration value="UnsignedShort"/>
+			<xsd:enumeration value="Integer"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="CopyRegisterToAddress">
+		<xsd:complexType>
+			<xsd:attribute name="destinationRegister" type="uint5"/>
+			<xsd:attribute name="baseRegister" type="uint5"/>
+			<xsd:attribute name="offset" type="int12"/>
+			<xsd:attribute name="type" type="CopyRegisterToAddressType"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:simpleType name="CopyRegisterToAddressType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Byte"/>
+			<xsd:enumeration value="Short"/>
+			<xsd:enumeration value="Integer"/>
+		</xsd:restriction>
+	</xsd:simpleType>
 	<xsd:element name="RegisterHigh20Function">
 		<xsd:complexType>
 			<xsd:attribute name="operation" type="RegisterHigh20Operation"/>
@@ -26,7 +58,7 @@
 	</xsd:element>
 	<xsd:simpleType name="RegisterHigh20Operation">
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="Set"/>
+			<xsd:enumeration value="SetRegister"/>
 			<xsd:enumeration value="AddToProgram"/>
 		</xsd:restriction>
 	</xsd:simpleType>
@@ -37,15 +69,9 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 	<xsd:simpleType name="int12">
-		<xsd:restriction base="xsd:unsignedByte">
-			<xsd:minInclusive value="0"/>
-			<xsd:maxInclusive value="15"/>
-		</xsd:restriction>
-	</xsd:simpleType>
-	<xsd:simpleType name="int3">
-		<xsd:restriction base="xsd:unsignedByte">
-			<xsd:minInclusive value="0"/>
-			<xsd:maxInclusive value="7"/>
+		<xsd:restriction base="xsd:short">
+			<xsd:minInclusive value="-2048"/>
+			<xsd:maxInclusive value="2047"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>
