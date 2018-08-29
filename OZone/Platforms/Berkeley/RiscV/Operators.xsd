@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema id="Operators"
+    targetNamespace="http://metalx.org/Berkeley/RiscV/Operators"
+    elementFormDefault="qualified"
+    xmlns="http://metalx.org/Berkeley/RiscV/Operators"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:element name="Call">
+		<xsd:complexType>
+			<xsd:attribute name="ref" type="xsd:IDREF"/>
+			<xsd:attribute name="link" type="uint5"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="CallRegisterAddress">
+		<xsd:complexType>
+			<xsd:attribute name="link" type="uint5"/>
+			<xsd:attribute name="base" type="uint5"/>
+			<xsd:attribute name="offset" type="int12"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="RegisterHigh20Function">
+		<xsd:complexType>
+			<xsd:attribute name="operation" type="RegisterHigh20Operation"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:simpleType name="RegisterHigh20Operation">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Set"/>
+			<xsd:enumeration value="AddToProgram"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="uint5">
+		<xsd:restriction base="xsd:unsignedByte">
+			<xsd:minInclusive value="0"/>
+			<xsd:maxInclusive value="31"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="int12">
+		<xsd:restriction base="xsd:unsignedByte">
+			<xsd:minInclusive value="0"/>
+			<xsd:maxInclusive value="15"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="int3">
+		<xsd:restriction base="xsd:unsignedByte">
+			<xsd:minInclusive value="0"/>
+			<xsd:maxInclusive value="7"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+</xsd:schema>
