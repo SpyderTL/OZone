@@ -35,33 +35,33 @@
 		<xsl:variable name="linkRegister" select="@linkRegister * 128"/>
 		<xsl:variable name="offset" select="@offset * 1048576"/>
 
-		<xsl:variable name="operation">
+		<xsl:variable name="type">
 			<xsl:choose>
-				<xsl:when test="@Operation='Byte'">
+				<xsl:when test="@type='Byte'">
 					<xsl:value-of select="0"/>
 				</xsl:when>
-				<xsl:when test="@Operation='Short'">
+				<xsl:when test="@type='Short'">
 					<xsl:value-of select="1"/>
 				</xsl:when>
-				<xsl:when test="@Operation='Integer'">
+				<xsl:when test="@type='Integer'">
 					<xsl:value-of select="2"/>
 				</xsl:when>
-				<xsl:when test="@Operation='SignedByte'">
+				<xsl:when test="@type='SignedByte'">
 					<xsl:value-of select="4"/>
 				</xsl:when>
-				<xsl:when test="@Operation='UnsignedShort'">
+				<xsl:when test="@type='UnsignedShort'">
 					<xsl:value-of select="5"/>
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:message terminate="yes">
-						Invalid Data Operation: <xsl:value-of select="@Operation"/>
+						Invalid Type: <xsl:value-of select="@type"/>
 					</xsl:message>
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
 
 		<prg:uint>
-			<xsl:value-of select="$opcode + $baseRegister + $linkRegister + $offset + $operation"/>
+			<xsl:value-of select="$opcode + $baseRegister + $linkRegister + $offset + $type"/>
 		</prg:uint>
 	</xsl:template>
 
@@ -71,27 +71,27 @@
 		<xsl:variable name="linkRegister" select="@linkRegister * 128"/>
 		<xsl:variable name="offset" select="@offset * 1048576"/>
 
-		<xsl:variable name="operation">
+		<xsl:variable name="type">
 			<xsl:choose>
-				<xsl:when test="@Operation='Byte'">
+				<xsl:when test="@type='Byte'">
 					<xsl:value-of select="0"/>
 				</xsl:when>
-				<xsl:when test="@Operation='Short'">
+				<xsl:when test="@type='Short'">
 					<xsl:value-of select="1"/>
 				</xsl:when>
-				<xsl:when test="@Operation='Integer'">
+				<xsl:when test="@type='Integer'">
 					<xsl:value-of select="2"/>
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:message terminate="yes">
-						Invalid Data Operation: <xsl:value-of select="@Operation"/>
+						Invalid Type: <xsl:value-of select="@type"/>
 					</xsl:message>
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
 
 		<prg:uint>
-			<xsl:value-of select="$opcode + $baseRegister + $linkRegister + $offset + $operation"/>
+			<xsl:value-of select="$opcode + $baseRegister + $linkRegister + $offset + $type"/>
 		</prg:uint>
 	</xsl:template>
 
