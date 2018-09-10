@@ -76,7 +76,7 @@
 				<xsl:when test="@type='Byte'">
 					<xsl:value-of select="0"/>
 				</xsl:when>
-				<xsl:when test="@type='Short'">
+				<xsl:when test="@type='Short'"> 
 					<xsl:value-of select="1"/>
 				</xsl:when>
 				<xsl:when test="@type='Integer'">
