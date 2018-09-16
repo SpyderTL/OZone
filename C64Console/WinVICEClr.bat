@@ -1,1 +1,1 @@
-"C:\Games\Commodore 64\WinVICE-3.1-x64\x64" -config "C:\Users\joshu\source\repos\OZone\C64Console\WinVICEClr.settings" -cart16 "bin\debug\C64Console.bin" -8 "C:\Games\Commodore 64\TestCore.d64"
+"C:\Games\Commodore 64\WinVICE-3.1-x64\x64" -config "C:\Users\joshu\source\repos\OZone\C64Console\WinVICEClr.settings" -cart16 "bin\debug\C64Console.bin" -8 "C:\Games\Commodore 64\TestCore2.d64"
