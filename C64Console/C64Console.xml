@@ -4265,7 +4265,7 @@
 	<label id="executeMethod">
 		<scope>
 			<label id="result" offset="02"/>
-			
+
 			<!--Find Entry Point-->
 			<cpu:CopyImmediate8ToYIndex/>
 			<byte>6</byte>
@@ -4283,7 +4283,7 @@
 
 			<cpu:CopyAccumulatorToImmediate16Address/>
 			<addressOf ref="entryPoint" type="Absolute16" offset="1"/>
-			
+
 			<!--Get Parameters-->
 			<cpu:CopyImmediate8AddressToAccumulator/>
 			<hex>04</hex>
@@ -4313,7 +4313,7 @@
 			<cpu:CallImmediate16Address/>
 			<label id="entryPoint"/>
 			<hex>0000</hex>
-		
+
 			<cpu:ReturnFromSubroutine/>
 		</scope>
 	</label>
@@ -4362,7 +4362,7 @@
 	<label id="createObject">
 		<scope>
 			<label id="result" offset="02"/>
-			
+
 			<!--Save Data Pointer-->
 			<cpu:CopyImmediate8AddressToAccumulator/>
 			<addressOf ref="result" type="Absolute16Low8"/>
@@ -4526,7 +4526,7 @@
 	</label>
 
 	<!--Catalog-->
-	<var:short id="catalog">16</var:short>
+	<var:short id="catalog">14</var:short>
 	<addressOf ref="objectClass" type="Absolute16"/>
 	<addressOf ref="classClass" type="Absolute16"/>
 	<addressOf ref="stringClass" type="Absolute16"/>
@@ -4536,14 +4536,14 @@
 	<addressOf ref="hexClass" type="Absolute16"/>
 	<addressOf ref="integerClass" type="Absolute16"/>
 	<addressOf ref="errorClass" type="Absolute16"/>
-	<addressOf ref="systemClass" type="Absolute16"/>
+	<!--<addressOf ref="systemClass" type="Absolute16"/>-->
 	<!--<addressOf ref="audioClass" type="Absolute16"/>
 	<addressOf ref="videoClass" type="Absolute16"/>-->
 	<addressOf ref="storageClass" type="Absolute16"/>
 	<addressOf ref="floppyDriveReaderClass" type="Absolute16"/>
 	<addressOf ref="inputClass" type="Absolute16"/>
 	<!--<addressOf ref="networkClass" type="Absolute16"/>-->
-	<addressOf ref="timerClass" type="Absolute16"/>
+	<!--<addressOf ref="timerClass" type="Absolute16"/>-->
 	<addressOf ref="userClass" type="Absolute16"/>
 	<addressOf ref="clrClass" type="Absolute16"/>
 
@@ -8926,121 +8926,6 @@
 		</cls:class>
 	</label>
 
-	<label id="systemClass">
-		<cls:class
-			name="System"
-			static="true"
-			type="http://metalx.org/System"
-			base="http://metalx.org/String">
-
-			<cls:method name="Reset" static="true" type="http://metalx.org/String">
-				<cpu:CopyImmediate8ToXIndex/>
-				<hex>ff</hex>
-
-				<cpu:CopyXIndexToStackPointer/>
-
-				<cpu:JumpToImmediate16Address/>
-				<addressOf ref="start" type="Absolute16"/>
-			</cls:method>
-
-			<cls:method name="GetTime" static="true" type="http://metalx.org/Hex">
-				<!--Enable I/O Access-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00100101</binary>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
-
-				<!--Read Hours-->
-				<cpu:CopyImmediate16AddressToAccumulator/>
-				<hex>dc0b</hex>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>0201</hex>
-
-				<!--Read Minutes-->
-				<cpu:CopyImmediate16AddressToAccumulator/>
-				<hex>dc0a</hex>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>0200</hex>
-
-				<!--Read Fractional Seconds (Clear Latch)-->
-				<cpu:CopyImmediate16AddressToAccumulator/>
-				<hex>dc08</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>02</hex>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="hexClass" type="Absolute16Low8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="hexClass" type="Absolute16High8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
-
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="createObject" type="Absolute16"/>
-
-				<!--Disable I/O Access-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00100000</binary>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
-
-				<cpu:ReturnFromSubroutine/>
-			</cls:method>
-
-			<cls:method name="ToString" static="true" type="http://metalx.org/String">
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="className" type="Absolute16Low8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="className" type="Absolute16High8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="stringClass" type="Absolute16Low8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="stringClass" type="Absolute16High8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
-
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="createObject" type="Absolute16"/>
-
-				<cpu:ReturnFromSubroutine/>
-
-				<var:string id="className">System</var:string>
-			</cls:method>
-		</cls:class>
-	</label>
-
 	<label id="storageClass">
 		<cls:class
 			name="Storage"
@@ -11201,7 +11086,7 @@
 
 			<cls:method name="ReadObject" type="http://metalx.org/Storage/FloppyDriveReader">
 				<cls:parameter name="Object" type="http://metalx.org/Object"/>
-				
+
 				<!--Get Parameters-->
 				<cpu:CopyImmediate8ToYIndex/>
 				<byte>0</byte>
@@ -11227,7 +11112,7 @@
 				<!--Get Object Length-->
 				<cpu:CopyImmediate8ToYIndex/>
 				<byte>4</byte>
-					
+
 				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 				<hex>04</hex>
 
@@ -11248,10 +11133,10 @@
 
 				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 				<hex>04</hex>
-				
+
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>12</hex>
-				
+
 				<cpu:IncrementYIndex/>
 
 				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
@@ -13128,376 +13013,6 @@
 		</cls:class>
 	</label>
 
-	<label id="timerClass">
-		<cls:class
-			name="Timer"
-			static="true"
-			type="http://metalx.org/Timer">
-
-			<cls:method name="Start" static="true" type="http://metalx.org/String">
-				<!--Enable I/O Access-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00100101</binary>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
-
-				<!--Set Timer A Value-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>ff</hex>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dc04</hex>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dc05</hex>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dc06</hex>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dc07</hex>
-
-				<!--Set Timer B Mode-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>01000001</binary>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dc0f</hex>
-
-				<!--Start Timer-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00000001</binary>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dc0e</hex>
-
-				<!--Disable I/O Access-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00100000</binary>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<byte>0</byte>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
-
-				<cpu:ReturnFromSubroutine/>
-			</cls:method>
-
-			<cls:method name="Wait" static="true" type="http://metalx.org/String">
-				<!--Enable I/O Access-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00100101</binary>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
-
-				<!--Set Timer A Value-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>ff</hex>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dc04</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>ff</hex>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dc05</hex>
-
-				<!--Set Timer B Value-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>a0</hex>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dc06</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dc07</hex>
-
-				<!--Set Timer B Mode-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>01010001</binary>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dc0f</hex>
-
-				<!--Start Timer A-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00010001</binary>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>dc0e</hex>
-
-				<!--Wait For Timer-->
-				<label id="waitForTimer"/>
-
-				<cpu:CopyImmediate16AddressToAccumulator/>
-				<hex>dc06</hex>
-
-				<cpu:CompareAccumulatorToImmediate8/>
-				<byte>0</byte>
-
-				<cpu:BranchToRelative8IfNotEqual/>
-				<addressOf ref="waitForTimer" type="Relative8"/>
-
-				<!--Disable I/O Access-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00100000</binary>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<byte>0</byte>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
-
-				<cpu:ReturnFromSubroutine/>
-			</cls:method>
-
-			<cls:method name="GetTimerA" static="true" type="http://metalx.org/String">
-				<!--Enable I/O Access-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00100101</binary>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
-
-				<!--Get Timer A Value-->
-				<cpu:CopyImmediate16AddressToAccumulator/>
-				<hex>dc04</hex>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>0200</hex>
-
-				<cpu:CopyImmediate16AddressToAccumulator/>
-				<hex>dc05</hex>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>0201</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>02</hex>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="hexClass" type="Absolute16Low8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="hexClass" type="Absolute16High8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
-
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="createObject" type="Absolute16"/>
-
-				<!--Disable I/O Access-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00100000</binary>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
-
-				<cpu:ReturnFromSubroutine/>
-			</cls:method>
-
-			<cls:method name="GetTimerB" static="true" type="http://metalx.org/String">
-				<!--Enable I/O Access-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00100101</binary>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
-
-				<!--Get Timer A Value-->
-				<cpu:CopyImmediate16AddressToAccumulator/>
-				<hex>dc06</hex>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>0200</hex>
-
-				<cpu:CopyImmediate16AddressToAccumulator/>
-				<hex>dc07</hex>
-
-				<cpu:CopyAccumulatorToImmediate16Address/>
-				<hex>0201</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>02</hex>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="hexClass" type="Absolute16Low8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="hexClass" type="Absolute16High8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
-
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="createObject" type="Absolute16"/>
-
-				<!--Disable I/O Access-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<binary>00100000</binary>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<addressOf ref="cpuRomBankControl" type="Absolute16Low8"/>
-
-				<cpu:ReturnFromSubroutine/>
-			</cls:method>
-
-			<cls:method name="ToString" static="true" type="http://metalx.org/String">
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="className" type="Absolute16Low8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="className" type="Absolute16High8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="stringClass" type="Absolute16Low8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="stringClass" type="Absolute16High8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
-
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="createObject" type="Absolute16"/>
-
-				<cpu:ReturnFromSubroutine/>
-
-				<var:string id="className">Timer</var:string>
-			</cls:method>
-
-			<cls:method name="ToString" type="http://metalx.org/String">
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="toString" type="Absolute16Low8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="toString" type="Absolute16High8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="stringClass" type="Absolute16Low8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="stringClass" type="Absolute16High8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
-
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="createObject" type="Absolute16"/>
-
-				<cpu:ReturnFromSubroutine/>
-			</cls:method>
-
-			<cls:method name="GetClass" type="http://metalx.org/Class">
-				<label id="result" offset="02"/>
-
-				<!--Get Data-->
-				<cpu:CopyImmediate8ToYIndex/>
-				<byte>2</byte>
-
-				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
-				<addressOf ref="result" type="Absolute16Low8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>82</hex>
-
-				<cpu:IncrementYIndex/>
-
-				<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
-				<addressOf ref="result" type="Absolute16Low8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<addressOf ref="result" type="Absolute16Low8" offset="1"/>
-
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>82</hex>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<addressOf ref="result" type="Absolute16Low8"/>
-
-				<!--Create Object-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="classClass" type="Absolute16Low8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="classClass" type="Absolute16High8"/>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
-
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="createObject" type="Absolute16"/>
-
-				<cpu:ReturnFromSubroutine/>
-			</cls:method>
-		</cls:class>
-	</label>
-
 	<label id="userClass">
 		<cls:class
 			name="User"
@@ -13671,931 +13186,1627 @@
 
 			<cls:method name="Test" static="true" type="http://metalx.org/Integer">
 				<!--Create Floppy Drive Reader [0x40]-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="floppyDriveReaderClass" type="Absolute16Low8"/>
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<addressOf ref="floppyDriveReaderClass" type="Absolute16Low8"/>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="floppyDriveReaderClass" type="Absolute16High8"/>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<addressOf ref="floppyDriveReaderClass" type="Absolute16High8"/>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="create" type="Absolute16Low8"/>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<addressOf ref="create" type="Absolute16Low8"/>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="create" type="Absolute16High8"/>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<addressOf ref="create" type="Absolute16High8"/>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="findStaticMethod" type="Absolute16"/>
-				
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="executeMethod" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="findStaticMethod" type="Absolute16"/>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>02</hex>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="executeMethod" type="Absolute16"/>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>40</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>02</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>03</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>40</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>41</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>03</hex>
 
-				<!--Create Integer [0x50]-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>3c</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>41</hex>
+				</scope>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>50</hex>
-
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>51</hex>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>52</hex>
-
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>53</hex>
-				
 				<!--Create Integer Object [0x42]-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>50</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>50</hex>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="integerClass" type="Absolute16Low8"/>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="integerClass" type="Absolute16High8"/>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<addressOf ref="integerClass" type="Absolute16Low8"/>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
-				
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>04</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>06</hex>
-				
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>07</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="createObject" type="Absolute16"/>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<addressOf ref="integerClass" type="Absolute16High8"/>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>02</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>42</hex>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>04</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>03</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>06</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>43</hex>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
 
-				<!--Return Integer-->
-				<!--<cls:return/>-->
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>07</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="createObject" type="Absolute16"/>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>02</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>42</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>03</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>43</hex>
+				</scope>
 
 				<!--Create Integer Object [0x44]-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>54</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>54</hex>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="createObject" type="Absolute16"/>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>02</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>44</hex>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="createObject" type="Absolute16"/>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>03</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>02</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>45</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>44</hex>
 
-				<!--Return Integer-->
-				<!--<cls:return/>-->
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>03</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>45</hex>
+				</scope>
 
 				<!--Create Integer Object [0x46]-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>58</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>58</hex>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="createObject" type="Absolute16"/>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>02</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>46</hex>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="createObject" type="Absolute16"/>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>03</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>02</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>47</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>46</hex>
 
-				<!--Return Integer-->
-				<!--<cls:return/>-->
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>03</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>47</hex>
+				</scope>
 
 				<!--Create Integer Object [0x48]-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>5c</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>5c</hex>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="createObject" type="Absolute16"/>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>02</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>48</hex>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="createObject" type="Absolute16"/>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>03</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>02</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>49</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>48</hex>
 
-				<!--Return Integer-->
-				<!--<cls:return/>-->
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>03</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>49</hex>
+				</scope>
+
+				<!--Create Integer Object [0x4a]-->
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>60</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
+
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="createObject" type="Absolute16"/>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>02</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>4a</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>03</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>4b</hex>
+				</scope>
+
+				<!--Find PE Header (0x3c)-->
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>3c</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>50</hex>
+
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>51</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>52</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>53</hex>
+				</scope>
 
 				<!--Find SetPosition Method-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>40</hex>
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>40</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>41</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>41</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="setPosition" type="Absolute16Low8"/>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<addressOf ref="setPosition" type="Absolute16Low8"/>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="setPosition" type="Absolute16High8"/>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<addressOf ref="setPosition" type="Absolute16High8"/>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="findMethod" type="Absolute16"/>
-				
-				<!--Save SetPosition Method [0x60]-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>02</hex>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="findMethod" type="Absolute16"/>
+				</scope>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>60</hex>
+				<!--Save SetPosition Method [0x70]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>02</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>03</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>70</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>61</hex>
-				
-				<!--Pass Reader-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>40</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>03</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>71</hex>
+				</scope>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>41</hex>
+				<!--Pass Reader [0x40]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>40</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
 
-				<!--Pass Integer-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>42</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>41</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>06</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
+				</scope>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
+				<!--Pass Integer Object [0x42]-->
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>42</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>07</hex>
-				
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="executeMethod" type="Absolute16"/>
-				
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>06</hex>
+
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>07</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="executeMethod" type="Absolute16"/>
+				</scope>
+
 				<!--Find ReadObject Method-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="readObject" type="Absolute16Low8"/>
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<addressOf ref="readObject" type="Absolute16Low8"/>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<addressOf ref="readObject" type="Absolute16High8"/>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<addressOf ref="readObject" type="Absolute16High8"/>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
 
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="findMethod" type="Absolute16"/>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="findMethod" type="Absolute16"/>
+				</scope>
 
-				<!--Save ReadObject Method [0x62]-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>02</hex>
+				<!--Save ReadObject Method [0x72]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>02</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>62</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>72</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>03</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>03</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>63</hex>
-				
-				<!--Pass Reader-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>40</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>73</hex>
+				</scope>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
+				<!--Pass Reader [0x40]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>40</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>41</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>41</hex>
 
-				<!--Pass Integer[0x44]-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>44</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
+				</scope>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>06</hex>
+				<!--Pass Integer Object [0x44]-->
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>44</hex>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>06</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>07</hex>
-				
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="executeMethod" type="Absolute16"/>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>07</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="executeMethod" type="Absolute16"/>
+				</scope>
 
 				<!--Get CLR Table Address-->
-				<cpu:ClearCarryFlag/>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>54</hex>
-				
-				<cpu:AddImmediate8ToAccumulator/>
-				<hex>e8</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>50</hex>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>55</hex>
-				
-				<cpu:AddImmediate8ToAccumulator/>
-				<hex>00</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>51</hex>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>56</hex>
-				
-				<cpu:AddImmediate8ToAccumulator/>
-				<hex>00</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>52</hex>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>57</hex>
-				
-				<cpu:AddImmediate8ToAccumulator/>
-				<hex>00</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>53</hex>
-				
-				<!--Get SetPosition Method [0x60]-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>60</hex>
+				<!--[0x50] = [0x54] + 0xe8-->
+				<scope>
+					<cpu:ClearCarryFlag/>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>54</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>61</hex>
+					<cpu:AddImmediate8ToAccumulator/>
+					<hex>e8</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
-				
-				<!--Pass Reader-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>40</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>50</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>55</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>41</hex>
+					<cpu:AddImmediate8ToAccumulator/>
+					<hex>00</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>51</hex>
 
-				<!--Pass Integer-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>42</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>56</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>06</hex>
+					<cpu:AddImmediate8ToAccumulator/>
+					<hex>00</hex>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>52</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>07</hex>
-				
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="executeMethod" type="Absolute16"/>
-				
-				<!--Get ReadObject Method [0x62]-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>62</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>57</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
+					<cpu:AddImmediate8ToAccumulator/>
+					<hex>00</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>63</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>53</hex>
+				</scope>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
-				
-				<!--Pass Reader-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>40</hex>
+				<!--Get SetPosition Method [0x70]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>70</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>41</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>71</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
+				</scope>
 
-				<!--Pass Integer-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>44</hex>
+				<!--Pass Reader [0x40]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>40</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>06</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>41</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>07</hex>
-				
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="executeMethod" type="Absolute16"/>
-				
-				<!--Get Section Address-->
-				<cpu:ClearCarryFlag/>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>50</hex>
-				
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>28</byte>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>50</hex>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>51</hex>
-				
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>0</byte>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>51</hex>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>52</hex>
-				
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>0</byte>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>52</hex>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>53</hex>
-				
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>0</byte>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>53</hex>
-				
-				<!--Get SetPosition Method [0x60]-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>60</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
+				</scope>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
+				<!--Pass Integer Object [0x42]-->
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>42</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>61</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>06</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
-				
-				<!--Pass Reader-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>40</hex>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>07</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>41</hex>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="executeMethod" type="Absolute16"/>
+				</scope>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
+				<!--Get ReadObject Method [0x72]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>72</hex>
 
-				<!--Pass Integer-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>42</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>06</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>73</hex>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
+				</scope>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>07</hex>
-				
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="executeMethod" type="Absolute16"/>
-				
-				<!--Get ReadObject Method [0x62]-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>62</hex>
+				<!--Pass Reader [0x40]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>40</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>63</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>41</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
-				
-				<!--Pass Reader-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>40</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
+				</scope>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
+				<!--Pass Integer Object [0x44]-->
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>44</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>41</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>06</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
 
-				<!--Pass Integer-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>46</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>07</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>06</hex>
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="executeMethod" type="Absolute16"/>
+				</scope>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
+				<!--Get Section Address (0x28)-->
+				<scope>
+					<cpu:ClearCarryFlag/>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>07</hex>
-				
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="executeMethod" type="Absolute16"/>
-				
-				<!--Get Section Offset-->
-				<cpu:ClearCarryFlag/>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>50</hex>
-				
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>8</byte>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>50</hex>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>51</hex>
-				
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>0</byte>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>51</hex>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>52</hex>
-				
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>0</byte>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>52</hex>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>53</hex>
-				
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>0</byte>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>53</hex>
-				
-				<!--Get SetPosition Method [0x60]-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>60</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>50</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>28</byte>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>61</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>50</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
-				
-				<!--Pass Reader-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>40</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>51</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>41</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>51</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>52</hex>
 
-				<!--Pass Integer-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>42</hex>
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>06</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>52</hex>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>53</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>07</hex>
-				
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="executeMethod" type="Absolute16"/>
-				
-				<!--Get ReadObject Method [0x62]-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>62</hex>
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>53</hex>
+				</scope>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>63</hex>
+				<!--Get SetPosition Method [0x70]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>70</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
-				
-				<!--Pass Reader-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>40</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>71</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>41</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
+				</scope>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
+				<!--Pass Reader [0x40]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>40</hex>
 
-				<!--Pass Integer-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>48</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>06</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>41</hex>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
+				</scope>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>07</hex>
-				
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="executeMethod" type="Absolute16"/>
-				
+				<!--Pass Integer Object [0x42]-->
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>42</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>06</hex>
+
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>07</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="executeMethod" type="Absolute16"/>
+				</scope>
+
+				<!--Get ReadObject Method [0x72]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>72</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>73</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
+				</scope>
+
+				<!--Pass Reader [0x40]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>40</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>41</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
+				</scope>
+
+				<!--Pass Integer Object [0x46]-->
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>46</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>06</hex>
+
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>07</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="executeMethod" type="Absolute16"/>
+				</scope>
+
+				<!--Get Section Offset (0x08)-->
+				<scope>
+					<cpu:ClearCarryFlag/>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>50</hex>
+
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>8</byte>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>50</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>51</hex>
+
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>51</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>52</hex>
+
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>52</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>53</hex>
+
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>53</hex>
+				</scope>
+
+				<!--Get SetPosition Method [0x70]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>70</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>71</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
+				</scope>
+
+				<!--Pass Reader [0x40]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>40</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>41</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
+				</scope>
+
+				<!--Pass Integer Object [0x42]-->
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>42</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>06</hex>
+
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>07</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="executeMethod" type="Absolute16"/>
+				</scope>
+
+				<!--Get ReadObject Method [0x72]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>72</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>73</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
+				</scope>
+
+				<!--Pass Reader [0x40]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>40</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>41</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
+				</scope>
+
+				<!--Pass Integer Object [0x48]-->
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>48</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>06</hex>
+
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>07</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="executeMethod" type="Absolute16"/>
+				</scope>
+
 				<!--Find CLR Table-->
-				<cpu:SetCarryFlag/>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>54</hex>
-				
-				<cpu:SubtractImmediate8AddressFromAccumulator/>
-				<hex>58</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>54</hex>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>55</hex>
-				
-				<cpu:SubtractImmediate8AddressFromAccumulator/>
-				<hex>59</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>55</hex>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>56</hex>
-				
-				<cpu:SubtractImmediate8AddressFromAccumulator/>
-				<hex>5a</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>56</hex>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>57</hex>
-				
-				<cpu:SubtractImmediate8AddressFromAccumulator/>
-				<hex>5b</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>57</hex>
-				
-				<cpu:ClearCarryFlag/>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>54</hex>
-				
-				<cpu:AddImmediate8AddressToAccumulator/>
-				<hex>5c</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>54</hex>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>55</hex>
-				
-				<cpu:AddImmediate8AddressToAccumulator/>
-				<hex>5d</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>55</hex>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>56</hex>
-				
-				<cpu:AddImmediate8AddressToAccumulator/>
-				<hex>5e</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>56</hex>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>57</hex>
-				
-				<cpu:AddImmediate8AddressToAccumulator/>
-				<hex>5f</hex>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>57</hex>
-				
+				<!--[0x50] = [0x54] - [0x58] + [0x5c]-->
+				<scope>
+					<cpu:SetCarryFlag/>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>54</hex>
+
+					<cpu:SubtractImmediate8AddressFromAccumulator/>
+					<hex>58</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>50</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>55</hex>
+
+					<cpu:SubtractImmediate8AddressFromAccumulator/>
+					<hex>59</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>51</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>56</hex>
+
+					<cpu:SubtractImmediate8AddressFromAccumulator/>
+					<hex>5a</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>52</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>57</hex>
+
+					<cpu:SubtractImmediate8AddressFromAccumulator/>
+					<hex>5b</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>53</hex>
+
+					<cpu:ClearCarryFlag/>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>50</hex>
+
+					<cpu:AddImmediate8AddressToAccumulator/>
+					<hex>5c</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>50</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>51</hex>
+
+					<cpu:AddImmediate8AddressToAccumulator/>
+					<hex>5d</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>51</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>52</hex>
+
+					<cpu:AddImmediate8AddressToAccumulator/>
+					<hex>5e</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>52</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>53</hex>
+
+					<cpu:AddImmediate8AddressToAccumulator/>
+					<hex>5f</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>53</hex>
+				</scope>
+
 				<!--Find Metadata Table-->
-				<cpu:ClearCarryFlag/>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>54</hex>
-				
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>8</byte>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>54</hex>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>55</hex>
-				
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>0</byte>
-								
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>55</hex>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>56</hex>
-				
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>0</byte>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>56</hex>
-				
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>57</hex>
-				
-				<cpu:AddImmediate8ToAccumulator/>
-				<byte>0</byte>
-				
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>57</hex>
-				
-				<!--Get SetPosition Method [0x60]-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>60</hex>
+				<!--[0x50] += 8-->
+				<scope>
+					<cpu:ClearCarryFlag/>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>50</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>61</hex>
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>8</byte>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
-				
-				<!--Pass Reader-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>40</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>50</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>51</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>41</hex>
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>51</hex>
 
-				<!--Pass Integer-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>42</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>52</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>06</hex>
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>52</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>07</hex>
-				
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="executeMethod" type="Absolute16"/>
-				
-				<!--Get ReadObject Method [0x62]-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>62</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>53</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>02</hex>
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>63</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>53</hex>
+				</scope>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>03</hex>
-				
-				<!--Pass Reader-->
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>40</hex>
+				<!--Get SetPosition Method [0x70]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>70</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>04</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
 
-				<cpu:CopyImmediate8AddressToAccumulator/>
-				<hex>41</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>71</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>05</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
+				</scope>
 
-				<!--Pass Integer-->
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>4a</hex>
+				<!--Pass Reader [0x40]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>40</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>06</hex>
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
 
-				<cpu:CopyImmediate8ToAccumulator/>
-				<hex>00</hex>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>41</hex>
 
-				<cpu:CopyAccumulatorToImmediate8Address/>
-				<hex>07</hex>
-				
-				<cpu:CallImmediate16Address/>
-				<addressOf ref="executeMethod" type="Absolute16"/>
-				
-				<!--Add 12-->
-				<!--Read Entry Point Token-->
-				
-				<!--Get File Track-->
-				
-				<!--Get File Sector-->
-				
-				<!--Calculate Position-->
-				
-				<!--Set Position-->
-				
-				<!--Get Metadata-->
-				
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
+				</scope>
+
+				<!--Pass Integer Object [0x42]-->
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>42</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>06</hex>
+
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>07</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="executeMethod" type="Absolute16"/>
+				</scope>
+
+				<!--Get ReadObject Method [0x72]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>72</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>73</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
+				</scope>
+
+				<!--Pass Reader [0x40]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>40</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>41</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
+				</scope>
+
+				<!--Pass Integer Object [0x44]-->
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>44</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>06</hex>
+
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>07</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="executeMethod" type="Absolute16"/>
+				</scope>
+
+				<!--Return Metadata Table Address-->
+				<!--<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>48</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>49</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
+				</scope>
+
+				<cls:return/>-->
+
+				<!--Get Entry Point Token-->
+				<!--[0x50] += 12-->
+				<scope>
+					<cpu:ClearCarryFlag/>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>50</hex>
+
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>12</byte>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>50</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>51</hex>
+
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>51</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>52</hex>
+
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>52</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>53</hex>
+
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>53</hex>
+				</scope>
+
+				<!--Get SetPosition Method [0x70]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>70</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>71</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
+				</scope>
+
+				<!--Pass Reader [0x40]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>40</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>41</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
+				</scope>
+
+				<!--Pass Integer Object [0x42]-->
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>42</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>06</hex>
+
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>07</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="executeMethod" type="Absolute16"/>
+				</scope>
+
+				<!--Get ReadObject Method [0x72]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>72</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>73</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
+				</scope>
+
+				<!--Pass Reader [0x40]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>40</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>41</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
+				</scope>
+
+				<!--Pass Integer Object [0x4a]-->
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>4a</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>06</hex>
+
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>07</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="executeMethod" type="Absolute16"/>
+				</scope>
+
+				<!--Return Entry Point Token-->
+				<!--<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>4a</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>4b</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
+
+					<cls:return/>
+				</scope>-->
+
 				<!--Get Tables-->
+				<!--[0x50] = [0x54] - [0x58] + [0x5c]-->
+				<scope>
+					<cpu:SetCarryFlag/>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>54</hex>
+
+					<cpu:SubtractImmediate8AddressFromAccumulator/>
+					<hex>58</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>50</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>55</hex>
+
+					<cpu:SubtractImmediate8AddressFromAccumulator/>
+					<hex>59</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>51</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>56</hex>
+
+					<cpu:SubtractImmediate8AddressFromAccumulator/>
+					<hex>5a</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>52</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>57</hex>
+
+					<cpu:SubtractImmediate8AddressFromAccumulator/>
+					<hex>5b</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>53</hex>
+
+					<cpu:ClearCarryFlag/>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>50</hex>
+
+					<cpu:AddImmediate8AddressToAccumulator/>
+					<hex>5c</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>50</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>51</hex>
+
+					<cpu:AddImmediate8AddressToAccumulator/>
+					<hex>5d</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>51</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>52</hex>
+
+					<cpu:AddImmediate8AddressToAccumulator/>
+					<hex>5e</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>52</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>53</hex>
+
+					<cpu:AddImmediate8AddressToAccumulator/>
+					<hex>5f</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>53</hex>
+				</scope>
+
+				<!--Find Version Length Field-->
+				<!--[0x50] += 12-->
+				<scope>
+					<cpu:ClearCarryFlag/>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>50</hex>
+
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>12</byte>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>50</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>51</hex>
+
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>51</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>52</hex>
+
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>52</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>53</hex>
+
+					<cpu:AddImmediate8ToAccumulator/>
+					<byte>0</byte>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>53</hex>
+				</scope>
+
+				<!--Get SetPosition Method [0x70]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>70</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>71</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
+				</scope>
+
+				<!--Pass Reader [0x40]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>40</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>41</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
+				</scope>
+
+				<!--Pass Integer Object [0x42]-->
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>42</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>06</hex>
+
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>07</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="executeMethod" type="Absolute16"/>
+				</scope>
+
+				<!--Get ReadObject Method [0x72]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>72</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>73</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
+				</scope>
+
+				<!--Pass Reader [0x40]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>40</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>41</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
+				</scope>
+
+				<!--Pass Integer Object [0x4a]-->
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>4a</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>06</hex>
+
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>07</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="executeMethod" type="Absolute16"/>
+				</scope>
+
+				<!--Return Version Length-->
+				<!--<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>4a</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>4b</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
+
+					<cls:return/>
+				</scope>-->
 				
-				<!--Get Entry Point-->
+				<!--Find Tables-->
+				<!--[0x50] = [0x50] + [0x60] + 0x08-->
+				<scope>
+					<cpu:ClearCarryFlag/>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>50</hex>
+
+					<cpu:AddImmediate8AddressToAccumulator/>
+					<hex>60</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>50</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>51</hex>
+
+					<cpu:AddImmediate8AddressToAccumulator/>
+					<hex>61</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>51</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>52</hex>
+
+					<cpu:AddImmediate8AddressToAccumulator/>
+					<hex>62</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>52</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>53</hex>
+
+					<cpu:AddImmediate8AddressToAccumulator/>
+					<hex>63</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>53</hex>
+					
+					<cpu:ClearCarryFlag/>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>50</hex>
+
+					<cpu:AddImmediate8ToAccumulator/>
+					<hex>08</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>50</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>51</hex>
+
+					<cpu:AddImmediate8ToAccumulator/>
+					<hex>00</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>51</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>52</hex>
+
+					<cpu:AddImmediate8ToAccumulator/>
+					<hex>00</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>52</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>53</hex>
+
+					<cpu:AddImmediate8ToAccumulator/>
+					<hex>00</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>53</hex>
+				</scope>
 				
-				<!--Get Method-->
+				<!--Get SetPosition Method [0x70]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>70</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>71</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
+				</scope>
+
+				<!--Pass Reader [0x40]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>40</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>41</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
+				</scope>
+
+				<!--Pass Integer Object [0x42]-->
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>42</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>06</hex>
+
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>07</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="executeMethod" type="Absolute16"/>
+				</scope>
+
+				<!--Get ReadObject Method [0x72]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>72</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>73</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
+				</scope>
+
+				<!--Pass Reader [0x40]-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>40</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>04</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>41</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>05</hex>
+				</scope>
+
+				<!--Pass Integer Object [0x4a]-->
+				<scope>
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>4a</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>06</hex>
+
+					<cpu:CopyImmediate8ToAccumulator/>
+					<hex>00</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>07</hex>
+
+					<cpu:CallImmediate16Address/>
+					<addressOf ref="executeMethod" type="Absolute16"/>
+				</scope>
+
+				<!--Return Metadata Offset-->
+				<scope>
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>4a</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>02</hex>
+
+					<cpu:CopyImmediate8AddressToAccumulator/>
+					<hex>4b</hex>
+
+					<cpu:CopyAccumulatorToImmediate8Address/>
+					<hex>03</hex>
+
+					<cls:return/>
+				</scope>
 				
+				<!--Find Metadata Tables-->
+				
+				<!--Find Row Counts Field-->
+				
+				<!--Get Table Addresses-->
+				
+				<!--Get Entry Method-->
+
 				<!--Execute Method-->
 
 				<var:string id="create">Create</var:string>
@@ -15467,7 +15678,7 @@
 	<label id="stop">
 		<cpu:JumpToImmediate16Address/>
 		<addressOf ref="stop" type="Absolute16"/>
-	
+
 		<cpu:ReturnFromSubroutine/>
 	</label>
 
