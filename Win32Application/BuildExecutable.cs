@@ -28,15 +28,19 @@ namespace Win32Application
 			var compiler = new BinaryCompiler();
 
 			using (Stream stream = File.Create("test.exe"))
-			using(BinaryWriter writer = new BinaryWriter(stream))
+			using (BinaryWriter writer = new BinaryWriter(stream))
 			{
-				foreach(var program in project.Files)
+				foreach (var file in project.Files)
 				{
 					//var filename = Path.Combine(project.Name, Path.GetFileName(program.Path) + ".program");
 
+					var program = ProgramReader.Read(XDocument.Load(file.OutputPath));
+
+					//program.Segments.OfType<Label>().Where(l => l.Export);
+
 					compiler.Compile(
-						ProgramReader.Read(XDocument.Load(program.OutputPath)),
-						program.Address,
+						program,
+						file.Address,
 						writer);
 				}
 			}

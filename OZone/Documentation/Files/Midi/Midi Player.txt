@@ -1,0 +1,62 @@
+﻿MidiFileReader
+	Status
+	Data
+	Data2
+	Delay
+	Header
+	Channels[16]
+		Address
+		Delay
+		End
+		Status
+	Create(object)
+	{
+		address = object.Address;
+		end = address + object.Length;
+		channel = 0;
+		
+		while(address < end)
+		{
+			if(chunk.Type == "MThd")
+				Header = address;
+			else if(chunk.Type == "MTrk")
+			{
+				Channels[channel].Address = address + 8;
+				ReadDelay(channel);
+
+				channel++;
+			}
+
+			address += chunk.Length;
+		}
+	}
+	ReadEvent()
+	{
+		Channel = Channels.OrderBy(c => c.Delay).First.Channel;
+		Delay = Channels[Channel].Delay;
+		Channels.Each(x => x.Delay -= delay);
+
+		ReadMessage(Channel);
+	}
+	ReadDelay(channel)
+	{
+		Channels[channel].Delay = 0;
+
+		while(true)
+		{
+			value = [Channels[channel].Address++];
+
+			Channels[channel].Delay <<= 7;
+			Channels[channel].Delay |= (value & 0x7f);
+
+			if((value & 0x80) != 0)
+				break;
+		}
+	}
+	ReadStatus(channel)
+	{
+		value = [Channels[channel].Address];
+
+		if((value & 0x80) != 0)
+			Channels[channel].Status = [Channels[channel].Address++];
+	}
