@@ -21,16 +21,21 @@
 	xmlns:shift="http://metalx.org/Intel/80386/Shift"
 	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
 	xmlns:op="http://metalx.org/Intel/80386/Operands"
-	xmlns:index="http://metalx.org/Intel/80386/Index">
+	xmlns:index="http://metalx.org/Intel/80386/Index"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:ext="http://metalx.org/Intel/80386/ExtendedOperators">
 
-	<cls:field name="Channel" type="http://metalx.org/Byte" offset="0"/>
+	<cls:field name="Status" type="http://metalx.org/Byte" offset="0"/>
 	<cls:field name="Data" type="http://metalx.org/Byte" offset="1"/>
 	<cls:field name="Data2" type="http://metalx.org/Byte" offset="2"/>
 	<cls:field name="Delay" type="http://metalx.org/Integer" offset="3"/>
 	<cls:field name="Address" type="http://metalx.org/Hexadecimal" offset="7"/>
+	<cls:field name="Tracks" type="http://metalx.org/Integer" offset="11"/>
 
 	<cls:method name="Create" type="http://metalx.org/Audio/Midi/MidiReader" static="true">
 		<cls:parameter name="object" type="http://metalx.org/Object"/>
+		
+		<cpu:PushBXToStack/>
 
 		<mm:CheckOut length="512"/>
 
@@ -59,25 +64,64 @@
 		<cpu:ExchangeOperandWithRegister8/>
 		<op:CL-CHRegister/>
 		
-		<cpu:PullDIFromStack/>
-
-
-		
-		
 		<cpu:CopyRegisterToOperand/>
-		<op:CX-AXRegister/>
-
-		<int:CreateObject/>
-
+		<op:CX-DIAddressPlusImmediate8/>
+		<byte>11</byte>
+		
 		<cpu:MathImmediate8ToOperandFunction/>
-		<math:AddToBPRegister/>
+		<math:AddToSIRegister/>
+		<byte>14</byte>
+		
+		<label id="forEachTrack"/>
+		
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToDIRegister/>
+		<byte>16</byte>
+		
+		<!--Get Track Length-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
 		<byte>4</byte>
 		
-		<cls:return/>
+		<cpu:ExtendedOperator/>
+		<ext:ReverseAX/>
 		
+		<cpu:PushAXToStack/>
 		
+		<!--Get Delay-->
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>8</byte>
 		
+		<cpu:PushSIToStack/>
 		
+		<cpu:CallRelative/>
+		<addressOf ref="readVariable" type="Relative32"/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIAddressPlusImmediate8/>
+		<byte>8</byte>
+		
+		<!--Save Address-->
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIAddress/>
+		
+		<!--Calculate End-->
+		<cpu:PullSIFromStack/>
+		<cpu:PullAXFromStack/>
+		
+		<cpu:AddRegisterToOperand/>
+		<op:AX-SIRegister/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIAddressPlusImmediate8/>
+		<byte>4</byte>
+		
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachTrack" type="Relative8"/>
+		
+		<cpu:PullDIFromStack/>
+		<cpu:PullBXFromStack/>
 		
 		<obj:Create length="512"/>
 
@@ -89,7 +133,129 @@
 	</cls:method>
 
 	<cls:method name="ReadMessage" type="http://metalx.org/Audio/Midi/MidiReader">
-		<cpu:ReturnToNearCaller/>
+		<cpu:PushDIToStack/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+		
+		<obj:GetData/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+		
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSIRegister/>
+		<byte>16</byte>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DXRegister/>
+		
+		<!--Set Delay-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>3</byte>
+		
+		<!--Read Status-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+		
+		<cpu:CopySIAddressToALAndIncrementSI/>
+		
+		<cpu:TestALWithImmediate/>
+		<hex>80</hex>
+		
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="data" type="Relative8"/>
+		
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DXAddressPlusImmediate8/>
+		<byte>12</byte>
+		
+		<cpu:CopySIAddressToALAndIncrementSI/>
+		
+		<label id="data"/>
+		
+		<cpu:PushAXToStack/>
+		
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-DXAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddress/>
+		
+		<cpu:CompareALToImmediate/>
+		<hex>ff</hex>
+		
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="meta" type="Relative8"/>
+		
+		<!--Read Channel Message-->
+		<cpu:PullBXFromStack/>
+		
+		<cpu:CopyRegisterToOperand8/>
+		<op:BL-DIAddressPlusImmediate8/>
+		<byte>1</byte>
+		
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterRight/>
+		<byte>4</byte>
+		
+		<cpu:CompareALToImmediate/>
+		<hex>0c</hex>
+		
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="end" type="Relative8"/>
+
+		<cpu:CompareALToImmediate/>
+		<hex>0d</hex>
+		
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="end" type="Relative8"/>
+		
+		<!--Read Data2-->
+		<cpu:CopySIAddressToALAndIncrementSI/>
+		
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>2</byte>
+		
+		<cpu:JumpToRelative8/>
+		<addressOf ref="end" type="Relative8"/>
+
+		<!--Read Metadata-->
+		<label id="meta"/>
+		
+		<!--Type-->
+		<cpu:PullAXFromStack/>
+		
+		<!--Length-->
+		<cpu:CallRelative/>
+		<addressOf ref="readVariable" type="Relative32"/>
+		
+		<cpu:AddRegisterToOperand/>
+		<op:BX-SIRegister/>
+		
+		<label id="end"/>
+		
+		<!--Load Track Delay-->
+		<cpu:CallRelative/>
+		<addressOf ref="readVariable" type="Relative32"/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DXAddressPlusImmediate8/>
+		<byte>8</byte>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DXAddress/>
+				
+		<cpu:PullDIFromStack/>
+		
+		<cls:return/>
 	</cls:method>
 
 	<cls:method name="ToString" type="http://metalx.org/String">
@@ -139,6 +305,40 @@
 	</label>
 
 	<label id="readVariable">
-		<cpu:ReturnToNearCaller/>
+		<scope>
+			<cpu:CopyImmediateToBX/>
+			<int>0</int>
+
+			<label id="forEachByte"/>
+			
+			<cpu:CopySIAddressToALAndIncrementSI/>
+
+			<cpu:TestALWithImmediate/>
+			<hex>80</hex>
+			
+			<cpu:PushFlagsToStack/>
+
+			<cpu:AndALWithImmediate/>
+			<hex>7f</hex>
+			
+			<cpu:OrRegisterWithOperand8/>
+			<op:BL-ALRegister/>
+			
+			<cpu:PullFlagsFromStack/>
+			
+			<cpu:BranchToRelative8IfZero/>
+			<addressOf ref="done" type="Relative8"/>
+			
+			<cpu:ShiftRegisterByImmediate8Function/>
+			<shift:ShiftBXRegisterLeft/>
+			<byte>7</byte>
+			
+			<cpu:JumpToRelative8/>
+			<addressOf ref="forEachByte" type="Relative8"/>
+
+			<label id="done"/>
+
+			<cpu:ReturnToNearCaller/>
+		</scope>
 	</label>
 </cls:class>

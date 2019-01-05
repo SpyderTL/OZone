@@ -27,6 +27,30 @@
 	<xsl:template match="ns:RandomFunction">
 		<xsl:element name="prg:hex">C7</xsl:element>
 	</xsl:template>
+	<xsl:template match="ns:ReverseAX">
+		<xsl:element name="prg:hex">C8</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:ReverseCX">
+		<xsl:element name="prg:hex">C9</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:ReverseDX">
+		<xsl:element name="prg:hex">CA</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:ReverseBX">
+		<xsl:element name="prg:hex">CB</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:ReverseSP">
+		<xsl:element name="prg:hex">CC</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:ReverseBP">
+		<xsl:element name="prg:hex">CD</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:ReverseSI">
+		<xsl:element name="prg:hex">CE</xsl:element>
+	</xsl:template>
+	<xsl:template match="ns:ReverseDI">
+		<xsl:element name="prg:hex">CF</xsl:element>
+	</xsl:template>
 	<xsl:template match="ns:CopyTimestampCounterToAXDX">
 		<xsl:element name="prg:hex">31</xsl:element>
 	</xsl:template>
