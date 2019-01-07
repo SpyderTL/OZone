@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 
 <cls:class
-	name="MidiReader"
+	name="Opl2Reader"
 	static="true"
-	type="http://metalx.org/Audio/Midi/MidiReader"
+	type="http://metalx.org/Audio/Yamaha/Opl2Reader"
 	xmlns="http://metalx.org/Program"
 	xmlns:cls="http://metalx.org/Class"
 	xmlns:var="http://metalx.org/Variable"
@@ -25,15 +25,13 @@
 	xmlns:logic="http://metalx.org/Intel/80386/Logic"
 	xmlns:ext="http://metalx.org/Intel/80386/ExtendedOperators">
 
-	<cls:field name="Status" type="http://metalx.org/Byte" offset="0"/>
+	<cls:field name="Register" type="http://metalx.org/Byte" offset="0"/>
 	<cls:field name="Value" type="http://metalx.org/Byte" offset="1"/>
-	<cls:field name="Value2" type="http://metalx.org/Byte" offset="2"/>
-	<cls:field name="Delay" type="http://metalx.org/Integer" offset="3"/>
-	<cls:field name="Address" type="http://metalx.org/Hexadecimal" offset="7"/>
-	<cls:field name="Tracks" type="http://metalx.org/Integer" offset="11"/>
-
+	<cls:field name="Delay" type="http://metalx.org/Integer" offset="2"/>
+	<cls:field name="Address" type="http://metalx.org/Hexadecimal" offset="6"/>
+	
 	<cls:method name="Create" type="http://metalx.org/Audio/Midi/MidiReader" static="true">
-		<cls:parameter name="object" type="http://metalx.org/Object"/>
+		<cls:parameter name="reader" type="http://metalx.org/Object"/>
 		
 		<cpu:PushBXToStack/>
 
@@ -194,7 +192,7 @@
 		<cpu:BranchToRelative8IfEqual/>
 		<addressOf ref="meta" type="Relative8"/>
 		
-		<!--Read Value-->
+		<!--Read Channel Message-->
 		<cpu:PullBXFromStack/>
 		
 		<cpu:CopyRegisterToOperand8/>
@@ -217,7 +215,7 @@
 		<cpu:BranchToRelative8IfEqual/>
 		<addressOf ref="end" type="Relative8"/>
 		
-		<!--Read Value2-->
+		<!--Read Data2-->
 		<cpu:CopySIAddressToALAndIncrementSI/>
 		
 		<cpu:CopyRegisterToOperand8/>

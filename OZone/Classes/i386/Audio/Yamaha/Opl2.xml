@@ -46,156 +46,300 @@
 		<cls:return/>
 	</cls:method>
 
-	<cls:method name="Play" type="http://metalx.org/Integer" static="true">
-		<cls:parameter name="Note" type="http://metalx.org/Integer"/>
+	<cls:method name="Play" type="http://metalx.org/Audio/Yamaha/Opl2">
+		<cls:parameter name="reader" type="http://metalx.org/Audio/Midi/MidiReader"/>
 
-		<!--Feedback[0]: None-->
-		<cpu:CopyImmediateToDX/>
-		<hex>00000388</hex>
-
-		<cpu:CopyImmediateToAL/>
-		<hex>c0</hex>
-
-		<cpu:WriteALToDXPort/>
-
-		<cpu:IncrementDX/>
-
-		<cpu:CopyImmediateToAL/>
-		<hex>01</hex>
-
-		<cpu:WriteALToDXPort/>
-
-		<cpu:DecrementDX/>
-
-		<!--Modulation[0]: Normal-->
-		<!--<cpu:CopyImmediateToAL/>
-		<hex>20</hex>
+		<cpu:PushDIToStack/>
 		
-		<cpu:WriteALToDXPort/>
-
-		<cpu:IncrementDX/>
-
-		<cpu:CopyImmediateToAL/>
-		<binary>00100001</binary>
-
-		<cpu:WriteALToDXPort/>
-
-		<cpu:DecrementDX/>-->
-
-		<!--Scaling[0]: 0dB Attenuation-->
-		<!--<cpu:CopyImmediateToAL/>
-		<hex>40</hex>
-
-		<cpu:WriteALToDXPort/>
-
-		<cpu:IncrementDX/>
-
-		<cpu:CopyImmediateToAL/>
-		<hex>00</hex>
-
-		<cpu:WriteALToDXPort/>
-
-		<cpu:DecrementDX/>-->
-
-		<!--Attack[0]: 0xf Decay[0]: 0x0-->
-		<!--<cpu:CopyImmediateToAL/>
-		<hex>60</hex>
-
-		<cpu:WriteALToDXPort/>
-
-		<cpu:IncrementDX/>
-
-		<cpu:CopyImmediateToAL/>
-		<hex>f0</hex>
-
-		<cpu:WriteALToDXPort/>
-
-		<cpu:DecrementDX/>-->
-
-		<!--Sustain[0]: 0x0 Release[0]: 0xf-->
-		<!--<cpu:CopyImmediateToAL/>
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromSPRegister/>
 		<hex>80</hex>
 
-		<cpu:WriteALToDXPort/>
-
-		<cpu:IncrementDX/>
-
-		<cpu:CopyImmediateToAL/>
-		<hex>0f</hex>
-
-		<cpu:WriteALToDXPort/>
-
-		<cpu:DecrementDX/>-->
-
-		<!--Modulation[3]: Normal Sustain-->
-		<cpu:CopyImmediateToAL/>
-		<hex>23</hex>
-
-		<cpu:WriteALToDXPort/>
-
-		<cpu:IncrementDX/>
-
-		<cpu:CopyImmediateToAL/>
-		<binary>00100001</binary>
-
-		<cpu:WriteALToDXPort/>
-
-		<cpu:DecrementDX/>
-
-		<!--Scaling[3]: 0dB Attenuation-->
-		<cpu:CopyImmediateToAL/>
-		<hex>43</hex>
-
-		<cpu:WriteALToDXPort/>
-
-		<cpu:IncrementDX/>
-
-		<cpu:CopyImmediateToAL/>
-		<hex>00</hex>
-
-		<cpu:WriteALToDXPort/>
-
-		<cpu:DecrementDX/>
-
-		<!--Attack[3]: 0xf Decay[3]: 0x0-->
-		<cpu:CopyImmediateToAL/>
-		<hex>63</hex>
-
-		<cpu:WriteALToDXPort/>
-
-		<cpu:IncrementDX/>
-
-		<cpu:CopyImmediateToAL/>
-		<hex>f0</hex>
-
-		<cpu:WriteALToDXPort/>
-
-		<cpu:DecrementDX/>
-
-		<!--Sustain[3]: 0x0 Release[3]: 0xf-->
-		<cpu:CopyImmediateToAL/>
-		<hex>83</hex>
-
-		<cpu:WriteALToDXPort/>
-
-		<cpu:IncrementDX/>
-
-		<cpu:CopyImmediateToAL/>
-		<hex>0f</hex>
-
-		<cpu:WriteALToDXPort/>
-
-		<cpu:DecrementDX/>
-
-		<!--Get Frequency-->
-		<cpu:CopyOperandToRegister/>
-		<op:SI-BPAddressPlusImmediate8/>
-		<byte>0</byte>
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
 
 		<obj:GetData/>
 
 		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+		
+		<cpu:PushDXToStack/>
+		
+		<!--Setup OPL2-->
+		<cpu:CallRelative/>
+		<addressOf ref="reset" type="Relative32"/>
+		
+		<!--Find ReadMessage Method-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+		
+		<obj:GetType/>
+		
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="readMessage" type="Absolute32"/>
+		
+		<clsf:FindMethod/>
+		
+		<clsf:GetMethodEntryPoint/>
+		
+		<cpu:PullDXFromStack/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>40</hex>
+		
+		<label id="forEachEvent"/>
+		
+		<!--Read Event-->
+		<cpu:CopyOperandToRegister/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<hex>40</hex>
+		
+		<cpu:PushDXToStack/>
+		
+		<cpu:LogicFunction/>
+		<logic:CallSIRegister/>
+		
+		<cpu:PullDXFromStack/>
+		
+		
+		
+		
+		
+		
+		<cpu:IncrementFunction8/>
+		<inc:IncrementImmediateAddress/>
+		<hex>000b8002</hex>
+
+		
+		
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+		
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>3</byte>
+
+		<cpu:CompareAXToImmediate/>
+		<int>0</int>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="handleEvent" type="Relative8"/>
+
+		<label id="waitForDelay"/>
+		
+		<!--Wait For Delay-->
+		<cpu:CopyImmediateToCX/>
+		<!--<int>195000</int>-->
+		<int>9500</int>
+
+		<label id="delay"/>
+			
+		<cpu:NoOperation/>
+		
+		<cpu:LoopToRelative8/>
+		<addressOf ref="delay" type="Relative8"/>
+
+		<cpu:DecrementAX/>
+
+		
+		
+		
+		
+		
+		<cpu:IncrementFunction8/>
+		<inc:IncrementImmediateAddress/>
+		<hex>000b8004</hex>
+
+		
+		
+		
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="waitForDelay" type="Relative8"/>
+
+		<!--Handle Event-->
+		<label id="handleEvent"/>
+		
+		
+		
+		
+		<cpu:IncrementFunction8/>
+		<inc:IncrementImmediateAddress/>
+		<hex>000b800a</hex>
+
+		
+		
+		<cpu:Operand16/>
+		<cpu:CopyOperandToRegister/>
 		<op:AX-SIAddress/>
+
+		<cpu:Operand16/>
+		<cpu:CompareAXToImmediate/>
+		<hex>ff</hex>
+		<hex>2f</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notEnd" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="exit" type="Relative32"/>
+
+		<label id="notEnd"/>
+		
+				
+		
+		
+		<cpu:IncrementFunction8/>
+		<inc:IncrementImmediateAddress/>
+		<hex>000b800c</hex>
+
+		
+		
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:CompareALToImmediate/>
+		<hex>ff</hex>
+		
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notMetadata" type="Relative8"/>
+		
+		<cpu:JumpToRelative/>
+		<addressOf ref="forEachEvent" type="Relative32"/>
+		
+		<label id="notMetadata"/>
+		
+		
+		
+		
+		
+		
+		
+		
+		<cpu:IncrementFunction8/>
+		<inc:IncrementImmediateAddress/>
+		<hex>000b8006</hex>
+
+		
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>		
+		
+		<cpu:AndALWithImmediate/>
+		<hex>0f</hex>
+		
+		<cpu:CompareALToImmediate/>
+		<hex>09</hex>
+		
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notDrums" type="Relative8"/>
+		
+		<cpu:JumpToRelative/>
+		<addressOf ref="forEachEvent" type="Relative32"/>
+		
+		<label id="notDrums"/>
+		
+		
+		
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>		
+		
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterRight/>
+		<byte>4</byte>
+		
+		<cpu:CompareALToImmediate/>
+		<hex>09</hex>
+		
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="noteOn" type="Relative8"/>
+		
+		<cpu:JumpToRelative/>
+		<addressOf ref="forEachEvent" type="Relative32"/>
+		
+		<label id="noteOn"/>
+		
+
+		
+		
+		
+		
+		
+		<cpu:IncrementFunction8/>
+		<inc:IncrementImmediateAddress/>
+		<hex>000b8008</hex>
+
+		
+		
+		
+		<!--Get Velocity-->
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>2</byte>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="noteOff" type="Relative8"/>
+
+		<!--Find Inactive Voice-->
+		<cpu:CopyImmediateToCX/>
+		<int>9</int>
+
+		<label id="forEachVoice"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>9</int>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:AddImmediateToAX/>
+		<addressOf ref="voices" type="Absolute32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>15</byte>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:LoopToRelative8WhileNotEqual/>
+		<addressOf ref="forEachVoice" type="Relative8"/>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="nextEvent" type="Relative8"/>
+
+		<!--Store Note-->
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>1</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>15</byte>
+
+		<!--Get Frequency-->
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
 
 		<cpu:Operand16/>
 		<cpu:CopyOperandToRegister/>
@@ -204,15 +348,13 @@
 		<addressOf ref="notes" type="Absolute32"/>
 
 		<!--F-Number[0]: 0x41-->
-		<cpu:CopyImmediateToAL/>
-		<hex>a0</hex>
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>1</byte>
 
 		<cpu:WriteALToDXPort/>
 
 		<cpu:IncrementDX/>
-
-		<!--<cpu:CopyImmediateToAL/>
-		<hex>41</hex>-->
 
 		<cpu:CopyRegisterToOperand8/>
 		<op:BL-ALRegister/>
@@ -222,15 +364,13 @@
 		<cpu:DecrementDX/>
 
 		<!--KeyOn[0]: F-Number High: 2 Octave: 4 Key: On-->
-		<cpu:CopyImmediateToAL/>
-		<hex>b0</hex>
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>0</byte>
 
 		<cpu:WriteALToDXPort/>
 
 		<cpu:IncrementDX/>
-
-		<!--<cpu:CopyImmediateToAL/>
-		<hex>32</hex>-->
 
 		<cpu:CopyRegisterToOperand8/>
 		<op:BH-ALRegister/>
@@ -240,15 +380,111 @@
 
 		<cpu:WriteALToDXPort/>
 
-		<cpu:CopyImmediateToDI/>
-		<int>0</int>
+		<cpu:DecrementDX/>
+		
+		
+		
+		
+		
+		<cpu:IncrementFunction8/>
+		<inc:IncrementImmediateAddress/>
+		<hex>000b8000</hex>
+
+		
+		
+		
+		
+		<cpu:JumpToRelative/>
+		<addressOf ref="nextEvent" type="Relative32"/>
+
+		<label id="noteOff"/>
+
+		<cpu:CopyImmediateToCX/>
+		<int>9</int>
+
+		<label id="noteOff_forEachVoice"/>
+
+		<cpu:CopyImmediateToAX/>
+		<int>9</int>
+
+		<cpu:SubtractRegisterFromOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>4</byte>
+
+		<cpu:AddImmediateToAX/>
+		<addressOf ref="voices" type="Absolute32"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>15</byte>
+
+		<cpu:CompareRegisterToOperand8/>
+		<op:AL-SIAddressPlusImmediate8/>
+		<byte>1</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notNote" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:IncrementDX/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:DecrementDX/>
+
+		<!--Clear Channel-->
+		<cpu:CopyImmediateToAL/>
+		<byte>0</byte>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>15</byte>
+
+		<label id="notNote"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="noteOff_forEachVoice" type="Relative8"/>
+
+		<!--Next Event-->
+		<label id="nextEvent"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="forEachEvent" type="Relative32"/>
+
+		<label id="exit"/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="reset" type="Relative32"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSPRegister/>
+		<hex>80</hex>
+
+		<cpu:PullDIFromStack/>
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
 		<byte>4</byte>
 
 		<cpu:ReturnToNearCaller/>
+
+		<var:string id="readMessage">ReadMessage</var:string>
 	</cls:method>
+
 
 	<cls:method name="Test" type="http://metalx.org/Integer">
 		<cpu:MathImmediate8ToOperandFunction/>
@@ -546,7 +782,7 @@
 		<byte>4</byte>
 
 		<cpu:AddImmediateToAX/>
-		<addressOf ref="channels" type="Absolute32"/>
+		<addressOf ref="voices" type="Absolute32"/>
 
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-DIRegister/>
@@ -639,7 +875,7 @@
 		<byte>4</byte>
 
 		<cpu:AddImmediateToAX/>
-		<addressOf ref="channels" type="Absolute32"/>
+		<addressOf ref="voices" type="Absolute32"/>
 
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-DIRegister/>
@@ -1347,7 +1583,7 @@
 		<byte>4</byte>
 
 		<cpu:AddImmediateToAX/>
-		<addressOf ref="channels" type="Absolute32"/>
+		<addressOf ref="voices" type="Absolute32"/>
 
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-DIRegister/>
@@ -1440,7 +1676,7 @@
 		<byte>4</byte>
 
 		<cpu:AddImmediateToAX/>
-		<addressOf ref="channels" type="Absolute32"/>
+		<addressOf ref="voices" type="Absolute32"/>
 
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-DIRegister/>
@@ -2257,7 +2493,7 @@
 		<byte>4</byte>
 
 		<cpu:AddImmediateToAX/>
-		<addressOf ref="channels" type="Absolute32"/>
+		<addressOf ref="voices" type="Absolute32"/>
 
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-DIRegister/>
@@ -2350,7 +2586,7 @@
 		<byte>4</byte>
 
 		<cpu:AddImmediateToAX/>
-		<addressOf ref="channels" type="Absolute32"/>
+		<addressOf ref="voices" type="Absolute32"/>
 
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-DIRegister/>
@@ -2583,7 +2819,7 @@
 		<byte>4</byte>
 
 		<cpu:AddImmediateToAX/>
-		<addressOf ref="channels" type="Absolute32"/>
+		<addressOf ref="voices" type="Absolute32"/>
 
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-BXRegister/>
@@ -2735,7 +2971,7 @@
 		<cpu:ReturnToNearCaller/>
 	</label>
 
-	<label id="channels">
+	<label id="voices">
 		<opl:Channel1KeyOn/>
 		<opl:Channel1Frequency/>
 		<opl:Channel1Feedback/>
