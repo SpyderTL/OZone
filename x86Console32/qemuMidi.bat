@@ -1,1 +1,1 @@
-"c:\program files\qemu\qemu-system-i386.exe" -drive file="bin\debug\x86Console32.iso",index=2,media=cdrom -soundhw all -drive file="C:\Users\joshu\Music\Midi\ELO_-_Don'T_Bring_Me_Down.mid",index=3,media=cdrom
+"c:\program files\qemu\qemu-system-i386.exe" -drive file="bin\debug\x86Console32.iso",index=2,media=cdrom -soundhw all -drive file="C:\Users\jbair\Source\Repos\OZone\OZone\Documentation\Files\Midi\onestop.iso",index=3,media=cdrom
