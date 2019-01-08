@@ -108,19 +108,7 @@
 		<logic:CallSIRegister/>
 		
 		<cpu:PullDXFromStack/>
-		
-		
-		
-		
-		
-		
-		<cpu:IncrementFunction8/>
-		<inc:IncrementImmediateAddress/>
-		<hex>000b8002</hex>
-
-		
-		
-		
+				
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
 		
@@ -140,8 +128,7 @@
 		
 		<!--Wait For Delay-->
 		<cpu:CopyImmediateToCX/>
-		<!--<int>195000</int>-->
-		<int>9500</int>
+		<int>195000</int>
 
 		<label id="delay"/>
 			
@@ -151,34 +138,13 @@
 		<addressOf ref="delay" type="Relative8"/>
 
 		<cpu:DecrementAX/>
-
-		
-		
-		
-		
-		
-		<cpu:IncrementFunction8/>
-		<inc:IncrementImmediateAddress/>
-		<hex>000b8004</hex>
-
-		
-		
 		
 		<cpu:BranchToRelative8IfNotZero/>
 		<addressOf ref="waitForDelay" type="Relative8"/>
 
 		<!--Handle Event-->
 		<label id="handleEvent"/>
-		
-		
-		
-		
-		<cpu:IncrementFunction8/>
-		<inc:IncrementImmediateAddress/>
-		<hex>000b800a</hex>
-
-		
-		
+				
 		<cpu:Operand16/>
 		<cpu:CopyOperandToRegister/>
 		<op:AX-SIAddress/>
@@ -195,16 +161,7 @@
 		<addressOf ref="exit" type="Relative32"/>
 
 		<label id="notEnd"/>
-		
 				
-		
-		
-		<cpu:IncrementFunction8/>
-		<inc:IncrementImmediateAddress/>
-		<hex>000b800c</hex>
-
-		
-		
 		<cpu:CopyOperandToRegister8/>
 		<op:AL-SIAddress/>
 
@@ -219,37 +176,22 @@
 		
 		<label id="notMetadata"/>
 		
-		
-		
-		
-		
-		
-		
-		
-		<cpu:IncrementFunction8/>
-		<inc:IncrementImmediateAddress/>
-		<hex>000b8006</hex>
-
-		
 		<cpu:CopyOperandToRegister8/>
 		<op:AL-SIAddress/>		
 		
 		<cpu:AndALWithImmediate/>
 		<hex>0f</hex>
-		
+
 		<cpu:CompareALToImmediate/>
 		<hex>09</hex>
-		
+
 		<cpu:BranchToRelative8IfNotEqual/>
 		<addressOf ref="notDrums" type="Relative8"/>
-		
+
 		<cpu:JumpToRelative/>
 		<addressOf ref="forEachEvent" type="Relative32"/>
 		
 		<label id="notDrums"/>
-		
-		
-		
 
 		<cpu:CopyOperandToRegister8/>
 		<op:AL-SIAddress/>		
@@ -257,30 +199,23 @@
 		<cpu:ShiftRegisterByImmediateFunction8/>
 		<shift:ShiftALRegisterRight/>
 		<byte>4</byte>
+
+		<cpu:CompareALToImmediate/>
+		<hex>08</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="noteOff" type="Relative8"/>
 		
 		<cpu:CompareALToImmediate/>
 		<hex>09</hex>
-		
+
 		<cpu:BranchToRelative8IfEqual/>
 		<addressOf ref="noteOn" type="Relative8"/>
-		
+
 		<cpu:JumpToRelative/>
 		<addressOf ref="forEachEvent" type="Relative32"/>
 		
-		<label id="noteOn"/>
-		
-
-		
-		
-		
-		
-		
-		<cpu:IncrementFunction8/>
-		<inc:IncrementImmediateAddress/>
-		<hex>000b8008</hex>
-
-		
-		
+		<label id="noteOn"/>		
 		
 		<!--Get Velocity-->
 		<cpu:CopyOperandToRegister8/>
@@ -484,7 +419,6 @@
 
 		<var:string id="readMessage">ReadMessage</var:string>
 	</cls:method>
-
 
 	<cls:method name="Test" type="http://metalx.org/Integer">
 		<cpu:MathImmediate8ToOperandFunction/>
@@ -2824,7 +2758,7 @@
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-BXRegister/>
 
-		<!--Feedback: None-->
+		<!--Feedback: None, Stereo, Additive-->
 		<cpu:CopyOperandToRegister8/>
 		<op:AL-BXAddressPlusImmediate8/>
 		<byte>2</byte>
@@ -2834,7 +2768,7 @@
 		<cpu:IncrementDX/>
 
 		<cpu:CopyImmediateToAL/>
-		<hex>01</hex>
+		<binary>00110001</binary>
 
 		<cpu:WriteALToDXPort/>
 
@@ -2882,13 +2816,13 @@
 		<cpu:IncrementDX/>
 
 		<cpu:CopyImmediateToAL/>
-		<hex>cf</hex>
+		<hex>00</hex>
 
 		<cpu:WriteALToDXPort/>
 
 		<cpu:DecrementDX/>
 
-		<!--Output[1]: 0dB Attenuation-->
+		<!--Output[1]: 100dB Attenuation-->
 		<cpu:CopyOperandToRegister8/>
 		<op:AL-BXAddressPlusImmediate8/>
 		<byte>4</byte>
@@ -2898,13 +2832,13 @@
 		<cpu:IncrementDX/>
 
 		<cpu:CopyImmediateToAL/>
-		<hex>cf</hex>
+		<hex>3f</hex>
 
 		<cpu:WriteALToDXPort/>
 
 		<cpu:DecrementDX/>
 
-		<!--AttackDecay[0]: 0xf0-->
+		<!--AttackDecay[0]: 0xe0-->
 		<cpu:CopyOperandToRegister8/>
 		<op:AL-BXAddressPlusImmediate8/>
 		<byte>5</byte>
@@ -2914,13 +2848,13 @@
 		<cpu:IncrementDX/>
 
 		<cpu:CopyImmediateToAL/>
-		<hex>f0</hex>
+		<hex>e0</hex>
 
 		<cpu:WriteALToDXPort/>
 
 		<cpu:DecrementDX/>
 
-		<!--AttackDecay[0]: 0xf0-->
+		<!--AttackDecay[1]: 0xe0-->
 		<cpu:CopyOperandToRegister8/>
 		<op:AL-BXAddressPlusImmediate8/>
 		<byte>6</byte>
@@ -2930,13 +2864,13 @@
 		<cpu:IncrementDX/>
 
 		<cpu:CopyImmediateToAL/>
-		<hex>f0</hex>
+		<hex>e0</hex>
 
 		<cpu:WriteALToDXPort/>
 
 		<cpu:DecrementDX/>
 
-		<!--SustainRelease[0]: 0x0f-->
+		<!--SustainRelease[0]: 0x0e-->
 		<cpu:CopyOperandToRegister8/>
 		<op:AL-BXAddressPlusImmediate8/>
 		<byte>7</byte>
@@ -2946,13 +2880,13 @@
 		<cpu:IncrementDX/>
 
 		<cpu:CopyImmediateToAL/>
-		<hex>0f</hex>
+		<hex>0e</hex>
 
 		<cpu:WriteALToDXPort/>
 
 		<cpu:DecrementDX/>
 
-		<!--SustainRelease[1]: 0x0f-->
+		<!--SustainRelease[1]: 0x0e-->
 		<cpu:CopyOperandToRegister8/>
 		<op:AL-BXAddressPlusImmediate8/>
 		<byte>8</byte>
@@ -2962,7 +2896,7 @@
 		<cpu:IncrementDX/>
 
 		<cpu:CopyImmediateToAL/>
-		<hex>0f</hex>
+		<hex>0e</hex>
 
 		<cpu:WriteALToDXPort/>
 
