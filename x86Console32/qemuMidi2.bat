@@ -1,0 +1,1 @@
+"c:\program files\qemu\qemu-system-i386.exe" -drive file="bin\debug\x86Console32.iso",index=2,media=cdrom -soundhw all -drive file="..\OZone\Documentation\Files\Midi\ELO_-_Xanadu.iso",index=3,media=cdrom

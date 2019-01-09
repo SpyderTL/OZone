@@ -187,13 +187,19 @@
 
 		<cpu:CopyRegisterToOperand8/>
 		<op:AL-DIAddress/>
-		
+
 		<cpu:CompareALToImmediate/>
 		<hex>ff</hex>
-		
+
 		<cpu:BranchToRelative8IfEqual/>
 		<addressOf ref="meta" type="Relative8"/>
-		
+
+		<cpu:CompareALToImmediate/>
+		<hex>f0</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="sysEx" type="Relative8"/>
+
 		<!--Read Value-->
 		<cpu:PullBXFromStack/>
 		
@@ -229,21 +235,38 @@
 
 		<!--Read Metadata-->
 		<label id="meta"/>
-		
+
 		<!--Type-->
 		<cpu:PullAXFromStack/>
 
 		<cpu:CopyRegisterToOperand8/>
 		<op:AL-DIAddressPlusImmediate8/>
 		<byte>1</byte>
-		
+
 		<!--Length-->
 		<cpu:CallRelative/>
 		<addressOf ref="readVariable" type="Relative32"/>
-		
+
 		<cpu:AddRegisterToOperand/>
 		<op:BX-SIRegister/>
-		
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="end" type="Relative8"/>
+
+		<!--Read SysEx-->
+		<label id="sysEx"/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:DecrementSI/>
+
+		<!--Length-->
+		<cpu:CallRelative/>
+		<addressOf ref="readVariable" type="Relative32"/>
+
+		<cpu:AddRegisterToOperand/>
+		<op:BX-SIRegister/>
+
 		<label id="end"/>
 		
 		<!--Load Track Delay-->
