@@ -32,12 +32,13 @@
 
 	<cls:field name="HardDrive" offset="0" type="http://metalx.org/Reference"/>
 	<cls:field name="Position" offset="4" type="http://metalx.org/Integer"/>
+	<cls:field name="Block" offset="8" type="http://metalx.org/Integer"/>
 
 	<cls:method name="Create" type="http://metalx.org/Storage/Ide/IdeHardDriveReader" static="true">
 		<cls:parameter name="HardDrive" type="http://metalx.org/Storage/Ide/IdeHardDrive"/>
 		<cls:parameter name="Position" type="http://metalx.org/Integer"/>
 
-		<mm:CheckOut length="8"/>
+		<mm:CheckOut length="12"/>
 
 		<cpu:CopyOperandToRegister/>
 		<op:AX-BPAddressPlusImmediate8/>
@@ -45,6 +46,11 @@
 
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-DIAddress/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>-1</int>
 
 		<cpu:CopyOperandToRegister/>
 		<op:SI-BPAddressPlusImmediate8/>
@@ -54,26 +60,11 @@
 
 		<cpu:CopySIAddressToAXAndIncrementSI/>
 
-		<cpu:PushAXToStack/>
-
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-DIAddressPlusImmediate8/>
 		<byte>4</byte>
 
-		<obj:Create length="8"/>
-
-		<cpu:PullAXFromStack/>
-
-		<cpu:AndAXWithImmediate/>
-		<hex>000001ff</hex>
-
-		<cpu:BranchToRelative8IfZero/>
-		<addressOf ref="skipReadBlock" type="Relative8"/>
-
-		<cpu:CallRelative/>
-		<addressOf ref="readBlock" type="Relative32"/>
-
-		<label id="skipReadBlock"/>
+		<obj:Create length="12"/>
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
@@ -102,9 +93,6 @@
 		<op:AX-SIAddressPlusImmediate8/>
 		<byte>4</byte>
 
-		<cpu:CallRelative/>
-		<addressOf ref="readBlock" type="Relative32"/>
-
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
 		<byte>4</byte>
@@ -113,7 +101,7 @@
 	</cls:method>
 
 	<cls:method name="Skip" type="http://metalx.org/Storage/Ide/IdeHardDriveReader">
-		<cls:parameter name="Position" type="http://metalx.org/Integer"/>
+		<cls:parameter name="Length" type="http://metalx.org/Integer"/>
 
 		<cpu:CopyOperandToRegister/>
 		<op:SI-BPAddressPlusImmediate8/>
@@ -131,9 +119,6 @@
 		<cpu:AddRegisterToOperand/>
 		<op:AX-SIAddressPlusImmediate8/>
 		<byte>4</byte>
-
-		<cpu:CallRelative/>
-		<addressOf ref="readBlock" type="Relative32"/>
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
@@ -333,7 +318,7 @@
 	</cls:method>
 
 	<cls:method name="ReadString" type="http://metalx.org/String">
-		<cls:parameter name="Count" type="http://metalx.org/Integer"/>
+		<cls:parameter name="Length" type="http://metalx.org/Integer"/>
 
 		<cpu:PushDIToStack/>
 		
@@ -445,21 +430,29 @@
 		<inc:IncrementSIAddressPlusImmediate8/>
 		<byte>4</byte>
 
-		<cpu:AndAXWithImmediate/>
-		<hex>000001ff</hex>
-
-		<cpu:BranchToRelative8IfNotZero/>
-		<addressOf ref="skipReadBlock2" type="Relative8"/>
-
 		<cpu:PushAXToStack/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>9</byte>
+
+		<cpu:CompareRegisterToOperand/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="skipReadBlock2" type="Relative8"/>
 
 		<cpu:CallRelative/>
 		<addressOf ref="readBlock" type="Relative32"/>
 
-		<cpu:PullAXFromStack/>
-
 		<label id="skipReadBlock2"/>
 
+		<cpu:PullAXFromStack/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000001ff</hex>
+		
 		<cpu:AddImmediateToAX/>
 		<hex>00008000</hex>
 
@@ -479,18 +472,42 @@
 
 		<obj:GetData/>
 
-		<cpu:CopyOperandToRegister/>
+		<cpu:CopyRegisterToOperand/>
 		<op:AX-SIAddressPlusImmediate8/>
-		<byte>4</byte>
-
-		<cpu:ShiftRegisterByImmediate8Function/>
-		<shift:ShiftAXRegisterRight/>
-		<byte>9</byte>
+		<byte>8</byte>
 
 		<cpu:CopyOperandToRegister/>
 		<op:SI-SIAddress/>
 
 		<obj:GetData/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000100</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:PullAXFromStack/>
 
 		<cpu:CopyOperandToRegister/>
 		<op:DX-SIAddress/>

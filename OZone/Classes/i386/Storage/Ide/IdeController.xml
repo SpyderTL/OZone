@@ -176,6 +176,7 @@
 
 		<cpu:ReadFromDXPortToAL/>
 
+		<!--Check Drive Exists-->
 		<cpu:CompareALToImmediate/>
 		<byte>0</byte>
 
@@ -186,14 +187,26 @@
 
 		<cpu:ReadFromDXPortToAL/>
 
-		<cpu:TestALWithImmediate/>
+		<!--<cpu:TestALWithImmediate/>
 		<sta:Error/>
 
 		<cpu:BranchToRelative8IfNotZero/>
-		<addressOf ref="nextChannel" type="Relative8"/>
+		<addressOf ref="nextChannel" type="Relative8"/>-->
 
 		<cpu:TestALWithImmediate/>
-		<sta:DriveFault/>
+		<sta:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="waitForBusy" type="Relative8"/>
+
+		<!--Read Status-->
+		<label id="waitForData"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:TestALWithImmediate/>
+		<sta:Error/>
+		<!--<binary>00000001</binary>-->
 
 		<cpu:BranchToRelative8IfNotZero/>
 		<addressOf ref="nextChannel" type="Relative8"/>
@@ -202,8 +215,8 @@
 		<sta:DataRequest/>
 
 		<cpu:BranchToRelative8IfZero/>
-		<addressOf ref="waitForBusy" type="Relative8"/>
-		
+		<addressOf ref="waitForData" type="Relative8"/>
+
 		<!--Read Data-->
 		<cpu:PushDXToStack/>
 		<cpu:PushCXToStack/>
@@ -222,6 +235,7 @@
 		<cpu:PullCXFromStack/>
 		<cpu:PullDXFromStack/>
 
+		<!--Store Drive Information-->
 		<cpu:LogicFunction/>
 		<logic:PushSIAddressPlusImmediate8/>
 		<byte>8</byte>
@@ -285,7 +299,7 @@
 
 		<cpu:PushDIToStack/>
 
-		<mm:CheckOut length="9"/>
+		<mm:CheckOut length="16"/>
 
 		<cpu:PullSIFromStack/>
 
@@ -309,7 +323,7 @@
 		<cpu:PushSIToStack/>
 
 		<cpu:CopyImmediateToAX/>
-		<int>9</int>
+		<int>16</int>
 
 		<obj:Create/>
 
@@ -531,6 +545,7 @@
 
 		<cpu:ReadFromDXPortToAL/>
 
+		<!--Check Drive Exists-->
 		<cpu:CompareALToImmediate/>
 		<byte>0</byte>
 
@@ -553,14 +568,27 @@
 		<cpu:BranchToRelative8IfNotZero/>
 		<addressOf ref="waitForBusy" type="Relative8"/>
 
+		<!--Read Status-->
+		<label id="waitForData"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:TestALWithImmediate/>
+		<sta:Error/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="nextChannel" type="Relative8"/>
+
+		<cpu:TestALWithImmediate/>
+		<sta:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="waitForData" type="Relative8"/>
+
 		<!--Read Data-->
 		<cpu:PushDXToStack/>
 		<cpu:PushCXToStack/>
 		
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:SubtractFromDXRegister/>
-		<byte>7</byte>
-
 		<cpu:CopyImmediateToCX/>
 		<int>256</int>
 
@@ -635,7 +663,7 @@
 
 		<cpu:PushDIToStack/>
 
-		<mm:CheckOut length="9"/>
+		<mm:CheckOut length="16"/>
 
 		<cpu:PullSIFromStack/>
 
@@ -659,7 +687,7 @@
 		<cpu:PushSIToStack/>
 
 		<cpu:CopyImmediateToAX/>
-		<int>9</int>
+		<int>16</int>
 
 		<obj:Create/>
 
