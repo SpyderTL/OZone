@@ -128,7 +128,8 @@
 		
 		<!--Wait For Delay-->
 		<cpu:CopyImmediateToCX/>
-		<int>195000</int>
+		<!--<int>195000</int>-->
+		<int>175000</int>
 
 		<label id="delay"/>
 			
@@ -187,11 +188,15 @@
 		
 		<label id="notSysEx"/>
 		
+		<!--Get Channel-->
 		<cpu:CopyOperandToRegister8/>
 		<op:AL-SIAddress/>		
 		
 		<cpu:AndALWithImmediate/>
 		<hex>0f</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BXRegister/>
 
 		<cpu:CompareALToImmediate/>
 		<hex>09</hex>
@@ -203,7 +208,8 @@
 		<addressOf ref="forEachEvent" type="Relative32"/>
 		
 		<label id="notDrums"/>
-
+		
+		<!--Get Event-->
 		<cpu:CopyOperandToRegister8/>
 		<op:AL-SIAddress/>		
 		
@@ -222,11 +228,11 @@
 
 		<cpu:BranchToRelative8IfEqual/>
 		<addressOf ref="noteOn" type="Relative8"/>
-
+		
 		<cpu:JumpToRelative/>
 		<addressOf ref="forEachEvent" type="Relative32"/>
 		
-		<label id="noteOn"/>		
+		<label id="noteOn"/>
 		
 		<!--Get Velocity-->
 		<cpu:CopyOperandToRegister8/>
@@ -238,7 +244,19 @@
 
 		<cpu:BranchToRelative8IfEqual/>
 		<addressOf ref="noteOff" type="Relative8"/>
+		
+		<cpu:ExclusiveOrALWithImmediate/>
+		<hex>ff</hex>
 
+		<cpu:ShiftRegisterByImmediateFunction8/>
+		<shift:ShiftALRegisterRight/>
+		<byte>2</byte>
+		
+		<cpu:OrALWithImmediate/>
+		<binary>10000000</binary>
+		
+		<cpu:PushAXToStack/>
+		
 		<!--Find Inactive Voice-->
 		<cpu:CopyImmediateToCX/>
 		<int>9</int>
@@ -271,8 +289,30 @@
 		<cpu:LoopToRelative8WhileNotEqual/>
 		<addressOf ref="forEachVoice" type="Relative8"/>
 
-		<cpu:BranchToRelative8IfNotEqual/>
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="voiceFound" type="Relative8"/>
+		
+		<cpu:PullAXFromStack/>
+		
+		<cpu:JumpToRelative8/>
 		<addressOf ref="nextEvent" type="Relative8"/>
+		
+		<label id="voiceFound"/>
+		
+		<!--Store Velocity-->
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-DIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<!--<cpu:WriteALToDXPort/>
+
+		<cpu:IncrementDX/>-->
+
+		<cpu:PullAXFromStack/>
+		
+		<!--<cpu:WriteALToDXPort/>
+		
+		<cpu:DecrementDX/>-->
 
 		<!--Store Note-->
 		<cpu:CopyOperandToRegister8/>
@@ -282,6 +322,11 @@
 		<cpu:CopyRegisterToOperand8/>
 		<op:AL-DIAddressPlusImmediate8/>
 		<byte>15</byte>
+		
+		<!--Store Channel-->
+		<cpu:CopyRegisterToOperand8/>
+		<op:BL-DIAddressPlusImmediate8/>
+		<byte>14</byte>
 
 		<!--Get Frequency-->
 		<cpu:AndAXWithImmediate/>
@@ -376,6 +421,13 @@
 
 		<cpu:BranchToRelative8IfNotEqual/>
 		<addressOf ref="notNote" type="Relative8"/>
+		
+		<cpu:CompareRegisterToOperand8/>
+		<op:BL-DIAddressPlusImmediate8/>
+		<byte>14</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notNote" type="Relative8"/>
 
 		<cpu:CopyOperandToRegister8/>
 		<op:AL-DIAddressPlusImmediate8/>
@@ -401,7 +453,7 @@
 		<byte>15</byte>
 
 		<label id="notNote"/>
-
+		
 		<cpu:LoopToRelative8/>
 		<addressOf ref="noteOff_forEachVoice" type="Relative8"/>
 
@@ -2827,13 +2879,13 @@
 		<cpu:IncrementDX/>
 
 		<cpu:CopyImmediateToAL/>
-		<hex>00</hex>
+		<binary>10100000</binary>
 
 		<cpu:WriteALToDXPort/>
 
 		<cpu:DecrementDX/>
 
-		<!--Output[1]: 100dB Attenuation-->
+		<!--Output[1]: 0dB Attenuation, Medium Key Scale Level-->
 		<cpu:CopyOperandToRegister8/>
 		<op:AL-BXAddressPlusImmediate8/>
 		<byte>4</byte>
@@ -2843,7 +2895,7 @@
 		<cpu:IncrementDX/>
 
 		<cpu:CopyImmediateToAL/>
-		<hex>3f</hex>
+		<binary>10100000</binary>
 
 		<cpu:WriteALToDXPort/>
 
