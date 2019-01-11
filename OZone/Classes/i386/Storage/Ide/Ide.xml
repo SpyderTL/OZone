@@ -38,7 +38,7 @@
 		<int>0</int>
 
 		<cpu:CopyImmediateToCX/>
-		<int>8</int>
+		<int>4</int>
 
 		<!--Find Hard Drives-->
 		<label id="forEachChannel"/>
@@ -99,17 +99,17 @@
 		<addressOf ref="waitForBusy" type="Relative8"/>
 
 		<!--Read Status-->
-		<!--<cpu:ReadFromDXPortToAL/>
+		<cpu:ReadFromDXPortToAL/>
 
 		<cpu:AndALWithImmediate/>
-		<sta:Error/>-->
+		<sta:Error/>
 		<!--<binary>00000001</binary>-->
 
-		<!--<cpu:CompareALToImmediate/>
+		<cpu:CompareALToImmediate/>
 		<byte>0</byte>
 
 		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="nextChannel" type="Relative8"/>-->
+		<addressOf ref="nextChannel" type="Relative8"/>
 
 		<cpu:LogicFunction/>
 		<logic:PushSIAddressPlusImmediate8/>
@@ -239,7 +239,7 @@
 		<int>0</int>
 
 		<cpu:CopyImmediateToCX/>
-		<int>8</int>
+		<int>4</int>
 
 		<!--Find CD Drives-->
 		<label id="forEachChannel"/>
@@ -277,6 +277,7 @@
 
 		<cpu:ReadFromDXPortToAL/>
 
+		<!--Check Drive Exists-->
 		<cpu:CompareALToImmediate/>
 		<byte>0</byte>
 
@@ -287,11 +288,11 @@
 
 		<cpu:ReadFromDXPortToAL/>
 
-		<cpu:TestALWithImmediate/>
+		<!--<cpu:TestALWithImmediate/>
 		<sta:Error/>
 
 		<cpu:BranchToRelative8IfNotZero/>
-		<addressOf ref="nextChannel" type="Relative8"/>
+		<addressOf ref="nextChannel" type="Relative8"/>-->
 
 		<cpu:TestALWithImmediate/>
 		<sta:Busy/>
@@ -300,18 +301,42 @@
 		<addressOf ref="waitForBusy" type="Relative8"/>
 
 		<!--Read Status-->
-		<!--<cpu:ReadFromDXPortToAL/>
+		<label id="waitForData"/>
+		
+		<cpu:ReadFromDXPortToAL/>
 
-		<cpu:AndALWithImmediate/>
-		<sta:Error/>-->
+		<cpu:TestALWithImmediate/>
+		<sta:Error/>
 		<!--<binary>00000001</binary>-->
 
-		<!--<cpu:CompareALToImmediate/>
-		<byte>0</byte>
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="nextChannel" type="Relative8"/>
 
-		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="nextChannel" type="Relative8"/>-->
+		<cpu:TestALWithImmediate/>
+		<sta:DataRequest/>
+		
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="waitForData" type="Relative8"/>
 
+		<!--Read Data-->
+		<cpu:PushDXToStack/>
+		<cpu:PushCXToStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromDXRegister/>
+		<byte>7</byte>
+
+		<cpu:CopyImmediateToCX/>
+		<int>256</int>
+
+		<cpu:Repeat/>
+		<cpu:Operand16/>
+		<cpu:ReadFromDXPortToAX/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullDXFromStack/>
+
+		<!--Store Drive Information-->
 		<cpu:LogicFunction/>
 		<logic:PushSIAddressPlusImmediate8/>
 		<byte>4</byte>

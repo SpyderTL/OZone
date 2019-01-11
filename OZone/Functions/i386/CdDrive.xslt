@@ -320,9 +320,10 @@
 		<hex>00007000</hex>
 
 		<cpu:CopyImmediateToCX/>
-		<int>128</int>
+		<int>256</int>
 
 		<cpu:Repeat/>
+		<cpu:Operand16/>
 		<cpu:ReadFromDXPortToDIAddressAndIncrementDI/>
 
 		<!--Read Model Number-->

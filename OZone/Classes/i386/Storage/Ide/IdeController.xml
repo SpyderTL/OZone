@@ -176,6 +176,7 @@
 
 		<cpu:ReadFromDXPortToAL/>
 
+		<!--Check Drive Exists-->
 		<cpu:CompareALToImmediate/>
 		<byte>0</byte>
 
@@ -187,13 +188,19 @@
 		<cpu:ReadFromDXPortToAL/>
 
 		<cpu:TestALWithImmediate/>
-		<sta:Error/>
+		<sta:Busy/>
 
 		<cpu:BranchToRelative8IfNotZero/>
-		<addressOf ref="nextChannel" type="Relative8"/>
+		<addressOf ref="waitForBusy" type="Relative8"/>
+
+		<!--Read Status-->
+		<label id="waitForData"/>
+
+		<cpu:ReadFromDXPortToAL/>
 
 		<cpu:TestALWithImmediate/>
-		<sta:DriveFault/>
+		<sta:Error/>
+		<!--<binary>00000001</binary>-->
 
 		<cpu:BranchToRelative8IfNotZero/>
 		<addressOf ref="nextChannel" type="Relative8"/>
@@ -202,15 +209,15 @@
 		<sta:DataRequest/>
 
 		<cpu:BranchToRelative8IfZero/>
-		<addressOf ref="waitForBusy" type="Relative8"/>
-		
+		<addressOf ref="waitForData" type="Relative8"/>
+
 		<!--Read Data-->
 		<cpu:PushDXToStack/>
 		<cpu:PushCXToStack/>
 		
-		<cpu:MathImmediate8ToOperandFunction/>
+		<!--<cpu:MathImmediate8ToOperandFunction/>
 		<math:SubtractFromDXRegister/>
-		<byte>7</byte>
+		<byte>7</byte>-->
 
 		<cpu:CopyImmediateToCX/>
 		<int>256</int>
@@ -222,6 +229,7 @@
 		<cpu:PullCXFromStack/>
 		<cpu:PullDXFromStack/>
 
+		<!--Store Drive Information-->
 		<cpu:LogicFunction/>
 		<logic:PushSIAddressPlusImmediate8/>
 		<byte>8</byte>
@@ -531,6 +539,7 @@
 
 		<cpu:ReadFromDXPortToAL/>
 
+		<!--Check Drive Exists-->
 		<cpu:CompareALToImmediate/>
 		<byte>0</byte>
 
@@ -553,13 +562,30 @@
 		<cpu:BranchToRelative8IfNotZero/>
 		<addressOf ref="waitForBusy" type="Relative8"/>
 
+		<!--Read Status-->
+		<label id="waitForData"/>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:TestALWithImmediate/>
+		<sta:Error/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="nextChannel" type="Relative8"/>
+
+		<cpu:TestALWithImmediate/>
+		<sta:DataRequest/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="waitForData" type="Relative8"/>
+
 		<!--Read Data-->
 		<cpu:PushDXToStack/>
 		<cpu:PushCXToStack/>
-		
-		<cpu:MathImmediate8ToOperandFunction/>
+
+		<!--<cpu:MathImmediate8ToOperandFunction/>
 		<math:SubtractFromDXRegister/>
-		<byte>7</byte>
+		<byte>7</byte>-->
 
 		<cpu:CopyImmediateToCX/>
 		<int>256</int>
