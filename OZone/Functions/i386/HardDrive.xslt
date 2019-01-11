@@ -413,6 +413,16 @@
 		<cpu:ReadFromDXPortToAL/>
 		<cpu:ReadFromDXPortToAL/>
 
+		<label id="waitForBusy"/>
+		
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:TestALWithImmediate/>
+		<sta:Busy/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="waitForBusy" type="Relative8"/>
+		
 		<label id="waitForData"/>
 
 		<cpu:ReadFromDXPortToAL/>
@@ -435,9 +445,10 @@
 		<hex>07</hex>
 
 		<cpu:CopyImmediateToCX/>
-		<int>128</int>
+		<int>256</int>
 
 		<cpu:Repeat/>
+		<cpu:Operand16/>
 		<cpu:ReadFromDXPortToDIAddressAndIncrementDI/>
 
 		<label id="error"/>
