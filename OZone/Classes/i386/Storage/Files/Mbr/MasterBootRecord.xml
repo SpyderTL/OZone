@@ -1,0 +1,909 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Fat32Volume"
+	type="http://metalx.org/Storage/Files/Mbr/MasterBootRecord"
+	xmlns="http://metalx.org/Program"
+	xmlns:dbg="http://metalx.org/i386/Functions/Debug"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:con="http://metalx.org/i386/Functions/Console"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:byte="http://metalx.org/i386/Functions/Byte"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:fd="http://metalx.org/i386/Functions/FloppyDrive"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
+	xmlns:inc="http://metalx.org/Intel/80386/Increment"
+	xmlns:index="http://metalx.org/Intel/80386/Index"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands"
+	xmlns:cls="http://metalx.org/Class">
+
+	<cls:field name="Reader" offset="0" type="http://metalx.org/Reference"/>
+
+	<cls:method name="Create" type="http://metalx.org/Storage/Files/Mbr/MasterBootRecord" static="true">
+		<cls:parameter name="Reader" type="http://metalx.org/Reader"/>
+
+		<mm:CheckOut length="4"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddress/>
+
+		<obj:Create length="4"/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetLabel" type="http://metalx.org/String>">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>0000002b</hex>
+
+		<cpu:AddOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<int:CreateObject/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:ExecuteMethod name="SetPosition"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyImmediateToAX/>
+		<int>11</int>
+
+		<int:CreateObject/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:ExecuteMethod name="ReadString"/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetFolders" type="http://metalx.org/Storage/Files/FolderList">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<cpu:PushSIToStack/>
+		
+		<!--Get Reserved Sector Count-->
+		<cpu:CopyImmediateToAX/>
+		<hex>0000000e</hex>
+
+		<int:CreateObject/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:ExecuteMethod name="SetPosition"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:ExecuteMethod name="ReadShort"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:Operand16/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<cpu:PushAXToStack/>
+		
+		<!--Get FAT Table Count-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<obj:ExecuteMethod name="ReadByte"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToALAndIncrementSI/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<cpu:PushAXToStack/>
+
+		<!--Get	Root Directory Size-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+
+		<obj:ExecuteMethod name="ReadShort"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:Operand16/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<cpu:PushAXToStack/>
+		
+		<!--Get FAT Table Size-->
+		<cpu:CopyImmediateToAX/>
+		<hex>00000016</hex>
+
+		<int:CreateObject/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>12</byte>
+
+		<obj:ExecuteMethod name="SetPosition"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:ExecuteMethod name="ReadShort"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:Operand16/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<cpu:PullCXFromStack/>
+
+		<cpu:PullBXFromStack/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByBXRegister/>
+
+		<cpu:PullBXFromStack/>
+
+		<cpu:AddRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyImmediateToBX/>
+		<int>512</int>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByBXRegister/>
+		
+		<!--Find Directories-->
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:BX-BXRegister/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+		
+		<label id="nextEntry"/>
+
+		<cpu:PushCXToStack/>
+		<cpu:PushAXToStack/>
+		<cpu:PushBXToStack/>
+		<cpu:PushSIToStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToAXRegister/>
+		<hex>0b</hex>
+		
+		<int:CreateObject/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:ExecuteMethod name="SetPosition"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:ExecuteMethod name="ReadByte"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToALAndIncrementSI/>
+
+		<cpu:TestALWithImmediate/>
+		<hex>10</hex>
+
+		<cpu:PullSIFromStack/>
+		<cpu:PullBXFromStack/>
+		<cpu:PullAXFromStack/>
+		<cpu:PullCXFromStack/>
+		
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="skipEntry" type="Relative8"/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:PushAXToStack/>
+
+		<label id="skipEntry"/>
+		
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToAXRegister/>
+		<byte>32</byte>
+
+		<cpu:DecrementCX/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="createList" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="nextEntry" type="Relative32"/>
+
+		<label id="createList"/>
+
+		<!--Create List-->
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<lst:Create/>
+
+		<!--Find Fat32Folder Class-->
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+		<cpu:PushBXToStack/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="Fat32Folder" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+		
+		<cpu:PullCXFromStack/>
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:CompareWithCXRegister/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="forEachDevice" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="createListObject" type="Relative32"/>
+
+		<!--Create FdcFloppyDrive Objects-->
+		<label id="forEachDevice"/>
+
+		<cpu:PullAXFromStack/>
+		
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+
+		<mm:CheckOut length="12"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIAddress/>
+		
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<obj:Create length="12"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:DecrementAX/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+		
+		<lst:SetItem/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachDevice" type="Relative8"/>
+
+		<!--Create List Object-->
+		<label id="createListObject"/>
+
+		<!--Get Item Count-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-DIAddress/>
+
+		<cpu:IncrementAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<obj:Create type="http://metalx.org/Storage/Files/FolderList"/>
+
+		<cpu:PullSIFromStack/>
+		
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="Fat32Folder">http://metalx.org/Storage/Files/Fat32/Fat32Folder</var:string>
+	</cls:method>
+
+	<cls:method name="GetFiles" type="http://metalx.org/Storage/Files/FileList">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<cpu:PushSIToStack/>
+
+		<!--Get Reserved Sector Count-->
+		<cpu:CopyImmediateToAX/>
+		<hex>0000000e</hex>
+
+		<int:CreateObject/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:ExecuteMethod name="SetPosition"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:ExecuteMethod name="ReadShort"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:Operand16/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<cpu:PushAXToStack/>
+
+		<!--Get FAT Table Count-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<obj:ExecuteMethod name="ReadByte"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToALAndIncrementSI/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000000ff</hex>
+
+		<cpu:PushAXToStack/>
+
+		<!--Get	Root Directory Size-->
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+
+		<obj:ExecuteMethod name="ReadShort"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:Operand16/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<cpu:PushAXToStack/>
+
+		<!--Get FAT Table Size-->
+		<cpu:CopyImmediateToAX/>
+		<hex>00000016</hex>
+
+		<int:CreateObject/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>12</byte>
+
+		<obj:ExecuteMethod name="SetPosition"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:ExecuteMethod name="ReadShort"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:Operand16/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>0000ffff</hex>
+
+		<cpu:PullCXFromStack/>
+
+		<cpu:PullBXFromStack/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByBXRegister/>
+
+		<cpu:PullBXFromStack/>
+
+		<cpu:AddRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<cpu:CopyImmediateToBX/>
+		<int>512</int>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByBXRegister/>
+
+		<!--Find Files-->
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:BX-BXRegister/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<label id="nextEntry"/>
+
+		<cpu:PushCXToStack/>
+		<cpu:PushAXToStack/>
+		<cpu:PushBXToStack/>
+		<cpu:PushSIToStack/>
+
+		<int:CreateObject/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:ExecuteMethod name="SetPosition"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:ExecuteMethod name="ReadByte"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToALAndIncrementSI/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notEmpty" type="Relative8"/>
+
+		<cpu:PullSIFromStack/>
+		<cpu:PullBXFromStack/>
+		<cpu:PullAXFromStack/>
+		<cpu:PullCXFromStack/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="skipEntry" type="Relative32"/>
+
+		<label id="notEmpty"/>
+
+		<cpu:CompareALToImmediate/>
+		<hex>e5</hex>
+		
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notDeleted" type="Relative8"/>
+
+		<cpu:PullSIFromStack/>
+		<cpu:PullBXFromStack/>
+		<cpu:PullAXFromStack/>
+		<cpu:PullCXFromStack/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="skipEntry" type="Relative32"/>
+
+		<label id="notDeleted"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToAXRegister/>
+		<hex>0b</hex>
+
+		<int:CreateObject/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:ExecuteMethod name="SetPosition"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:ExecuteMethod name="ReadByte"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopySIAddressToALAndIncrementSI/>
+
+		<cpu:AndALWithImmediate/>
+		<hex>da</hex>
+
+		<cpu:PullSIFromStack/>
+		<cpu:PullBXFromStack/>
+		<cpu:PullAXFromStack/>
+		<cpu:PullCXFromStack/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="skipEntry" type="Relative8"/>
+
+		<cpu:IncrementBX/>
+
+		<cpu:PushAXToStack/>
+
+		<label id="skipEntry"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToAXRegister/>
+		<byte>32</byte>
+
+		<cpu:DecrementCX/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="createList" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="nextEntry" type="Relative32"/>
+
+		<label id="createList"/>
+
+		<!--Create List-->
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-AXRegister/>
+
+		<lst:Create/>
+
+		<!--Find Fat32File Class-->
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+		<cpu:PushBXToStack/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="Fat32File" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-BXRegister/>
+
+		<cpu:PullCXFromStack/>
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:CompareWithCXRegister/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="nextFile" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="createListObject" type="Relative32"/>
+
+		<!--Create FdcFloppyDrive Objects-->
+		<label id="nextFile"/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+
+		<mm:CheckOut length="12"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIAddress/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<obj:Create length="12"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:CX-AXRegister/>
+
+		<cpu:DecrementAX/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddress/>
+		<index:SP/>
+
+		<lst:SetItem/>
+
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextFile" type="Relative8"/>
+
+		<!--Create List Object-->
+		<label id="createListObject"/>
+
+		<!--Get Item Count-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-DIAddress/>
+
+		<cpu:IncrementAX/>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<obj:Create type="http://metalx.org/Storage/Files/FileList"/>
+
+		<cpu:PullSIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="Fat32File">http://metalx.org/Storage/Files/Fat32/Fat32File</var:string>
+	</cls:method>
+
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="className" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="className">FAT32 Volume</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<label id="readByte">
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:IncrementFunction/>
+		<inc:IncrementSIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>000001ff</hex>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="skipReadBlock2" type="Relative8"/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="readBlock" type="Relative32"/>
+
+		<cpu:PullAXFromStack/>
+
+		<label id="skipReadBlock2"/>
+
+		<cpu:AddImmediateToAX/>
+		<hex>00008000</hex>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AL-AXAddress/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+
+	<label id="readBlock">
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:ShiftRegisterByImmediate8Function/>
+		<shift:ShiftAXRegisterRight/>
+		<byte>9</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DX-SIAddress/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:BL-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:MathImmediateToOperandFunction/>
+		<math:AndWithBXRegister/>
+		<hex>000000ff</hex>
+
+		<cpu:CopyImmediateToDI/>
+		<hex>00008000</hex>
+
+		<fd:ReadBlock/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+</cls:class>
