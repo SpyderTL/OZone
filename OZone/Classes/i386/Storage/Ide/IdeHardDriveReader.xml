@@ -13,11 +13,11 @@
 	xmlns:str="http://metalx.org/i386/Functions/String"
 	xmlns:clsf="http://metalx.org/i386/Functions/Class"
 	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:hd="http://metalx.org/i386/Functions/HardDrive"
 	xmlns:var="http://metalx.org/Variable"
 	xmlns:sys="http://metalx.org/i386/Functions/System"
 	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
 	xmlns:obj="http://metalx.org/i386/Functions/Object"
-	xmlns:hd="http://metalx.org/i386/Functions/HardDrive"
 	xmlns:asc="http://metalx.org/Ansi/Ascii"
 	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
 	xmlns:logic="http://metalx.org/Intel/80386/Logic"
@@ -123,6 +123,56 @@
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
 		<byte>4</byte>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="ReadObject" type="http://metalx.org/Storage/Ide/IdeHardDriveReader">
+		<cls:parameter name="Object" type="http://metalx.org/Object"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<obj:GetDataLength/>
+
+		<obj:GetData/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<label id="nextByte"/>
+
+		<cpu:PushCXToStack/>
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+
+		<cpu:CallRelative/>
+		<addressOf ref="readByte" type="Relative32"/>
+
+		<cpu:PullDIFromStack/>
+
+		<cpu:CopyALToDIAddressAndIncrementDI/>
+
+		<cpu:PullCXFromStack/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="nextByte" type="Relative8"/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
+
+		<cpu:PullDIFromStack/>
 
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
