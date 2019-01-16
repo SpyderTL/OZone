@@ -62,10 +62,9 @@
 
 		<mm:CheckOut length="16"/>
 
-		<cpu:CopyImmediateToBX/>
-		<int>0</int>
-		
-		<obj:Create length="16"/>
+		<cpu:PushDIToStack/>
+
+		<obj:Create length="16" type="http://metalx.org/Object"/>
 
 		<cpu:PushDIToStack/>
 
@@ -87,12 +86,26 @@
 		<cpu:CopyOperandToRegister/>
 		<op:SI-IndexAddressPlusImmediate8/>
 		<index:SP/>
-		<byte>8</byte>
+		<byte>12</byte>
 		
 		<obj:ExecuteMethod name="SetPosition"/>
 
-		<cpu:CopyRegisterToOperand/>
-		<op:DI-SIRegister/>
+		<!--Read Volumes-->
+		<cpu:CopyImmediateToCX/>
+		<int>4</int>
+
+		<cpu:CopyImmediateToBX/>
+		<int>0</int>
+
+		<label id="forEachVolume"/>
+
+		<cpu:PushCXToStack/>
+		<cpu:PushBXToStack/>
+		
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>20</byte>
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:SubtractFromBPRegister/>
@@ -101,13 +114,72 @@
 		<cpu:CopyOperandToRegister/>
 		<op:DI-IndexAddressPlusImmediate8/>
 		<index:SP/>
-		<byte>4</byte>
+		<byte>12</byte>
 		
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-BPAddressPlusImmediate8/>
 		<byte>0</byte>
 
 		<obj:ExecuteMethod name="ReadObject"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>16</byte>
+
+		<cpu:MathImmediateToOperandFunction8/>
+		<math:CompareWithSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<hex>0c</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFat32" type="Relative8"/>
+
+		<cpu:IncrementFunction/>
+		<inc:IncrementIndexAddress/>
+		<index:SP/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
+		<byte>8</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>8</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>12</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<label id="notFat32"/>
+
+		<cpu:PullBXFromStack/>
+		<cpu:PullCXFromStack/>
+		
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachVolume" type="Relative8"/>
+		
+		
+		<!--<cpu:CopyOperandToRegister/>
+		<op:DI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>4</byte>
+		
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSPRegister/>
+		<byte>12</byte>
+
+		<cpu:ReturnToNearCaller/>-->
+		
+		
 		
 		<!--Get Reserved Sector Count--><!--
 		<cpu:CopyImmediateToAX/>
@@ -415,9 +487,6 @@
 
 		<!--Create Volume Objects-->
 		<label id="nextVolume"/>
-
-		<cpu:PullAXFromStack/>
-
 		<cpu:PushSIToStack/>
 		<cpu:PushDIToStack/>
 
@@ -426,14 +495,26 @@
 		<cpu:CopyOperandToRegister/>
 		<op:SI-IndexAddressPlusImmediate8/>
 		<index:SP/>
-		<byte>4</byte>
+		<byte>24</byte>
 
 		<cpu:CopyRegisterToOperand/>
 		<op:SI-DIAddress/>
 
+		<cpu:CopyOperandToRegister/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<byte>4</byte>
+
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-DIAddressPlusImmediate8/>
 		<byte>4</byte>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DIAddressPlusImmediate8/>
+		<byte>8</byte>
 
 		<obj:Create length="12"/>
 
@@ -447,6 +528,10 @@
 		<index:SP/>
 
 		<lst:SetItem/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToBPRegister/>
+		<byte>4</byte>
 
 		<cpu:PullDIFromStack/>
 		<cpu:PullSIFromStack/>
@@ -471,7 +556,7 @@
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToSPRegister/>
-		<byte>12</byte>
+		<byte>16</byte>
 
 		<cpu:ReturnToNearCaller/>
 
