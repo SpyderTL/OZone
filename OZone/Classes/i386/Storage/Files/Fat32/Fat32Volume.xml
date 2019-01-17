@@ -31,12 +31,11 @@
 	xmlns:cls="http://metalx.org/Class">
 
 	<cls:field name="Reader" offset="0" type="http://metalx.org/Reference"/>
-	<cls:field name="Offset" offset="4" type="http://metalx.org/Integer"/>
 
 	<cls:method name="Create" type="http://metalx.org/Storage/Files/Fat32/Fat32Volume" static="true">
 		<cls:parameter name="Reader" type="http://metalx.org/Reader"/>
 
-		<mm:CheckOut length="8"/>
+		<mm:CheckOut length="4"/>
 
 		<cpu:CopyOperandToRegister/>
 		<op:AX-BPAddressPlusImmediate8/>
@@ -45,12 +44,7 @@
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-DIAddress/>
 
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToDIAddressPlusImmediate8/>
-		<byte>4</byte>
-		<int>0</int>
-
-		<obj:Create length="8"/>
+		<obj:Create length="4"/>
 
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
@@ -62,13 +56,9 @@
 		<obj:GetData/>
 
 		<cpu:CopyOperandToRegister/>
-		<op:AX-SIAddressPlusImmediate8/>
-		<byte>4</byte>
-
-		<cpu:CopyOperandToRegister/>
 		<op:SI-SIAddress/>
 
-		<cpu:AddImmediateToAX/>
+		<cpu:CopyImmediateToAX/>
 		<hex>00000047</hex>
 
 		<int:CreateObject/>
@@ -354,7 +344,7 @@
 		<cpu:JumpToRelative/>
 		<addressOf ref="createListObject" type="Relative32"/>
 
-		<!--Create FdcFloppyDrive Objects-->
+		<!--Create Fat32Folder Objects-->
 		<label id="forEachDevice"/>
 
 		<cpu:PullAXFromStack/>

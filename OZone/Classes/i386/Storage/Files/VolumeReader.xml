@@ -78,8 +78,10 @@
 
 		<obj:GetData/>
 
-		<cpu:LogicFunction/>
-		<logic:PushSIAddress/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<cpu:PushAXToStack/>
 
 		<cpu:CopyOperandToRegister/>
 		<op:AX-SIAddressPlusImmediate8/>
@@ -113,8 +115,8 @@
 		<cls:parameter name="Length" type="http://metalx.org/Integer"/>
 
 		<cpu:PushDIToStack/>
-		
-		<cpu:CopyOperandToRegister/>
+
+		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
 
 		<obj:GetData/>
@@ -129,10 +131,13 @@
 	<cls:method name="ReadObject" type="http://metalx.org/Storage/Files/VolumeReader">
 		<cls:parameter name="Object" type="http://metalx.org/Object"/>
 
-		<cpu:CopyOperandToRegister/>
+		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
 
 		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
 
 		<obj:ExecuteMethod name="ReadObject"/>
 
@@ -140,17 +145,27 @@
 	</cls:method>
 
 	<cls:method name="ReadBoolean" type="http://metalx.org/Boolean">
-		<cpu:CopyImmediateToDI/>
-		<int>0</int>
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<obj:ExecuteMethod name="ReadBoolean"/>
 
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
 
 	<cls:method name="ReadByte" type="http://metalx.org/Byte">
-		<cpu:CopyOperandToRegister/>
+		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
 
 		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
 
 		<obj:ExecuteMethod name="ReadByte"/>
 
@@ -158,10 +173,13 @@
 	</cls:method>
 
 	<cls:method name="ReadShort" type="http://metalx.org/Short">
-		<cpu:CopyOperandToRegister/>
+		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
 
 		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
 
 		<obj:ExecuteMethod name="ReadShort"/>
 
@@ -169,10 +187,13 @@
 	</cls:method>
 
 	<cls:method name="ReadInteger" type="http://metalx.org/Integer">
-		<cpu:CopyOperandToRegister/>
+		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
 
 		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
 
 		<obj:ExecuteMethod name="ReadInteger"/>
 
@@ -180,10 +201,13 @@
 	</cls:method>
 
 	<cls:method name="ReadFloat" type="http://metalx.org/Float">
-		<cpu:CopyOperandToRegister/>
+		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
 
 		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
 
 		<obj:ExecuteMethod name="ReadFloat"/>
 
@@ -191,10 +215,13 @@
 	</cls:method>
 
 	<cls:method name="ReadDouble" type="http://metalx.org/Double">
-		<cpu:CopyOperandToRegister/>
+		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
 
 		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
 
 		<obj:ExecuteMethod name="ReadDouble"/>
 
@@ -202,10 +229,13 @@
 	</cls:method>
 
 	<cls:method name="ReadReal" type="http://metalx.org/Real">
-		<cpu:CopyOperandToRegister/>
+		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
 
 		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
 
 		<obj:ExecuteMethod name="ReadReal"/>
 
@@ -215,10 +245,13 @@
 	<cls:method name="ReadString" type="http://metalx.org/String">
 		<cls:parameter name="Count" type="http://metalx.org/Integer"/>
 
-		<cpu:CopyOperandToRegister/>
+		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
 
 		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
 
 		<obj:ExecuteMethod name="ReadString"/>
 
