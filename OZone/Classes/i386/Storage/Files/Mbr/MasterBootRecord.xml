@@ -198,6 +198,27 @@
 
 		<lst:Create/>
 
+		<!--Find VolumeReader Class-->
+		<cpu:PushSIToStack/>
+		<cpu:PushDIToStack/>
+		<cpu:PushBXToStack/>
+
+		<sys:GetCatalog/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="VolumeReader" type="Absolute32"/>
+
+		<cat:FindType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-AXRegister/>
+
+		<cpu:PullBXFromStack/>
+		<cpu:PullDIFromStack/>
+		<cpu:PullSIFromStack/>
+
+		<cpu:PushAXToStack/>
+
 		<!--Find Fat32Volume Class-->
 		<cpu:PushSIToStack/>
 		<cpu:PushDIToStack/>
@@ -211,11 +232,13 @@
 		<cat:FindType/>
 
 		<cpu:CopyRegisterToOperand/>
-		<op:SI-BXRegister/>
+		<op:SI-AXRegister/>
 
 		<cpu:PullCXFromStack/>
 		<cpu:PullDIFromStack/>
 		<cpu:PullSIFromStack/>
+
+		<cpu:PushAXToStack/>
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:CompareWithCXRegister/>
@@ -232,13 +255,14 @@
 		
 		<cpu:PushSIToStack/>
 		<cpu:PushDIToStack/>
-
+		
+		<!--Create Volume Reader-->
 		<mm:CheckOut length="12"/>
 
 		<cpu:CopyOperandToRegister/>
 		<op:SI-IndexAddressPlusImmediate8/>
 		<index:SP/>
-		<byte>20</byte>
+		<byte>28</byte>
 
 		<cpu:CopyRegisterToOperand/>
 		<op:SI-DIAddress/>
@@ -259,6 +283,31 @@
 		<op:AX-DIAddressPlusImmediate8/>
 		<byte>8</byte>
 
+		<cpu:CopyOperandToRegister/>
+		<op:BX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>12</byte>
+
+		<obj:Create length="12"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<mm:CheckOut length="12"/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIAddress/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<int>0</int>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+
 		<obj:Create length="12"/>
 
 		<cpu:CopyRegisterToOperand/>
@@ -274,13 +323,18 @@
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
-		<byte>4</byte>
+		<byte>8</byte>
 
 		<cpu:PullDIFromStack/>
 		<cpu:PullSIFromStack/>
 
-		<cpu:LoopToRelative8/>
-		<addressOf ref="nextVolume" type="Relative8"/>
+		<cpu:DecrementCX/>
+		
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="createListObject" type="Relative8"/>
+
+		<cpu:JumpToRelative/>
+		<addressOf ref="nextVolume" type="Relative32"/>
 
 		<!--Create List Object-->
 		<label id="createListObject"/>
@@ -299,10 +353,11 @@
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToSPRegister/>
-		<byte>16</byte>
+		<byte>24</byte>
 
 		<cpu:ReturnToNearCaller/>
 
+		<var:string id="VolumeReader">http://metalx.org/Storage/Files/VolumeReader</var:string>
 		<var:string id="Fat32Volume">http://metalx.org/Storage/Files/Fat32/Fat32Volume</var:string>
 	</cls:method>
 
