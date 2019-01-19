@@ -1,1 +1,31 @@
 ﻿ClusterAddress = VolumeAddress + (BootSector.ReservedSectorCount + (BootSector.TableCount * BootSector.SectorsPerTable) + ((Cluster - 2) * BootSector.SectorsPerCluster) * BootSector.BytesPerSector) + (BootSector.RootEntryCount * 32);
+
+
+VolumeBootRecord
+	0x00		Code								3
+	0x03		OemName						8
+	0x0B		BytesPerSector				2
+	0x0D		SectorsPerCluster			1
+	0x0E		ReservedSectors			2
+	0x10		FatTableCount				1
+	0x11		RootDirectoryCount		2
+	0x13		SectorCount					2		// 0 - Use SectorCount2
+	0x15		MediaDescriptor			2
+	0x16		SectorsPerFatTable			2		// 0 - Use SectorsPerFatTable2
+	0x18		SectorsPerTrack				2
+	0x1A		HeadCount					2
+	0x1C		HiddenSectorCount		4
+	0x20		SectorCount2					4
+	0x24		SectorsPerFatTable2		4
+	0x28		Flags								2
+	0x2A		Version							2
+		Major										1
+		Minor										1
+	0x2C		RootDirectoryCluster		4
+
+
+	0x00		Signature						2		(0x55 0xAA)
+
+FatTable
+	Cluster[]
+		NextCluster			4
