@@ -107,38 +107,58 @@
 		<op:SI-ImmediateAddress/>
 		<addressOf ref="reader" type="Absolute32"/>
 
-		<!--Find Root Folder First Block-->
 		<cpu:CallRelative/>
 		<addressOf ref="readBootRecord" type="Relative32"/>
+
+		<!--Find Root Folder First Cluster-->
+		<cpu:CopyOperandToRegister/>
+		<op:AX-ImmediateAddress/>
+		<hex>00009e2c</hex>
+
+		<cpu:CopyAXToAbsoluteMemory/>
+		<addressOf ref="cluster" type="Absolute32"/>
+
+		<!--Load Cluster-->
+		<label id="loadCluster"/>
 
 		<cpu:ExclusiveOrRegisterWithOperand/>
 		<op:AX-AXRegister/>
 
 		<cpu:CopyOperandToRegister8/>
 		<op:AL-ImmediateAddress/>
-		<hex>00009210</hex>
+		<hex>00009e10</hex>
 
 		<cpu:ArithmeticDXAXOperandFunction/>
 		<ari:MultiplyByImmediateAddress/>
-		<hex>00009224</hex>
+		<hex>00009e24</hex>
 
 		<cpu:PushAXToStack/>
-		
-		<cpu:CopyOperandToRegister/>
-		<op:AX-ImmediateAddress/>
-		<hex>0000922c</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-ImmediateAddress/>
+		<hex>00009e0d</hex>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByImmediateAddress/>
+		<addressOf ref="blockSize" type="Absolute32"/>
+
+		<cpu:CopyAXToAbsoluteMemory/>
+		<addressOf ref="buffer" type="Absolute32" offset="8"/>
+
+		<cpu:PullBXFromStack/>
+
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<addressOf ref="cluster" type="Absolute32"/>
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:SubtractFromAXRegister/>
 		<byte>2</byte>
 
-		<cpu:ExclusiveOrRegisterWithOperand/>
-		<op:BX-BXRegister/>
-
-		<cpu:CopyOperandToRegister8/>
-		<op:BL-ImmediateAddress/>
-		<hex>0000920d</hex>
-		
 		<cpu:ArithmeticDXAXOperandFunction/>
 		<ari:MultiplyByBXRegister/>
 
@@ -153,7 +173,7 @@
 		<cpu:Operand16/>
 		<cpu:CopyOperandToRegister/>
 		<op:BX-ImmediateAddress/>
-		<hex>0000920e</hex>
+		<hex>00009e0e</hex>
 
 		<cpu:AddRegisterToOperand/>
 		<op:BX-AXRegister/>
@@ -164,14 +184,13 @@
 		<cpu:Operand16/>
 		<cpu:CopyOperandToRegister/>
 		<op:BX-ImmediateAddress/>
-		<hex>0000920b</hex>
+		<hex>00009e0b</hex>
 
 		<cpu:ArithmeticDXAXOperandFunction/>
 		<ari:MultiplyByBXRegister/>
 
 		<cpu:PushAXToStack/>
 
-		<!--Load Block-->
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-ImmediateAddress/>
 		<hex>00009000</hex>
@@ -261,10 +280,37 @@
 		<cpu:CopyImmediateToCX/>
 		<int>16</int>
 
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<hex>00009e0d</hex>
+
+		<cpu:ArithmeticDXAXOperandFunction/>
+		<ari:MultiplyByCXRegister/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+
 		<cpu:CopyImmediateToBX/>
 		<int>0</int>
 
 		<label id="nextEntry"/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:CompareALToImmediate/>
+		<hex>00</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="skipEntry" type="Relative8"/>
+
+		<cpu:CompareALToImmediate/>
+		<hex>e5</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="skipEntry" type="Relative8"/>
 
 		<cpu:CopyOperandToRegister8/>
 		<op:AL-SIAddressPlusImmediate8/>
@@ -309,19 +355,12 @@
 
 		<!--<cpu:PushBXToStack/>
 
-		<cpu:CopyOperandToRegister/>
-		<op:AX-ImmediateAddress/>
+		<cpu:CopyAbsoluteMemoryToAX/>
 		<addressOf ref="cluster" type="Absolute32"/>
-
-		<cpu:ShiftRegisterByOneFunction/>
-		<shift:ShiftAXRegisterRight/>
 
 		<cpu:ArithmeticDXAXOperandFunction/>
 		<ari:MultiplyByImmediateAddress/>
 		<addressOf ref="fatEntrySize" type="Absolute32"/>
-
-		<cpu:AddImmediateToAX/>
-		<int>512</int>
 
 		<int:CreateObject/>
 
@@ -363,9 +402,9 @@
 		<addressOf ref="createList" type="Relative8"/>
 
 		<cpu:JumpToRelative/>
-		<addressOf ref="loadBlock" type="Relative32"/>
+		<addressOf ref="loadBlock" type="Relative32"/>-->
 
-		<label id="createList"/>-->
+		<label id="createList"/>
 
 		<!--Create List-->
 		<cpu:CopyRegisterToOperand/>
@@ -496,17 +535,17 @@
 
 		<cpu:CopyOperandToRegister8/>
 		<op:AL-ImmediateAddress/>
-		<hex>00009210</hex>
+		<hex>00009e10</hex>
 
 		<cpu:ArithmeticDXAXOperandFunction/>
 		<ari:MultiplyByImmediateAddress/>
-		<hex>00009224</hex>
+		<hex>00009e24</hex>
 
 		<cpu:PushAXToStack/>
 
 		<cpu:CopyOperandToRegister/>
 		<op:AX-ImmediateAddress/>
-		<hex>0000922c</hex>
+		<hex>00009e2c</hex>
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:SubtractFromAXRegister/>
@@ -517,7 +556,7 @@
 
 		<cpu:CopyOperandToRegister8/>
 		<op:BL-ImmediateAddress/>
-		<hex>0000920d</hex>
+		<hex>00009e0d</hex>
 
 		<cpu:ArithmeticDXAXOperandFunction/>
 		<ari:MultiplyByBXRegister/>
@@ -533,7 +572,7 @@
 		<cpu:Operand16/>
 		<cpu:CopyOperandToRegister/>
 		<op:BX-ImmediateAddress/>
-		<hex>0000920e</hex>
+		<hex>00009e0e</hex>
 
 		<cpu:AddRegisterToOperand/>
 		<op:BX-AXRegister/>
@@ -544,7 +583,7 @@
 		<cpu:Operand16/>
 		<cpu:CopyOperandToRegister/>
 		<op:BX-ImmediateAddress/>
-		<hex>0000920b</hex>
+		<hex>00009e0b</hex>
 
 		<cpu:ArithmeticDXAXOperandFunction/>
 		<ari:MultiplyByBXRegister/>
@@ -587,51 +626,6 @@
 
 		<obj:ExecuteMethod name="ReadObject"/>
 
-		<!--<label id="loadBlock"/>
-
-		<cpu:CopyRegisterToOperand/>
-		<op:AX-ImmediateAddress/>
-		<addressOf ref="cluster" type="Absolute32"/>
-
-		<cpu:AddImmediateToAX/>
-		<int>31</int>
-
-		<cpu:ShiftRegisterByImmediate8Function/>
-		<shift:ShiftAXRegisterLeft/>
-		<byte>9</byte>
-
-		<cpu:PushAXToStack/>
-		<cpu:PushBXToStack/>
-
-		<int:CreateObject/>
-
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:SubtractFromBPRegister/>
-		<byte>4</byte>
-
-		<cpu:CopyRegisterToOperand/>
-		<op:DI-BPAddressPlusImmediate8/>
-		<byte>0</byte>
-
-		<cpu:CopyRegisterToOperand/>
-		<op:DI-SIRegister/>
-
-		<cpu:MathImmediate8ToOperandFunction/>
-		<math:SubtractFromBPRegister/>
-		<byte>4</byte>
-
-		<cpu:CopyImmediateToAX/>
-		<addressOf ref="buffer" type="Absolute32"/>
-
-		<cpu:CopyRegisterToOperand/>
-		<op:AX-BPAddressPlusImmediate8/>
-		<byte>0</byte>
-
-		<obj:ExecuteMethod name="ReadObject"/>
-
-		<cpu:PullBXFromStack/>
-		<cpu:PullDIFromStack/>-->
-
 		<!--Find Files-->
 		<cpu:CopyImmediateToSI/>
 		<hex>00009000</hex>
@@ -647,6 +641,21 @@
 		<label id="nextEntry"/>
 
 		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:CompareALToImmediate/>
+		<hex>00</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="skipEntry" type="Relative8"/>
+
+		<cpu:CompareALToImmediate/>
+		<hex>e5</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="skipEntry" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister8/>
 		<op:AL-SIAddressPlusImmediate8/>
 		<hex>0b</hex>
 
@@ -654,12 +663,6 @@
 		<hex>10</hex>
 
 		<cpu:BranchToRelative8IfNotZero/>
-		<addressOf ref="skipEntry" type="Relative8"/>
-
-		<cpu:CompareALToImmediate/>
-		<hex>e5</hex>
-
-		<cpu:BranchToRelative8IfEqual/>
 		<addressOf ref="skipEntry" type="Relative8"/>
 
 		<cpu:CopyOperandToRegister8/>
@@ -908,7 +911,7 @@
 		<scope>
 			<cpu:CopyImmediateToOperandFunction/>
 			<imm:CopyImmediateToImmediateAddress/>
-			<hex>00009200</hex>
+			<hex>00009e00</hex>
 			<int>0</int>
 
 			<cpu:MathImmediate8ToOperandFunction/>
@@ -942,7 +945,7 @@
 
 			<label id="buffer"/>
 			<int>0</int>
-			<hex>00009200</hex>
+			<hex>00009e00</hex>
 			<int>512</int>
 		</scope>
 	</label>

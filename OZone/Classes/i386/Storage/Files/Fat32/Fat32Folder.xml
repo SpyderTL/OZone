@@ -97,6 +97,10 @@
 		<!--Read Cluster-->
 		<cpu:PushAXToStack/>
 
+		<cpu:CopyOperandToRegister/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="reader" type="Absolute32"/>
+
 		<cpu:CallRelative/>
 		<addressOf ref="readBootRecord" type="Relative32"/>
 
@@ -154,13 +158,7 @@
 		<hex>0000920b</hex>
 
 		<cpu:ArithmeticDXAXOperandFunction/>
-		<ari:MultiplyByBXRegister/>
-		
-		
-		<int:CreateObject/>
-
-		<cls:return/>
-		
+		<ari:MultiplyByBXRegister/>		
 
 		<cpu:PushAXToStack/>
 
@@ -214,6 +212,21 @@
 
 		<label id="nextEntry"/>
 
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:CompareALToImmediate/>
+		<hex>00</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="skipEntry" type="Relative8"/>
+
+		<cpu:CompareALToImmediate/>
+		<hex>e5</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="skipEntry" type="Relative8"/>
+		
 		<cpu:CopyOperandToRegister8/>
 		<op:AL-SIAddressPlusImmediate8/>
 		<hex>0b</hex>
@@ -490,6 +503,10 @@
 		<!--Read Cluster-->
 		<cpu:PushAXToStack/>
 
+		<cpu:CopyOperandToRegister/>
+		<op:SI-ImmediateAddress/>
+		<addressOf ref="reader" type="Absolute32"/>
+
 		<cpu:CallRelative/>
 		<addressOf ref="readBootRecord" type="Relative32"/>
 
@@ -602,6 +619,21 @@
 		<label id="nextEntry"/>
 
 		<cpu:CopyOperandToRegister8/>
+		<op:AL-SIAddress/>
+
+		<cpu:CompareALToImmediate/>
+		<hex>00</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="skipEntry" type="Relative8"/>
+
+		<cpu:CompareALToImmediate/>
+		<hex>e5</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="skipEntry" type="Relative8"/>
+
+		<cpu:CopyOperandToRegister8/>
 		<op:AL-SIAddressPlusImmediate8/>
 		<hex>0b</hex>
 
@@ -609,12 +641,6 @@
 		<hex>10</hex>
 
 		<cpu:BranchToRelative8IfNotZero/>
-		<addressOf ref="skipEntry" type="Relative8"/>
-
-		<cpu:CompareALToImmediate/>
-		<hex>e5</hex>
-
-		<cpu:BranchToRelative8IfEqual/>
 		<addressOf ref="skipEntry" type="Relative8"/>
 
 		<cpu:CopyOperandToRegister8/>
