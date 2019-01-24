@@ -36,21 +36,16 @@
 	<cls:field name="LongNamePosition" offset="8" type="http://metalx.org/Integer"/>
 
 	<cls:method name="GetReader" type="http://metalx.org/Storage/Files/Fat32/Fat32FileReader">
-		<cpu:CopyRegisterToOperand/>
-		<op:DI-SIRegister/>
-
-		<mm:CheckOut length="8"/>
-
-		<cpu:CopyRegisterToOperand/>
-		<op:SI-DIAddress/>
-
-		<cpu:CopyImmediateToOperandFunction/>
-		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:SubtractFromBPRegister/>
 		<byte>4</byte>
-		<int>0</int>
 
-		<obj:Create length="8" type="http://metalx.org/Storage/Files/Fat32/Fat32FileReader"/>
-
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-BPAddressPlusImmediate8/>
+		<byte>0</byte>
+		
+		<clsf:ExecuteMethod method="Create" type="http://metalx.org/Storage/Files/Fat32/Fat32FileReader"/>
+		
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
 

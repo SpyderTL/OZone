@@ -32,11 +32,12 @@
 
 	<cls:field name="File" offset="0" type="http://metalx.org/Reference"/>
 	<cls:field name="Position" offset="4" type="http://metalx.org/Integer"/>
+	<cls:field name="Cluster" offset="8" type="http://metalx.org/Integer"/>
 
 	<cls:method name="Create" type="http://metalx.org/Storage/Files/Fat32/Fat32FileReader" static="true">
 		<cls:parameter name="File" type="http://metalx.org/Storage/Files/Fat32/Fat32File"/>
 
-		<mm:CheckOut length="8"/>
+		<mm:CheckOut length="12"/>
 
 		<cpu:CopyOperandToRegister/>
 		<op:SI-BPAddressPlusImmediate8/>
@@ -50,7 +51,19 @@
 		<byte>4</byte>
 		<int>0</int>
 
-		<obj:Create/>
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToDIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<int>-1</int>
+
+		<obj:Create length="12"/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CallRelative/>
+		<addressOf ref="readBootRecord" type="Relative32"/>
+
+		<cpu:PullDIFromStack/>
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
@@ -75,36 +88,9 @@
 
 		<obj:GetData/>
 
-		<cpu:CopyOperandToRegister/>
-		<op:BX-SIAddressPlusImmediate8/>
-		<byte>4</byte>
-
-		<cpu:DecrementBX/>
-
-		<cpu:ShiftRegisterByImmediate8Function/>
-		<shift:ShiftBXRegisterRight/>
-		<byte>9</byte>
-
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-SIAddressPlusImmediate8/>
 		<byte>4</byte>
-
-		<cpu:DecrementAX/>
-
-		<cpu:ShiftRegisterByImmediate8Function/>
-		<shift:ShiftAXRegisterRight/>
-		<byte>9</byte>
-
-		<cpu:CompareRegisterToOperand/>
-		<op:AX-BXRegister/>
-
-		<cpu:BranchToRelative8IfEqual/>
-		<addressOf ref="sameBlock" type="Relative8"/>
-
-		<cpu:CallRelative/>
-		<addressOf ref="readBlock" type="Relative32"/>
-
-		<label id="sameBlock"/>
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
@@ -129,41 +115,9 @@
 
 		<obj:GetData/>
 
-		<cpu:CopyOperandToRegister/>
-		<op:BX-SIAddressPlusImmediate8/>
-		<byte>4</byte>
-
 		<cpu:AddRegisterToOperand/>
 		<op:AX-SIAddressPlusImmediate8/>
 		<byte>4</byte>
-
-		<cpu:AddRegisterToOperand/>
-		<op:BX-AXRegister/>
-
-		<cpu:DecrementAX/>
-		<cpu:DecrementBX/>
-
-		<cpu:ShiftRegisterByImmediate8Function/>
-		<shift:ShiftBXRegisterRight/>
-		<byte>9</byte>
-
-		<cpu:ShiftRegisterByImmediate8Function/>
-		<shift:ShiftAXRegisterRight/>
-		<byte>9</byte>
-
-		<cpu:CompareRegisterToOperand/>
-		<op:AX-BXRegister/>
-
-		<cpu:BranchToRelative8IfEqual/>
-		<addressOf ref="sameBlock" type="Relative8"/>
-
-		<cpu:CallRelative/>
-		<addressOf ref="readBlock" type="Relative32"/>
-
-		<label id="sameBlock"/>
-
-		<cpu:CallRelative/>
-		<addressOf ref="readBlock" type="Relative32"/>
 
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToBPRegister/>
@@ -516,19 +470,19 @@
 			<hex>000001ff</hex>
 
 			<cpu:BranchToRelative8IfNotZero/>
-			<addressOf ref="skipReadBlock2" type="Relative8"/>
+			<addressOf ref="skipReadCluster" type="Relative8"/>
 
 			<cpu:PushAXToStack/>
 
 			<cpu:CallRelative/>
-			<addressOf ref="readBlock" type="Relative32"/>
+			<addressOf ref="readCluster" type="Relative32"/>
 
 			<cpu:PullAXFromStack/>
 
-			<label id="skipReadBlock2"/>
+			<label id="skipReadCluster"/>
 
 			<cpu:AddImmediateToAX/>
-			<hex>00009000</hex>
+			<hex>00008000</hex>
 
 			<cpu:CopyOperandToRegister/>
 			<op:AL-AXAddress/>
@@ -539,7 +493,7 @@
 		</scope>
 	</label>
 
-	<label id="readBlock">
+	<label id="readCluster">
 		<scope>
 			<cpu:PushDIToStack/>
 
@@ -672,7 +626,7 @@
 
 			<label id="buffer"/>
 			<int>0</int>
-			<hex>00009000</hex>
+			<hex>00008000</hex>
 			<int>512</int>
 		</scope>
 	</label>
@@ -717,6 +671,71 @@
 			<cpu:ReturnToNearCaller/>
 
 			<var:integer id="fatEntrySize">4</var:integer>
+			
+			<label id="buffer"/>
+			<int>0</int>
+			<hex>00008000</hex>
+			<int>4</int>
+		</scope>
+	</label>
+	
+	<label id="readBootRecord">
+		<scope>
+			<cpu:PushDIToStack/>
+
+			<cpu:CopyRegisterToOperand/>
+			<op:DI-SIRegister/>
+
+			<obj:GetData/>
+
+			<cpu:CopyOperandToRegister/>
+			<op:SI-SIAddress/>
+
+			<obj:GetData/>
+
+			<cpu:CopyOperandToRegister/>
+			<op:SI-SIAddress/>
+			
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToImmediateAddress/>
+			<hex>00008e00</hex>
+			<int>0</int>
+
+			<cpu:MathImmediate8ToOperandFunction/>
+			<math:SubtractFromBPRegister/>
+			<byte>4</byte>
+
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToIndexAddress/>
+			<index:BPPlusImmediate32/>
+			<int>0</int>
+			<addressOf ref="buffer" type="Absolute32"/>
+
+			<obj:ExecuteMethod name="SetPosition"/>
+
+			<cpu:CopyRegisterToOperand/>
+			<op:DI-SIRegister/>
+
+			<cpu:MathImmediate8ToOperandFunction/>
+			<math:SubtractFromBPRegister/>
+			<byte>4</byte>
+
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToIndexAddress/>
+			<index:BPPlusImmediate32/>
+			<int>0</int>
+			<addressOf ref="buffer" type="Absolute32"/>
+
+			<obj:ExecuteMethod name="ReadObject"/>
+
+			<cpu:PullDIFromStack/>
+
+			<cpu:ReturnToNearCaller/>
+
+			<label id="buffer"/>
+			<int>0</int>
+			<hex>00008e00</hex>
+			<int>512</int>
 		</scope>
 	</label>
 </cls:class>

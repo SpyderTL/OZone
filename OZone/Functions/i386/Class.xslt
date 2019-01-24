@@ -392,7 +392,7 @@
 
 					<cpu:CopyImmediateToDI/>
 					<addressOf ref="className" type="Absolute32"/>
-					
+
 					<cat:FindClass/>
 
 					<cpu:PushSIToStack/>
@@ -424,7 +424,47 @@
 					<label id="end"/>
 				</scope>
 			</xsl:when>
-			<xsl:when test="@name">
+			<xsl:when test="@type">
+				<scope>
+					<cpu:PushDIToStack/>
+
+					<sys:GetCatalog/>
+
+					<cpu:CopyImmediateToDI/>
+					<addressOf ref="className" type="Absolute32"/>
+
+					<cat:FindType/>
+
+					<cpu:PushSIToStack/>
+
+					<cpu:CopyImmediateToDI/>
+					<addressOf ref="methodName" type="Absolute32"/>
+
+					<xsl:call-template name="FindStaticMethod"/>
+
+					<cpu:PullBXFromStack/>
+
+					<cpu:PullDIFromStack/>
+
+					<cpu:LogicFunction/>
+					<logic:CallSIAddressPlusImmediate8/>
+					<byte>12</byte>
+
+					<cpu:JumpToRelative8/>
+					<addressOf ref="end" type="Relative8"/>
+
+					<var:string id="className">
+						<xsl:value-of select="@type"/>
+					</var:string>
+
+					<var:string id="methodName">
+						<xsl:value-of select="@method"/>
+					</var:string>
+
+					<label id="end"/>
+				</scope>
+			</xsl:when>
+			<xsl:when test="@method">
 				<scope>
 					<cpu:PushDIToStack/>
 
@@ -445,10 +485,9 @@
 					<cpu:JumpToRelative8/>
 					<addressOf ref="end" type="Relative8"/>
 
-					<label id="methodName"/>
-					<string>
-						<xsl:value-of select="@name"/>
-					</string>
+					<var:string id="methodName">
+						<xsl:value-of select="@method"/>
+					</var:string>
 					<label id="end"/>
 				</scope>
 			</xsl:when>
