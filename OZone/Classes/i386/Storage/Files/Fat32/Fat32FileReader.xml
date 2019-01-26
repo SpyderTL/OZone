@@ -453,6 +453,7 @@
 		<scope>
 			<cpu:PushDIToStack/>
 
+			<!--Get Position-->
 			<cpu:CopyRegisterToOperand/>
 			<op:DI-SIRegister/>
 
@@ -461,7 +462,72 @@
 			<cpu:CopyOperandToRegister/>
 			<op:AX-SIAddressPlusImmediate8/>
 			<byte>4</byte>
+			
+			<cpu:PushAXToStack/>
+			
+			<!--Get Cluster Size-->
+			<cpu:ExclusiveOrRegisterWithOperand/>
+			<op:AX-AXRegister/>
+			
+			<cpu:CopyAbsoluteMemoryToAL/>
+			<hex>00008e0d</hex>
+			
+			<cpu:ExclusiveOrRegisterWithOperand/>
+			<op:BX-BXRegister/>
+			
+			<cpu:Operand16/>
+			<cpu:CopyOperandToRegister/>
+			<op:BX-ImmediateAddress/>
+			<hex>00008e0b</hex>
+			
+			<cpu:ArithmeticDXAXOperandFunction/>
+			<ari:MultiplyByBXRegister/>
+			
+			<cpu:PullBXFromStack/>
+			
+			<cpu:CompareRegisterToOperand/>
+			<op:BX-AXRegister/>
+			
+			<cpu:BranchToRelative8IfLess/>
+			<addressOf ref="notNextCluster" type="Relative8"/>
+			
+			<!--Load Next Cluster-->
+			<cpu:CopyOperandToRegister/>
+			<op:DI-IndexAddress/>
+			<index:SP/>
 
+			<cpu:CallRelative/>
+			<addressOf ref="getNextCluster" type="Relative32"/>
+
+			<cpu:CopyOperandToRegister/>
+			<op:SI-IndexAddress/>
+			<index:SP/>
+
+			<obj:GetData/>
+
+			<cpu:CopyRegisterToOperand/>
+			<op:AX-SIAddressPlusImmediate8/>
+			<byte>4</byte>
+
+			<cpu:CopyOperandToRegister/>
+			<op:DI-IndexAddress/>
+			<index:SP/>
+
+			<cpu:CallRelative/>
+			<addressOf ref="readCluster" type="Relative32"/>
+
+			<label id="notNextCluster"/>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			<cpu:IncrementFunction/>
 			<inc:IncrementSIAddressPlusImmediate8/>
 			<byte>4</byte>
@@ -630,55 +696,93 @@
 			<int>512</int>
 		</scope>
 	</label>
-	
-	<label id="findNextCluster">
+
+	<label id="getNextCluster">
 		<scope>
-			<cpu:PushCXToStack/>
-			<cpu:PushSIToStack/>
-
-			<!--Calculate FAT Table Entry Position-->
-			<cpu:ArithmeticDXAXOperandFunction/>
-			<ari:MultiplyByImmediateAddress/>
-			<addressOf ref="fatEntrySize" type="Absolute32"/>
-
-			<int:CreateObject/>
-
-			<cpu:MathImmediate8ToOperandFunction/>
-			<math:SubtractFromBPRegister/>
-			<byte>4</byte>
-
-			<cpu:CopyRegisterToOperand/>
-			<op:DI-BPAddressPlusImmediate8/>
-			<byte>0</byte>
-			
-			<obj:ExecuteMethod name="SetPosition"/>
-
-			<cpu:CopyRegisterToOperand/>
-			<op:DI-SIRegister/>
-
-			<obj:ExecuteMethod name="ReadInteger"/>
-
 			<cpu:CopyRegisterToOperand/>
 			<op:DI-SIRegister/>
 
 			<obj:GetData/>
 
-			<cpu:CopySIAddressToAXAndIncrementSI/>
-			
-			<cpu:PullSIFromStack/>
-			<cpu:PullCXFromStack/>
-			
+			<cpu:CopyOperandToRegister/>
+			<op:SI-SIAddress/>
+
+			<obj:GetData/>
+
+			<cpu:CopyOperandToRegister/>
+			<op:SI-SIAddress/>
+
+			<cpu:ExclusiveOrRegisterWithOperand/>
+			<op:BX-BXRegister/>
+
+			<cpu:CopyOperandToRegister8/>
+			<op:BL-ImmediateAddress/>
+			<hex>00008e0d</hex>
+
+			<cpu:ArithmeticDXAXOperandFunction/>
+			<ari:MultiplyByBXRegister/>
+
+			<cpu:ExclusiveOrRegisterWithOperand/>
+			<op:BX-BXRegister/>
+
+			<cpu:Operand16/>
+			<cpu:CopyOperandToRegister/>
+			<op:BX-ImmediateAddress/>
+			<hex>00008e0e</hex>
+
+			<cpu:AddRegisterToOperand/>
+			<op:BX-AXRegister/>
+
+			<cpu:Operand16/>
+			<cpu:CopyOperandToRegister/>
+			<op:BX-ImmediateAddress/>
+			<hex>00008e0b</hex>
+
+			<cpu:ArithmeticDXAXOperandFunction/>
+			<ari:MultiplyByBXRegister/>
+
+			<cpu:CopyAXToAbsoluteMemory/>
+			<hex>00008000</hex>
+
+			<cpu:MathImmediate8ToOperandFunction/>
+			<math:SubtractFromBPRegister/>
+			<byte>4</byte>
+
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToIndexAddress/>
+			<index:BPPlusImmediate32/>
+			<int>0</int>
+			<addressOf ref="buffer" type="Absolute32"/>
+
+			<obj:ExecuteMethod name="SetPosition"/>
+
+			<cpu:CopyRegisterToOperand/>
+			<op:DI-SIRegister/>
+
+			<cpu:MathImmediate8ToOperandFunction/>
+			<math:SubtractFromBPRegister/>
+			<byte>4</byte>
+
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToIndexAddress/>
+			<index:BPPlusImmediate32/>
+			<int>0</int>
+			<addressOf ref="buffer" type="Absolute32"/>
+
+			<obj:ExecuteMethod name="ReadObject"/>
+
+			<cpu:CopyAbsoluteMemoryToAX/>
+			<hex>00009000</hex>
+
 			<cpu:ReturnToNearCaller/>
 
-			<var:integer id="fatEntrySize">4</var:integer>
-			
 			<label id="buffer"/>
 			<int>0</int>
-			<hex>00008000</hex>
+			<hex>00009000</hex>
 			<int>4</int>
 		</scope>
 	</label>
-	
+
 	<label id="readBootRecord">
 		<scope>
 			<cpu:PushDIToStack/>
