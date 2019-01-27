@@ -489,6 +489,9 @@
 			<op:BX-ImmediateAddress/>
 			<hex>00008e0b</hex>
 
+			<cpu:ExclusiveOrRegisterWithOperand/>
+			<op:DX-DXRegister/>
+			
 			<cpu:ArithmeticDXAXOperandFunction/>
 			<ari:MultiplyByBXRegister/>
 
@@ -528,8 +531,9 @@
 			<addressOf ref="getNextCluster" type="Relative32"/>
 
 			<cpu:CopyOperandToRegister/>
-			<op:SI-IndexAddress/>
+			<op:SI-IndexAddressPlusImmediate8/>
 			<index:SP/>
+			<byte>4</byte>
 
 			<obj:GetData/>
 
@@ -568,7 +572,7 @@
 
 			<obj:GetData/>
 
-			<cpu:CopyRegisterToOperand/>
+			<cpu:CopyOperandToRegister/>
 			<op:AX-SIAddressPlusImmediate8/>
 			<byte>8</byte>
 
@@ -582,7 +586,7 @@
 			<label id="readNextByte"/>
 
 			<!--Get Position-->
-			<cpu:CopyRegisterToOperand/>
+			<cpu:CopyOperandToRegister/>
 			<op:SI-IndexAddress/>
 			<index:SP/>
 
@@ -824,6 +828,8 @@
 
 	<label id="getNextCluster">
 		<scope>
+			<cpu:PushAXToStack/>
+			
 			<cpu:CopyRegisterToOperand/>
 			<op:DI-SIRegister/>
 
@@ -838,14 +844,12 @@
 			<op:SI-SIAddress/>
 
 			<cpu:ExclusiveOrRegisterWithOperand/>
-			<op:BX-BXRegister/>
+			<op:AX-AXRegister/>
 
-			<cpu:CopyOperandToRegister8/>
-			<op:BL-ImmediateAddress/>
-			<hex>00008e0d</hex>
-
-			<cpu:ArithmeticDXAXOperandFunction/>
-			<ari:MultiplyByBXRegister/>
+			<cpu:Operand16/>
+			<cpu:CopyOperandToRegister/>
+			<op:AX-ImmediateAddress/>
+			<hex>00008e0e</hex>
 
 			<cpu:ExclusiveOrRegisterWithOperand/>
 			<op:BX-BXRegister/>
@@ -853,18 +857,22 @@
 			<cpu:Operand16/>
 			<cpu:CopyOperandToRegister/>
 			<op:BX-ImmediateAddress/>
-			<hex>00008e0e</hex>
-
-			<cpu:AddRegisterToOperand/>
-			<op:BX-AXRegister/>
-
-			<cpu:Operand16/>
-			<cpu:CopyOperandToRegister/>
-			<op:BX-ImmediateAddress/>
 			<hex>00008e0b</hex>
+
+			<cpu:ExclusiveOrRegisterWithOperand/>
+			<op:DX-DXRegister/>
 
 			<cpu:ArithmeticDXAXOperandFunction/>
 			<ari:MultiplyByBXRegister/>
+			
+			<cpu:PullBXFromStack/>
+			
+			<cpu:ShiftRegisterByImmediate8Function/>
+			<shift:ShiftBXRegisterLeft/>
+			<byte>2</byte>
+			
+			<cpu:AddRegisterToOperand/>
+			<op:BX-AXRegister/>
 
 			<cpu:CopyAXToAbsoluteMemory/>
 			<hex>00008000</hex>
