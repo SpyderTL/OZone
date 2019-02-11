@@ -326,7 +326,7 @@
 		<addressOf ref="cluster" type="Absolute32"/>
 
 		<cpu:CompareAXToImmediate/>
-		<hex>fffffff8</hex>
+		<hex>0ffffff8</hex>
 
 		<cpu:BranchToRelative8IfGreaterOrEqual/>
 		<addressOf ref="createList" type="Relative8"/>
@@ -456,20 +456,25 @@
 		<op:SI-ImmediateAddress/>
 		<addressOf ref="reader" type="Absolute32"/>
 
-		<!--Find Root Folder First Block-->
+		<!--Find Root Folder First Cluster-->
 		<cpu:CallRelative/>
 		<addressOf ref="readBootRecord" type="Relative32"/>
 
-		<cpu:CopyOperandToRegister/>
-		<op:AX-ImmediateAddress/>
+		<cpu:CopyAbsoluteMemoryToAX/>
 		<hex>00009e2c</hex>
 
 		<cpu:CopyAXToAbsoluteMemory/>
 		<addressOf ref="cluster" type="Absolute32"/>
 
+		<cpu:CopyImmediateToBX/>
+		<int>0</int>
+		
 		<!--Load Cluster-->
 		<label id="forEachCluster"/>
 
+		<cpu:PushBXToStack/>
+
+		<!--Get Table Count-->
 		<cpu:ExclusiveOrRegisterWithOperand/>
 		<op:AX-AXRegister/>
 
@@ -477,12 +482,14 @@
 		<op:AL-ImmediateAddress/>
 		<hex>00009e10</hex>
 
+		<!--Multiply By Sectors Per Table-->
 		<cpu:ArithmeticDXAXOperandFunction/>
 		<ari:MultiplyByImmediateAddress/>
 		<hex>00009e24</hex>
 
 		<cpu:PushAXToStack/>
 
+		<!--Get Sectors Per Cluster-->
 		<cpu:ExclusiveOrRegisterWithOperand/>
 		<op:AX-AXRegister/>
 
@@ -492,13 +499,15 @@
 
 		<cpu:PushAXToStack/>
 
+		<!--Multply By Bytes Per Sector-->
 		<cpu:ArithmeticDXAXOperandFunction/>
 		<ari:MultiplyByImmediateAddress/>
 		<addressOf ref="blockSize" type="Absolute32"/>
 
 		<cpu:CopyAXToAbsoluteMemory/>
 		<addressOf ref="buffer" type="Absolute32" offset="8"/>
-
+		
+		<!--Get Sectors Per Cluster-->
 		<cpu:PullBXFromStack/>
 
 		<cpu:CopyAbsoluteMemoryToAX/>
@@ -511,11 +520,13 @@
 		<cpu:ArithmeticDXAXOperandFunction/>
 		<ari:MultiplyByBXRegister/>
 
+		<!--Get Total Table Sectors-->
 		<cpu:PullBXFromStack/>
 
 		<cpu:AddRegisterToOperand/>
 		<op:BX-AXRegister/>
 
+		<!--Get Reserved Sector Count-->
 		<cpu:ExclusiveOrRegisterWithOperand/>
 		<op:BX-BXRegister/>
 
@@ -526,7 +537,8 @@
 
 		<cpu:AddRegisterToOperand/>
 		<op:BX-AXRegister/>
-
+		
+		<!--Get Bytes Per Sector-->
 		<cpu:ExclusiveOrRegisterWithOperand/>
 		<op:BX-BXRegister/>
 
@@ -538,8 +550,10 @@
 		<cpu:ArithmeticDXAXOperandFunction/>
 		<ari:MultiplyByBXRegister/>
 
+		<!--Save Position-->
 		<cpu:PushAXToStack/>
 
+		<!--Set Position-->
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-ImmediateAddress/>
 		<hex>00009000</hex>
@@ -560,6 +574,7 @@
 
 		<obj:ExecuteMethod name="SetPosition"/>
 
+		<!--Read Cluster-->
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
 
@@ -584,11 +599,15 @@
 		<cpu:CopyImmediateToCX/>
 		<int>16</int>
 
+		<!--Get Sectors Per Cluster-->
 		<cpu:ExclusiveOrRegisterWithOperand/>
 		<op:AX-AXRegister/>
 
 		<cpu:CopyAbsoluteMemoryToAL/>
 		<hex>00009e0d</hex>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:DX-DXRegister/>
 
 		<cpu:ArithmeticDXAXOperandFunction/>
 		<ari:MultiplyByCXRegister/>
@@ -596,9 +615,8 @@
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-CXRegister/>
 
-		<cpu:CopyImmediateToBX/>
-		<int>0</int>
-
+		<cpu:PullBXFromStack/>
+		
 		<label id="nextEntry"/>
 
 		<cpu:CopyOperandToRegister8/>
@@ -620,8 +638,9 @@
 		<op:AL-SIAddressPlusImmediate8/>
 		<hex>0b</hex>
 
+		<!--Check Directory and Volume Label Attibute Flags-->
 		<cpu:TestALWithImmediate/>
-		<hex>10</hex>
+		<binary>00010000</binary>
 
 		<cpu:BranchToRelative8IfNotZero/>
 		<addressOf ref="skipEntry" type="Relative8"/>
@@ -685,7 +704,7 @@
 		<addressOf ref="cluster" type="Absolute32"/>
 
 		<cpu:CompareAXToImmediate/>
-		<hex>fffffff8</hex>
+		<hex>0ffffff8</hex>
 
 		<cpu:BranchToRelative8IfGreaterOrEqual/>
 		<addressOf ref="createList" type="Relative8"/>
@@ -695,12 +714,12 @@
 
 		<!--Create List-->
 		<label id="createList"/>
-
+		
 		<cpu:CopyRegisterToOperand/>
 		<op:BX-AXRegister/>
 
 		<lst:Create/>
-
+		
 		<!--Find Fat32File Class-->
 		<cpu:PushDIToStack/>
 		<cpu:PushBXToStack/>
@@ -785,7 +804,7 @@
 		<shift:ShiftAXRegisterLeft/>
 		<byte>2</byte>
 
-		<obj:Create type="http://metalx.org/Storage/Files/FolderList"/>
+		<obj:Create type="http://metalx.org/Storage/Files/FileList"/>
 
 		<cpu:ReturnToNearCaller/>
 
@@ -879,8 +898,12 @@
 		</scope>
 	</label>
 
-	<label id="getNextCluster">
+	<!--<label id="getNextCluster">
 		<scope>
+			<cpu:ShiftRegisterByImmediate8Function/>
+			<shift:ShiftAXRegisterLeft/>
+			<byte>2</byte>
+			
 			<cpu:ExclusiveOrRegisterWithOperand/>
 			<op:BX-BXRegister/>
 
@@ -909,6 +932,86 @@
 			
 			<cpu:ArithmeticDXAXOperandFunction/>
 			<ari:MultiplyByBXRegister/>
+
+			<cpu:CopyAXToAbsoluteMemory/>
+			<hex>00009000</hex>
+
+			<cpu:MathImmediate8ToOperandFunction/>
+			<math:SubtractFromBPRegister/>
+			<byte>4</byte>
+
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToIndexAddress/>
+			<index:BPPlusImmediate32/>
+			<int>0</int>
+			<addressOf ref="buffer" type="Absolute32"/>
+
+			<obj:ExecuteMethod name="SetPosition"/>
+
+			<cpu:CopyRegisterToOperand/>
+			<op:DI-SIRegister/>
+
+			<cpu:MathImmediate8ToOperandFunction/>
+			<math:SubtractFromBPRegister/>
+			<byte>4</byte>
+
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToIndexAddress/>
+			<index:BPPlusImmediate32/>
+			<int>0</int>
+			<addressOf ref="buffer" type="Absolute32"/>
+
+			<obj:ExecuteMethod name="ReadObject"/>
+
+			<cpu:CopyAbsoluteMemoryToAX/>
+			<hex>00009000</hex>
+
+			<cpu:ReturnToNearCaller/>
+
+			<label id="buffer"/>
+			<int>0</int>
+			<hex>00009000</hex>
+			<int>4</int>
+		</scope>
+	</label>-->
+	
+	<label id="getNextCluster">
+		<scope>
+			<cpu:PushAXToStack/>
+
+			<!--Get Reserved Sector Count-->
+			<cpu:ExclusiveOrRegisterWithOperand/>
+			<op:AX-AXRegister/>
+
+			<cpu:Operand16/>
+			<cpu:CopyOperandToRegister/>
+			<op:AX-ImmediateAddress/>
+			<hex>00009e0e</hex>
+
+			<!--Get Bytes Per Sector-->
+			<cpu:ExclusiveOrRegisterWithOperand/>
+			<op:BX-BXRegister/>
+
+			<cpu:Operand16/>
+			<cpu:CopyOperandToRegister/>
+			<op:BX-ImmediateAddress/>
+			<hex>00009e0b</hex>
+
+			<cpu:ExclusiveOrRegisterWithOperand/>
+			<op:DX-DXRegister/>
+
+			<cpu:ArithmeticDXAXOperandFunction/>
+			<ari:MultiplyByBXRegister/>
+
+			<!--Get Cluster Offset-->
+			<cpu:PullBXFromStack/>
+
+			<cpu:ShiftRegisterByImmediate8Function/>
+			<shift:ShiftBXRegisterLeft/>
+			<byte>2</byte>
+
+			<cpu:AddRegisterToOperand/>
+			<op:BX-AXRegister/>
 
 			<cpu:CopyAXToAbsoluteMemory/>
 			<hex>00009000</hex>
