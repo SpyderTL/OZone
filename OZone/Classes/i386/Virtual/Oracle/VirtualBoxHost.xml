@@ -62,6 +62,17 @@
 		<addressOf ref="guestInfo" type="Absolute32"/>
 
 		<cpu:WriteAXToDXPort/>
+		
+		<label id="wait"/>
+		
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<addressOf ref="returnValue" type="Absolute32"/>
+		
+		<cpu:CompareAXToImmediate/>
+		<hex>ffffffff</hex>
+		
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="wait" type="Relative8"/>
 
 		<cpu:PullDIFromStack/>
 
@@ -78,6 +89,81 @@
 
 		<hex>00010003</hex>
 		<int>0</int>
+	</cls:method>
+
+	<cls:method name="Test" type="http://metalx.org/Virtual/Oracle/VirtualBoxHost">
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffffc</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAX/>
+		<addressOf ref="connect" type="Absolute32"/>
+
+		<cpu:WriteAXToDXPort/>
+		
+		<label id="wait"/>
+		
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<addressOf ref="returnValue" type="Absolute32"/>
+		
+		<cpu:CompareAXToImmediate/>
+		<hex>ffffffff</hex>
+		
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="wait" type="Relative8"/>
+
+		<label id="wait2"/>
+		
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<addressOf ref="flags" type="Absolute32"/>
+		
+		<cpu:CompareAXToImmediate/>
+		<hex>00000000</hex>
+		
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="wait2" type="Relative8"/>
+
+		<cpu:PullDIFromStack/>
+		
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<addressOf ref="clientID" type="Absolute32"/>
+		
+		<hex:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="connect"/>
+		<int>168</int>
+		<hex>00010001</hex>
+		<int>60</int>
+		<label id="returnValue"/>
+		<hex>ffffffff</hex>
+		<int>0</int>
+		<int>0</int>
+
+		<label id="flags"/>
+		<hex>00000000</hex>
+		<label id="resultCode"/>
+		<int>0</int>
+		<int>2</int>
+		<string>VBoxSharedFolders</string>
+		<empty length="111"/>
+		<label id="clientID"/>
+		<hex>ffffffff</hex>
 	</cls:method>
 
 	<cls:method name="ToString" type="http://metalx.org/String">
