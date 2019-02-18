@@ -168,12 +168,29 @@ QueryMappings
 	ReturnCode			4
 	Reserved				4
 	Requestor				4
+	Flags						4			// 1 - Done, 2 - Cancelled
+	ResultCode			4
 	ClientID					4
 	Function				4			// 1 - QueryMappings
 	ParameterCount		4			// 3
-	Flags						16
-	MappingCount		16
-	Mappings				16
+	Flags						16			// 32-bit Value
+	MappingCount		16			// 32-bit Value
+	Mappings				16			// Pointer
+
+QueryMapName
+	Length					4
+	Version					4			// 0x00010001
+	RequestType			4			// 63 - CallFunction64
+	ReturnCode			4
+	Reserved				4
+	Requestor				4
+	Flags						4			// 1 - Done, 2 - Cancelled
+	ResultCode			4
+	ClientID					4
+	Function				4			// 2 - QueryMapName
+	ParameterCount		4			// 2
+	Root						16			// 32-bit Value
+	Name					16			// Pointer
 
 Create
 	Length					4
@@ -185,9 +202,161 @@ Create
 	ClientID					4
 	Function				4			// 3 - Create
 	ParameterCount		4			// 3
-	Root						16
-	Path						16
-	CreateParameters	16
+	Root						16			// 32-bit Value
+	Path						16			// Pointer
+	CreateParameters	16			// Pointer
+
+Close
+	Length					4
+	Version					4			// 0x00010001
+	RequestType			4			// 63 - CallFunction64
+	ReturnCode			4
+	Reserved				4
+	Requestor				4
+	ClientID					4
+	Function				4			// 4 - Close
+	ParameterCount		4			// 3
+	Root						16			// 32-bit Value
+	Handle					16			// 64-bit Value
+
+Read
+	Length					4
+	Version					4			// 0x00010001
+	RequestType			4			// 63 - CallFunction64
+	ReturnCode			4
+	Reserved				4
+	Requestor				4
+	ClientID					4
+	Function				4			// 5 - Read
+	ParameterCount		4			// 5
+	Root						16			// 32-bit Value
+	Handle					16			// 64-bit Value
+	Offset					16			// 64-bit Value
+	Count					16			// 32-bit Value
+	Buffer					16			// Pointer
+
+Write
+	Length					4
+	Version					4			// 0x00010001
+	RequestType			4			// 63 - CallFunction64
+	ReturnCode			4
+	Reserved				4
+	Requestor				4
+	ClientID					4
+	Function				4			// 6 - Write
+	ParameterCount		4			// 5
+	Root						16			// 32-bit Value
+	Handle					16			// 64-bit Value
+	Offset					16			// 64-bit Value
+	Count					16			// 32-bit Value
+	Buffer					16			// Pointer
+
+Lock
+	Length					4
+	Version					4			// 0x00010001
+	RequestType			4			// 63 - CallFunction64
+	ReturnCode			4
+	Reserved				4
+	Requestor				4
+	ClientID					4
+	Function				4			// 7 - Lock
+	ParameterCount		4			// 5
+	Root						16			// 32-bit Value
+	Handle					16			// 64-bit Value
+	Offset					16			// 64-bit Value
+	Length					16			// 64-bit Value
+	Flags						16			// 32-bit Value
+
+List
+	Length					4
+	Version					4			// 0x00010001
+	RequestType			4			// 63 - CallFunction64
+	ReturnCode			4
+	Reserved				4
+	Requestor				4
+	ClientID					4
+	Function				4			// 8 - List
+	ParameterCount		4			// 8
+	Root						16			// 32-bit Value
+	Handle					16			// 64-bit Value
+	Flags						16			// 32-bit Value
+	Length					16			// 32-bit Value
+	Path						16			// Pointer
+	Buffer					16			// Pointer
+	ResumePoint			16			// 32-bit Value
+	FileCount				16			// 32-bit Value
+
+Information
+	Length					4
+	Version					4			// 0x00010001
+	RequestType			4			// 63 - CallFunction64
+	ReturnCode			4
+	Reserved				4
+	Requestor				4
+	ClientID					4
+	Function				4			// 9 - Information
+	ParameterCount		4			// 5
+	Root						16			// 32-bit Value
+	Handle					16			// 64-bit Value
+	Flags						16			// 32-bit Value
+	Length					16			// 32-bit Value
+	Buffer					16			// Pointer
+
+Remove
+	Length					4
+	Version					4			// 0x00010001
+	RequestType			4			// 63 - CallFunction64
+	ReturnCode			4
+	Reserved				4
+	Requestor				4
+	ClientID					4
+	Function				4			// 11 - Remove
+	ParameterCount		4			// 3
+	Root						16			// 32-bit Value
+	Path						16			// Pointer
+	Flags						16			// 32-bit Value
+
+Rename
+	Length					4
+	Version					4			// 0x00010001
+	RequestType			4			// 63 - CallFunction64
+	ReturnCode			4
+	Reserved				4
+	Requestor				4
+	ClientID					4
+	Function				4			// 14 - Rename
+	ParameterCount		4			// 4
+	Root						16			// 32-bit Value
+	Source					16			// Pointer
+	Destination			16			// Pointer
+	Flags						16			// 32-bit Value
+
+Flush
+	Length					4
+	Version					4			// 0x00010001
+	RequestType			4			// 63 - CallFunction64
+	ReturnCode			4
+	Reserved				4
+	Requestor				4
+	ClientID					4
+	Function				4			// 15 - Flush
+	ParameterCount		4			// 2
+	Root						16			// 32-bit Value
+	Handle					16			// 64-bit Value
+
+SetFileSize
+	Length					4
+	Version					4			// 0x00010001
+	RequestType			4			// 63 - CallFunction64
+	ReturnCode			4
+	Reserved				4
+	Requestor				4
+	ClientID					4
+	Function				4			// 24 - Set File Size
+	ParameterCount		4			// 3
+	Root						16			// 32-bit Value
+	Handle					16			// 64-bit Value
+	NewSize				16			// 64-bit Value
 
 VBGLIOCHGCMCALL
 

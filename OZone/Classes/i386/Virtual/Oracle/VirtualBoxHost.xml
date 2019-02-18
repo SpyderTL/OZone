@@ -91,9 +91,9 @@
 		<int>0</int>
 	</cls:method>
 
-	<cls:method name="Test" type="http://metalx.org/Virtual/Oracle/VirtualBoxHost">
+	<cls:method name="GetSharedFolders" type="http://metalx.org/Integer">
 		<cpu:PushDIToStack/>
-
+		
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
 
@@ -109,47 +109,23 @@
 
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-DXRegister/>
-
-		<cpu:CopyImmediateToAX/>
-		<addressOf ref="connect" type="Absolute32"/>
-
-		<cpu:WriteAXToDXPort/>
 		
-		<label id="wait"/>
+		<cpu:CallRelative/>
+		<addressOf ref="connect" type="Relative32"/>
 		
-		<cpu:CopyAbsoluteMemoryToAX/>
-		<addressOf ref="returnValue" type="Absolute32"/>
 		
-		<cpu:CompareAXToImmediate/>
-		<hex>ffffffff</hex>
 		
-		<cpu:BranchToRelative8IfEqual/>
-		<addressOf ref="wait" type="Relative8"/>
-
-		<label id="wait2"/>
+		<cpu:CallRelative/>
+		<addressOf ref="disconnect" type="Relative32"/>
 		
-		<cpu:CopyAbsoluteMemoryToAX/>
-		<addressOf ref="flags" type="Absolute32"/>
-		
-		<cpu:CompareAXToImmediate/>
-		<hex>00000000</hex>
-		
-		<cpu:BranchToRelative8IfEqual/>
-		<addressOf ref="wait2" type="Relative8"/>
-
 		<cpu:PullDIFromStack/>
-		
-		<cpu:CopyAbsoluteMemoryToAX/>
-		<addressOf ref="clientID" type="Absolute32"/>
-		
-		<hex:CreateObject/>
 
 		<cpu:ReturnToNearCaller/>
-
-		<label id="connect"/>
-		<int>168</int>
+	
+		<label id="packet"/>
+		<int>36</int>
 		<hex>00010001</hex>
-		<int>60</int>
+		<int>63</int>
 		<label id="returnValue"/>
 		<hex>ffffffff</hex>
 		<int>0</int>
@@ -159,11 +135,9 @@
 		<hex>00000000</hex>
 		<label id="resultCode"/>
 		<int>0</int>
-		<int>2</int>
-		<string>VBoxSharedFolders</string>
-		<empty length="111"/>
 		<label id="clientID"/>
 		<hex>ffffffff</hex>
+
 	</cls:method>
 
 	<cls:method name="ToString" type="http://metalx.org/String">
@@ -199,4 +173,131 @@
 
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
+
+	<label id="connect">
+		<scope>
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToImmediateAddress/>
+			<addressOf ref="returnValue" type="Absolute32"/>
+			<hex>ffffffff</hex>
+
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToImmediateAddress/>
+			<addressOf ref="flags" type="Absolute32"/>
+			<hex>00000000</hex>
+
+			<cpu:CopyImmediateToAX/>
+			<addressOf ref="packet" type="Absolute32"/>
+
+			<cpu:WriteAXToDXPort/>
+
+			<label id="wait"/>
+
+			<cpu:CopyAbsoluteMemoryToAX/>
+			<addressOf ref="returnValue" type="Absolute32"/>
+
+			<cpu:CompareAXToImmediate/>
+			<hex>ffffffff</hex>
+
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="wait" type="Relative8"/>
+
+			<label id="wait2"/>
+
+			<cpu:CopyAbsoluteMemoryToAX/>
+			<addressOf ref="flags" type="Absolute32"/>
+
+			<cpu:CompareAXToImmediate/>
+			<hex>00000000</hex>
+
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="wait2" type="Relative8"/>
+
+			<cpu:CopyAbsoluteMemoryToAX/>
+			<addressOf ref="clientID" type="Absolute32"/>
+
+			<cpu:ReturnToNearCaller/>
+
+			<label id="packet"/>
+			<int>168</int>
+			<hex>00010001</hex>
+			<int>60</int>
+			<label id="returnValue"/>
+			<hex>ffffffff</hex>
+			<int>0</int>
+			<int>0</int>
+
+			<label id="flags"/>
+			<hex>00000000</hex>
+			<label id="resultCode"/>
+			<int>0</int>
+			<int>2</int>
+			<string>VBoxSharedFolders</string>
+			<empty length="111"/>
+			<label id="clientID"/>
+			<hex>ffffffff</hex>
+		</scope>
+	</label>
+
+	<label id="disconnect">
+		<scope>
+			<cpu:CopyAXToAbsoluteMemory/>
+			<addressOf ref="clientID" type="Absolute32"/>
+
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToImmediateAddress/>
+			<addressOf ref="returnValue" type="Absolute32"/>
+			<hex>ffffffff</hex>
+
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToImmediateAddress/>
+			<addressOf ref="flags" type="Absolute32"/>
+			<hex>00000000</hex>
+
+			<cpu:CopyImmediateToAX/>
+			<addressOf ref="packet" type="Absolute32"/>
+
+			<cpu:WriteAXToDXPort/>
+
+			<label id="wait"/>
+
+			<cpu:CopyAbsoluteMemoryToAX/>
+			<addressOf ref="returnValue" type="Absolute32"/>
+
+			<cpu:CompareAXToImmediate/>
+			<hex>ffffffff</hex>
+
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="wait" type="Relative8"/>
+
+			<label id="wait2"/>
+
+			<cpu:CopyAbsoluteMemoryToAX/>
+			<addressOf ref="flags" type="Absolute32"/>
+
+			<cpu:CompareAXToImmediate/>
+			<hex>00000000</hex>
+
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="wait2" type="Relative8"/>
+
+			<cpu:ReturnToNearCaller/>
+
+			<label id="packet"/>
+			<int>36</int>
+			<hex>00010001</hex>
+			<int>61</int>
+			<label id="returnValue"/>
+			<hex>ffffffff</hex>
+			<int>0</int>
+			<int>0</int>
+
+			<label id="flags"/>
+			<hex>00000000</hex>
+			<label id="resultCode"/>
+			<int>0</int>
+			<label id="clientID"/>
+			<hex>ffffffff</hex>
+		</scope>
+	</label>
 </cls:class>
