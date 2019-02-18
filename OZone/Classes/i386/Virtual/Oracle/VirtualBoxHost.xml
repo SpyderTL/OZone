@@ -92,8 +92,6 @@
 	</cls:method>
 
 	<cls:method name="GetSharedFolders" type="http://metalx.org/Integer">
-		<cpu:PushDIToStack/>
-		
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
 
@@ -113,17 +111,64 @@
 		<cpu:CallRelative/>
 		<addressOf ref="connect" type="Relative32"/>
 		
-		
+		<!--Query Mappings-->
+		<cpu:CopyAXToAbsoluteMemory/>
+		<addressOf ref="clientID" type="Absolute32"/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<addressOf ref="returnValue" type="Absolute32"/>
+		<hex>ffffffff</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<addressOf ref="flags" type="Absolute32"/>
+		<hex>00000000</hex>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<addressOf ref="mappingCount" type="Absolute32"/>
+		<int>512</int>
+
+		<cpu:CopyImmediateToAX/>
+		<addressOf ref="packet" type="Absolute32"/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<label id="wait"/>
+
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<addressOf ref="returnValue" type="Absolute32"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>ffffffff</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="wait" type="Relative8"/>
+
+		<label id="wait2"/>
+
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<addressOf ref="flags" type="Absolute32"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>00000000</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="wait2" type="Relative8"/>
 		
 		<cpu:CallRelative/>
 		<addressOf ref="disconnect" type="Relative32"/>
 		
-		<cpu:PullDIFromStack/>
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<addressOf ref="mappingCount" type="Absolute32"/>
+
+		<int:CreateObject/>
 
 		<cpu:ReturnToNearCaller/>
 	
 		<label id="packet"/>
-		<int>36</int>
+		<int>92</int>
 		<hex>00010001</hex>
 		<int>63</int>
 		<label id="returnValue"/>
@@ -137,7 +182,22 @@
 		<int>0</int>
 		<label id="clientID"/>
 		<hex>ffffffff</hex>
-
+		<int>1</int>
+		<int>3</int>
+		
+		<!--Flags (32-bit)-->
+		<int>1</int>
+		<empty length="12"/>
+		
+		<!--Mapping Count (32-bit)-->
+		<int>1</int>
+		<label id="mappingCount"/>
+		<empty length="12"/>
+				
+		<!--Mappings (Pointer)-->
+		<int>4</int>
+		<hex>00001000</hex>
+		<hex>0000000000008000</hex>
 	</cls:method>
 
 	<cls:method name="ToString" type="http://metalx.org/String">
