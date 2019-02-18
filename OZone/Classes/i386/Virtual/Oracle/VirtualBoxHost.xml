@@ -203,19 +203,23 @@
 		
 		<cpu:CopyImmediateToSI/>
 		<hex>00008000</hex>
+		
+		<cpu:CopyImmediateToAX/>
+		<int>0</int>
 
-		<!--Create PciDevice Object-->
+		<!--Create Objects-->
 		<label id="forEachDevice"/>
 
 		<cpu:PushSIToStack/>
 		<cpu:PushDIToStack/>
+		<cpu:PushAXToStack/>
 
 		<mm:CheckOut length="8"/>
 		
 		<cpu:CopyOperandToRegister/>
 		<op:AX-IndexAddressPlusImmediate8/>
 		<index:SP/>
-		<byte>8</byte>
+		<byte>12</byte>
 		
 		<cpu:CopyRegisterToOperand/>
 		<op:AX-DIAddress/>
@@ -235,22 +239,25 @@
 		<obj:Create length="8"/>
 
 		<cpu:CopyOperandToRegister/>
-		<op:SI-IndexAddress/>
+		<op:SI-IndexAddressPlusImmediate8/>
 		<index:SP/>
+		<byte>4</byte>
 
-		<cpu:CopyRegisterToOperand/>
-		<op:CX-AXRegister/>
-
-		<cpu:DecrementAX/>
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddress/>
+		<index:SP/>
 
 		<lst:SetItem/>
 
+		<cpu:PullAXFromStack/>
 		<cpu:PullDIFromStack/>
 		<cpu:PullSIFromStack/>
 		
 		<cpu:MathImmediate8ToOperandFunction/>
 		<math:AddToSIRegister/>
 		<byte>8</byte>
+		
+		<cpu:IncrementAX/>
 
 		<cpu:LoopToRelative8/>
 		<addressOf ref="forEachDevice" type="Relative8"/>

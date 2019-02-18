@@ -5,28 +5,20 @@
 	type="http://metalx.org/Virtual/Oracle/VirtualBoxSharedFolder"
 	xmlns="http://metalx.org/Program"
 	xmlns:cls="http://metalx.org/Class"
-	xmlns:var="http://metalx.org/Variable"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
 	xmlns:sys="http://metalx.org/i386/Functions/System"
 	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
-	xmlns:clsf="http://metalx.org/i386/Functions/Class"
 	xmlns:obj="http://metalx.org/i386/Functions/Object"
-	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
-	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
-	xmlns:str="http://metalx.org/i386/Functions/String"
-	xmlns:lst="http://metalx.org/i386/Functions/List"
-	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
-	xmlns:pcir="http://metalx.org/Pc/Pci/Configuration"
-	xmlns:pcis="http://metalx.org/Pc/Pci/Status"
-	xmlns:pcic="http://metalx.org/Pc/Pci/Classes"
-	xmlns:sbc="http://metalx.org/Creative/SoundBlaster/Commands"
-	xmlns:pcnet="http://metalx.org/i386/Functions/PcNet"
-	xmlns:int="http://metalx.org/i386/Functions/Integer"
-	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
-	xmlns:con="http://metalx.org/i386/Functions/Console"
 	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+		xmlns:str="http://metalx.org/i386/Functions/String"
+		xmlns:var="http://metalx.org/Variable"
 	xmlns:math="http://metalx.org/Intel/80386/Math"
 	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
 	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:index="http://metalx.org/Intel/80386/Index"
 	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
 	xmlns:op="http://metalx.org/Intel/80386/Operands">
 
@@ -34,14 +26,172 @@
 	<cls:field name="Root" type="http://metalx.org/Integer" offset="4"/>
 	
 	<cls:method name="ToString" type="http://metalx.org/String">
-		<cpu:CopyImmediateToDI/>
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddressPlusImmediate8/>
+		<byte>4</byte>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-SIAddress/>
+
+		<obj:GetData/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-SIAddress/>
+
+		<pcif:GetBaseAddress0/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>fffffffc</hex>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-DXRegister/>
+		
+		<cpu:CallRelative/>
+		<addressOf ref="connect" type="Relative32"/>
+		
+		<!--Query Mapping Name-->
+		<cpu:CopyAXToAbsoluteMemory/>
+		<addressOf ref="clientID" type="Absolute32"/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<addressOf ref="returnValue" type="Absolute32"/>
+		<hex>ffffffff</hex>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:CopyAXToAbsoluteMemory/>
+		<addressOf ref="root" type="Absolute32"/>
+
+		<cpu:CopyImmediateToOperandFunction/>
+		<imm:CopyImmediateToImmediateAddress/>
+		<hex>00008000</hex>
+		<hex>00000800</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<addressOf ref="packet" type="Absolute32"/>
+
+		<cpu:WriteAXToDXPort/>
+
+		<label id="wait"/>
+
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<addressOf ref="returnValue" type="Absolute32"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>ffffffff</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="wait" type="Relative8"/>
+
+		<label id="wait2"/>
+
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<addressOf ref="flags" type="Absolute32"/>
+
+		<cpu:CompareAXToImmediate/>
+		<hex>00000000</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="wait2" type="Relative8"/>
+		
+		<cpu:CallRelative/>
+		<addressOf ref="disconnect" type="Relative32"/>
+
+		<!--Get String Length-->
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+		
+		<cpu:Operand16/>
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<hex>00008002</hex>
+
+		<cpu:ShiftRegisterByOneFunction/>
+		<shift:ShiftAXRegisterRight/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:AX-CXRegister/>
+
+		<cpu:PushAXToStack/>
+
+		<str:Create/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:PushDIToStack/>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyImmediateToSI/>
+		<hex>00008004</hex>
+
+		<label id="forEachCharacter"/>
+
+		<cpu:Operand16/>
+		<cpu:CopySIAddressToAXAndIncrementSI/>
+
+		<cpu:CopyALToDIAddressAndIncrementDI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachCharacter" type="Relative8"/>
+
+		<cpu:PullDIFromStack/>
+
+		<str:CreateObject/>
+		
+		
+		
+		<!--<cpu:CopyImmediateToDI/>
 		<addressOf ref="deviceName" type="Absolute32"/>
 
 		<str:CreateObject/>
 
 		<cpu:ReturnToNearCaller/>
 
-		<var:string id="deviceName">VirtualBox Shared Folder</var:string>
+		<var:string id="deviceName">VirtualBox Host</var:string>-->
+
+		
+		
+		
+
+
+
+		<cpu:ReturnToNearCaller/>
+		
+		<label id="packet"/>
+		<int>76</int>
+		<hex>00010001</hex>
+		<int>63</int>
+		<label id="returnValue"/>
+		<hex>ffffffff</hex>
+		<int>0</int>
+		<int>0</int>
+
+		<label id="flags"/>
+		<hex>00000000</hex>
+		<label id="resultCode"/>
+		<int>0</int>
+		<label id="clientID"/>
+		<hex>ffffffff</hex>
+		<int>2</int>
+		<int>2</int>
+		
+		<!--Root (32-bit)-->
+		<int>1</int>
+		<label id="root"/>
+		<empty length="12"/>
+		
+		<!--Name (Pointer)-->
+		<int>4</int>
+		<hex>00001000</hex>
+		<hex>0000000000008000</hex>
 	</cls:method>
 
 	<cls:method name="GetClass" type="http://metalx.org/Class">
@@ -66,4 +216,131 @@
 
 		<cpu:ReturnToNearCaller/>
 	</cls:method>
+
+	<label id="connect">
+		<scope>
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToImmediateAddress/>
+			<addressOf ref="returnValue" type="Absolute32"/>
+			<hex>ffffffff</hex>
+
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToImmediateAddress/>
+			<addressOf ref="flags" type="Absolute32"/>
+			<hex>00000000</hex>
+
+			<cpu:CopyImmediateToAX/>
+			<addressOf ref="packet" type="Absolute32"/>
+
+			<cpu:WriteAXToDXPort/>
+
+			<label id="wait"/>
+
+			<cpu:CopyAbsoluteMemoryToAX/>
+			<addressOf ref="returnValue" type="Absolute32"/>
+
+			<cpu:CompareAXToImmediate/>
+			<hex>ffffffff</hex>
+
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="wait" type="Relative8"/>
+
+			<label id="wait2"/>
+
+			<cpu:CopyAbsoluteMemoryToAX/>
+			<addressOf ref="flags" type="Absolute32"/>
+
+			<cpu:CompareAXToImmediate/>
+			<hex>00000000</hex>
+
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="wait2" type="Relative8"/>
+
+			<cpu:CopyAbsoluteMemoryToAX/>
+			<addressOf ref="clientID" type="Absolute32"/>
+
+			<cpu:ReturnToNearCaller/>
+
+			<label id="packet"/>
+			<int>168</int>
+			<hex>00010001</hex>
+			<int>60</int>
+			<label id="returnValue"/>
+			<hex>ffffffff</hex>
+			<int>0</int>
+			<int>0</int>
+
+			<label id="flags"/>
+			<hex>00000000</hex>
+			<label id="resultCode"/>
+			<int>0</int>
+			<int>2</int>
+			<string>VBoxSharedFolders</string>
+			<empty length="111"/>
+			<label id="clientID"/>
+			<hex>ffffffff</hex>
+		</scope>
+	</label>
+
+	<label id="disconnect">
+		<scope>
+			<cpu:CopyAXToAbsoluteMemory/>
+			<addressOf ref="clientID" type="Absolute32"/>
+
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToImmediateAddress/>
+			<addressOf ref="returnValue" type="Absolute32"/>
+			<hex>ffffffff</hex>
+
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToImmediateAddress/>
+			<addressOf ref="flags" type="Absolute32"/>
+			<hex>00000000</hex>
+
+			<cpu:CopyImmediateToAX/>
+			<addressOf ref="packet" type="Absolute32"/>
+
+			<cpu:WriteAXToDXPort/>
+
+			<label id="wait"/>
+
+			<cpu:CopyAbsoluteMemoryToAX/>
+			<addressOf ref="returnValue" type="Absolute32"/>
+
+			<cpu:CompareAXToImmediate/>
+			<hex>ffffffff</hex>
+
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="wait" type="Relative8"/>
+
+			<label id="wait2"/>
+
+			<cpu:CopyAbsoluteMemoryToAX/>
+			<addressOf ref="flags" type="Absolute32"/>
+
+			<cpu:CompareAXToImmediate/>
+			<hex>00000000</hex>
+
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="wait2" type="Relative8"/>
+
+			<cpu:ReturnToNearCaller/>
+
+			<label id="packet"/>
+			<int>36</int>
+			<hex>00010001</hex>
+			<int>61</int>
+			<label id="returnValue"/>
+			<hex>ffffffff</hex>
+			<int>0</int>
+			<int>0</int>
+
+			<label id="flags"/>
+			<hex>00000000</hex>
+			<label id="resultCode"/>
+			<int>0</int>
+			<label id="clientID"/>
+			<hex>ffffffff</hex>
+		</scope>
+	</label>
 </cls:class>
