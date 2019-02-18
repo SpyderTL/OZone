@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="VirtualBoxSharedFolder"
+	type="http://metalx.org/Virtual/Oracle/VirtualBoxSharedFolder"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:sys="http://metalx.org/i386/Functions/System"
+	xmlns:cat="http://metalx.org/i386/Functions/Catalog"
+	xmlns:clsf="http://metalx.org/i386/Functions/Class"
+	xmlns:obj="http://metalx.org/i386/Functions/Object"
+	xmlns:mm="http://metalx.org/i386/Functions/MemoryManager"
+	xmlns:bool="http://metalx.org/i386/Functions/Boolean"
+	xmlns:str="http://metalx.org/i386/Functions/String"
+	xmlns:lst="http://metalx.org/i386/Functions/List"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports"
+	xmlns:pcir="http://metalx.org/Pc/Pci/Configuration"
+	xmlns:pcis="http://metalx.org/Pc/Pci/Status"
+	xmlns:pcic="http://metalx.org/Pc/Pci/Classes"
+	xmlns:sbc="http://metalx.org/Creative/SoundBlaster/Commands"
+	xmlns:pcnet="http://metalx.org/i386/Functions/PcNet"
+	xmlns:int="http://metalx.org/i386/Functions/Integer"
+	xmlns:hex="http://metalx.org/i386/Functions/Hexadecimal"
+	xmlns:con="http://metalx.org/i386/Functions/Console"
+	xmlns:pcif="http://metalx.org/i386/Functions/Pci"
+	xmlns:math="http://metalx.org/Intel/80386/Math"
+	xmlns:ari="http://metalx.org/Intel/80386/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80386/Shift"
+	xmlns:cpu="http://metalx.org/Intel/80386/Operators"
+	xmlns:op="http://metalx.org/Intel/80386/Operands">
+
+	<cls:field name="Host" type="http://metalx.org/Reference" offset="0"/>
+	<cls:field name="Root" type="http://metalx.org/Integer" offset="4"/>
+	
+	<cls:method name="ToString" type="http://metalx.org/String">
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="deviceName" type="Absolute32"/>
+
+		<str:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<var:string id="deviceName">VirtualBox Shared Folder</var:string>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class">
+		<cpu:CopyRegisterToOperand/>
+		<op:DI-SIRegister/>
+
+		<obj:GetType/>
+
+		<cpu:CopyRegisterToOperand/>
+		<op:SI-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="GetClass" type="http://metalx.org/Class" static="true">
+		<cpu:CopyRegisterToOperand/>
+		<op:BX-DIRegister/>
+
+		<clsf:CreateObject/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>
