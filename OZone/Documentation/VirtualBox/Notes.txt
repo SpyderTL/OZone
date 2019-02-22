@@ -192,13 +192,15 @@ QueryMapName
 	Root						16			// 32-bit Value
 	Name					16			// Pointer
 
-Create
-	Length					4
+CreateHandle
+	Length					4			// 92
 	Version					4			// 0x00010001
 	RequestType			4			// 63 - CallFunction64
 	ReturnCode			4
 	Reserved				4
 	Requestor				4
+	Flags						4			// 1 - Done, 2 - Cancelled
+	ResultCode			4
 	ClientID					4
 	Function				4			// 3 - Create
 	ParameterCount		4			// 3
@@ -206,13 +208,39 @@ Create
 	Path						16			// Pointer
 	CreateParameters	16			// Pointer
 
-Close
-	Length					4
+CreateParameters	108
+	Handle					8
+	Result					4			// 0 - None, 1 - Path Not Found, 2 - File Not Found, 3 - File Exists, 4 - File Created, 5 - File Replaced
+	Flags						4			// 0 - None, 1 - Lookup Only, 2 - Open Parent, 4 - Directory
+	Information			92
+		Length					8
+		Allocated				8
+		AccessTime			8
+		ModificationTime	8
+		ChangeTime			8
+		BirthTime				8
+		Attributes				44
+			Mode					4
+			Flags						4
+			User						4
+			Group					4
+			Hardlinks				4
+			NodeDevice			4
+			NodeID					8
+			UserFlags				4
+			GenerationID			4
+			Device					4
+		
+
+CloseHandle
+	Length					4			// 76
 	Version					4			// 0x00010001
 	RequestType			4			// 63 - CallFunction64
 	ReturnCode			4
 	Reserved				4
 	Requestor				4
+	Flags						4			// 1 - Done, 2 - Cancelled
+	ResultCode			4
 	ClientID					4
 	Function				4			// 4 - Close
 	ParameterCount		4			// 3
@@ -226,6 +254,8 @@ Read
 	ReturnCode			4
 	Reserved				4
 	Requestor				4
+	Flags						4			// 1 - Done, 2 - Cancelled
+	ResultCode			4
 	ClientID					4
 	Function				4			// 5 - Read
 	ParameterCount		4			// 5
@@ -242,6 +272,8 @@ Write
 	ReturnCode			4
 	Reserved				4
 	Requestor				4
+	Flags						4			// 1 - Done, 2 - Cancelled
+	ResultCode			4
 	ClientID					4
 	Function				4			// 6 - Write
 	ParameterCount		4			// 5
@@ -258,6 +290,8 @@ Lock
 	ReturnCode			4
 	Reserved				4
 	Requestor				4
+	Flags						4			// 1 - Done, 2 - Cancelled
+	ResultCode			4
 	ClientID					4
 	Function				4			// 7 - Lock
 	ParameterCount		4			// 5
@@ -268,12 +302,14 @@ Lock
 	Flags						16			// 32-bit Value
 
 List
-	Length					4			// 164
+	Length					4			// 172
 	Version					4			// 0x00010001
 	RequestType			4			// 63 - CallFunction64
 	ReturnCode			4
 	Reserved				4
 	Requestor				4
+	Flags						4			// 1 - Done, 2 - Cancelled
+	ResultCode			4
 	ClientID					4
 	Function				4			// 8 - List
 	ParameterCount		4			// 8
@@ -293,6 +329,8 @@ Information
 	ReturnCode			4
 	Reserved				4
 	Requestor				4
+	Flags						4			// 1 - Done, 2 - Cancelled
+	ResultCode			4
 	ClientID					4
 	Function				4			// 9 - Information
 	ParameterCount		4			// 5
@@ -309,6 +347,8 @@ Remove
 	ReturnCode			4
 	Reserved				4
 	Requestor				4
+	Flags						4			// 1 - Done, 2 - Cancelled
+	ResultCode			4
 	ClientID					4
 	Function				4			// 11 - Remove
 	ParameterCount		4			// 3
@@ -323,6 +363,8 @@ Rename
 	ReturnCode			4
 	Reserved				4
 	Requestor				4
+	Flags						4			// 1 - Done, 2 - Cancelled
+	ResultCode			4
 	ClientID					4
 	Function				4			// 14 - Rename
 	ParameterCount		4			// 4
@@ -338,6 +380,8 @@ Flush
 	ReturnCode			4
 	Reserved				4
 	Requestor				4
+	Flags						4			// 1 - Done, 2 - Cancelled
+	ResultCode			4
 	ClientID					4
 	Function				4			// 15 - Flush
 	ParameterCount		4			// 2
@@ -351,6 +395,8 @@ SetFileSize
 	ReturnCode			4
 	Reserved				4
 	Requestor				4
+	Flags						4			// 1 - Done, 2 - Cancelled
+	ResultCode			4
 	ClientID					4
 	Function				4			// 24 - Set File Size
 	ParameterCount		4			// 3
