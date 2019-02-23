@@ -62,32 +62,9 @@
 
 		<cpu:PullBXFromStack/>
 		<cpu:PushBXToStack/>
-		
+
 		<cpu:CallRelative/>
 		<addressOf ref="create" type="Relative32"/>
-
-
-
-
-
-
-
-
-		<cpu:PullAXFromStack/>
-
-		<cpu:CopyRegisterToOperand/>
-		<op:CX-AXRegister/>
-
-		<hex:CreateObject/>
-
-		<cls:return/>
-		
-		
-		
-		
-		
-		
-		
 
 		<!--List-->
 		<cpu:CopyAXToAbsoluteMemory/>
@@ -153,13 +130,14 @@
 		<addressOf ref="disconnect" type="Relative32"/>
 		
 		<!--Get Object Count-->
-		<cpu:CopyAbsoluteMemoryToAX/>
+		<cpu:CopyOperandToRegister/>
+		<op:CX-ImmediateAddress/>
 		<addressOf ref="fileCount" type="Absolute32"/>
-		
-		<!--<cpu:CopyAbsoluteMemoryToAX/>
-		<addressOf ref="resultCode" type="Absolute32"/>-->
 
-		<hex:CreateObject/>
+		<label id="forEachObject"/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachObject" type="Relative8"/>
 
 		<cls:return/>
 
@@ -489,6 +467,16 @@
 			<hex>0000800c</hex>
 			<hex>00000004</hex>
 
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToImmediateAddress/>
+			<hex>00009000</hex>
+			<hex>00000002</hex>
+
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToImmediateAddress/>
+			<hex>00009004</hex>
+			<hex>00000000</hex>
+
 			<cpu:CopyImmediateToAX/>
 			<addressOf ref="packet" type="Absolute32"/>
 
@@ -522,24 +510,6 @@
 			<cpu:CopyOperandToRegister/>
 			<op:BX-ImmediateAddress/>
 			<hex>00008004</hex>
-
-			
-			
-			
-			
-			
-			<cpu:CopyOperandToRegister/>
-			<op:CX-ImmediateAddress/>
-			<addressOf ref="resultCode" type="Absolute32"/>
-
-			
-			
-			
-			
-			
-			
-			
-			
 			
 			<cpu:ReturnToNearCaller/>
 
@@ -568,8 +538,8 @@
 
 			<!--Path (Pointer)-->
 			<int>4</int>
-			<hex>00000000</hex>
-			<hex>0000000000000000</hex>
+			<int>6</int>
+			<hex>0000000000009000</hex>
 
 			<!--Parameters (Pointer)-->
 			<int>4</int>
