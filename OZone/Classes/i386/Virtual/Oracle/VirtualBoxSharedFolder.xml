@@ -129,15 +129,57 @@
 		<cpu:CallRelative/>
 		<addressOf ref="disconnect" type="Relative32"/>
 		
-		<!--Get Object Count-->
+		<!--Create List-->
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<addressOf ref="fileCount" type="Absolute32"/>
+
+		<lst:Create/>
+
+		<cpu:ExclusiveOrRegisterWithOperand/>
+		<op:AX-AXRegister/>
+
+		<!--Get Objects-->
 		<cpu:CopyOperandToRegister/>
 		<op:CX-ImmediateAddress/>
 		<addressOf ref="fileCount" type="Absolute32"/>
 
+		<cpu:CopyImmediateToSI/>
+		<hex>00008000</hex>
+
 		<label id="forEachObject"/>
 
+		<cpu:PushDIToStack/>
+		<cpu:PushCXToStack/>
+		<cpu:PushAXToStack/>
+		
+		<cpu:CallRelative/>
+		<addressOf ref="readObject" type="Relative32"/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:AX-IndexAddress/>
+		<index:SP/>
+
+		<cpu:PushSIToStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:SI-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>12</byte>
+
+		<lst:SetItem/>
+
+		<cpu:PullSIFromStack/>
+		
+		<cpu:PullAXFromStack/>
+		<cpu:PullCXFromStack/>
+		<cpu:PullDIFromStack/>
+
+		<cpu:IncrementAX/>
+		
 		<cpu:LoopToRelative8/>
 		<addressOf ref="forEachObject" type="Relative8"/>
+
+		<lst:CreateObject/>
 
 		<cls:return/>
 
@@ -607,6 +649,71 @@
 			<int>0</int>
 			<label id="clientID"/>
 			<hex>ffffffff</hex>
+		</scope>
+	</label>
+
+	<label id="readObject">
+		<scope>
+			<cpu:MathImmediate8ToOperandFunction/>
+			<math:AddToSIRegister/>
+			<byte>122</byte>
+
+			<cpu:PushSIToStack/>
+
+			<!--Get String Allocated Size and Length-->
+			<cpu:CopySIAddressToAXAndIncrementSI/>
+
+			<cpu:PushAXToStack/>
+
+			<cpu:ShiftRegisterByImmediate8Function/>
+			<shift:ShiftAXRegisterRight/>
+			<byte>17</byte>
+
+			<str:Create/>
+
+			<cpu:CopyOperandToRegister/>
+			<op:AX-IndexAddress/>
+			<index:SP/>
+
+			<cpu:PushDIToStack/>
+
+			<cpu:ShiftRegisterByImmediate8Function/>
+			<shift:ShiftAXRegisterRight/>
+			<byte>17</byte>
+
+			<cpu:CopyRegisterToOperand/>
+			<op:AX-CXRegister/>
+
+			<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+			<label id="forEachCharacter"/>
+
+			<cpu:Operand16/>
+			<cpu:CopySIAddressToAXAndIncrementSI/>
+
+			<cpu:CopyALToDIAddressAndIncrementDI/>
+
+			<cpu:LoopToRelative8/>
+			<addressOf ref="forEachCharacter" type="Relative8"/>
+
+			<cpu:PullDIFromStack/>
+
+			<str:CreateObject/>
+
+			<cpu:PullAXFromStack/>
+			<cpu:PullSIFromStack/>
+
+			<cpu:AndAXWithImmediate/>
+			<hex>0000ffff</hex>
+
+			<cpu:AddRegisterToOperand/>
+			<op:AX-SIRegister/>
+
+			<cpu:MathImmediate8ToOperandFunction/>
+			<math:AddToSIRegister/>
+			<byte>4</byte>
+
+			<cpu:ReturnToNearCaller/>
 		</scope>
 	</label>
 </cls:class>
