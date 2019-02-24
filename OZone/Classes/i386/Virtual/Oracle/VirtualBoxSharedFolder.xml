@@ -27,6 +27,8 @@
 	<cls:field name="Root" type="http://metalx.org/Integer" offset="4"/>
 
 	<cls:method name="GetFiles" type="http://metalx.org/Integer">
+		<cpu:PushDIToStack/>
+		
 		<cpu:CopyRegisterToOperand/>
 		<op:DI-SIRegister/>
 
@@ -151,6 +153,11 @@
 		<cpu:PushDIToStack/>
 		<cpu:PushCXToStack/>
 		<cpu:PushAXToStack/>
+
+		<cpu:CopyOperandToRegister/>
+		<op:BX-IndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>12</byte>
 		
 		<cpu:CallRelative/>
 		<addressOf ref="readObject" type="Relative32"/>
@@ -180,6 +187,10 @@
 		<addressOf ref="forEachObject" type="Relative8"/>
 
 		<lst:CreateObject/>
+
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:AddToSPRegister/>
+		<byte>4</byte>
 
 		<cls:return/>
 
@@ -654,6 +665,8 @@
 
 	<label id="readObject">
 		<scope>
+			<cpu:PushBXToStack/>
+			
 			<cpu:MathImmediate8ToOperandFunction/>
 			<math:AddToSIRegister/>
 			<byte>122</byte>
@@ -708,7 +721,15 @@
 
 			<cpu:CopyRegisterToOperand/>
 			<op:AX-DIAddressPlusImmediate8/>
+			<byte>4</byte>
+
+			<cpu:CopyOperandToRegister/>
+			<op:AX-IndexAddressPlusImmediate8/>
+			<index:SP/>
 			<byte>8</byte>
+
+			<cpu:CopyRegisterToOperand/>
+			<op:AX-DIAddress/>
 
 			<obj:Create length="12" type="http://metalx.org/Virtual/Oracle/VirtualBoxFile"/>
 
@@ -723,6 +744,10 @@
 
 			<cpu:MathImmediate8ToOperandFunction/>
 			<math:AddToSIRegister/>
+			<byte>4</byte>
+
+			<cpu:MathImmediate8ToOperandFunction/>
+			<math:AddToSPRegister/>
 			<byte>4</byte>
 
 			<cpu:ReturnToNearCaller/>
