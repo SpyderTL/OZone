@@ -485,8 +485,8 @@
 			<cpu:CopyImmediateToOperandFunction/>
 			<imm:CopyImmediateToImmediateAddress/>
 			<hex>0000800c</hex>
-			<hex>00000004</hex>
-			<!--<hex>00001100</hex>-->
+			<!--<hex>00000004</hex>-->
+			<hex>00001100</hex>
 
 			<cpu:CopyImmediateToOperandFunction/>
 			<imm:CopyImmediateToImmediateAddress/>
@@ -499,67 +499,7 @@
 			<hex>ffffffff</hex>
 			
 			<!--Copy Path To Buffer-->
-			<label id="debug">
-				<cpu:CopyImmediateToOperandFunction/>
-				<imm:CopyImmediateToImmediateAddress/>
-				<hex>00009000</hex>
-				<hex>00000002</hex>
-
-				<cpu:CopyImmediateToOperandFunction/>
-				<imm:CopyImmediateToImmediateAddress/>
-				<hex>00009004</hex>
-				<hex>00000000</hex>
-
-				<cpu:CopyImmediateToOperandFunction/>
-				<imm:CopyImmediateToImmediateAddress/>
-				<hex>00009008</hex>
-				<string>D</string>
-				<hex>00</hex>
-				<string>e</string>
-				<hex>00</hex>
-
-				<cpu:CopyImmediateToOperandFunction/>
-				<imm:CopyImmediateToImmediateAddress/>
-				<hex>0000900c</hex>
-				<string>s</string>
-				<hex>00</hex>
-				<string>k</string>
-				<hex>00</hex>
-
-				<cpu:CopyImmediateToOperandFunction/>
-				<imm:CopyImmediateToImmediateAddress/>
-				<hex>00009010</hex>
-				<string>t</string>
-				<hex>00</hex>
-				<string>o</string>
-				<hex>00</hex>
-				
-				<cpu:CopyImmediateToOperandFunction/>
-				<imm:CopyImmediateToImmediateAddress/>
-				<hex>00009014</hex>
-				<string>p</string>
-				<hex>00</hex>
-				<string>/</string>
-				<hex>00</hex>
-
-				<cpu:CopyImmediateToOperandFunction/>
-				<imm:CopyImmediateToImmediateAddress/>
-				<hex>00009018</hex>
-				<string>X</string>
-				<hex>00</hex>
-				<hex>00</hex>
-				<hex>00</hex>
-				
-				<cpu:CopyImmediateToOperandFunction/>
-				<imm:CopyImmediateToImmediateAddress/>
-				<hex>0000901c</hex>
-				<hex>00</hex>
-				<hex>00</hex>
-				<hex>00</hex>
-				<hex>00</hex>
-			</label>
-
-			<!--<cpu:CopyImmediateToDI/>
+			<cpu:CopyImmediateToDI/>
 			<hex>00009000</hex>
 
 			<obj:GetData/>
@@ -571,11 +511,13 @@
 			<cpu:ShiftRegisterByOneFunction/>
 			<shift:ShiftAXRegisterLeft/>
 
+			<cpu:Operand16/>
 			<cpu:CopyAXToDIAddressAndIncrementDI/>
 
 			<cpu:DecrementAX/>
 			<cpu:DecrementAX/>
 
+			<cpu:Operand16/>
 			<cpu:CopyAXToDIAddressAndIncrementDI/>
 
 			<cpu:ShiftRegisterByOneFunction/>
@@ -601,7 +543,7 @@
 			<op:AX-AXRegister/>
 
 			<cpu:Operand16/>
-			<cpu:CopyAXToDIAddressAndIncrementDI/>-->
+			<cpu:CopyAXToDIAddressAndIncrementDI/>
 			
 			<!--Send Packet-->
 			<cpu:CopyImmediateToAX/>
@@ -637,20 +579,6 @@
 			<cpu:CopyOperandToRegister/>
 			<op:BX-ImmediateAddress/>
 			<hex>00008004</hex>
-
-
-
-
-			
-
-			<cpu:CopyAbsoluteMemoryToAX/>
-			<addressOf ref="resultCode" type="Absolute32"/>
-
-
-
-
-
-
 
 			<cpu:ReturnToNearCaller/>
 
@@ -767,6 +695,9 @@
 			<cpu:CopyAXToAbsoluteMemory/>
 			<addressOf ref="bufferSize" type="Absolute32"/>
 
+			<cpu:CopyAXToAbsoluteMemory/>
+			<addressOf ref="count" type="Absolute32"/>
+
 			<obj:GetData/>
 
 			<cpu:CopyRegisterToOperand/>
@@ -845,38 +776,43 @@
 			<op:BX-ImmediateAddress/>
 			<addressOf ref="handle" type="Absolute32" offset="4"/>
 
-
-
-			
-			<cpu:MathImmediate8ToOperandFunction/>
-			<math:AddToBPRegister/>
-			<byte>4</byte>
-
-			<cpu:MathImmediate8ToOperandFunction/>
-			<math:AddToSPRegister/>
-			<byte>8</byte>
-
-			<hex:CreateObject/>
-
-			<cpu:ReturnToNearCaller/>
-
-
-
-
 			<!--Read-->
-			<cpu:CopyOperandToRegister/>
-			<op:DI-ImmediateAddress/>
-			<addressOf ref="bufferAddress" type="Absolute32"/>
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToImmediateAddress/>
+			<addressOf ref="returnValue" type="Absolute32"/>
+			<hex>ffffffff</hex>
 
-			<cpu:CopyOperandToRegister/>
-			<op:CX-ImmediateAddress/>
-			<addressOf ref="bufferSize" type="Absolute32"/>
+			<cpu:CopyImmediateToOperandFunction/>
+			<imm:CopyImmediateToImmediateAddress/>
+			<addressOf ref="flags" type="Absolute32"/>
+			<hex>00000000</hex>
 
-			<cpu:CopyImmediateToAL/>
-			<hex>ff</hex>
+			<cpu:CopyImmediateToAX/>
+			<addressOf ref="packet" type="Absolute32"/>
 
-			<cpu:Repeat/>
-			<cpu:CopyALToDIAddressAndIncrementDI/>
+			<cpu:WriteAXToDXPort/>
+
+			<label id="wait"/>
+
+			<cpu:CopyAbsoluteMemoryToAX/>
+			<addressOf ref="returnValue" type="Absolute32"/>
+
+			<cpu:CompareAXToImmediate/>
+			<hex>ffffffff</hex>
+
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="wait" type="Relative8"/>
+
+			<label id="wait2"/>
+
+			<cpu:CopyAbsoluteMemoryToAX/>
+			<addressOf ref="flags" type="Absolute32"/>
+
+			<cpu:CompareAXToImmediate/>
+			<hex>00000000</hex>
+
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="wait2" type="Relative8"/>
 
 			<!--Disconnect-->
 
@@ -925,9 +861,9 @@
 			<!--Buffer (Pointer)-->
 			<int>4</int>
 			<label id="bufferSize"/>
-			<int>108</int>
+			<int>0</int>
 			<label id="bufferAddress"/>
-			<hex>0000000000008000</hex>
+			<hex>0000000000000000</hex>
 		</scope>
 	</label>
 </cls:class>
