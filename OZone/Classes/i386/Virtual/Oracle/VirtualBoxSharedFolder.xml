@@ -667,9 +667,15 @@
 		<scope>
 			<cpu:PushBXToStack/>
 			
+			<!--Get File Length-->
+			<cpu:CopySIAddressToAXAndIncrementSI/>
+
+			<cpu:PushAXToStack/>
+			
+			<!--Find Name-->
 			<cpu:MathImmediate8ToOperandFunction/>
 			<math:AddToSIRegister/>
-			<byte>122</byte>
+			<byte>118</byte>
 
 			<cpu:PushSIToStack/>
 
@@ -715,7 +721,7 @@
 
 			<cpu:PushDIToStack/>
 
-			<mm:CheckOut length="12"/>
+			<mm:CheckOut length="16"/>
 
 			<cpu:PullAXFromStack/>
 
@@ -726,12 +732,21 @@
 			<cpu:CopyOperandToRegister/>
 			<op:AX-IndexAddressPlusImmediate8/>
 			<index:SP/>
-			<byte>8</byte>
+			<byte>12</byte>
 
 			<cpu:CopyRegisterToOperand/>
 			<op:AX-DIAddress/>
+			
+			<cpu:CopyOperandToRegister/>
+			<op:AX-IndexAddressPlusImmediate8/>
+			<index:SP/>
+			<byte>8</byte>
 
-			<obj:Create length="12" type="http://metalx.org/Virtual/Oracle/VirtualBoxFile"/>
+			<cpu:CopyRegisterToOperand/>
+			<op:AX-DIAddressPlusImmediate8/>
+			<byte>12</byte>
+			
+			<obj:Create length="16" type="http://metalx.org/Virtual/Oracle/VirtualBoxFile"/>
 
 			<cpu:PullAXFromStack/>
 			<cpu:PullSIFromStack/>
@@ -748,7 +763,7 @@
 
 			<cpu:MathImmediate8ToOperandFunction/>
 			<math:AddToSPRegister/>
-			<byte>4</byte>
+			<byte>8</byte>
 
 			<cpu:ReturnToNearCaller/>
 		</scope>
