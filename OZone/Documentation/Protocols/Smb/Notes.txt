@@ -1,0 +1,39 @@
+Little Endian, Port 445
+
+CIFS Packet Header
+	Signature						4			// 0xFF, 'S', 'M', 'B'
+	Command						1			// 0x72 - Negotiate, 0x73 - Setup, 0x75 - Tree Connect, 0x2D - Open, 0x2E - Read, 
+	Status							4
+		Error Class					1
+		Reserved						1
+		Error Code					2
+	Flags								1
+	Flags2							2
+	Security Signataure`		4
+	Tree ID							2
+	Process ID						2
+	User ID							2
+	Multiplex ID					2
+	Parameter Length			1				// In 2-byte words
+	Parameters					*
+	Buffer Length					2				// in bytes
+	Buffer							*
+
+Connect
+	Negotiate
+		ProcessID = Client Process ID
+		Multiplex ID = Random
+		Parameters: none
+		Buffer
+			Dialect[]
+				Format						1			// 2 - NULL terminated string
+				Dialect						*			// "NT LM 0.12"
+
+			
+	Setup
+
+Open
+	Open
+
+Read
+	Read
