@@ -40,7 +40,7 @@ namespace x86Console
 			using(Stream stream = File.Create("x86Console.com"))
 				image.Save(stream);
 
-			System.Diagnostics.Process.Start("x86Console.com");
+			//System.Diagnostics.Process.Start("x86Console.com");
 		}
 	}
 }

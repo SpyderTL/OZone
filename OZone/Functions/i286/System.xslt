@@ -31,12 +31,20 @@
 	</xsl:template>
 
 	<xsl:template match="sys:GetCatalog">
-		<cpu:PushImmediateToStack16/>
+		<!--<cpu:PushImmediateToStack16/>
 		<hex>1000</hex>
 
 		<cpu:PullDSFromStack/>
 
 		<cpu:CopyImmediateToSI/>
+		<hex>0000</hex>-->
+		
+		<cpu:PushImmediateToStack16/>
 		<hex>0000</hex>
+
+		<cpu:PullDSFromStack/>
+
+		<cpu:CopyImmediateToSI/>
+		<hex>0500</hex>
 	</xsl:template>
 </xsl:stylesheet>

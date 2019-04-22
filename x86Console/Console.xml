@@ -7,6 +7,7 @@
 	xmlns:seg="http://metalx.org/Intel/80286/Segments"
 	xmlns:math="http://metalx.org/Intel/80286/Math"
 	xmlns:logic="http://metalx.org/Intel/80286/Logic"
+	xmlns:imm="http://metalx.org/Intel/80286/Immediate"
 	xmlns:int="http://metalx.org/Pc/Bios/Functions"
 	xmlns:vid="http://metalx.org/Pc/Bios/Video"
 	xmlns:key="http://metalx.org/Pc/Bios/Keyboard"
@@ -29,7 +30,7 @@
 	<mm:Reset/>
 
 	<cpu:CopyImmediateToAX/>
-	<hex>1000</hex>
+	<hex>0000</hex>
 	
 	<cpu:CopyOperandToSegmentRegister16/>
 	<seg:DS-AXRegister/>
@@ -123,6 +124,12 @@
 	<!--Check Buffer Length-->
 	<cpu:PushAXToStack/>
 
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="inputBuffer" type="Segment16"/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
+
 	<cpu:CopyImmediateToSI/>
 	<addressOf ref="inputBuffer" type="Absolute16"/>
 
@@ -136,6 +143,12 @@
 	<addressOf ref="waitForKeystroke" type="Relative8"/>
 
 	<!--Add Character To Buffer-->
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="inputBuffer" type="Segment16"/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
+
 	<cpu:PullAXFromStack/>
 
 	<cpu:CopyImmediateToSI/>
@@ -161,15 +174,33 @@
 	<con:WriteCharacters endLine="true"/>
 
 	<!--Find Class Name And Method Name-->
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="className" type="Segment16"/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
+
 	<cpu:CopyImmediateToSI/>
 	<addressOf ref="className" type="Absolute16"/>
 
 	<str:Clear/>
 
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="methodName" type="Segment16"/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
+
 	<cpu:CopyImmediateToSI/>
 	<addressOf ref="methodName" type="Absolute16"/>
 
 	<str:Clear/>
+
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="inputBuffer" type="Segment16"/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
 
 	<cpu:CopyImmediateToSI/>
 	<addressOf ref="inputBuffer" type="Absolute16"/>
@@ -207,6 +238,12 @@
 	<!--Find Class-->
 	<sys:GetCatalog/>
 
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="className" type="Segment16"/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:ES-AXRegister/>
+
 	<cpu:CopyImmediateToDI/>
 	<addressOf ref="className" type="Absolute16"/>
 
@@ -235,6 +272,12 @@
 
 	<!--Find Method-->
 	<label id="findMethod"/>
+
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="methodName" type="Segment16"/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:ES-AXRegister/>
 
 	<cpu:CopyImmediateToDI/>
 	<addressOf ref="methodName" type="Absolute16"/>
@@ -287,15 +330,11 @@
 
 	<obj:GetType/>
 
-	<cpu:PushImmediateToStack16/>
-	<hex>1000</hex>
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="methodName" type="Segment16"/>
 
-	<cpu:PullDSFromStack/>
-
-	<cpu:PushImmediateToStack16/>
-	<hex>1000</hex>
-
-	<cpu:PullESFromStack/>
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:ES-AXRegister/>
 
 	<cpu:CopyImmediateToDI/>
 	<addressOf ref="toStringMethodName" type="Absolute16"/>
@@ -359,6 +398,12 @@
 	<!--Backspace Key Pressed-->
 	<label id="handleBackspaceKey"/>
 
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="inputBuffer" type="Segment16"/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
+
 	<cpu:CopyImmediateToSI/>
 	<addressOf ref="inputBuffer" type="Absolute16"/>
 
@@ -372,6 +417,12 @@
 	<addressOf ref="ignoreBackspace" type="Relative8"/>
 
 	<!--Remove 1 character from buffer-->
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="inputBuffer" type="Segment16"/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
+
 	<cpu:CopyImmediateToSI/>
 	<addressOf ref="inputBuffer" type="Absolute16"/>
 
@@ -408,6 +459,12 @@
 	<!--Handle Tab Key-->
 	<label id="handleTabKey"/>
 
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="inputBuffer" type="Segment16"/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
+
 	<cpu:CopyImmediateToSI/>
 	<addressOf ref="inputBuffer" type="Absolute16"/>
 
@@ -425,15 +482,33 @@
 	<!--Find Class Name And Method Name-->
 	<label id="findClassName"/>
 
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="className" type="Segment16"/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
+
 	<cpu:CopyImmediateToSI/>
 	<addressOf ref="className" type="Absolute16"/>
 
 	<str:Clear/>
 
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="methodName" type="Segment16"/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
+
 	<cpu:CopyImmediateToSI/>
 	<addressOf ref="methodName" type="Absolute16"/>
 
 	<str:Clear/>
+
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="inputBuffer" type="Segment16"/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
 
 	<cpu:CopyImmediateToSI/>
 	<addressOf ref="inputBuffer" type="Absolute16"/>
@@ -488,6 +563,12 @@
 
 	<sys:GetCatalog/>
 
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="inputBuffer" type="Segment16"/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:ES-AXRegister/>
+
 	<cpu:CopyImmediateToDI/>
 	<addressOf ref="inputBuffer" type="Absolute16"/>
 
@@ -525,6 +606,12 @@
 	<cpu:PushSIToStack/>
 
 	<!--Get Buffer Length-->
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="className" type="Segment16"/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
+
 	<cpu:CopyImmediateToSI/>
 	<addressOf ref="className" type="Absolute16"/>
 
@@ -564,8 +651,18 @@
 		<cpu:PushAXToStack/>
 		<cpu:PushSIToStack/>
 
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<addressOf ref="inputBuffer" type="Segment16"/>
+
+		<cpu:CopyOperandToSegmentRegister16/>
+		<seg:DS-AXRegister/>
+
 		<cpu:CopyImmediateToSI/>
 		<addressOf ref="inputBuffer" type="Absolute16"/>
+
+		<cpu:PullAXFromStack/>
 
 		<str:AppendByte/>
 
@@ -589,6 +686,12 @@
 
 	<sys:GetCatalog/>
 
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="className" type="Segment16"/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:ES-AXRegister/>
+
 	<cpu:CopyImmediateToDI/>
 	<addressOf ref="className" type="Absolute16"/>
 
@@ -602,6 +705,12 @@
 
 	<!--Find Method-->
 	<label id="findMethod2"/>
+
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="methodName" type="Segment16"/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:ES-AXRegister/>
 
 	<cpu:CopyImmediateToDI/>
 	<addressOf ref="methodName" type="Absolute16"/>
@@ -619,6 +728,12 @@
 	<addressOf ref="showMethodList" type="Relative16"/>
 	
 	<label id="findMethod3"/>
+
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="methodName" type="Segment16"/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
 
 	<cpu:CopyImmediateToDI/>
 	<addressOf ref="methodName" type="Absolute16"/>
@@ -652,6 +767,12 @@
 
 	<!--Save method-->
 	<cpu:PushSIToStack/>
+
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="methodName" type="Segment16"/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
 
 	<cpu:CopyImmediateToSI/>
 	<addressOf ref="methodName" type="Absolute16"/>
@@ -691,9 +812,19 @@
 		<cpu:PushAXToStack/>
 		<cpu:PushSIToStack/>
 
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<addressOf ref="inputBuffer" type="Segment16"/>
+
+		<cpu:CopyOperandToSegmentRegister16/>
+		<seg:DS-AXRegister/>
+
 		<cpu:CopyImmediateToSI/>
 		<addressOf ref="inputBuffer" type="Absolute16"/>
 
+		<cpu:PullAXFromStack/>
+		
 		<str:AppendByte/>
 
 		<cpu:PullSIFromStack/>
@@ -719,6 +850,7 @@
 	<sys:GetCatalog/>
 
 	<lst:ForEach>
+		<cpu:PushDSToStack/>
 		<cpu:PushSIToStack/>
 		<cpu:PushCXToStack/>
 		<cpu:PushDXToStack/>
@@ -742,6 +874,7 @@
 		<cpu:PullDXFromStack/>
 		<cpu:PullCXFromStack/>
 		<cpu:PullSIFromStack/>
+		<cpu:PullDXFromStack/>
 	</lst:ForEach>
 
 	<con:WriteCharacters endLine="true"/>
@@ -778,6 +911,12 @@
 	<con:WriteCharacters endLine="true"/>
 
 	<con:WriteCharacters>&gt;</con:WriteCharacters>
+
+	<cpu:CopyImmediateToAX/>
+	<addressOf ref="inputBuffer" type="Segment16"/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
 
 	<cpu:CopyImmediateToSI/>
 	<addressOf ref="inputBuffer" type="Absolute16"/>

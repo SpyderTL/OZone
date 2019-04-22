@@ -1,0 +1,88 @@
+SPC700
+	3x 8-bit Registers (A, X, Y)
+	1x 8-bit Stack Pointer
+	1x 8-bit Status Register
+	1x 16-bit Program Counter (Negative, Overflow, Direct Page, Break, Half Carry, Interrupt, Zero, Carry)
+	1 Mhz
+	64KB RAM
+	4x I/O Ports (Hard-wired to SNES RAM)
+	8x Channels ADPCM Compression
+	DSP Effects (Echo, Noise, Pitch)
+	2x 8KHz 4-bit Timers
+	1x 64KHz 4-bit Timer
+
+
+Memory Map
+	0x0000-0x000f	Page 0
+	0x00f0-0x00ff		Hardware Registers
+		0x00f0				Unknown
+		0x00f1				Control
+			Unknown			2 bits
+			ClearPorts23		1 bit
+			ClearPorts01		1 bit
+			Unknown			1 bit
+			Timer2Start		1 bit
+			Timer1Start		1 bit
+			Timer0Start		1 bit
+		0x00f2				DSP Address
+		0x00f3				DSP Data
+		0x00f4				Port 0 (SNES RAM 0x2140)
+		0x00f5				Port 1 (SNES RAM 0x2141)
+		0x00f6				Port 2 (SNES RAM 0x2142)
+		0x00f7				Port 3 (SNES RAM 0x2143)
+		0x00fa				Timer 0 Rate (125ms)
+		0x00fb				Timer 1 Rate (125ms)
+		0x00fc				Timer 2 Rate (15.6ms)
+		0x00fd				Timer 0 Counter
+		0x00fe				Timer 1 Counter
+		0x00ff				Timer 2 Counter
+	0x0100-0x01ff	Page 1 (Stack)
+	0xffc0-0xffff		IPL ROM (Copy)
+
+DSP Registers
+	0xN0-0xN9			Channel N
+		0xN0					Left Channel Volume
+		0xN1					Right Channel Volume
+		0xN2					Pitch (Low)
+		0xN3					Pitch (High)
+		0xN4					Source
+		0xN5					Envelope Enable
+		0xN6					Envelope Mode
+		0xN7					Gain Mode
+		0xN8					Envelope Value (Read Only)
+		0xN9					Wave Out (Read Only)
+	0x0c					Main Volume Left Channel
+	0x0d					Echo Feedback
+	0x1c					Main Volume Right Channel
+	0x2c					Echo Volume Left Channel
+	0x2d					Pitch Modulation Enable
+	0x3c					Echo Volume Right Channel
+	0x3d					Noise Enable
+	0x4c					Key On (Channel 1-8)
+	0x4d					Echo Enable
+	0x5c					Key Off (Channel 1-8)
+	0x5d					Source Offset (times 0x100h)
+	0x6c					Effect Enable
+		Mute					1 bit
+		Echo					1 bit
+		Reset				1 bit
+		Noise				1 bit
+	0x6d					Echo Buffer Offset (times 0x100h)
+	0x7c					End Flag (Channel 1-8)
+	0x7d					Echo Delay (0-15)
+	0xNf					FIR Filter Coefficients (Channel N)
+		
+
+
+DSP Audio Format
+	Block						9
+		Header					1
+			Range					4 bits			// Shift Left 0-12 bits
+			Filter						2 bits
+			Loop						1 bit
+			End						1 bit
+		Data						8
+			Samples[16]			4 bits
+
+Sample[x] = (Data.Sample[x] + (Filter[Header.Filter][0] * Sample[x-1]) + (Filter(Header.Filter][1] * Sample[x-2])) << Header.Range;
+
