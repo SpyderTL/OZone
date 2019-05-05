@@ -20,7 +20,7 @@
 	
 	<!--Switch To 8-Bit Accumulator-->
 	<cpu:SetImmediateFlags/>
-	<binary>00110000</binary>
+	<binary>00100000</binary>
 
 	<!--Data Bank 0-->
 	<!--<cpu:PushImmediate/>
@@ -241,9 +241,9 @@
 	<cpu:SetAbsoluteAddressToZero/>
 	<hex>2133</hex>
 	
-	<!--Setup Interrupts-->
+	<!--Setup Interrupts (NMI, Controller)-->
 	<cpu:CopyImmediateToAccumulator/>
-	<binary>10000000</binary>
+	<binary>10000001</binary>
 	
 	<cpu:CopyAccumulatorToAbsoluteAddress/>
 	<hex>4200</hex>
@@ -292,7 +292,7 @@
 
 	<cpu:SetAbsoluteAddressToZero/>
 	<hex>4210</hex>
-
+	
 	<cpu:ClearInterruptDisableFlag/>
 	
 	<!--Test Background Color-->
@@ -305,6 +305,12 @@
 	<hex>2100</hex>
 
 	<!--Write Background Color (White)-->
+	<cpu:SetAbsoluteAddressToZero/>
+	<hex>2121</hex>
+
+	<cpu:SetAbsoluteAddressToZero/>
+	<hex>2121</hex>
+
 	<cpu:CopyImmediateToAccumulator/>
 	<hex>ff</hex>
 
@@ -316,10 +322,20 @@
 
 	<cpu:CopyAccumulatorToAbsoluteAddress/>
 	<hex>2122</hex>
-	
+
 	<!--Set Initial Screen Fade-->
 	<cpu:CopyImmediateToAccumulator/>
 	<hex>1f</hex>
+
+	<cpu:CopyAccumulatorToAbsoluteAddress/>
+	<hex>0010</hex>
+
+	<!--Set Initial Screen Color-->
+	<cpu:SetAbsoluteAddressToZero/>
+	<hex>0012</hex>
+
+	<cpu:SetAbsoluteAddressToZero/>
+	<hex>0013</hex>
 
 	<cpu:CopyAccumulatorToAbsoluteAddress/>
 	<hex>0010</hex>
@@ -364,6 +380,51 @@
 	<hex>0010</hex>
 
 	<label id="skip"/>
+	
+	<!--Read Controller 1-->
+	<cpu:CopyAbsoluteAddressToAccumulator/>
+	<hex>4218</hex>
+
+	<cpu:AndAccumulatorWithImmediate/>
+	<binary>10000000</binary>
+
+	<cpu:BranchToRelativeIfEqual/>
+	<addressOf ref="skip2" type="Relative8"/>
+
+	<cpu:CopyImmediateToAccumulator/>
+	<hex>1f</hex>
+
+	<cpu:CopyAccumulatorToAbsoluteAddress/>
+	<hex>0010</hex>
+
+	<cpu:SetAbsoluteAddressToZero/>
+	<hex>2121</hex>
+
+	<cpu:SetAbsoluteAddressToZero/>
+	<hex>2121</hex>
+
+	<cpu:CopyAbsoluteAddressToAccumulator/>
+	<hex>0012</hex>
+
+	<cpu:CopyAccumulatorToAbsoluteAddress/>
+	<hex>2122</hex>
+
+	<cpu:CopyAbsoluteAddressToAccumulator/>
+	<hex>0013</hex>
+
+	<cpu:CopyAccumulatorToAbsoluteAddress/>
+	<hex>2122</hex>
+
+	<label id="skip2"/>
+	
+	<!--Increment Color-->
+	<cpu:CopyAbsoluteAddressToXIndex/>
+	<hex>0012</hex>
+
+	<cpu:IncrementXIndex/>
+
+	<cpu:CopyXIndexToAbsoluteAddress/>
+	<hex>0012</hex>
 
 	<cpu:JumpToAbsoluteAddress/>
 	<addressOf ref="next" type="Absolute16"/>
