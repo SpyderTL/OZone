@@ -72,8 +72,6 @@ DSP Registers
 	0x7d					Echo Delay (0-15)
 	0xNf					FIR Filter Coefficients (Channel N)
 		
-
-
 DSP Audio Format
 	Block						9
 		Header					1
@@ -86,3 +84,72 @@ DSP Audio Format
 
 Sample[x] = (Data.Sample[x] + (Filter[Header.Filter][0] * Sample[x-1]) + (Filter(Header.Filter][1] * Sample[x-2])) << Header.Range;
 
+SPC700 IPL ROM (0xffc0-0xffff):
+	SP = 0x01ef;
+	[0x0000-0x00ef] = 0x00;
+	IP = WaitForData;
+
+WaitForData:
+	[0x00f4] = 0xaa;
+	[0x00f5] = 0xbb;
+	while(0x00f4] != 0xcc)
+		;
+	IP = GetAddress;
+
+GetAddress:
+	next = [0x00f7} << 8 | [0x00f6];
+	[0x00f4] = [0x00f4];
+	if([0x00f4] == 0x00)
+		IP = [next];
+	IP = ReadBlock;
+
+ReadBlock:
+	while([0x00f4] != 0x00)
+		;
+	counter = 0x00;
+	IP = CopyByte;
+
+CopyByte:
+	while(counter > [0x00f4])
+		;
+	if(counter == [0x00f4])
+	{
+		[next] == [0x00f5];
+		next++;
+		counter++;
+		IP = CopyByte;
+	}
+	IP = WaitForData;
+
+SNES SendData(source, destination, length, entry):
+	while([0x2140] != 0xaa)
+		;
+	[0x2143] = destination >> 8;
+	[0x2142] = destination & 0xff;
+	[0x2141] = 0x01;					// IPL Command: Copy
+	[0x2140] = 0xcc;
+	while([0x2140] != 0xcc)
+		;
+	counter = 0;
+	IP = SendByte;
+
+SendByte:
+	[0x2141] = [source];
+	[0x2140] = counter;
+	while([0x2140] != counter)
+		;
+	source++;
+	counter++;
+	if(counter == length)
+		IP = Execute;
+	IP = SendByte;
+
+Execute:
+	[0x2143] = entry >> 8;
+	[0x2142] = entry & 0xff;
+	[0x2141] = 0x00;				// IPL Command: Execute
+	counter++;						// Skip next byte to indicate end of data
+	[0x2140] = counter;
+	while([0x2140] != counter)
+		;
+	return;
