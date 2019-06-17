@@ -44,10 +44,10 @@
 
 			<sys:GetCatalog/>
 
-			<cpu:PushImmediateToStack16/>
+			<!--<cpu:PushImmediateToStack16/>
 			<addressOf ref="className" type="Segment16"/>
 
-			<cpu:PullESFromStack/>
+			<cpu:PullESFromStack/>-->
 
 			<cpu:CopyImmediateToDI/>
 			<addressOf ref="className" type="Absolute16"/>

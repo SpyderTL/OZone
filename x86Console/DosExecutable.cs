@@ -55,6 +55,8 @@ namespace x86Console
 				{
 					stream.Position = program.Address.Offset - _baseAddress.Offset;
 					compiler.Compile(program.Program, program.Address, writer);
+
+					writer.Flush();
 				}
 
 				// Write Catalog
@@ -64,6 +66,8 @@ namespace x86Console
 
 				foreach(var program in _programs.Skip(2))
 					writer.Write((short)program.Address.Offset);
+
+				writer.Flush();
 			}
 		}
 

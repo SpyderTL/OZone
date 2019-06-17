@@ -58,13 +58,13 @@
 			<cpu:PushAXToStack/>
 			<cpu:PushDSToStack/>
 			<cpu:PushSIToStack/>
-			<cpu:PushESToStack/>
+			<!--<cpu:PushESToStack/>-->
 			<cpu:PushDIToStack/>
 
-			<cpu:PushImmediateToStack16/>
+			<!--<cpu:PushImmediateToStack16/>
 			<addressOf ref="stringClassName" type="Segment16"/>
 
-			<cpu:PullESFromStack/>
+			<cpu:PullESFromStack/>-->
 
 			<cpu:CopyImmediateToDI/>
 			<addressOf ref="stringClassName" type="Absolute16"/>
@@ -77,7 +77,7 @@
 			<op:SI-BXRegister/>
 
 			<cpu:PullDIFromStack/>
-			<cpu:PullESFromStack/>
+			<!--<cpu:PullESFromStack/>-->
 			<cpu:PullSIFromStack/>
 			<cpu:PullDSFromStack/>
 			<cpu:PullAXFromStack/>
