@@ -31,12 +31,12 @@
 
 	<xsl:template match="int:CreateObject">
 		<scope>
-			<cpu:PushDSToStack/>
+			<!--<cpu:PushDSToStack/>-->
 			<cpu:PushSIToStack/>
 
 			<mm:CheckOut length="2"/>
 
-			<cpu:PushESToStack/>
+			<!--<cpu:PushESToStack/>-->
 			<cpu:PushDIToStack/>
 
 			<cpu:CopyRegisterToOperand16/>
@@ -58,9 +58,9 @@
 			<op:SI-BXRegister/>
 
 			<cpu:PullDIFromStack/>
-			<cpu:PullESFromStack/>
+			<!--<cpu:PullESFromStack/>-->
 			<cpu:PullSIFromStack/>
-			<cpu:PullDSFromStack/>
+			<!--<cpu:PullDSFromStack/>-->
 
 			<cpu:CopyImmediateToAX/>
 			<short>2</short>
@@ -71,7 +71,7 @@
 			<addressOf ref="end" type="Relative8"/>
 
 			<label id="shortClassName"/>
-			<short>22</short>
+			<short>23</short>
 			<string>http://metalx.org/Short</string>
 
 			<label id="end"/>

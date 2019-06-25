@@ -66,7 +66,7 @@
 			<addressOf ref="end" type="Relative8"/>
 
 			<label id="booleanClassName"/>
-			<short>24</short>
+			<short>25</short>
 			<string>http://metalx.org/Boolean</string>
 
 			<label id="end"/>

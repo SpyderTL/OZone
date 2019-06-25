@@ -28,12 +28,12 @@
 	<xsl:template match="date:CreateObject">
 		<scope>
 			<cpu:PushSIToStack/>
-			<cpu:PushDSToStack/>
+			<!--<cpu:PushDSToStack/>-->
 
 			<mm:CheckOut length="4"/>
 
 			<cpu:PushDIToStack/>
-			<cpu:PushESToStack/>
+			<!--<cpu:PushESToStack/>-->
 
 			<cpu:CopyRegisterToOperand16/>
 			<op:CX-DIAddress/>
@@ -53,10 +53,10 @@
 
 			<sys:GetCatalog/>
 
-			<cpu:PushImmediateToStack16/>
+			<!--<cpu:PushImmediateToStack16/>
 			<addressOf ref="dateClassName" type="Segment16" />
 
-			<cpu:PullESFromStack/>
+			<cpu:PullESFromStack/>-->
 
 			<cpu:CopyImmediateToDI/>
 			<addressOf ref="dateClassName" type="Absolute16"/>
@@ -66,9 +66,9 @@
 			<cpu:CopyRegisterToOperand16/>
 			<op:SI-BXRegister/>
 
-			<cpu:PullESFromStack/>
+			<!--<cpu:PullESFromStack/>-->
 			<cpu:PullDIFromStack/>
-			<cpu:PullDSFromStack/>
+			<!--<cpu:PullDSFromStack/>-->
 			<cpu:PullSIFromStack/>
 
 			<cpu:CopyImmediateToAX/>
@@ -80,7 +80,7 @@
 			<addressOf ref="end" type="Relative8"/>
 
 			<label id="dateClassName"/>
-			<short>21</short>
+			<short>22</short>
 			<string>http://metalx.org/Date</string>
 
 			<label id="end"/>

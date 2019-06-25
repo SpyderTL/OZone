@@ -48,7 +48,7 @@
 
 	<xsl:template match="str:CreateObject">
 		<scope>
-			<cpu:PushESToStack/>
+			<!--<cpu:PushESToStack/>-->
 			<cpu:PushDIToStack/>
 
 			<cpu:CopyImmediateToAX/>
@@ -73,15 +73,15 @@
 			<label id="createObject"/>
 
 			<cpu:PushAXToStack/>
-			<cpu:PushDSToStack/>
+			<!--<cpu:PushDSToStack/>-->
 			<cpu:PushSIToStack/>
 
 			<sys:GetCatalog/>
 
-			<cpu:PushImmediateToStack16/>
+			<!--<cpu:PushImmediateToStack16/>
 			<addressOf ref="streamClassName" type="Segment16"/>
 
-			<cpu:PullESFromStack/>
+			<cpu:PullESFromStack/>-->
 			
 			<cpu:CopyImmediateToDI/>
 			<addressOf ref="streamClassName" type="Absolute16"/>
@@ -92,10 +92,10 @@
 			<op:SI-BXRegister/>
 
 			<cpu:PullSIFromStack/>
-			<cpu:PullDSFromStack/>
+			<!--<cpu:PullDSFromStack/>-->
 			<cpu:PullAXFromStack/>
 			<cpu:PullDIFromStack/>
-			<cpu:PullESFromStack/>
+			<!--<cpu:PullESFromStack/>-->
 
 			<obj:Create/>
 
@@ -103,7 +103,7 @@
 			<addressOf ref="end" type="Relative8"/>
 
 			<label id="streamClassName"/>
-			<short>23</short>
+			<short>24</short>
 			<string>http://metalx.org/Stream</string>
 
 			<label id="end"/>

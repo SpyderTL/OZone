@@ -56,7 +56,7 @@
 			<cpu:IncrementAX/>
 
 			<cpu:PushAXToStack/>
-			<cpu:PushDSToStack/>
+			<!--<cpu:PushDSToStack/>-->
 			<cpu:PushSIToStack/>
 			<!--<cpu:PushESToStack/>-->
 			<cpu:PushDIToStack/>
@@ -79,7 +79,7 @@
 			<cpu:PullDIFromStack/>
 			<!--<cpu:PullESFromStack/>-->
 			<cpu:PullSIFromStack/>
-			<cpu:PullDSFromStack/>
+			<!--<cpu:PullDSFromStack/>-->
 			<cpu:PullAXFromStack/>
 
 			<obj:Create/>
@@ -88,7 +88,7 @@
 			<addressOf ref="end" type="Relative8"/>
 
 			<label id="stringClassName"/>
-			<short>23</short>
+			<short>24</short>
 			<string>http://metalx.org/String</string>
 
 			<label id="end"/>

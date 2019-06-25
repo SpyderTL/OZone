@@ -26,12 +26,12 @@
 
 	<xsl:template match="time:CreateObject">
 		<scope>
-			<cpu:PushDSToStack/>
+			<!--<cpu:PushDSToStack/>-->
 			<cpu:PushSIToStack/>
 
 			<mm:CheckOut length="3"/>
 
-			<cpu:PushESToStack/>
+			<!--<cpu:PushESToStack/>-->
 			<cpu:PushDIToStack/>
 
 			<cpu:CopyRegisterToOperand8/>
@@ -49,10 +49,10 @@
 
 			<sys:GetCatalog/>
 
-			<cpu:PushImmediateToStack16/>
+			<!--<cpu:PushImmediateToStack16/>
 			<addressOf ref="timeClassName" type="Segment16"/>
 
-			<cpu:PullESFromStack/>
+			<cpu:PullESFromStack/>-->
 			
 			<cpu:CopyImmediateToDI/>
 			<addressOf ref="timeClassName" type="Absolute16"/>
@@ -63,9 +63,9 @@
 			<op:SI-BXRegister/>
 
 			<cpu:PullDIFromStack/>
-			<cpu:PullESFromStack/>
+			<!--<cpu:PullESFromStack/>-->
 			<cpu:PullSIFromStack/>
-			<cpu:PullDSFromStack/>
+			<!--<cpu:PullDSFromStack/>-->
 
 			<cpu:CopyImmediateToAX/>
 			<short>3</short>
@@ -76,7 +76,7 @@
 			<addressOf ref="end" type="Relative8"/>
 
 			<label id="timeClassName"/>
-			<short>21</short>
+			<short>22</short>
 			<string>http://metalx.org/Time</string>
 
 			<label id="end"/>

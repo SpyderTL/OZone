@@ -41,7 +41,7 @@
 			<cpu:IncrementDI/>
 			<cpu:IncrementDI/>
 
-			<cpu:PushESToStack/>
+			<!--<cpu:PushESToStack/>-->
 			<cpu:PullBXFromStack/>
 
 			<cpu:CopyRegisterToOperand16/>
@@ -49,10 +49,10 @@
 
 			<sys:GetCatalog/>
 
-			<cpu:PushImmediateToStack16/>
+			<!--<cpu:PushImmediateToStack16/>
 			<addressOf ref="className" type="Segment16"/>
 
-			<cpu:PullESFromStack/>
+			<cpu:PullESFromStack/>-->
 			
 			<cpu:CopyImmediateToDI/>
 			<addressOf ref="className" type="Absolute16"/>
@@ -74,7 +74,7 @@
 			<addressOf ref="end" type="Relative8"/>
 
 			<label id="className"/>
-			<short>24</short>
+			<short>25</short>
 			<string>http://metalx.org/Address</string>
 
 			<label id="end"/>
@@ -83,17 +83,17 @@
 	
 	<xsl:template match="addr:CreatePointer">
 		<scope>
-			<cpu:PushDSToStack/>
+			<!--<cpu:PushDSToStack/>-->
 			<cpu:PushSIToStack/>
-			<cpu:PushESToStack/>
+			<!--<cpu:PushESToStack/>-->
 			<cpu:PushDIToStack/>
 
 			<sys:GetCatalog/>
 
-			<cpu:PushImmediateToStack16/>
+			<!--<cpu:PushImmediateToStack16/>
 			<addressOf ref="className" type="Segment16"/>
 
-			<cpu:PullESFromStack/>
+			<cpu:PullESFromStack/>-->
 			
 			<cpu:CopyImmediateToDI/>
 			<addressOf ref="className" type="Absolute16"/>
@@ -104,9 +104,9 @@
 			<op:SI-BXRegister/>
 
 			<cpu:PullDIFromStack/>
-			<cpu:PullESFromStack/>
+			<!--<cpu:PullESFromStack/>-->
 			<cpu:PullSIFromStack/>
-			<cpu:PullDSFromStack/>
+			<!--<cpu:PullDSFromStack/>-->
 
 			<cpu:CopyImmediateToAX/>
 			<short>4</short>
@@ -117,7 +117,7 @@
 			<addressOf ref="end" type="Relative8"/>
 
 			<label id="className"/>
-			<short>24</short>
+			<short>25</short>
 			<string>http://metalx.org/Address</string>
 
 			<label id="end"/>

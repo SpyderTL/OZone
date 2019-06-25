@@ -73,15 +73,15 @@
 			<shift:ShiftAXRegisterLeft/>
 
 			<cpu:PushAXToStack/>
-			<cpu:PushDSToStack/>
+			<!--<cpu:PushDSToStack/>-->
 			<cpu:PushSIToStack/>
-			<cpu:PushESToStack/>
+			<!--<cpu:PushESToStack/>-->
 			<cpu:PushDIToStack/>
 
-			<cpu:PushImmediateToStack16/>
+			<!--<cpu:PushImmediateToStack16/>
 			<addressOf ref="className" type="Segment16"/>
 
-			<cpu:PullESFromStack/>
+			<cpu:PullESFromStack/>-->
 			
 			<cpu:CopyImmediateToDI/>
 			<addressOf ref="className" type="Absolute16"/>
@@ -94,9 +94,9 @@
 			<op:SI-BXRegister/>
 
 			<cpu:PullDIFromStack/>
-			<cpu:PullESFromStack/>
+			<!--<cpu:PullESFromStack/>-->
 			<cpu:PullSIFromStack/>
-			<cpu:PullDSFromStack/>
+			<!--<cpu:PullDSFromStack/>-->
 			<cpu:PullAXFromStack/>
 			
 			<obj:Create/>
@@ -105,7 +105,7 @@
 			<addressOf ref="end" type="Relative8"/>
 
 			<label id="className"/>
-			<short>21</short>
+			<short>22</short>
 			<string>http://metalx.org/List</string>
 
 			<label id="end"/>
