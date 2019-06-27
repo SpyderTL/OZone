@@ -75,13 +75,14 @@ namespace DosConsole
 			LoadTransform("../../../OZone/Platforms/Intel/Ac97/BusMaster/GlobalControl.xslt"),
 			LoadTransform("../../../OZone/Platforms/Intel/Ac97/BusMaster/GlobalStatus.xslt"),
 			LoadTransform("../../../OZone/Platforms/Intel/Ac97/Mixer/Mixer.xslt"),
+			LoadTransform("../../../OZone/Platforms/Yamaha/Opl2/Registers.xslt"),
 		};
 
 		public static string[] Programs = new string[]
 		{
 			"../../Console.xml",
 			"../../../OZone/Classes/i286/Address.xml",
-			//"../../../OZone/Classes/i286/Audio.xml",
+			"../../../OZone/Classes/i286/Audio.xml",
 			"../../../OZone/Classes/i286/Boolean.xml",
 			"../../../OZone/Classes/i286/Class.xml",
 			"../../../OZone/Classes/i286/Collection.xml",
@@ -94,7 +95,7 @@ namespace DosConsole
 			"../../../OZone/Classes/i286/Network.xml",
 			"../../../OZone/Classes/i286/PciDevice.xml",
 			"../../../OZone/Classes/i286/Power.xml",
-			//"../../../OZone/Classes/i286/Processor.xml",
+			"../../../OZone/Classes/i286/Processor.xml",
 			"../../../OZone/Classes/i286/Short.xml",
 			"../../../OZone/Classes/i286/Stream.xml",
 			"../../../OZone/Classes/i286/String.xml",
@@ -103,8 +104,8 @@ namespace DosConsole
 			"../../../OZone/Classes/i286/Text.xml",
 			"../../../OZone/Classes/i286/Time.xml",
 			"../../../OZone/Classes/i286/Version.xml",
-			//"../../../OZone/Classes/i286/Video.xml",
-			//"../../../OZone/Classes/i286/VideoMode.xml",
+			"../../../OZone/Classes/i286/Video.xml",
+			"../../../OZone/Classes/i286/VideoMode.xml",
 		};
 		
 		private static XslCompiledTransform LoadTransform(string fileName)
