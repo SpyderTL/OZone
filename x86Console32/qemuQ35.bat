@@ -1,0 +1,1 @@
+"c:\program files\qemu\qemu-system-x86_64.exe" -cdrom "bin\debug\x86Console32.iso" -soundhw all -machine q35

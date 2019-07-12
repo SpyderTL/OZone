@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<cls:class
+	name="Dos"
+	type="http://metalx.org/Dos"
+	static="true"
+	xmlns="http://metalx.org/Program"
+	xmlns:cls="http://metalx.org/i286/Structures/Class"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:obj="http://metalx.org/i286/Functions/Object"
+	xmlns:lst="http://metalx.org/i286/Functions/List"
+	xmlns:str="http://metalx.org/i286/Functions/String"
+	xmlns:mm="http://metalx.org/i286/Functions/MemoryManager"
+	xmlns:sys="http://metalx.org/i286/Functions/System"
+	xmlns:short="http://metalx.org/i286/Functions/Short"
+	xmlns:asc="http://metalx.org/Ansi/Ascii"
+	xmlns:ari="http://metalx.org/Intel/80286/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80286/Shift"
+	xmlns:seg="http://metalx.org/Intel/80286/Segments"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands">
+
+	<cls:method name="GetAllocatedSegments" type="http://metalx.org/Short" static="true">
+		<sys:GetMemoryManager/>
+
+		<cpu:CopyOperandToRegister16/>
+		<op:AX-ImmediateAddress/>
+		<hex>0002</hex>
+
+		<cpu:CopySegmentRegisterToOperand16/>
+		<seg:CS-BXRegister/>
+
+		<cpu:SubtractOperandFromRegister16/>
+		<op:AX-BXRegister/>
+
+		<!--<cpu:ShiftRegister16ByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>4</byte>-->
+
+		<short:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+	
+	<cls:method name="GetNextSegment" type="http://metalx.org/Short" static="true">
+		<sys:GetMemoryManager/>
+
+		<cpu:CopyOperandToRegister16/>
+		<op:AX-ImmediateAddress/>
+		<hex>0002</hex>
+
+		<short:CreateObject/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:DI-SIRegister/>
+
+		<cpu:ReturnToNearCaller/>
+	</cls:method>
+</cls:class>

@@ -89,6 +89,7 @@ namespace DosConsole
 			"../../../OZone/Classes/i286/Date.xml",
 			"../../../OZone/Classes/i286/Debug.xml",
 			"../../../OZone/Classes/i286/Dictionary.xml",
+			"../../../OZone/Classes/i286/Dos.xml",
 			"../../../OZone/Classes/i286/Hexadecimal.xml",
 			"../../../OZone/Classes/i286/List.xml",
 			"../../../OZone/Classes/i286/Mouse.xml",
