@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:vid="http://metalx.org/Commodore64/Video"
+	xmlns:sys="http://metalx.org/Commodore64/System"
+	xmlns:key="http://metalx.org/Commodore64/Keyboard"
+	xmlns:kernel="http://metalx.org/Commodore64/Kernel"
+	xmlns:color="http://metalx.org/Commodore64/Color"
+	xmlns:mem="http://metalx.org/6502/Functions/Memory"
+	xmlns:mm="http://metalx.org/C64/Functions/MemoryManager"
+	xmlns:str="http://metalx.org/C64/Functions/String"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<!--Hardware Registers-->
+	<label id="VideoAddressHigh" offset="9f20"/>
+	<label id="VideoAddressMid" offset="9f21"/>
+	<label id="VideoAddressLow" offset="9f22"/>
+	<label id="VideoData0" offset="9f23"/>
+	<label id="VideoData1" offset="9f24"/>
+	<label id="VideoControl" offset="9f25"/>
+	<label id="VideoInterruptEnable" offset="9f26"/>
+	<label id="VideoInterruptStatus" offset="9f27"/>
+
+	<cpu:SetInterruptDisableFlag/>
+	
+	<!--Enable V-SYNC Interrupt-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>00000001</binary>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoInterruptEnable" type="Absolute16"/>
+
+	<label id="loop"/>
+
+	<!--Clear Screen-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>10</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressHigh" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>00</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressMid" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>00</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressLow" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToYIndex/>
+	<byte>64</byte>
+
+	<label id="loopY"/>
+
+	<cpu:CopyImmediate8ToXIndex/>
+	<byte>128</byte>
+
+	<label id="loopX"/>
+	
+	<cpu:CopyImmediate8ToAccumulator/>
+	<petscii:Space/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
+
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<addressOf ref="color" type="Absolute16"/>
+
+	<cpu:ShiftAccumulatorLeft/>
+	<cpu:ShiftAccumulatorLeft/>
+	<cpu:ShiftAccumulatorLeft/>
+	<cpu:ShiftAccumulatorLeft/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
+
+	<cpu:DecrementXIndex/>
+
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="loopX" type="Relative8"/>
+
+	<cpu:DecrementYIndex/>
+
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="loopY" type="Relative8"/>
+
+	<!--<cpu:IncrementImmediate16Address/>
+	<addressOf ref="color" type="Absolute16"/>-->
+
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<addressOf ref="color" type="Absolute16"/>
+
+	<cpu:ExclusiveOrAccumulatorWithImmediate8/>
+	<binary>00000001</binary>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="color" type="Absolute16"/>
+
+	<!--Wait For V-Blank-->
+	<label id="wait"/>
+	
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>00000001</binary>
+
+	<cpu:TestImmediate16AddressWithAccumulator/>
+	<addressOf ref="VideoInterruptStatus" type="Absolute16"/>
+
+	<cpu:BranchToRelative8IfZero/>
+	<addressOf ref="wait" type="Relative8"/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoInterruptStatus" type="Absolute16"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="loop" type="Absolute16"/>
+
+	<!--Set Lower Case Mode-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>14</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressHigh" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>00</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressMid" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>04</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressLow" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>00</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>82</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
+	
+	
+
+
+	<label id="stop">
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="stop" type="Absolute16"/>
+	</label>
+
+	<var:byte id="color">0</var:byte>
+
+	<label id="freeMemory"/>
+</scope>

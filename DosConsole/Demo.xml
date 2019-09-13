@@ -421,34 +421,9 @@
 	<hex>a000</hex>
 
 	<cpu:PullESFromStack/>
-	
-	<!--Draw line-->
-	<cpu:CopyImmediateToCX/>
-	<short>256</short>
-
-	<cpu:CopyImmediateToDI/>
-	<short>0</short>
-
-	<cpu:CopyImmediateToAL/>
-	<byte>0</byte>
 
 	<cpu:CopyImmediateToBX/>
-	<hex>0100</hex>
-
-	<label id="drawLine"/>
-
-	<cpu:CopyALToDIAddressAndIncrementDI/>
-
-	<cpu:AddRegisterToOperand16/>
-	<op:BX-DIRegister/>
-
-	<cpu:IncrementAX/>
-
-	<cpu:AndAXWithImmediate/>
-	<hex>00ff</hex>
-
-	<cpu:LoopToRelative8/>
-	<addressOf ref="drawLine" type="Relative8"/>
+	<short>0</short>
 
 	<label id="loop"/>
 
@@ -466,41 +441,25 @@
 	<addressOf ref="exit" type="Relative8"/>
 	
 	<!--Wait for VSync-->
-	<!--<cpu:CallRelative16/>
-	<addressOf ref="waitForVSync" type="Relative16"/>
-
-	<cpu:CopyImmediateToDI/>
-	<hex>0000</hex>
-
-	<cpu:Operand32/>
-	<cpu:CopyImmediateToAX/>
-	<hex>1010</hex>
-	<hex>1010</hex>
-
-	<cpu:CopyImmediateToCX/>
-	<short>16384</short>
-
-	<cpu:Repeat/>
-	<cpu:Operand32/>
-	<cpu:CopyAXToDIAddressAndIncrementDI/>
-
 	<cpu:CallRelative16/>
 	<addressOf ref="waitForVSync" type="Relative16"/>
 
 	<cpu:CopyImmediateToDI/>
 	<hex>0000</hex>
 
-	<cpu:Operand32/>
-	<cpu:CopyImmediateToAX/>
-	<hex>1f1f</hex>
-	<hex>1f1f</hex>
+	<cpu:CopyRegisterToOperand8/>
+	<op:BL-ALRegister/>
+
+	<cpu:CopyRegisterToOperand8/>
+	<op:BL-AHRegister/>
 
 	<cpu:CopyImmediateToCX/>
-	<short>16384</short>
+	<ushort>32768</ushort>
 
 	<cpu:Repeat/>
-	<cpu:Operand32/>
-	<cpu:CopyAXToDIAddressAndIncrementDI/>-->
+	<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+	<cpu:IncrementBX/>
 
 	<cpu:JumpToRelative8/>
 	<addressOf ref="loop" type="Relative8"/>
