@@ -28,14 +28,56 @@
 	<label id="VideoInterruptEnable" offset="9f26"/>
 	<label id="VideoInterruptStatus" offset="9f27"/>
 
+	<label id="InterfaceDirection0" offset="9f60"/>
+	<label id="InterfaceData0" offset="9f61"/>
+	<label id="InterfaceDirection1" offset="9f70"/>
+	<label id="InterfaceData1" offset="9f71"/>
+
 	<cpu:SetInterruptDisableFlag/>
 	
-	<!--Enable V-SYNC Interrupt-->
+	<!--Install Interrupt Handlers-->
+	<!--<cpu:CopyImmediate8ToXIndex/>
+	<addressOf ref="interruptTable" type="Absolute16Low8"/>
+
+	<cpu:CopyImmediate8ToYIndex/>
+	<addressOf ref="interruptTable" type="Absolute16High8"/>
+
+	<cpu:CallImmediate16Address/>
+	<hex>ff8a</hex>-->
+	
+	<!--Disable Keyboard Handshake-->
+	<!--<cpu:ClearInterruptDisableFlag/>-->
+
+	<!--Set Lower Case Mode-->
 	<cpu:CopyImmediate8ToAccumulator/>
-	<binary>00000001</binary>
+	<hex>14</hex>
 
 	<cpu:CopyAccumulatorToImmediate16Address/>
-	<addressOf ref="VideoInterruptEnable" type="Absolute16"/>
+	<addressOf ref="VideoAddressHigh" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>00</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressMid" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>04</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressLow" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>00</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>82</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
 
 	<label id="loop"/>
 
@@ -74,13 +116,8 @@
 	<cpu:CopyAccumulatorToImmediate16Address/>
 	<addressOf ref="VideoData0" type="Absolute16"/>
 
-	<cpu:CopyImmediate16AddressToAccumulator/>
-	<addressOf ref="color" type="Absolute16"/>
-
-	<cpu:ShiftAccumulatorLeft/>
-	<cpu:ShiftAccumulatorLeft/>
-	<cpu:ShiftAccumulatorLeft/>
-	<cpu:ShiftAccumulatorLeft/>
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>01</hex>
 
 	<cpu:CopyAccumulatorToImmediate16Address/>
 	<addressOf ref="VideoData0" type="Absolute16"/>
@@ -95,39 +132,9 @@
 	<cpu:BranchToRelative8IfNotZero/>
 	<addressOf ref="loopY" type="Relative8"/>
 
-	<!--<cpu:IncrementImmediate16Address/>
-	<addressOf ref="color" type="Absolute16"/>-->
-
-	<cpu:CopyImmediate16AddressToAccumulator/>
-	<addressOf ref="color" type="Absolute16"/>
-
-	<cpu:ExclusiveOrAccumulatorWithImmediate8/>
-	<binary>00000001</binary>
-
-	<cpu:CopyAccumulatorToImmediate16Address/>
-	<addressOf ref="color" type="Absolute16"/>
-
-	<!--Wait For V-Blank-->
-	<label id="wait"/>
-	
+	<!--Reset Cursor-->
 	<cpu:CopyImmediate8ToAccumulator/>
-	<binary>00000001</binary>
-
-	<cpu:TestImmediate16AddressWithAccumulator/>
-	<addressOf ref="VideoInterruptStatus" type="Absolute16"/>
-
-	<cpu:BranchToRelative8IfZero/>
-	<addressOf ref="wait" type="Relative8"/>
-
-	<cpu:CopyAccumulatorToImmediate16Address/>
-	<addressOf ref="VideoInterruptStatus" type="Absolute16"/>
-
-	<cpu:JumpToImmediate16Address/>
-	<addressOf ref="loop" type="Absolute16"/>
-
-	<!--Set Lower Case Mode-->
-	<cpu:CopyImmediate8ToAccumulator/>
-	<hex>14</hex>
+	<hex>20</hex>
 
 	<cpu:CopyAccumulatorToImmediate16Address/>
 	<addressOf ref="VideoAddressHigh" type="Absolute16"/>
@@ -139,32 +146,205 @@
 	<addressOf ref="VideoAddressMid" type="Absolute16"/>
 
 	<cpu:CopyImmediate8ToAccumulator/>
-	<hex>04</hex>
+	<hex>00</hex>
 
 	<cpu:CopyAccumulatorToImmediate16Address/>
 	<addressOf ref="VideoAddressLow" type="Absolute16"/>
 
+	<!--Show Prompt-->
 	<cpu:CopyImmediate8ToAccumulator/>
+	<petscii:GreaterThan/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
+	
+	<!--Wait For Key Press-->
+	<label id="waitForKeyPress"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="readPs2Byte" type="Absolute16"/>
+
+	<!--<cpu:CompareAccumulatorToImmediate8/>
 	<hex>00</hex>
 
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="waitForKeyPress" type="Relative8"/>-->
+	
+	<!--Draw Character-->
+	<!--<cpu:CopyImmediate8ToAccumulator/>
+	<petscii:Period/>-->
+
 	<cpu:CopyAccumulatorToImmediate16Address/>
 	<addressOf ref="VideoData0" type="Absolute16"/>
 
-	<cpu:CopyImmediate8ToAccumulator/>
-	<hex>82</hex>
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="waitForKeyPress" type="Absolute16"/>
 
-	<cpu:CopyAccumulatorToImmediate16Address/>
-	<addressOf ref="VideoData0" type="Absolute16"/>
-	
-	
+	<!--Read Byte From PS/2 Port-->
+	<label id="readPs2Byte">
+		<scope>
+			<!--Input Mode-->
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<hex>9f73</hex>
 
+			<cpu:AndAccumulatorWithImmediate8/>
+			<binary>11111100</binary>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<hex>9f73</hex>
+
+			<!--Wait For PS/2 Idle-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<binary>00000011</binary>
+
+			<label id="waitStart"/>
+
+			<cpu:TestImmediate16AddressWithAccumulator/>
+			<hex>9f71</hex>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="waitStart" type="Relative8"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<binary>00000010</binary>
+
+			<label id="waitNotReady"/>
+
+			<cpu:TestImmediate16AddressWithAccumulator/>
+			<hex>9f71</hex>
+
+			<cpu:BranchToRelative8IfZero/>
+			<addressOf ref="waitNotReady" type="Relative8"/>
+
+			<cpu:CopyImmediate8ToXIndex/>
+			<byte>9</byte>
+
+			<label id="readBit"/>
+			
+			<label id="waitForReady"/>
+
+			<cpu:TestImmediate16AddressWithAccumulator/>
+			<hex>9f71</hex>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="waitForReady" type="Relative8"/>
+
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<hex>9f71</hex>
+
+			<cpu:AndAccumulatorWithImmediate8/>
+			<binary>00000001</binary>
+
+			<cpu:CompareAccumulatorToImmediate8/>
+			<binary>00000001</binary>
+
+			<cpu:RollImmediate16AddressRight/>
+			<addressOf ref="ps2Data" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<binary>00000010</binary>
+
+			<label id="waitForNotReady2"/>
+
+			<cpu:TestImmediate16AddressWithAccumulator/>
+			<hex>9f71</hex>
+
+			<cpu:BranchToRelative8IfZero/>
+			<addressOf ref="waitForNotReady2" type="Relative8"/>
+			
+			<cpu:DecrementXIndex/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="readBit" type="Relative8"/>
+
+			<cpu:RollImmediate16AddressLeft/>
+			<addressOf ref="ps2Data" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<binary>00000010</binary>
+
+			<label id="waitForReady2"/>
+
+			<cpu:TestImmediate16AddressWithAccumulator/>
+			<hex>9f71</hex>
+			
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="waitForReady2" type="Relative8"/>
+			
+			<label id="waitForNotReady3"/>
+
+			<cpu:TestImmediate16AddressWithAccumulator/>
+			<hex>9f71</hex>
+
+			<cpu:BranchToRelative8IfZero/>
+			<addressOf ref="waitForNotReady3" type="Relative8"/>
+			
+			<label id="disableKeyboard"/>
+
+			<!--Output Mode-->
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<hex>9f73</hex>
+
+			<cpu:OrAccumulatorWithImmediate8/>
+			<binary>00000011</binary>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<hex>9f73</hex>
+
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<hex>9f71</hex>
+
+			<cpu:AndAccumulatorWithImmediate8/>
+			<binary>11111101</binary>
+
+			<cpu:OrAccumulatorWithImmediate8/>
+			<binary>00000001</binary>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<hex>9f71</hex>
+
+			<label id="done"/>
+
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="ps2Data" type="Absolute16"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
+	<label id="waitPs2Idle">
+		<cpu:ReturnFromSubroutine/>
+	</label>
 
 	<label id="stop">
 		<cpu:JumpToImmediate16Address/>
 		<addressOf ref="stop" type="Absolute16"/>
 	</label>
 
-	<var:byte id="color">0</var:byte>
+	<label id="interruptHandler">
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="interruptTable">
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+	</label>
+
+	<var:byte id="ps2Data">0</var:byte>
 
 	<label id="freeMemory"/>
 </scope>
