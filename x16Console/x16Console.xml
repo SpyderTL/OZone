@@ -33,8 +33,10 @@
 	<label id="InterfaceDirection1" offset="9f70"/>
 	<label id="InterfaceData1" offset="9f71"/>
 
+	<label id="keys" offset="9e00"/>
+
 	<cpu:SetInterruptDisableFlag/>
-	
+
 	<!--Install Interrupt Handlers-->
 	<cpu:CopyImmediate8ToXIndex/>
 	<addressOf ref="interruptTable" type="Absolute16Low8"/>
@@ -44,7 +46,7 @@
 
 	<cpu:CallImmediate16Address/>
 	<hex>ff8a</hex>
-	
+
 	<!--Disable Keyboard Handshake-->
 	<!--<cpu:ClearInterruptDisableFlag/>-->
 
@@ -109,7 +111,7 @@
 	<byte>128</byte>
 
 	<label id="loopX"/>
-	
+
 	<cpu:CopyImmediate8ToAccumulator/>
 	<petscii:Space/>
 
@@ -157,7 +159,7 @@
 
 	<cpu:CopyAccumulatorToImmediate16Address/>
 	<addressOf ref="VideoData0" type="Absolute16"/>
-	
+
 	<!--Wait For Key Press-->
 	<label id="waitForKeyPress"/>
 
@@ -173,16 +175,74 @@
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="readPs2Byte" type="Absolute16"/>
 
+	<cpu:CopyAccumulatorToXIndex/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<byte>0</byte>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<addressOf ref="keys" type="Absolute16"/>
+
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="waitForKeyPress" type="Absolute16"/>
 
 	<label id="notKeyUp"/>
-	
-	<!--Get ASCII Code-->
+
 	<cpu:CopyAccumulatorToXIndex/>
-	
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<byte>1</byte>
+
+	<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+	<addressOf ref="keys" type="Absolute16"/>
+
+	<cpu:CopyXIndexToAccumulator/>
+
+	<!--Check Keys-->
+	<cpu:CompareAccumulatorToImmediate8/>
+	<hex>5a</hex>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notEnter" type="Relative8"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="handleEnter" type="Absolute16"/>
+
+	<label id="notEnter"/>
+
+	<cpu:CompareAccumulatorToImmediate8/>
+	<hex>66</hex>
+
+	<cpu:BranchToRelative8IfNotEqual/>
+	<addressOf ref="notBackspace" type="Relative8"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="handleBackspace" type="Absolute16"/>
+
+	<label id="notBackspace"/>
+
+	<!--Get ASCII Code-->
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<hex>9e12</hex>
+
+	<cpu:OrAccumulatorWithImmediate16Address/>
+	<hex>9e59</hex>
+
+	<cpu:BranchToRelative8IfZero/>
+	<addressOf ref="notShift" type="Relative8"/>
+
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<addressOf ref="ps2ShiftCodes" type="Absolute16"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="drawCharacter" type="Absolute16"/>
+
+	<label id="notShift"/>
+
 	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
 	<addressOf ref="ps2Codes" type="Absolute16"/>
+
+	<label id="drawCharacter"/>
 
 	<cpu:CompareAccumulatorToImmediate8/>
 	<hex>00</hex>
@@ -192,7 +252,7 @@
 
 	<!--Draw Character-->
 	<cpu:CopyAccumulatorToXIndex/>
-	
+
 	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
 	<addressOf ref="vicCodes" type="Absolute16"/>
 
@@ -202,7 +262,62 @@
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="waitForKeyPress" type="Absolute16"/>
 
-	<!--Read Byte From PS/2 Port-->
+	<!--Functions-->
+	<label id="handleEnter">
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="waitForKeyPress" type="Absolute16"/>
+	</label>
+
+	<label id="handleBackspace">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="back" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<petscii:Space/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoData0" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="back" type="Absolute16"/>
+
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="waitForKeyPress" type="Absolute16"/>
+	</label>
+
+	<label id="back">
+		<cpu:SetCarryFlag/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="VideoAddressLow" type="Absolute16"/>
+
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>2</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoAddressLow" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="VideoAddressMid" type="Absolute16"/>
+
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoAddressMid" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="VideoAddressHigh" type="Absolute16"/>
+
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoAddressHigh" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+	
 	<label id="readPs2Byte">
 		<scope>
 			<!--Input Mode-->
@@ -242,7 +357,7 @@
 			<byte>9</byte>
 
 			<label id="readBit"/>
-			
+
 			<label id="waitForReady"/>
 
 			<cpu:TestImmediate16AddressWithAccumulator/>
@@ -273,7 +388,7 @@
 
 			<cpu:BranchToRelative8IfZero/>
 			<addressOf ref="waitForNotReady2" type="Relative8"/>
-			
+
 			<cpu:DecrementXIndex/>
 
 			<cpu:BranchToRelative8IfNotZero/>
@@ -289,10 +404,10 @@
 
 			<cpu:TestImmediate16AddressWithAccumulator/>
 			<hex>9f71</hex>
-			
+
 			<cpu:BranchToRelative8IfNotZero/>
 			<addressOf ref="waitForReady2" type="Relative8"/>
-			
+
 			<label id="waitForNotReady3"/>
 
 			<cpu:TestImmediate16AddressWithAccumulator/>
@@ -300,7 +415,7 @@
 
 			<cpu:BranchToRelative8IfZero/>
 			<addressOf ref="waitForNotReady3" type="Relative8"/>
-			
+
 			<label id="disableKeyboard"/>
 
 			<!--Output Mode-->
@@ -392,74 +507,74 @@
 		<hex>00</hex>
 		<hex>00</hex>
 		<hex>00</hex>
-		<hex>72</hex>
-		<hex>00</hex>
+		<hex>71</hex>
+		<hex>31</hex>
 		<hex>00</hex>
 
 		<hex>00</hex>
 		<hex>00</hex>
-		<hex>7b</hex>
-		<hex>74</hex>
+		<hex>7a</hex>
+		<hex>73</hex>
 		<hex>61</hex>
-		<hex>78</hex>
-		<hex>00</hex>
+		<hex>77</hex>
+		<hex>32</hex>
 		<hex>00</hex>
 
 		<!--20-->
 		<hex>00</hex>
 		<hex>63</hex>
-		<hex>79</hex>
+		<hex>78</hex>
 		<hex>64</hex>
 		<hex>65</hex>
-		<hex>00</hex>
-		<hex>00</hex>
+		<hex>34</hex>
+		<hex>33</hex>
 		<hex>00</hex>
 
 		<hex>00</hex>
 		<hex>20</hex>
-		<hex>77</hex>
+		<hex>76</hex>
 		<hex>66</hex>
-		<hex>75</hex>
-		<hex>73</hex>
-		<hex>00</hex>
+		<hex>74</hex>
+		<hex>72</hex>
+		<hex>35</hex>
 		<hex>00</hex>
 
 		<!--30-->
 		<hex>00</hex>
-		<hex>6f</hex>
+		<hex>6e</hex>
 		<hex>62</hex>
-		<hex>69</hex>
 		<hex>68</hex>
-		<hex>7a</hex>
-		<hex>00</hex>
+		<hex>67</hex>
+		<hex>79</hex>
+		<hex>36</hex>
 		<hex>00</hex>
 
 		<hex>00</hex>
 		<hex>00</hex>
-		<hex>6e</hex>
-		<hex>6b</hex>
-		<hex>76</hex>
-		<hex>00</hex>
-		<hex>00</hex>
+		<hex>6d</hex>
+		<hex>6a</hex>
+		<hex>75</hex>
+		<hex>37</hex>
+		<hex>38</hex>
 		<hex>00</hex>
 
 		<!--40-->
 		<hex>00</hex>
 		<hex>00</hex>
-		<hex>6c</hex>
-		<hex>6a</hex>
-		<hex>70</hex>
-		<hex>7c</hex>
-		<hex>00</hex>
+		<hex>6b</hex>
+		<hex>69</hex>
+		<hex>6f</hex>
+		<hex>30</hex>
+		<hex>39</hex>
 		<hex>00</hex>
 
 		<hex>00</hex>
 		<hex>00</hex>
 		<hex>00</hex>
-		<hex>6d</hex>
+		<hex>6c</hex>
 		<hex>00</hex>
-		<hex>71</hex>
-		<hex>00</hex>
+		<hex>70</hex>
+		<hex>2D</hex>
 		<hex>00</hex>
 
 		<!--50-->
@@ -468,7 +583,161 @@
 		<hex>00</hex>
 		<hex>00</hex>
 		<hex>00</hex>
+		<hex>3D</hex>
 		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--60-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--70-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+	</label>
+
+	<label id="ps2ShiftCodes">
+		<!--00-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--10-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>51</hex>
+		<hex>21</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>5a</hex>
+		<hex>53</hex>
+		<hex>41</hex>
+		<hex>57</hex>
+		<hex>40</hex>
+		<hex>00</hex>
+
+		<!--20-->
+		<hex>00</hex>
+		<hex>43</hex>
+		<hex>58</hex>
+		<hex>44</hex>
+		<hex>45</hex>
+		<hex>24</hex>
+		<hex>23</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>20</hex>
+		<hex>56</hex>
+		<hex>46</hex>
+		<hex>54</hex>
+		<hex>52</hex>
+		<hex>25</hex>
+		<hex>00</hex>
+
+		<!--30-->
+		<hex>00</hex>
+		<hex>4e</hex>
+		<hex>42</hex>
+		<hex>48</hex>
+		<hex>47</hex>
+		<hex>59</hex>
+		<hex>5E</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>4d</hex>
+		<hex>4a</hex>
+		<hex>55</hex>
+		<hex>26</hex>
+		<hex>2A</hex>
+		<hex>00</hex>
+
+		<!--40-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>4b</hex>
+		<hex>49</hex>
+		<hex>4f</hex>
+		<hex>29</hex>
+		<hex>28</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>4c</hex>
+		<hex>00</hex>
+		<hex>50</hex>
+		<hex>5F</hex>
+		<hex>00</hex>
+
+		<!--50-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>2B</hex>
 		<hex>00</hex>
 		<hex>00</hex>
 
@@ -633,7 +902,7 @@
 		<hex>1c</hex>
 		<hex>1d</hex>
 		<hex>1e</hex>
-		<hex>1f</hex>
+		<hex>64</hex>
 
 		<!--60-->
 		<hex>27</hex>
@@ -669,7 +938,10 @@
 		<hex>1a</hex>
 	</label>
 
+	<!--Variables-->
 	<var:byte id="ps2Data">0</var:byte>
+	<var:byte id="row">0</var:byte>
+	<var:byte id="column">0</var:byte>
 
 	<label id="freeMemory"/>
 </scope>
