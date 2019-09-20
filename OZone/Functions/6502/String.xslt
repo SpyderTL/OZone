@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+
 <xsl:stylesheet
 	version="1.0"
 	xmlns="http://metalx.org/Program"
@@ -6,6 +7,7 @@
 	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
 	xmlns:mm="http://metalx.org/6502/Functions/MemoryManager"
 	xmlns:str="http://metalx.org/6502/Functions/String">
+	
 	<xsl:output method="xml" indent="yes"/>
 
 	<xsl:template match="@* | node()">
@@ -15,96 +17,179 @@
 	</xsl:template>
 
 	<xsl:template match="str:Create">
-		<xsl:element name="mm:AllocateBlock">
-			<xsl:attribute name="memoryManager">
-				<xsl:value-of select="@memoryManager"/>
-			</xsl:attribute>
-			<xsl:attribute name="pointer">
-				<xsl:value-of select="@pointer"/>
-			</xsl:attribute>
-		</xsl:element>
+		<mm:CheckOut length="2"/>
+		<mm:CheckOut/>
+
+		<cpu:IncrementXIndex/>
+		<cpu:IncrementXIndex/>
+
 		<xsl:call-template name="Clear"/>
 	</xsl:template>
 
 	<xsl:template name="Clear" match="str:Clear">
-		<xsl:element name="mm:SelectPointer">
-			<xsl:attribute name="pointer">
-				<xsl:value-of select="@pointer"/>
-			</xsl:attribute>
-		</xsl:element>
-		<cpu:CopyImmediateToAccumulator />
+		<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
 		<byte>0</byte>
-		<cpu:CopyAccumulatorToYIndex />
-		<cpu:CopyAccumulatorToIndirectYIndexMemory/>
-		<hex>FD</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>02</hex>
+
+		<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
+		<byte>1</byte>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>03</hex>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToYIndex/>
+
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<hex>02</hex>
+
+		<cpu:IncrementYIndex/>
+
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<hex>02</hex>
 	</xsl:template>
 
 	<xsl:template match="str:AppendCharacter">
-		<cpu:PushAccumulatorToStack />
-
-		<xsl:element name="mm:SelectPointer">
-			<xsl:attribute name="pointer">
-				<xsl:value-of select="@pointer"/>
-			</xsl:attribute>
-		</xsl:element>
-
-		<cpu:CopyImmediateToYIndex />
+		<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
 		<byte>0</byte>
 
-		<cpu:CopyIndirectYIndexMemoryToAccumulator />
-		<mm:SelectedPointer />
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>02</hex>
 
-		<cpu:AddImmediateToAccumulator />
+		<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
 		<byte>1</byte>
 
-		<cpu:CopyAccumulatorToIndirectYIndexMemory	/>
-		<mm:SelectedPointer />
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>03</hex>
 
-		<cpu:CopyAccumulatorToYIndex />
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
 
-		<cpu:PullAccumulatorFromStack />
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>02</hex>
 
-		<cpu:CopyAccumulatorToIndirectYIndexMemory />
-		<mm:SelectedPointer />
+		<cpu:AddImmediate8ToAccumulator/>
+		<hex>01</hex>
+
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<hex>02</hex>
+
+		<cpu:IncrementYIndex/>
+
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<hex>02</hex>
+
+		<cpu:DecrementYIndex/>
+		
+		<cpu:ClearCarryFlag/>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:AddImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>04</hex>
+
+		<cpu:IncrementYIndex/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>03</hex>
+
+		<cpu:AddImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>05</hex>
+
+		<cpu:IncrementYIndex/>
+
+		<cpu:PullAccumulatorFromStack/>
+
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<hex>04</hex>
 	</xsl:template>
 
 	<xsl:template match="str:TrimLastCharacter">
-		<scope>
-			<xsl:element name="mm:SelectPointer">
-				<xsl:attribute name="pointer">
-					<xsl:value-of select="@pointer"/>
-				</xsl:attribute>
-			</xsl:element>
+		<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
+		<byte>0</byte>
 
-			<cpu:CopyImmediateToYIndex />
-			<byte>0</byte>
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>02</hex>
 
-			<cpu:CopyIndirectYIndexMemoryToAccumulator />
-			<mm:SelectedPointer/>
+		<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
+		<byte>1</byte>
 
-			<cpu:BranchToRelativeMemoryIfZero />
-			<addressOf ref="exitRoutine" type="Relative8"/>
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>03</hex>
 
-			<cpu:SubtractImmediateFromAccumulator />
-			<byte>1</byte>
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
 
-			<cpu:CopyAccumulatorToIndirectYIndexMemory />
-			<mm:SelectedPointer />
+		<cpu:SetCarryFlag/>
 
-			<label id="exitRoutine"/>
-		</scope>
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<hex>01</hex>
+
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<hex>02</hex>
+
+		<cpu:IncrementYIndex/>
+
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<hex>02</hex>
 	</xsl:template>
 
 	<xsl:template match="str:GetLength">
-		<xsl:element name="mm:SelectPointer">
-			<xsl:attribute name="pointer">
-				<xsl:value-of select="@pointer"/>
-			</xsl:attribute>
-		</xsl:element>
-		<cpu:CopyImmediateToYIndex />
+		<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
 		<byte>0</byte>
-		<cpu:CopyIndirectYIndexMemoryToAccumulator />
-		<mm:SelectedPointer />
-	</xsl:template>
 
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>04</hex>
+
+		<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
+		<byte>1</byte>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>05</hex>
+
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>02</hex>
+
+		<cpu:IncrementYIndex/>
+
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>03</hex>
+	</xsl:template>
 </xsl:stylesheet>

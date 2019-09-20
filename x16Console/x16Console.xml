@@ -9,8 +9,8 @@
 	xmlns:kernel="http://metalx.org/Commodore64/Kernel"
 	xmlns:color="http://metalx.org/Commodore64/Color"
 	xmlns:mem="http://metalx.org/6502/Functions/Memory"
-	xmlns:mm="http://metalx.org/C64/Functions/MemoryManager"
-	xmlns:str="http://metalx.org/C64/Functions/String"
+	xmlns:str="http://metalx.org/6502/Functions/String"
+	xmlns:mm="http://metalx.org/6502/Functions/MemoryManager"
 	xmlns:clsf="http://metalx.org/C64/Functions/Class"
 	xmlns:cls="http://metalx.org/Class"
 	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
@@ -80,8 +80,37 @@
 
 	<cpu:CopyAccumulatorToImmediate16Address/>
 	<addressOf ref="VideoData0" type="Absolute16"/>
+	
+	<!--Initialize Memory Manager-->
+	<mm:Reset/>
+	
+	<!--Create Input Buffer-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<byte>0</byte>
 
-	<label id="loop"/>
+	<cpu:PushAccumulatorToStack/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<byte>79</byte>
+	
+	<cpu:PushAccumulatorToStack/>
+
+	<cpu:CopyImmediate8ToXIndex/>
+	<byte>0</byte>
+
+	<str:Create/>
+
+	<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
+	<byte>0</byte>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="buffer" type="Absolute16"/>
+
+	<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
+	<byte>1</byte>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="buffer" type="Absolute16" offset="1"/>
 
 	<!--Clear Screen-->
 	<cpu:CopyImmediate8ToAccumulator/>
@@ -227,8 +256,31 @@
 	<label id="notBackspace"/>
 	
 	<!--Check Buffer-->
+	<cpu:PushAccumulatorToStack/>
+	
+	<cpu:CopyImmediate8ToXIndex/>
+	<hex>fe</hex>
+
 	<cpu:CopyImmediate16AddressToAccumulator/>
-	<addressOf ref="count" type="Absolute16"/>
+	<addressOf ref="buffer" type="Absolute16"/>
+
+	<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+	<byte>0</byte>
+
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<addressOf ref="buffer" type="Absolute16" offset="1"/>
+
+	<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+	<byte>1</byte>
+
+	<str:GetLength/>
+
+	<cpu:PullAccumulatorFromStack/>
+
+	<cpu:CopyAccumulatorToXIndex/>
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>02</hex>
 
 	<cpu:CompareAccumulatorToImmediate8/>
 	<byte>79</byte>
@@ -265,6 +317,29 @@
 	<cpu:BranchToRelative8IfEqual/>
 	<addressOf ref="waitForKeyPress" type="Relative8"/>
 
+	<!--Append Character-->
+	<cpu:PushAccumulatorToStack/>
+	<cpu:PushAccumulatorToStack/>
+
+	<cpu:CopyImmediate8ToXIndex/>
+	<hex>fe</hex>
+
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<addressOf ref="buffer" type="Absolute16"/>
+
+	<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+	<byte>0</byte>
+
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<addressOf ref="buffer" type="Absolute16" offset="1"/>
+
+	<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+	<byte>1</byte>
+
+	<str:AppendCharacter/>
+
+	<cpu:PullAccumulatorFromStack/>
+
 	<!--Draw Character-->
 	<cpu:CopyAccumulatorToXIndex/>
 
@@ -276,10 +351,7 @@
 
 	<cpu:IncrementImmediate16Address/>
 	<addressOf ref="column" type="Absolute16"/>
-
-	<cpu:IncrementImmediate16Address/>
-	<addressOf ref="count" type="Absolute16"/>
-
+	
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="waitForKeyPress" type="Absolute16"/>
 
@@ -374,23 +446,71 @@
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="column" type="Absolute16"/>
 
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="count" type="Absolute16"/>
+		<cpu:CopyImmediate8ToXIndex/>
+		<hex>fe</hex>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="buffer" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="buffer" type="Absolute16" offset="1"/>
+
+		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+		<byte>1</byte>
+
+		<str:Clear/>
 
 		<cpu:JumpToImmediate16Address/>
 		<addressOf ref="showPrompt" type="Absolute16"/>
 	</label>
 
 	<label id="handleBackspace">
+		<cpu:CopyImmediate8ToXIndex/>
+		<hex>fe</hex>
+
 		<cpu:CopyImmediate16AddressToAccumulator/>
-		<addressOf ref="count" type="Absolute16"/>
-		
+		<addressOf ref="buffer" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="buffer" type="Absolute16" offset="1"/>
+
+		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+		<byte>1</byte>
+
+		<str:GetLength/>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>02</hex>
+
 		<cpu:CompareAccumulatorToImmediate8/>
 		<byte>0</byte>
 
 		<cpu:BranchToRelative8IfEqual/>
 		<addressOf ref="bufferEmpty" type="Relative8"/>
-		
+
+		<cpu:CopyImmediate8ToXIndex/>
+		<hex>fe</hex>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="buffer" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="buffer" type="Absolute16" offset="1"/>
+
+		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+		<byte>1</byte>
+
+		<str:TrimLastCharacter/>
+
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="back" type="Absolute16"/>
 
@@ -405,9 +525,6 @@
 
 		<cpu:DecrementImmediate16Address/>
 		<addressOf ref="column" type="Absolute16"/>
-
-		<cpu:DecrementImmediate16Address/>
-		<addressOf ref="count" type="Absolute16"/>
 
 		<label id="bufferEmpty"/>
 		
@@ -711,6 +828,7 @@
 		<cpu:ReturnFromInterrupt/>
 	</label>
 
+	<!--Tables-->
 	<label id="interruptTable">
 		<addressOf ref="interruptHandler" type="Absolute16"/>
 		<addressOf ref="interruptHandler" type="Absolute16"/>
@@ -1191,7 +1309,7 @@
 	<var:byte id="ps2Data">0</var:byte>
 	<var:byte id="row">0</var:byte>
 	<var:byte id="column">0</var:byte>
-	<var:byte id="count">0</var:byte>
+	<var:short id="buffer">0</var:short>
 
 	<label id="freeMemory"/>
 </scope>

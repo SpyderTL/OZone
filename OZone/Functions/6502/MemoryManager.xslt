@@ -13,172 +13,91 @@
 		</xsl:copy>
 	</xsl:template>
 
-	<xsl:template match="mm:SelectedPointer">
-		<hex>FD</hex>
+	<xsl:template match="mm:CheckOut">
+		<!--Get Address-->
+		<cpu:DecrementXIndex/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>4001</hex>
+
+		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+		<hex>00</hex>
+
+		<cpu:DecrementXIndex/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>4000</hex>
+
+		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+		<hex>00</hex>
+
+		<cpu:ClearCarryFlag/>
+
+		<xsl:choose>
+			<xsl:when test="@length">
+				<cpu:CopyImmediate8ToAccumulator/>
+				<byte>
+					<xsl:value-of select="@length"/>
+				</byte>
+
+				<cpu:AddImmediate16AddressToAccumulator/>
+				<hex>4000</hex>
+
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>4000</hex>
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<byte>0</byte>
+
+				<cpu:AddImmediate16AddressToAccumulator/>
+				<hex>4001</hex>
+
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>4001</hex>
+			</xsl:when>
+			<xsl:otherwise>
+				<cpu:PullAccumulatorFromStack/>
+
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>02</hex>
+
+				<cpu:PullAccumulatorFromStack/>
+				
+				<cpu:CopyAccumulatorToImmediate8Address/>
+				<hex>03</hex>
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>02</hex>
+
+				<cpu:AddImmediate16AddressToAccumulator/>
+				<hex>4000</hex>
+
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>4000</hex>
+
+				<cpu:CopyImmediate8AddressToAccumulator/>
+				<hex>03</hex>
+
+				<cpu:AddImmediate16AddressToAccumulator/>
+				<hex>4001</hex>
+
+				<cpu:CopyAccumulatorToImmediate16Address/>
+				<hex>4001</hex>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
-
-	<xsl:template match="mm:AllocateBlock">
-
-		<cpu:CopyAbsoluteMemoryToAccumulator/>
-		<xsl:element name="addressOf">
-			<xsl:attribute name="ref">
-				<xsl:value-of select="@memoryManager"/>
-			</xsl:attribute>
-			<xsl:attribute name="type">Absolute16</xsl:attribute>
-		</xsl:element>
-
-		<cpu:CopyAccumulatorToAbsoluteMemory/>
-		<xsl:element name="addressOf">
-			<xsl:attribute name="ref">
-				<xsl:value-of select="@pointer"/>
-			</xsl:attribute>
-			<xsl:attribute name="type">Absolute16</xsl:attribute>
-		</xsl:element>
-
-		<cpu:CopyAbsoluteMemoryToAccumulator/>
-		<xsl:element name="addressOf">
-			<xsl:attribute name="ref">
-				<xsl:value-of select="@memoryManager"/>
-			</xsl:attribute>
-			<xsl:attribute name="type">Absolute16</xsl:attribute>
-			<xsl:attribute name="offset">1</xsl:attribute>
-		</xsl:element>
-
-		<cpu:CopyAccumulatorToAbsoluteMemory/>
-		<xsl:element name="addressOf">
-			<xsl:attribute name="ref">
-				<xsl:value-of select="@pointer"/>
-			</xsl:attribute>
-			<xsl:attribute name="type">Absolute16</xsl:attribute>
-			<xsl:attribute name="offset">1</xsl:attribute>
-		</xsl:element>
-
-		<cpu:IncrementAbsoluteMemory/>
-		<xsl:element name="addressOf">
-			<xsl:attribute name="ref">
-				<xsl:value-of select="@memoryManager"/>
-			</xsl:attribute>
-			<xsl:attribute name="type">Absolute16</xsl:attribute>
-			<xsl:attribute name="offset">1</xsl:attribute>
-		</xsl:element>
-
-	</xsl:template>
-
 
 	<xsl:template match="mm:Reset">
-		<cpu:CopyImmediateToAccumulator/>
-		<addressOf ref="{@memory}" type="Absolute16Low8"/>
-		<!--<xsl:element name="addressOf">
-			<xsl:attribute name="ref">
-				<xsl:value-of select="@memory"/>
-			</xsl:attribute>
-			<xsl:attribute name="type">AbsoluteLow</xsl:attribute>
-		</xsl:element>-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>02</hex>
 
-		<cpu:CopyAccumulatorToAbsoluteMemory/>
-		<addressOf ref="{@memoryManager}" type="Absolute16"/>
-		<!--<xsl:element name="addressOf">
-			<xsl:attribute name="ref">
-				<xsl:value-of select="@memoryManager"/>
-			</xsl:attribute>
-			<xsl:attribute name="type">Absolute16</xsl:attribute>
-		</xsl:element>-->
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<hex>4000</hex>
 
-		<cpu:CopyImmediateToAccumulator/>
-		<addressOf ref="{@memory}" type="Absolute16High8"/>
-		<!--<xsl:element name="addressOf">
-			<xsl:attribute name="ref">
-				<xsl:value-of select="@memory"/>
-			</xsl:attribute>
-			<xsl:attribute name="type">AbsoluteHigh</xsl:attribute>
-		</xsl:element>-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>40</hex>
 
-		<cpu:CopyAccumulatorToAbsoluteMemory/>
-		<addressOf ref="{@memoryManager}" type="Absolute16" offset="1"/>
-		<!--<xsl:element name="addressOf">
-			<xsl:attribute name="ref">
-				<xsl:value-of select="@memoryManager"/>
-			</xsl:attribute>
-			<xsl:attribute name="type">Absolute16</xsl:attribute>
-			<xsl:attribute name="offset">1</xsl:attribute>
-		</xsl:element>-->
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<hex>4001</hex>
 	</xsl:template>
-
-	<xsl:template match="mm:SelectPointer">
-		<scope>
-			<cpu:CopyAbsoluteMemoryToAccumulator/>
-			<xsl:element name="addressOf">
-				<xsl:attribute name="ref">
-					<xsl:value-of select="@pointer"/>
-				</xsl:attribute>
-				<xsl:attribute name="type">Absolute16</xsl:attribute>
-				<xsl:attribute name="parameter">true</xsl:attribute>
-			</xsl:element>
-
-			<cpu:CopyAccumulatorToAbsoluteMemory/>
-			<hex>00FD</hex>
-
-			<cpu:CopyAbsoluteMemoryToAccumulator/>
-			<xsl:element name="addressOf">
-				<xsl:attribute name="ref">
-					<xsl:value-of select="@pointer"/>
-				</xsl:attribute>
-				<xsl:attribute name="type">Absolute16</xsl:attribute>
-				<xsl:attribute name="offset">1</xsl:attribute>
-				<xsl:attribute name="parameter">true</xsl:attribute>
-			</xsl:element>
-
-			<cpu:CopyAccumulatorToAbsoluteMemory/>
-			<hex>00FE</hex>
-		</scope>
-	</xsl:template>
-
-	<xsl:template match="mm:PushSelectedPointer">
-		<cpu:CopyZeroPageMemoryToAccumulator/>
-		<hex>FD</hex>
-		<cpu:PushAccumulatorToStack/>
-
-		<cpu:CopyZeroPageMemoryToAccumulator/>
-		<hex>FE</hex>
-		<cpu:PushAccumulatorToStack/>
-
-		<cpu:CopyYIndexToAccumulator/>
-		<cpu:PushAccumulatorToStack/>
-	</xsl:template>
-
-	<xsl:template match="mm:PullSelectedPointer">
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:CopyAccumulatorToYIndex/>
-
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:CopyAccumulatorToZeroPageMemory/>
-		<hex>FE</hex>
-
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:CopyAccumulatorToZeroPageMemory/>
-		<hex>FD</hex>
-	</xsl:template>
-
-	<xsl:template match="mm:SelectReference">
-		<cpu:CopyIndirectYIndexMemoryToAccumulator/>
-		<hex>FD</hex>
-		<cpu:PushAccumulatorToStack/>
-
-		<cpu:IncrementYIndex/>
-
-		<cpu:CopyIndirectYIndexMemoryToAccumulator/>
-		<hex>FD</hex>
-
-		<cpu:CopyAccumulatorToZeroPageMemory/>
-		<hex>FE</hex>
-
-		<cpu:PullAccumulatorFromStack/>
-
-		<cpu:CopyAccumulatorToZeroPageMemory/>
-		<hex>FD</hex>
-
-		<cpu:CopyImmediateToYIndex/>
-		<byte>0</byte>
-	</xsl:template>
-
 </xsl:stylesheet>
