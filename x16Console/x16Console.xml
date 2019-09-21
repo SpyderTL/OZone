@@ -302,14 +302,14 @@
 	<addressOf ref="ps2ShiftCodes" type="Absolute16"/>
 
 	<cpu:JumpToImmediate16Address/>
-	<addressOf ref="drawCharacter" type="Absolute16"/>
+	<addressOf ref="checkCharacter" type="Absolute16"/>
 
 	<label id="notShift"/>
 
 	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
 	<addressOf ref="ps2Codes" type="Absolute16"/>
 
-	<label id="drawCharacter"/>
+	<label id="checkCharacter"/>
 
 	<cpu:CompareAccumulatorToImmediate8/>
 	<hex>00</hex>
@@ -341,111 +341,40 @@
 	<cpu:PullAccumulatorFromStack/>
 
 	<!--Draw Character-->
-	<cpu:CopyAccumulatorToXIndex/>
-
-	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
-	<addressOf ref="vicCodes" type="Absolute16"/>
-
-	<cpu:CopyAccumulatorToImmediate16Address/>
-	<addressOf ref="VideoData0" type="Absolute16"/>
-
-	<cpu:IncrementImmediate16Address/>
-	<addressOf ref="column" type="Absolute16"/>
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="drawCharacter" type="Absolute16"/>
 	
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="waitForKeyPress" type="Absolute16"/>
 
 	<!--Functions-->
 	<label id="handleEnter">
-		<!--Check For Scroll-->
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="newLine" type="Absolute16"/>
+
+		<!--Draw String-->
+		<cpu:CopyImmediate8ToXIndex/>
+		<hex>fe</hex>
+
 		<cpu:CopyImmediate16AddressToAccumulator/>
-		<addressOf ref="row" type="Absolute16"/>
+		<addressOf ref="buffer" type="Absolute16"/>
 
-		<cpu:CompareAccumulatorToImmediate8/>
-		<byte>59</byte>
+		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+		<byte>0</byte>
 
-		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="notScroll" type="Relative8"/>
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="buffer" type="Absolute16" offset="1"/>
+
+		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+		<byte>1</byte>
 
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="scroll" type="Absolute16"/>
+		<addressOf ref="drawString" type="Absolute16"/>
 
-		<cpu:JumpToImmediate16Address/>
-		<addressOf ref="resetColumn" type="Absolute16"/>
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="newLine" type="Absolute16"/>
 
-		<label id="notScroll"/>
-		
-		<!--Move To Next Line-->
-		<cpu:ClearCarryFlag/>
-
-		<cpu:CopyImmediate16AddressToAccumulator/>
-		<addressOf ref="VideoAddressMid" type="Absolute16"/>
-
-		<cpu:AddImmediate8ToAccumulator/>
-		<hex>01</hex>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="VideoAddressMid" type="Absolute16"/>
-
-		<cpu:CopyImmediate16AddressToAccumulator/>
-		<addressOf ref="VideoAddressHigh" type="Absolute16"/>
-
-		<cpu:AddImmediate8ToAccumulator/>
-		<hex>00</hex>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="VideoAddressHigh" type="Absolute16"/>
-
-		<cpu:IncrementImmediate16Address/>
-		<addressOf ref="row" type="Absolute16"/>
-
-		<label id="resetColumn"/>
-		
-		<!--Move To Column 0-->
-		<cpu:CopyImmediate16AddressToAccumulator/>
-		<addressOf ref="column" type="Absolute16"/>
-
-		<cpu:ShiftAccumulatorLeft/>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="column" type="Absolute16"/>
-
-		<cpu:SetCarryFlag/>
-
-		<cpu:CopyImmediate16AddressToAccumulator/>
-		<addressOf ref="VideoAddressLow" type="Absolute16"/>
-
-		<cpu:SubtractImmediate16AddressFromAccumulator/>
-		<addressOf ref="column" type="Absolute16"/>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="VideoAddressLow" type="Absolute16"/>
-
-		<cpu:CopyImmediate16AddressToAccumulator/>
-		<addressOf ref="VideoAddressMid" type="Absolute16"/>
-
-		<cpu:SubtractImmediate8FromAccumulator/>
-		<byte>0</byte>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="VideoAddressMid" type="Absolute16"/>
-
-		<cpu:CopyImmediate16AddressToAccumulator/>
-		<addressOf ref="VideoAddressHigh" type="Absolute16"/>
-
-		<cpu:SubtractImmediate8FromAccumulator/>
-		<byte>0</byte>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="VideoAddressHigh" type="Absolute16"/>
-		
-		<!--Reset Counters-->
-		<cpu:CopyImmediate8ToAccumulator/>
-		<byte>0</byte>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="column" type="Absolute16"/>
-
+		<!--Clear Buffer-->
 		<cpu:CopyImmediate8ToXIndex/>
 		<hex>fe</hex>
 
@@ -532,6 +461,178 @@
 		<addressOf ref="waitForKeyPress" type="Absolute16"/>
 	</label>
 
+	<label id="drawString">
+		<str:GetLength/>
+
+		<!--Get Pointer-->
+		<cpu:ClearCarryFlag/>
+
+		<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>04</hex>
+		
+		<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
+		<byte>1</byte>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>05</hex>
+
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
+
+		<label id="forEachCharacter"/>
+
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="drawCharacter" type="Absolute16"/>
+
+		<cpu:ClearCarryFlag/>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>1</byte>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>04</hex>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>05</hex>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>05</hex>
+
+		<cpu:DecrementImmediate8Address/>
+		<hex>02</hex>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="forEachCharacter" type="Relative8"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="drawCharacter">
+		<cpu:CopyAccumulatorToXIndex/>
+
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="vicCodes" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoData0" type="Absolute16"/>
+
+		<cpu:IncrementImmediate16Address/>
+		<addressOf ref="column" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="newLine">
+		<!--Check For Scroll-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="row" type="Absolute16"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<byte>59</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notScroll" type="Relative8"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="scroll" type="Absolute16"/>
+
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="resetColumn" type="Absolute16"/>
+
+		<label id="notScroll"/>
+
+		<!--Move To Next Line-->
+		<cpu:ClearCarryFlag/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="VideoAddressMid" type="Absolute16"/>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<hex>01</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoAddressMid" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="VideoAddressHigh" type="Absolute16"/>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoAddressHigh" type="Absolute16"/>
+
+		<cpu:IncrementImmediate16Address/>
+		<addressOf ref="row" type="Absolute16"/>
+
+		<label id="resetColumn"/>
+
+		<!--Move To Column 0-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="column" type="Absolute16"/>
+
+		<cpu:ShiftAccumulatorLeft/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="column" type="Absolute16"/>
+
+		<cpu:SetCarryFlag/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="VideoAddressLow" type="Absolute16"/>
+
+		<cpu:SubtractImmediate16AddressFromAccumulator/>
+		<addressOf ref="column" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoAddressLow" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="VideoAddressMid" type="Absolute16"/>
+
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoAddressMid" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="VideoAddressHigh" type="Absolute16"/>
+
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoAddressHigh" type="Absolute16"/>
+
+		<!--Reset Counters-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="column" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+	
 	<label id="back">
 		<cpu:SetCarryFlag/>
 

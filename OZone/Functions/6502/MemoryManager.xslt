@@ -31,10 +31,10 @@
 		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
 		<hex>00</hex>
 
-		<cpu:ClearCarryFlag/>
-
 		<xsl:choose>
 			<xsl:when test="@length">
+				<cpu:ClearCarryFlag/>
+
 				<cpu:CopyImmediate8ToAccumulator/>
 				<byte>
 					<xsl:value-of select="@length"/>
@@ -66,6 +66,8 @@
 				<cpu:CopyAccumulatorToImmediate8Address/>
 				<hex>03</hex>
 
+				<cpu:ClearCarryFlag/>
+				
 				<cpu:CopyImmediate8AddressToAccumulator/>
 				<hex>02</hex>
 

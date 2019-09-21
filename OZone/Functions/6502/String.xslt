@@ -80,7 +80,11 @@
 		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 		<hex>02</hex>
 
+		<cpu:PushStatusToStack/>
+		
 		<cpu:IncrementYIndex/>
+
+		<cpu:PullStatusFromStack/>
 
 		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 		<hex>02</hex>
@@ -104,7 +108,11 @@
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<hex>04</hex>
 
+		<cpu:PushStatusToStack/>
+		
 		<cpu:IncrementYIndex/>
+		
+		<cpu:PullStatusFromStack/>
 		
 		<cpu:CopyImmediate8AddressToAccumulator/>
 		<hex>03</hex>
@@ -114,8 +122,6 @@
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<hex>05</hex>
-
-		<cpu:IncrementYIndex/>
 
 		<cpu:PullAccumulatorFromStack/>
 
@@ -150,7 +156,11 @@
 		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 		<hex>02</hex>
 
+		<cpu:PushStatusToStack/>
+		
 		<cpu:IncrementYIndex/>
+		
+		<cpu:PullStatusFromStack/>
 
 		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 		<hex>02</hex>
