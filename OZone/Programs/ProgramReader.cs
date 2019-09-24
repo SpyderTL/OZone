@@ -24,10 +24,6 @@ namespace OZone.Programs
 			foreach(var label in scope.Elements("{http://metalx.org/Program}label"))
 				labels[label.Attribute("id").Value] = new Label();
 
-			//Dictionary<string, Label> labels = scope.Elements("{http://metalx.org/Program}label").ToDictionary(
-			//    e => e.Attribute("id").Value,
-			//    e => new Label());
-
 			foreach(XElement element in scope.Elements())
 			{
 				switch(element.Name.LocalName)

@@ -50,8 +50,39 @@
 	<!--Disable Keyboard Handshake-->
 	<!--<cpu:ClearInterruptDisableFlag/>-->
 
-	<!--Set ASCII Mode-->
+	<!--Set Lower Case Mode-->
 	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>1f</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressHigh" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>20</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressMid" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>04</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressLow" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>00</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>7e</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
+
+	<!--Set ASCII Mode-->
+	<!--<cpu:CopyImmediate8ToAccumulator/>
 	<hex>1f</hex>
 
 	<cpu:CopyAccumulatorToImmediate16Address/>
@@ -79,7 +110,7 @@
 	<hex>7a</hex>
 
 	<cpu:CopyAccumulatorToImmediate16Address/>
-	<addressOf ref="VideoData0" type="Absolute16"/>
+	<addressOf ref="VideoData0" type="Absolute16"/>-->
 
 	<!--Initialize Memory Manager-->
 	<mm:Reset/>
@@ -526,6 +557,11 @@
 	</label>
 
 	<label id="drawCharacter">
+		<cpu:CopyAccumulatorToXIndex/>
+
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="vicCodes" type="Absolute16"/>
+
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="VideoData0" type="Absolute16"/>
 
