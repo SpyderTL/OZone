@@ -351,8 +351,8 @@
 	<label id="handleEnter">
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="newLine" type="Absolute16"/>
-
-		<!--Draw String-->
+		
+		<!--Check Buffer-->
 		<cpu:CopyImmediate8ToXIndex/>
 		<hex>fe</hex>
 
@@ -368,6 +368,16 @@
 		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
 		<byte>1</byte>
 
+		<cpu:CopyImmediate8PlusXIndexPointerAddressToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="clearBuffer" type="Relative8"/>
+
+		<!--Draw String-->
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="drawString" type="Absolute16"/>
 
@@ -375,6 +385,8 @@
 		<addressOf ref="newLine" type="Absolute16"/>
 
 		<!--Clear Buffer-->
+		<label id="clearBuffer"/>
+			
 		<cpu:CopyImmediate8ToXIndex/>
 		<hex>fe</hex>
 
