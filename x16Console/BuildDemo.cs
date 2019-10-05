@@ -25,7 +25,7 @@ namespace x16Console
 				compiler.Compile(program, address, binaryWriter);
 
 				program = ProgramBuilder.Build(
-					"../../x16Demo - Copy.xml",
+					"../../x16Demo7.xml",
 					new KeyValuePair<string, string>[]
 					{
 						//new KeyValuePair<string, string>("http://metalx.org/C64Console/Functions/Screen", "../../Functions/Screen.xslt"),
@@ -58,7 +58,7 @@ namespace x16Console
 
 				for (var x = 0; x < 256; x++)
 				{
-					System.Diagnostics.Debug.WriteLine("<hex>" + ((byte)((Math.Sin(x * delta) * 127.0) + 127.0)).ToString("X2") + "</hex>");
+					System.Diagnostics.Debug.WriteLine("<hex>" + ((byte)((Math.Sin(x * delta) * 128) + 128)).ToString("X2") + "</hex>");
 				}
 			}
 		}
