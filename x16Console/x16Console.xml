@@ -376,7 +376,11 @@
 
 		<cpu:BranchToRelative8IfEqual/>
 		<addressOf ref="clearBuffer" type="Relative8"/>
-
+		
+		<!--Execute Command-->
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="executeCommand" type="Absolute16"/>
+		
 		<!--Draw String-->
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="drawString" type="Absolute16"/>
@@ -386,7 +390,7 @@
 
 		<!--Clear Buffer-->
 		<label id="clearBuffer"/>
-			
+		
 		<cpu:CopyImmediate8ToXIndex/>
 		<hex>fe</hex>
 
@@ -471,6 +475,23 @@
 		
 		<cpu:JumpToImmediate16Address/>
 		<addressOf ref="waitForKeyPress" type="Absolute16"/>
+	</label>
+
+	<label id="executeCommand">
+		<!--Reset Token-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="tokenStart" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="tokenLength" type="Absolute16"/>
+
+		<!--Read Token-->
+		<label id="readToken"/>
+
+		<cpu:ReturnFromSubroutine/>
 	</label>
 
 	<label id="drawString">
@@ -1418,6 +1439,8 @@
 	<var:byte id="row">0</var:byte>
 	<var:byte id="column">0</var:byte>
 	<var:short id="buffer">0</var:short>
+	<var:short id="tokenStart">0</var:short>
+	<var:short id="tokenLength">0</var:short>
 
 	<label id="freeMemory"/>
 </scope>

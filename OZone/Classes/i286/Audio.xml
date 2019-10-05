@@ -27,6 +27,7 @@
 	xmlns:agc="http://metalx.org/Intel/Ac97/BusMaster/GlobalControl"
 	xmlns:ags="http://metalx.org/Intel/Ac97/BusMaster/GlobalStatus"
 	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:shift="http://metalx.org/Intel/80286/Shift"
 	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
 	xmlns:op="http://metalx.org/Intel/80286/Operands">
 
@@ -504,5 +505,117 @@
 		<addressOf ref="updateBuffers" type="Relative8"/>
 
 		<cpu:ReturnToNearCaller/>
+	</cls:method>
+
+	<cls:method name="TestSpeaker" static="true">
+		<cpu:CopyImmediateToAL/>
+		<hex>b6</hex>
+
+		<cpu:WriteALToImmediate8Port/>
+		<hex>43</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>97</hex>
+
+		<cpu:WriteALToImmediate8Port/>
+		<hex>42</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0a</hex>
+
+		<cpu:WriteALToImmediate8Port/>
+		<hex>42</hex>
+
+		<cpu:ReadFromImmediate8PortToAL/>
+		<hex>61</hex>
+
+		<cpu:OrALWithImmediate/>
+		<binary>00000011</binary>
+
+		<cpu:WriteALToImmediate8Port/>
+		<hex>61</hex>
+
+		<cpu:ReturnToNearCaller/>
+
+
+
+		<label id="loop"/>
+
+		<cpu:ReadFromImmediate8PortToAL/>
+		<hex>61</hex>
+
+		<cpu:ExclusiveOrALWithImmediate/>
+		<binary>00000010</binary>
+
+		<cpu:WriteALToImmediate8Port/>
+		<hex>61</hex>
+
+		<!--<cpu:CopyImmediateToCX/>
+		<short>10</short>
+
+		<cpu:Repeat/>
+		<cpu:NoOperation/>-->
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="loop" type="Relative8"/>
+	</cls:method>
+	
+	<cls:method name="TestSpeakerNoise" static="true">
+		<cpu:CopyImmediateToBX/>
+		<hex>0000</hex>
+		
+		<label id="loop"/>
+		
+		<!--Set PIT Channel 2 Square Wave Low/High Data-->
+		<cpu:CopyImmediateToAL/>
+		<!--<hex>b6</hex>-->
+		<binary>10110110</binary>
+
+		<cpu:WriteALToImmediate8Port/>
+		<hex>43</hex>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:BL-ALRegister/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>11111100</binary>
+		
+		<cpu:OrALWithImmediate/>
+		<binary>00000011</binary>
+
+		<cpu:WriteALToImmediate8Port/>
+		<hex>42</hex>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:BH-ALRegister/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>00000000</binary>
+
+		<cpu:WriteALToImmediate8Port/>
+		<hex>42</hex>
+
+		<cpu:ReadFromImmediate8PortToAL/>
+		<hex>61</hex>
+
+		<cpu:OrALWithImmediate/>
+		<binary>00000011</binary>
+
+		<cpu:WriteALToImmediate8Port/>
+		<hex>61</hex>
+		
+		<!--Randomize BX-->
+		<cpu:ShiftRegister16ByImmediate8Function/>
+		<shift:RollBXRegisterLeft/>
+		<byte>5</byte>
+
+		<cpu:CopyImmediateToAX/>
+		<binary>0110100111010110</binary>
+
+		<cpu:ExclusiveOrRegisterWithOperand16/>
+		<op:BX-AXRegister/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="loop" type="Relative8"/>
 	</cls:method>
 </cls:class>
