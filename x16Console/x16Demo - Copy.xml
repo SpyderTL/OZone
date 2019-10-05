@@ -1,0 +1,605 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:mem="http://metalx.org/6502/Functions/Memory"
+	xmlns:str="http://metalx.org/6502/Functions/String"
+	xmlns:mm="http://metalx.org/6502/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<!--Hardware Registers-->
+	<label id="VideoAddressLow" offset="9f20"/>
+	<label id="VideoAddressMid" offset="9f21"/>
+	<label id="VideoAddressHigh" offset="9f22"/>
+	<label id="VideoData0" offset="9f23"/>
+	<label id="VideoData1" offset="9f24"/>
+	<label id="VideoControl" offset="9f25"/>
+	<label id="VideoInterruptEnable" offset="9f26"/>
+	<label id="VideoInterruptStatus" offset="9f27"/>
+
+	<label id="InterfaceDirection0" offset="9f60"/>
+	<label id="InterfaceData0" offset="9f61"/>
+	<label id="InterfaceDirection1" offset="9f70"/>
+	<label id="InterfaceData1" offset="9f71"/>
+
+	<cpu:SetInterruptDisableFlag/>
+
+	<!--Install Interrupt Handlers-->
+	<cpu:CopyImmediate8ToXIndex/>
+	<addressOf ref="interruptTable" type="Absolute16Low8"/>
+
+	<cpu:CopyImmediate8ToYIndex/>
+	<addressOf ref="interruptTable" type="Absolute16High8"/>
+
+	<cpu:ClearCarryFlag/>
+
+	<cpu:CallImmediate16Address/>
+	<hex>ff8a</hex>
+
+	<!--Disable Keyboard Handshake-->
+	<!--<cpu:ClearInterruptDisableFlag/>-->
+
+	<!--Set ASCII Mode-->
+	<!--<cpu:CopyImmediate8ToAccumulator/>
+	<hex>1f</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressHigh" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>20</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressMid" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>04</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressLow" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>00</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>7a</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>-->
+
+	<!--Set 256-Color Text Mode-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>1f</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressHigh" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>20</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressMid" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>00</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressLow" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>00100001</binary>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
+
+	<!--Update Tile 0-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>11</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressHigh" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>f0</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressMid" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>00</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressLow" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>11111111</binary>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<byte>0</byte>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>02</hex>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="enableVSync" type="Absolute16"/>
+
+	<label id="loop"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="waitForVSync" type="Absolute16"/>
+
+	<!--<cpu:CallImmediate16Address/>
+	<addressOf ref="waitForVSync" type="Absolute16"/>-->
+
+	<cpu:CopyImmediate8AddressToXIndex/>
+	<hex>02</hex>
+
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<addressOf ref="sin" type="Absolute16"/>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>03</hex>
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>02</hex>
+
+	<cpu:AddImmediate8ToAccumulator/>
+	<byte>32</byte>
+
+	<cpu:CopyAccumulatorToXIndex/>
+
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<addressOf ref="sin" type="Absolute16"/>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>04</hex>
+
+	<cpu:AddImmediate8AddressToAccumulator/>
+	<hex>03</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>05</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>06</hex>
+
+	<!--Clear Screen-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>10</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressHigh" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>00</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressMid" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>00</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressLow" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToYIndex/>
+	<byte>61</byte>
+
+	<label id="loopY"/>
+
+	<cpu:CopyImmediate8ToXIndex/>
+	<byte>128</byte>
+
+	<label id="loopX"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>00</hex>
+	<!--<ascii:Space/>-->
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>05</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoData0" type="Absolute16"/>
+
+	<cpu:IncrementImmediate8Address/>
+	<hex>05</hex>
+
+	<cpu:DecrementXIndex/>
+
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="loopX" type="Relative8"/>
+
+	<cpu:IncrementImmediate8Address/>
+	<hex>06</hex>
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<hex>06</hex>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>05</hex>
+
+	<cpu:DecrementYIndex/>
+
+	<cpu:BranchToRelative8IfNotZero/>
+	<addressOf ref="loopY" type="Relative8"/>
+
+	<cpu:IncrementImmediate8Address/>
+	<hex>02</hex>
+	
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="loop" type="Absolute16"/>
+
+	<!--Reset Cursor-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>20</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressHigh" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>00</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressMid" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>00</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="VideoAddressLow" type="Absolute16"/>
+
+	<label id="stop">
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="stop" type="Absolute16"/>
+	</label>
+
+	<label id="enableVSync">
+		<cpu:CopyImmediate8ToAccumulator/>
+		<binary>00000001</binary>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoInterruptEnable" type="Absolute16"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="waitForVSync">
+		<cpu:CopyImmediate8ToAccumulator/>
+		<binary>00000001</binary>
+
+		<cpu:TestImmediate16AddressWithAccumulator/>
+		<addressOf ref="VideoInterruptStatus" type="Absolute16"/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="waitForVSync" type="Relative8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoInterruptStatus" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="interruptHandler">
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<!--Tables-->
+	<label id="interruptTable">
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+		<addressOf ref="interruptHandler" type="Absolute16"/>
+	</label>
+
+	<label id="sin">
+		<hex>7F</hex>
+		<hex>82</hex>
+		<hex>85</hex>
+		<hex>88</hex>
+		<hex>8B</hex>
+		<hex>8E</hex>
+		<hex>91</hex>
+		<hex>94</hex>
+		<hex>97</hex>
+		<hex>9A</hex>
+		<hex>9D</hex>
+		<hex>A0</hex>
+		<hex>A3</hex>
+		<hex>A6</hex>
+		<hex>A9</hex>
+		<hex>AC</hex>
+		<hex>AF</hex>
+		<hex>B2</hex>
+		<hex>B5</hex>
+		<hex>B8</hex>
+		<hex>BA</hex>
+		<hex>BD</hex>
+		<hex>C0</hex>
+		<hex>C2</hex>
+		<hex>C5</hex>
+		<hex>C8</hex>
+		<hex>CA</hex>
+		<hex>CD</hex>
+		<hex>CF</hex>
+		<hex>D1</hex>
+		<hex>D4</hex>
+		<hex>D6</hex>
+		<hex>D8</hex>
+		<hex>DA</hex>
+		<hex>DD</hex>
+		<hex>DF</hex>
+		<hex>E1</hex>
+		<hex>E3</hex>
+		<hex>E5</hex>
+		<hex>E6</hex>
+		<hex>E8</hex>
+		<hex>EA</hex>
+		<hex>EB</hex>
+		<hex>ED</hex>
+		<hex>EF</hex>
+		<hex>F0</hex>
+		<hex>F1</hex>
+		<hex>F3</hex>
+		<hex>F4</hex>
+		<hex>F5</hex>
+		<hex>F6</hex>
+		<hex>F7</hex>
+		<hex>F8</hex>
+		<hex>F9</hex>
+		<hex>FA</hex>
+		<hex>FA</hex>
+		<hex>FB</hex>
+		<hex>FC</hex>
+		<hex>FC</hex>
+		<hex>FD</hex>
+		<hex>FD</hex>
+		<hex>FD</hex>
+		<hex>FD</hex>
+		<hex>FD</hex>
+		<hex>FE</hex>
+		<hex>FD</hex>
+		<hex>FD</hex>
+		<hex>FD</hex>
+		<hex>FD</hex>
+		<hex>FD</hex>
+		<hex>FC</hex>
+		<hex>FC</hex>
+		<hex>FB</hex>
+		<hex>FA</hex>
+		<hex>FA</hex>
+		<hex>F9</hex>
+		<hex>F8</hex>
+		<hex>F7</hex>
+		<hex>F6</hex>
+		<hex>F5</hex>
+		<hex>F4</hex>
+		<hex>F3</hex>
+		<hex>F1</hex>
+		<hex>F0</hex>
+		<hex>EF</hex>
+		<hex>ED</hex>
+		<hex>EB</hex>
+		<hex>EA</hex>
+		<hex>E8</hex>
+		<hex>E6</hex>
+		<hex>E5</hex>
+		<hex>E3</hex>
+		<hex>E1</hex>
+		<hex>DF</hex>
+		<hex>DD</hex>
+		<hex>DA</hex>
+		<hex>D8</hex>
+		<hex>D6</hex>
+		<hex>D4</hex>
+		<hex>D1</hex>
+		<hex>CF</hex>
+		<hex>CD</hex>
+		<hex>CA</hex>
+		<hex>C8</hex>
+		<hex>C5</hex>
+		<hex>C2</hex>
+		<hex>C0</hex>
+		<hex>BD</hex>
+		<hex>BA</hex>
+		<hex>B8</hex>
+		<hex>B5</hex>
+		<hex>B2</hex>
+		<hex>AF</hex>
+		<hex>AC</hex>
+		<hex>A9</hex>
+		<hex>A6</hex>
+		<hex>A3</hex>
+		<hex>A0</hex>
+		<hex>9D</hex>
+		<hex>9A</hex>
+		<hex>97</hex>
+		<hex>94</hex>
+		<hex>91</hex>
+		<hex>8E</hex>
+		<hex>8B</hex>
+		<hex>88</hex>
+		<hex>85</hex>
+		<hex>82</hex>
+		<hex>7F</hex>
+		<hex>7B</hex>
+		<hex>78</hex>
+		<hex>75</hex>
+		<hex>72</hex>
+		<hex>6F</hex>
+		<hex>6C</hex>
+		<hex>69</hex>
+		<hex>66</hex>
+		<hex>63</hex>
+		<hex>60</hex>
+		<hex>5D</hex>
+		<hex>5A</hex>
+		<hex>57</hex>
+		<hex>54</hex>
+		<hex>51</hex>
+		<hex>4E</hex>
+		<hex>4B</hex>
+		<hex>48</hex>
+		<hex>45</hex>
+		<hex>43</hex>
+		<hex>40</hex>
+		<hex>3D</hex>
+		<hex>3B</hex>
+		<hex>38</hex>
+		<hex>35</hex>
+		<hex>33</hex>
+		<hex>30</hex>
+		<hex>2E</hex>
+		<hex>2C</hex>
+		<hex>29</hex>
+		<hex>27</hex>
+		<hex>25</hex>
+		<hex>23</hex>
+		<hex>20</hex>
+		<hex>1E</hex>
+		<hex>1C</hex>
+		<hex>1A</hex>
+		<hex>18</hex>
+		<hex>17</hex>
+		<hex>15</hex>
+		<hex>13</hex>
+		<hex>12</hex>
+		<hex>10</hex>
+		<hex>0E</hex>
+		<hex>0D</hex>
+		<hex>0C</hex>
+		<hex>0A</hex>
+		<hex>09</hex>
+		<hex>08</hex>
+		<hex>07</hex>
+		<hex>06</hex>
+		<hex>05</hex>
+		<hex>04</hex>
+		<hex>03</hex>
+		<hex>03</hex>
+		<hex>02</hex>
+		<hex>01</hex>
+		<hex>01</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>01</hex>
+		<hex>01</hex>
+		<hex>02</hex>
+		<hex>03</hex>
+		<hex>03</hex>
+		<hex>04</hex>
+		<hex>05</hex>
+		<hex>06</hex>
+		<hex>07</hex>
+		<hex>08</hex>
+		<hex>09</hex>
+		<hex>0A</hex>
+		<hex>0C</hex>
+		<hex>0D</hex>
+		<hex>0E</hex>
+		<hex>10</hex>
+		<hex>12</hex>
+		<hex>13</hex>
+		<hex>15</hex>
+		<hex>17</hex>
+		<hex>18</hex>
+		<hex>1A</hex>
+		<hex>1C</hex>
+		<hex>1E</hex>
+		<hex>20</hex>
+		<hex>23</hex>
+		<hex>25</hex>
+		<hex>27</hex>
+		<hex>29</hex>
+		<hex>2C</hex>
+		<hex>2E</hex>
+		<hex>30</hex>
+		<hex>33</hex>
+		<hex>35</hex>
+		<hex>38</hex>
+		<hex>3B</hex>
+		<hex>3D</hex>
+		<hex>40</hex>
+		<hex>43</hex>
+		<hex>45</hex>
+		<hex>48</hex>
+		<hex>4B</hex>
+		<hex>4E</hex>
+		<hex>51</hex>
+		<hex>54</hex>
+		<hex>57</hex>
+		<hex>5A</hex>
+		<hex>5D</hex>
+		<hex>60</hex>
+		<hex>63</hex>
+		<hex>66</hex>
+		<hex>69</hex>
+		<hex>6C</hex>
+		<hex>6F</hex>
+		<hex>72</hex>
+		<hex>75</hex>
+		<hex>78</hex>
+		<hex>7B</hex>
+	</label>
+
+	<!--Variables-->
+
+	<label id="freeMemory"/>
+</scope>
