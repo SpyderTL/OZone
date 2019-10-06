@@ -25,7 +25,7 @@ namespace x16Console
 				compiler.Compile(program, address, binaryWriter);
 
 				program = ProgramBuilder.Build(
-					"../../x16Demo7.xml",
+					"../../x16Demo13.xml",
 					new KeyValuePair<string, string>[]
 					{
 						//new KeyValuePair<string, string>("http://metalx.org/C64Console/Functions/Screen", "../../Functions/Screen.xslt"),
@@ -54,12 +54,14 @@ namespace x16Console
 
 				Console.WriteLine(binaryWriter.BaseStream.Position);
 
-				var delta = (Math.PI * 2) / 256.0;
+				//var delta = 1.0 / 255.0;
 
-				for (var x = 0; x < 256; x++)
-				{
-					System.Diagnostics.Debug.WriteLine("<hex>" + ((byte)((Math.Sin(x * delta) * 128) + 128)).ToString("X2") + "</hex>");
-				}
+				//for (var x = 0; x < 256; x++)
+				//{
+					//System.Diagnostics.Debug.WriteLine("<hex>" + ((byte)((Math.Sin(x * delta) * 128) + 128)).ToString("X2") + "</hex>");
+					//System.Diagnostics.Debug.WriteLine(Math.Asin(x * delta));
+					//System.Diagnostics.Debug.WriteLine("<hex>" + ((byte)((Math.Asin(x * delta) * 128) + 128)).ToString("X2") + "</hex>");
+				//}
 			}
 		}
 	}
