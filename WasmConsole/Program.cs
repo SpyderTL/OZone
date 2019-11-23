@@ -16,9 +16,9 @@ namespace WasmConsole
 			var compiler = new WebAssemblyBinaryCompiler();
 
 			var program = ProgramBuilder.Build(
-					"../../Console.xml",
-					"../../../OZone/Structures/Wasm/Module.xslt",
-					"../../../OZone/Platforms/W3c/Wasm/Operators.xslt");
+				"../../Console.xml",
+				"../../../OZone/Structures/Wasm/Module.xslt",
+				"../../../OZone/Platforms/W3c/Wasm/Operators.xslt");
 
 			var address = new MemoryAddress { Offset = 0x0000 };
 

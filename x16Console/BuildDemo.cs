@@ -25,7 +25,7 @@ namespace x16Console
 				compiler.Compile(program, address, binaryWriter);
 
 				program = ProgramBuilder.Build(
-					"../../x16Demo30.xml",
+					"../../x16Demo21.xml",
 					new KeyValuePair<string, string>[]
 					{
 						//new KeyValuePair<string, string>("http://metalx.org/C64Console/Functions/Screen", "../../Functions/Screen.xslt"),

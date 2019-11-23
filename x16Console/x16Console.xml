@@ -50,7 +50,7 @@
 	<!--<cpu:ClearInterruptDisableFlag/>-->
 
 	<!--Set ASCII Mode-->
-	<cpu:CopyImmediate8ToAccumulator/>
+	<!--<cpu:CopyImmediate8ToAccumulator/>
 	<hex>1f</hex>
 
 	<cpu:CopyAccumulatorToImmediate16Address/>
@@ -78,11 +78,11 @@
 	<hex>7a</hex>
 
 	<cpu:CopyAccumulatorToImmediate16Address/>
-	<addressOf ref="VideoData0" type="Absolute16"/>
+	<addressOf ref="VideoData0" type="Absolute16"/>-->
 
 	<!--Initialize Memory Manager-->
 	<mm:Reset/>
-	
+
 	<!--Create Input Buffer-->
 	<cpu:CopyImmediate8ToAccumulator/>
 	<byte>0</byte>
@@ -91,7 +91,7 @@
 
 	<cpu:CopyImmediate8ToAccumulator/>
 	<byte>79</byte>
-	
+
 	<cpu:PushAccumulatorToStack/>
 
 	<cpu:CopyImmediate8ToXIndex/>
@@ -112,55 +112,154 @@
 	<addressOf ref="buffer" type="Absolute16" offset="1"/>
 
 	<!--Clear Screen-->
-	<cpu:CopyImmediate8ToAccumulator/>
-	<hex>10</hex>
+	<scope>
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>10</hex>
 
-	<cpu:CopyAccumulatorToImmediate16Address/>
-	<addressOf ref="VideoAddressHigh" type="Absolute16"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoAddressHigh" type="Absolute16"/>
 
-	<cpu:CopyImmediate8ToAccumulator/>
-	<hex>00</hex>
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
 
-	<cpu:CopyAccumulatorToImmediate16Address/>
-	<addressOf ref="VideoAddressMid" type="Absolute16"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoAddressMid" type="Absolute16"/>
 
-	<cpu:CopyImmediate8ToAccumulator/>
-	<hex>00</hex>
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
 
-	<cpu:CopyAccumulatorToImmediate16Address/>
-	<addressOf ref="VideoAddressLow" type="Absolute16"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoAddressLow" type="Absolute16"/>
 
-	<cpu:CopyImmediate8ToYIndex/>
-	<byte>61</byte>
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>61</byte>
 
-	<label id="loopY"/>
+		<label id="loopY"/>
 
-	<cpu:CopyImmediate8ToXIndex/>
-	<byte>128</byte>
+		<cpu:CopyImmediate8ToXIndex/>
+		<byte>128</byte>
 
-	<label id="loopX"/>
+		<label id="loopX"/>
 
-	<cpu:CopyImmediate8ToAccumulator/>
-	<ascii:Space/>
+		<cpu:CopyImmediate8ToAccumulator/>
+		<ascii:Space/>
 
-	<cpu:CopyAccumulatorToImmediate16Address/>
-	<addressOf ref="VideoData0" type="Absolute16"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoData0" type="Absolute16"/>
 
-	<cpu:CopyImmediate8ToAccumulator/>
-	<hex>01</hex>
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>01</hex>
 
-	<cpu:CopyAccumulatorToImmediate16Address/>
-	<addressOf ref="VideoData0" type="Absolute16"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoData0" type="Absolute16"/>
 
-	<cpu:DecrementXIndex/>
+		<cpu:DecrementXIndex/>
 
-	<cpu:BranchToRelative8IfNotZero/>
-	<addressOf ref="loopX" type="Relative8"/>
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="loopX" type="Relative8"/>
 
-	<cpu:DecrementYIndex/>
+		<cpu:DecrementYIndex/>
 
-	<cpu:BranchToRelative8IfNotZero/>
-	<addressOf ref="loopY" type="Relative8"/>
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="loopY" type="Relative8"/>
+	</scope>
+
+	<!--Load ASCII Character Set-->
+	<scope>
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<hex>9f60</hex>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>10</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoAddressHigh" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>f8</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoAddressMid" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoAddressLow" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>02</hex>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>c8</hex>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>03</hex>
+
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>128</byte>
+
+		<label id="loopY"/>
+
+		<cpu:CopyImmediate8ToXIndex/>
+		<byte>8</byte>
+
+		<label id="loopX"/>
+
+		<!--<cpu:CopyImmediate8ToAccumulator/>
+		<ascii:Space/>-->
+		
+		<cpu:CopyYIndexToImmediate8Address/>
+		<hex>04</hex>
+		
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
+		
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="VideoData0" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8AddressToYIndex/>
+		<hex>04</hex>
+		
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>02</hex>
+		
+		<cpu:AddImmediate8ToAccumulator/>
+		<hex>01</hex>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>02</hex>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>03</hex>
+		
+		<cpu:AddImmediate8ToAccumulator/>
+		<hex>00</hex>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>03</hex>
+
+		<cpu:DecrementXIndex/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="loopX" type="Relative8"/>
+
+		<cpu:DecrementYIndex/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="loopY" type="Relative8"/>
+	</scope>
 
 	<!--Reset Cursor-->
 	<cpu:CopyImmediate8ToAccumulator/>
@@ -182,7 +281,7 @@
 	<addressOf ref="VideoAddressLow" type="Absolute16"/>
 
 	<label id="showPrompt"/>
-	
+
 	<!--Show Prompt-->
 	<cpu:CopyImmediate8ToAccumulator/>
 	<ascii:GreaterThan/>
@@ -253,10 +352,10 @@
 	<addressOf ref="handleBackspace" type="Absolute16"/>
 
 	<label id="notBackspace"/>
-	
+
 	<!--Check Buffer-->
 	<cpu:PushAccumulatorToStack/>
-	
+
 	<cpu:CopyImmediate8ToXIndex/>
 	<hex>fe</hex>
 
@@ -342,7 +441,7 @@
 	<!--Draw Character-->
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="drawCharacter" type="Absolute16"/>
-	
+
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="waitForKeyPress" type="Absolute16"/>
 
@@ -350,7 +449,7 @@
 	<label id="handleEnter">
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="newLine" type="Absolute16"/>
-		
+
 		<!--Check Buffer-->
 		<cpu:CopyImmediate8ToXIndex/>
 		<hex>fe</hex>
@@ -375,11 +474,11 @@
 
 		<cpu:BranchToRelative8IfEqual/>
 		<addressOf ref="clearBuffer" type="Relative8"/>
-		
+
 		<!--Execute Command-->
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="executeCommand" type="Absolute16"/>
-		
+
 		<!--Draw String-->
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="drawString" type="Absolute16"/>
@@ -389,7 +488,7 @@
 
 		<!--Clear Buffer-->
 		<label id="clearBuffer"/>
-		
+
 		<cpu:CopyImmediate8ToXIndex/>
 		<hex>fe</hex>
 
@@ -471,7 +570,7 @@
 		<addressOf ref="column" type="Absolute16"/>
 
 		<label id="bufferEmpty"/>
-		
+
 		<cpu:JumpToImmediate16Address/>
 		<addressOf ref="waitForKeyPress" type="Absolute16"/>
 	</label>
@@ -507,7 +606,7 @@
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<hex>04</hex>
-		
+
 		<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
 		<byte>1</byte>
 
@@ -659,7 +758,7 @@
 
 		<cpu:ReturnFromSubroutine/>
 	</label>
-	
+
 	<label id="back">
 		<cpu:SetCarryFlag/>
 
@@ -811,7 +910,7 @@
 			<cpu:ReturnFromSubroutine/>
 		</scope>
 	</label>
-	
+
 	<label id="readPs2Byte">
 		<scope>
 			<!--Input Mode-->
@@ -953,7 +1052,7 @@
 	</label>
 
 	<label id="interruptHandler">
-		<cpu:ReturnFromInterrupt/>
+		<cpu:ReturnFromSubroutine/>
 	</label>
 
 	<!--Tables-->
