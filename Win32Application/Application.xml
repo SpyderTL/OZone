@@ -11,10 +11,10 @@
 	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
 	xmlns:shift="http://metalx.org/Intel/80386/Shift"
 	xmlns:logic="http://metalx.org/Intel/80386/Logic">
-	
+
 	<label id="entryPoint" export="Application.EntryPoint"/>
-	
-	<!--Get Kernel32.dll Handle-->
+
+	<!--Get kernel32.dll handle-->
 	<cpu:PushImmediateToStack/>
 	<addressOf ref="kernel32.fileName" type="Absolute32"/>
 
@@ -25,22 +25,20 @@
 	<cpu:CopyAXToAbsoluteMemory/>
 	<addressOf ref="kernel32.handle" type="Absolute32"/>
 
-	<!--Get GetStdHandle Address-->
+	<!--Get user32.dll handle-->
 	<cpu:PushImmediateToStack/>
-	<addressOf ref="kernel32.getStdHandle.name" type="Absolute32"/>
-
-	<cpu:PushAXToStack/>
+	<addressOf ref="user32.fileName" type="Absolute32"/>
 
 	<cpu:LogicFunction/>
 	<logic:CallImmediateAddress/>
-	<addressOf ref="ExeHeader.GetProcAddress" type="Absolute32"/>
+	<addressOf ref="ExeHeader.LoadLibrary" type="Absolute32"/>
 
 	<cpu:CopyAXToAbsoluteMemory/>
-	<addressOf ref="kernel32.getStdHandle.address" type="Absolute32"/>
+	<addressOf ref="user32.handle" type="Absolute32"/>
 
-	<!--Get ReadConsole Address-->
+	<!--Get GetModuleHandle address-->
 	<cpu:PushImmediateToStack/>
-	<addressOf ref="kernel32.readConsole.name" type="Absolute32"/>
+	<addressOf ref="kernel32.getModuleHandle.name" type="Absolute32"/>
 
 	<cpu:LogicFunction/>
 	<logic:PushImmediateAddress/>
@@ -51,152 +49,280 @@
 	<addressOf ref="ExeHeader.GetProcAddress" type="Absolute32"/>
 
 	<cpu:CopyAXToAbsoluteMemory/>
-	<addressOf ref="kernel32.readConsole.address" type="Absolute32"/>
+	<addressOf ref="kernel32.getModuleHandle.address" type="Absolute32"/>
 
-	<!--Get WriteConsole Address-->
+	<!--Get RegisterClass address-->
 	<cpu:PushImmediateToStack/>
-	<addressOf ref="kernel32.writeConsole.name" type="Absolute32"/>
+	<addressOf ref="user32.registerClass.name" type="Absolute32"/>
 
 	<cpu:LogicFunction/>
 	<logic:PushImmediateAddress/>
-	<addressOf ref="kernel32.handle" type="Absolute32"/>
+	<addressOf ref="user32.handle" type="Absolute32"/>
 
 	<cpu:LogicFunction/>
 	<logic:CallImmediateAddress/>
 	<addressOf ref="ExeHeader.GetProcAddress" type="Absolute32"/>
 
 	<cpu:CopyAXToAbsoluteMemory/>
-	<addressOf ref="kernel32.writeConsole.address" type="Absolute32"/>
+	<addressOf ref="user32.registerClass.address" type="Absolute32"/>
 
-	<!--Get Input Console Handle-->
+	<!--Get CreateWindow address-->
 	<cpu:PushImmediateToStack/>
-	<int>-10</int>
+	<addressOf ref="user32.createWindow.name" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="user32.handle" type="Absolute32"/>
 
 	<cpu:LogicFunction/>
 	<logic:CallImmediateAddress/>
-	<addressOf ref="kernel32.getStdHandle.address" type="Absolute32"/>
+	<addressOf ref="ExeHeader.GetProcAddress" type="Absolute32"/>
 
 	<cpu:CopyAXToAbsoluteMemory/>
-	<addressOf ref="console.input.handle" type="Absolute32"/>
+	<addressOf ref="user32.createWindow.address" type="Absolute32"/>
 
-	<!--Get Output Console Handle-->
+	<!--Get GetMessage address-->
 	<cpu:PushImmediateToStack/>
-	<int>-11</int>
+	<addressOf ref="user32.getMessage.name" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="user32.handle" type="Absolute32"/>
 
 	<cpu:LogicFunction/>
 	<logic:CallImmediateAddress/>
-	<addressOf ref="kernel32.getStdHandle.address" type="Absolute32"/>
+	<addressOf ref="ExeHeader.GetProcAddress" type="Absolute32"/>
 
 	<cpu:CopyAXToAbsoluteMemory/>
-	<addressOf ref="console.output.handle" type="Absolute32"/>
+	<addressOf ref="user32.getMessage.address" type="Absolute32"/>
 
-	<label id="showPrompt"/>
+	<!--Get DispatchMessage address-->
+	<cpu:PushImmediateToStack/>
+	<addressOf ref="user32.dispatchMessage.name" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="user32.handle" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:CallImmediateAddress/>
+	<addressOf ref="ExeHeader.GetProcAddress" type="Absolute32"/>
+
+	<cpu:CopyAXToAbsoluteMemory/>
+	<addressOf ref="user32.dispatchMessage.address" type="Absolute32"/>
+
+	<!--Get DefWindowProc address-->
+	<cpu:PushImmediateToStack/>
+	<addressOf ref="user32.defWindowProc.name" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="user32.handle" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:CallImmediateAddress/>
+	<addressOf ref="ExeHeader.GetProcAddress" type="Absolute32"/>
+
+	<cpu:CopyAXToAbsoluteMemory/>
+	<addressOf ref="user32.defWindowProc.address" type="Absolute32"/>
+
+	<!--Call GetModuleHandle()-->
+	<cpu:LogicFunction/>
+	<logic:CallImmediateAddress/>
+	<addressOf ref="kernel32.getModuleHandle.address" type="Absolute32"/>
+
+	<cpu:CopyAXToAbsoluteMemory/>
+	<addressOf ref="module.handle" type="Absolute32"/>
 	
-	<!--Write Prompt To Console-->
-	<!--WriteConsole(handle, buffer, length, out charactersWritten, reserved)-->
-	<cpu:PushImmediateToStack/>
-	<int>0</int>
+	<!--Call RegisterClass(class)-->
+	<cpu:CopyAbsoluteMemoryToAX/>
+	<addressOf ref="module.handle" type="Absolute32"/>
+
+	<cpu:CopyAXToAbsoluteMemory/>
+	<addressOf ref="window.class.moduleHandle" type="Absolute32"/>
 
 	<cpu:PushImmediateToStack/>
-	<int>0</int>
-
-	<cpu:PushImmediateToStack/>
-	<int>1</int>
-
-	<cpu:PushImmediateToStack/>
-	<addressOf ref="strings.prompt" type="Absolute32"/>
-
-	<cpu:LogicFunction/>
-	<logic:PushImmediateAddress/>
-	<addressOf ref="console.output.handle" type="Absolute32"/>
+	<addressOf ref="window.class" type="Absolute32"/>
 
 	<cpu:LogicFunction/>
 	<logic:CallImmediateAddress/>
-	<addressOf ref="kernel32.writeConsole.address" type="Absolute32"/>
+	<addressOf ref="user32.registerClass.address" type="Absolute32"/>
 
-	<!--Read From Console-->
-	<!--ReadConsole(handle, buffer, length, out charactersWritten, control)-->
+	<!--Call CreateWindow(style2, className, windowName, style, x, y, width, height, parent, menuHandle, moduleHandle, param)-->
 	<cpu:PushImmediateToStack/>
 	<int>0</int>
 
 	<cpu:PushImmediateToStack/>
-	<addressOf ref="inputBuffer.length" type="Absolute32"/>
+	<int>-1</int>
 
 	<cpu:PushImmediateToStack/>
-	<int>255</int>
+	<int>0</int>
 
 	<cpu:PushImmediateToStack/>
-	<addressOf ref="inputBuffer" type="Absolute32"/>
+	<int>0</int>
 
-	<cpu:LogicFunction/>
-	<logic:PushImmediateAddress/>
-	<addressOf ref="console.input.handle" type="Absolute32"/>
+	<cpu:PushImmediateToStack/>
+	<int>100</int>
+
+	<cpu:PushImmediateToStack/>
+	<int>100</int>
+
+	<cpu:PushImmediateToStack/>
+	<int>100</int>
+
+	<cpu:PushImmediateToStack/>
+	<int>100</int>
+
+	<cpu:PushImmediateToStack/>
+	<hex>10000000</hex>
+
+	<cpu:PushImmediateToStack/>
+	<addressOf ref="strings.application" type="Absolute32"/>
+
+	<cpu:PushImmediateToStack/>
+	<addressOf ref="strings.application" type="Absolute32"/>
+
+	<cpu:PushImmediateToStack/>
+	<hex>02000000</hex>
 
 	<cpu:LogicFunction/>
 	<logic:CallImmediateAddress/>
-	<addressOf ref="kernel32.readConsole.address" type="Absolute32"/>
-	
-	<!--Write Result To Console-->
-	<!--WriteConsole(handle, buffer, length, out charactersWritten, reserved)-->
+	<addressOf ref="user32.createWindow.address" type="Absolute32"/>
+
+	<cpu:CopyAXToAbsoluteMemory/>
+	<addressOf ref="window.handle" type="Absolute32"/>
+
+	<!--Process Messages-->
+	<label id="processMessages"/>
+
+	<!--Call GetMessage(message, windowHandle, filterMin, filterMax)-->
 	<cpu:PushImmediateToStack/>
 	<int>0</int>
 
 	<cpu:PushImmediateToStack/>
 	<int>0</int>
 
-	<cpu:LogicFunction/>
-	<logic:PushImmediateAddress/>
-	<addressOf ref="inputBuffer.length" type="Absolute32"/>
+	<cpu:PushImmediateToStack/>
+	<int>0</int>
 
 	<cpu:PushImmediateToStack/>
-	<addressOf ref="inputBuffer" type="Absolute32"/>
-
-	<cpu:LogicFunction/>
-	<logic:PushImmediateAddress/>
-	<addressOf ref="console.output.handle" type="Absolute32"/>
+	<addressOf ref="message" type="Absolute32"/>
 
 	<cpu:LogicFunction/>
 	<logic:CallImmediateAddress/>
-	<addressOf ref="kernel32.writeConsole.address" type="Absolute32"/>
+	<addressOf ref="user32.getMessage.address" type="Absolute32"/>
+
+	<cpu:CompareAXToImmediate/>
+	<int>0</int>
+
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="exit" type="Relative8"/>
+
+	<!--Call DispatchMessage(message)-->
+	<cpu:PushImmediateToStack/>
+	<addressOf ref="message" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:CallImmediateAddress/>
+	<addressOf ref="user32.dispatchMessage.address" type="Absolute32"/>
 
 	<cpu:JumpToRelative/>
-	<addressOf ref="showPrompt" type="Relative32"/>
+	<addressOf ref="processMessages" type="Relative32"/>
+
+	<label id="exit"/>
 
 	<cpu:ReturnToNearCaller/>
 
-	<!--Variables-->
+	<label id="window.handleMessage">
+		<cpu:JumpToRelative8/>
+		<sbyte>-2</sbyte>
+		
+		<!--Call DefWindowProc(windowHandle, type, parameter, parameter2)-->
+		<cpu:LogicFunction/>
+		<logic:CallImmediateAddress/>
+		<addressOf ref="user32.defWindowProc.address" type="Absolute32"/>
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+
 	<label id="kernel32.fileName"/>
 	<string>kernel32.dll</string>
 	<byte>0</byte>
 
-	<label id="kernel32.messageBox.name"/>
-	<string>MessageBoxA</string>
+	<label id="kernel32.getModuleHandle.name"/>
+	<string>GetModuleHandleA</string>
 	<byte>0</byte>
 
-	<label id="kernel32.getStdHandle.name"/>
-	<string>GetStdHandle</string>
+	<label id="user32.fileName"/>
+	<string>user32.dll</string>
 	<byte>0</byte>
 
-	<label id="kernel32.writeConsole.name"/>
-	<string>WriteConsoleA</string>
+	<label id="user32.registerClass.name"/>
+	<string>RegisterClassA</string>
 	<byte>0</byte>
 
-	<label id="kernel32.readConsole.name"/>
-	<string>ReadConsoleA</string>
+	<label id="user32.createWindow.name"/>
+	<string>CreateWindowExA</string>
 	<byte>0</byte>
 
-	<label id="strings.prompt"/>
-	<string>&gt;</string>
+	<label id="user32.getMessage.name"/>
+	<string>GetMessageA</string>
 	<byte>0</byte>
 
+	<label id="user32.dispatchMessage.name"/>
+	<string>DispatchMessageA</string>
+	<byte>0</byte>
+
+	<label id="user32.defWindowProc.name"/>
+	<string>DefWindowProcA</string>
+	<byte>0</byte>
+
+	<label id="strings.application"/>
+	<string>Application</string>
+	<byte>0</byte>
+
+	<var:integer id="user32.handle">0</var:integer>
+	<var:integer id="user32.registerClass.address">0</var:integer>
+	<var:integer id="user32.createWindow.address">0</var:integer>
+	<var:integer id="user32.getMessage.address">0</var:integer>
+	<var:integer id="user32.dispatchMessage.address">0</var:integer>
+	<var:integer id="user32.defWindowProc.address">0</var:integer>
 	<var:integer id="kernel32.handle">0</var:integer>
-	<var:integer id="kernel32.getStdHandle.address">0</var:integer>
-	<var:integer id="kernel32.readConsole.address">0</var:integer>
-	<var:integer id="kernel32.writeConsole.address">0</var:integer>
-	<var:integer id="console.input.handle">0</var:integer>
-	<var:integer id="console.output.handle">0</var:integer>
-	<var:integer id="inputBuffer.length">0</var:integer>
-	
-	<label id="inputBuffer"/>
-	<empty length="255"/>
+	<var:integer id="kernel32.getModuleHandle.address">0</var:integer>
+	<var:integer id="module.handle">0</var:integer>
+	<var:integer id="window.handle">0</var:integer>
+
+	<label id="message"/>
+	<var:integer id="message.windowHandle">0</var:integer>
+	<var:integer id="message.type">0</var:integer>
+	<var:integer id="message.parameter">0</var:integer>
+	<var:integer id="message.parameter2">0</var:integer>
+	<var:integer id="message.time">0</var:integer>
+	<var:integer id="message.point.x">0</var:integer>
+	<var:integer id="message.point.y">0</var:integer>
+	<var:integer id="message.private">0</var:integer>
+
+	<label id="window.class">
+		<!--Style-->
+		<int>0</int>
+		<!--WindowProcedure-->
+		<addressOf ref="window.handleMessage" type="Absolute32"/>
+		<!--ClassDataLength-->
+		<int>0</int>
+		<!--WindowDataLength-->
+		<int>0</int>
+		<!--Instance-->
+		<var:integer id="window.class.moduleHandle">0</var:integer>
+		<!--Icon-->
+		<int>0</int>
+		<!--Cursor-->
+		<int>0</int>
+		<!--Background-->
+		<int>5</int>
+		<!--<int>0</int>-->
+		<!--Menu-->
+		<int>0</int>
+		<!--Name-->
+		<addressOf ref="strings.application" type="Absolute32"/>
+	</label>
 </scope>
