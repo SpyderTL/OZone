@@ -32,9 +32,6 @@
 	<short>0</short>
 	<short>0</short>
 	<length from="Project.Start" to="signature" type="Absolute32"/>
-	<!--<addressOf ref="signature" type="Local32"/>-->
-
-	
 	
 	<!--Portable Executable Header-->
 	<label id="signature"/>
@@ -58,7 +55,6 @@
 
 	<!--Optional Header Length-->
 	<length from="optionalHeader" to="optionalHeaderEnd" type="Absolute16"/>
-	<!--<short>224</short>-->
 
 	<!--Characteristics-->
 	<hex>0103</hex>
@@ -80,27 +76,21 @@
 
 	<!--Code Length-->
 	<length from="program" to="Project.End" type="Absolute32"/>
-	<!--<int>34</int>-->
 
 	<!--Initialized Data Length-->
 	<length from="program" to="Project.End" type="Absolute32"/>
-	<!--<int>34</int>-->
 
 	<!--Uninitialized Data Length-->
 	<int>0</int>
 
 	<!--Entry Point Location-->
-	<!--<addressOf ref="Application.EntryPoint" type="Local32"/>-->
-	<!--<addressOf ref="program" type="Local32"/>-->
 	<length from="Project.Start" to="Application.EntryPoint" type="Absolute32"/>
 
 	<!--Code Base Address-->
 	<addressOf ref="Project.Start" type="Absolute32"/>
-	<!--<hex>00400000</hex>-->
 
 	<!--Data Base Address-->
 	<addressOf ref="Project.Start" type="Absolute32"/>
-	<!--<hex>00400000</hex>-->
 	
 	
 	
@@ -108,7 +98,6 @@
 
 	<!--Image Base Address-->
 	<addressOf ref="Project.Start" type="Absolute32"/>
-	<!--<hex>00400000</hex>-->
 
 	<!--Section Alignment-->
 	<int>1</int>
@@ -139,11 +128,9 @@
 
 	<!--Image Length (File Size)-->
 	<length from="Project.Start" to="Project.End" type="Absolute32"/>
-	<!--<hex>000001cb</hex>-->
 
 	<!--Header Length-->
 	<length from="Project.Start" to="importTable" type="Absolute32"/>
-	<!--<addressOf ref="importTable" type="Local32"/>-->
 
 	<!--Checksum-->
 	<int>0</int>
@@ -181,9 +168,7 @@
 
 	<!--Import-->
 	<length from="Project.Start" to="importTable" type="Absolute32"/>
-	<!--<addressOf ref="importTable" type="Local32"/>-->
 	<length from="importTable" to="importTableEnd" type="Absolute32"/>
-	<!--<hex>00000049</hex>-->
 
 	<int>0</int>
 	<int>0</int>
@@ -243,15 +228,12 @@
 
 	<!--Virtual Address-->
 	<length from="Project.Start" to="importTable" type="Absolute32"/>
-	<!--<addressOf ref="importTable" type="Local32"/>-->
 
 	<!--Data Size-->
 	<length from="program" to="Project.End" type="Absolute32"/>
-	<!--<hex>0000006b</hex>-->
 
 	<!--Data Location-->
 	<length from="Project.Start" to="importTable" type="Absolute32"/>
-	<!--<addressOf ref="importTable" type="Local32"/>-->
 
 	<!--Relocation Table Location-->
 	<int>0</int>
@@ -274,7 +256,6 @@
 
 	<!--Original Import Table Location-->
 	<int>0</int>
-	<!--<addressOf ref="methodTable" type="Local32"/>-->
 
 	<!--Timestamp-->
 	<int>0</int>
@@ -283,12 +264,10 @@
 	<int>0</int>
 
 	<!--Name Pointer-->
-	<length from="Project.Start" to="user32FileName" type="Absolute32"/>
-	<!--<addressOf ref="user32FileName" type="Local32"/>-->
+	<length from="Project.Start" to="kernel32FileName" type="Absolute32"/>
 
 	<!--Import Table Location-->
 	<length from="Project.Start" to="methodTable" type="Absolute32"/>
-	<!--<addressOf ref="methodTable" type="Local32"/>-->
 	
 	<!--End Of Import Table-->
 	<int>0</int>
@@ -298,22 +277,29 @@
 	<int>0</int>
 
 	<!--File Name-->
-	<label id="user32FileName"/>
-	<string>user32.dll</string>
+	<label id="kernel32FileName"/>
+	<string>kernel32.dll</string>
 	<byte>0</byte>
 
 	<!--Method Table-->
 	<label id="methodTable"/>
-	
-	<label id="messageBoxAExport" export="ExeHeader.MessageBoxA"/>
-	<length from="Project.Start" to="messageBoxA" type="Absolute32"/>
-	<!--<addressOf ref="messageBoxA" type="Local32"/>-->
-	
+
+	<label id="loadLibraryExport" export="ExeHeader.LoadLibrary"/>
+	<length from="Project.Start" to="loadLibrary" type="Absolute32"/>
+
+	<label id="getProcAddressExport" export="ExeHeader.GetProcAddress"/>
+	<length from="Project.Start" to="getProcAddress" type="Absolute32"/>
+
 	<int>0</int>
 
-	<label id="messageBoxA"/>
+	<label id="loadLibrary"/>
 	<short>0</short>
-	<string>MessageBoxA</string>
+	<string>LoadLibraryA</string>
+	<byte>0</byte>
+
+	<label id="getProcAddress"/>
+	<short>0</short>
+	<string>GetProcAddress</string>
 	<byte>0</byte>
 
 	<label id="importTableEnd"/>

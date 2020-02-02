@@ -11,29 +11,53 @@
 	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
 	xmlns:shift="http://metalx.org/Intel/80386/Shift"
 	xmlns:logic="http://metalx.org/Intel/80386/Logic">
-
-	<!--<label id="showMessageBox" segment="0000" offset="00400193"/>-->
-
+	
 	<label id="entryPoint" export="Application.EntryPoint"/>
 	
 	<cpu:CopyImmediateToAX/>
-	<addressOf ref="helloWorld" type="Absolute32"/>
+	<addressOf ref="user32FileName" type="Absolute32"/>
 
-	<cpu:CopyImmediateToDX/>
-	<int>0</int>
-
-	<cpu:PushDXToStack/>
 	<cpu:PushAXToStack/>
-	<cpu:PushAXToStack/>
-	<cpu:PushDXToStack/>
 
 	<cpu:LogicFunction/>
 	<logic:CallImmediateAddress/>
-	<addressOf ref="ExeHeader.MessageBoxA" type="Absolute32"/>
+	<addressOf ref="ExeHeader.LoadLibrary" type="Absolute32"/>
 
+	<cpu:CopyImmediateToBX/>
+	<addressOf ref="messageBoxMethodName" type="Absolute32"/>
+
+	<cpu:PushBXToStack/>
+	<cpu:PushAXToStack/>
+
+	<cpu:LogicFunction/>
+	<logic:CallImmediateAddress/>
+	<addressOf ref="ExeHeader.GetProcAddress" type="Absolute32"/>
+
+	<cpu:CopyImmediateToBX/>
+	<int>0</int>
+
+	<cpu:CopyImmediateToCX/>
+	<addressOf ref="message" type="Absolute32"/>
+
+	<cpu:PushBXToStack/>
+	<cpu:PushCXToStack/>
+	<cpu:PushCXToStack/>
+	<cpu:PushBXToStack/>
+
+	<cpu:LogicFunction/>
+	<logic:CallAXRegister/>
+	
 	<cpu:ReturnToNearCaller/>
 
-	<label id="helloWorld"/>
+	<label id="user32FileName"/>
+	<string>user32.dll</string>
+	<byte>0</byte>
+
+	<label id="messageBoxMethodName"/>
+	<string>MessageBoxA</string>
+	<byte>0</byte>
+
+	<label id="message"/>
 	<string>Hello World!</string>
 	<byte>0</byte>
 </scope>
