@@ -10,7 +10,8 @@
 	xmlns:inc="http://metalx.org/Intel/80386/Increment"
 	xmlns:imm="http://metalx.org/Intel/80386/Immediate"
 	xmlns:shift="http://metalx.org/Intel/80386/Shift"
-	xmlns:logic="http://metalx.org/Intel/80386/Logic">
+	xmlns:logic="http://metalx.org/Intel/80386/Logic"
+	xmlns:index="http://metalx.org/Intel/80386/Index">
 
 	<label id="entryPoint" export="Application.EntryPoint"/>
 
@@ -50,6 +51,21 @@
 
 	<cpu:CopyAXToAbsoluteMemory/>
 	<addressOf ref="kernel32.getModuleHandle.address" type="Absolute32"/>
+
+	<!--Get LoadCursor address-->
+	<cpu:PushImmediateToStack/>
+	<addressOf ref="user32.loadCursor.name" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="user32.handle" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:CallImmediateAddress/>
+	<addressOf ref="ExeHeader.GetProcAddress" type="Absolute32"/>
+
+	<cpu:CopyAXToAbsoluteMemory/>
+	<addressOf ref="user32.loadCursor.address" type="Absolute32"/>
 
 	<!--Get RegisterClass address-->
 	<cpu:PushImmediateToStack/>
@@ -126,20 +142,59 @@
 	<cpu:CopyAXToAbsoluteMemory/>
 	<addressOf ref="user32.defWindowProc.address" type="Absolute32"/>
 
-	<!--Call GetModuleHandle()-->
+	<!--Get PostQuitMessage address-->
+	<cpu:PushImmediateToStack/>
+	<addressOf ref="user32.postQuitMessage.name" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="user32.handle" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:CallImmediateAddress/>
+	<addressOf ref="ExeHeader.GetProcAddress" type="Absolute32"/>
+
+	<cpu:CopyAXToAbsoluteMemory/>
+	<addressOf ref="user32.postQuitMessage.address" type="Absolute32"/>
+
+	<!--Call GetModuleHandle(name)-->
+	<cpu:PushImmediateToStack/>
+	<int>0</int>
+
 	<cpu:LogicFunction/>
 	<logic:CallImmediateAddress/>
 	<addressOf ref="kernel32.getModuleHandle.address" type="Absolute32"/>
 
 	<cpu:CopyAXToAbsoluteMemory/>
 	<addressOf ref="module.handle" type="Absolute32"/>
-	
+
+	<!--Call LoadCursor(moduleHandle, cursorName)-->
+	<cpu:PushImmediateToStack/>
+	<int>32512</int>
+	<!--<int>32649</int>-->
+
+	<cpu:PushImmediateToStack/>
+	<int>0</int>
+
+	<cpu:LogicFunction/>
+	<logic:CallImmediateAddress/>
+	<addressOf ref="user32.loadCursor.address" type="Absolute32"/>
+
+	<cpu:CopyAXToAbsoluteMemory/>
+	<addressOf ref="cursor.handle" type="Absolute32"/>
+
 	<!--Call RegisterClass(class)-->
 	<cpu:CopyAbsoluteMemoryToAX/>
 	<addressOf ref="module.handle" type="Absolute32"/>
 
 	<cpu:CopyAXToAbsoluteMemory/>
 	<addressOf ref="window.class.moduleHandle" type="Absolute32"/>
+
+	<cpu:CopyAbsoluteMemoryToAX/>
+	<addressOf ref="cursor.handle" type="Absolute32"/>
+
+	<cpu:CopyAXToAbsoluteMemory/>
+	<addressOf ref="window.class.cursorHandle" type="Absolute32"/>
 
 	<cpu:PushImmediateToStack/>
 	<addressOf ref="window.class" type="Absolute32"/>
@@ -148,12 +203,16 @@
 	<logic:CallImmediateAddress/>
 	<addressOf ref="user32.registerClass.address" type="Absolute32"/>
 
+	<cpu:CopyAXToAbsoluteMemory/>
+	<addressOf ref="window.class.handle" type="Absolute32"/>
+
 	<!--Call CreateWindow(style2, className, windowName, style, x, y, width, height, parent, menuHandle, moduleHandle, param)-->
 	<cpu:PushImmediateToStack/>
 	<int>0</int>
 
-	<cpu:PushImmediateToStack/>
-	<int>-1</int>
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="module.handle" type="Absolute32"/>
 
 	<cpu:PushImmediateToStack/>
 	<int>0</int>
@@ -162,7 +221,10 @@
 	<int>0</int>
 
 	<cpu:PushImmediateToStack/>
-	<int>100</int>
+	<int>768</int>
+
+	<cpu:PushImmediateToStack/>
+	<int>1024</int>
 
 	<cpu:PushImmediateToStack/>
 	<int>100</int>
@@ -171,16 +233,14 @@
 	<int>100</int>
 
 	<cpu:PushImmediateToStack/>
-	<int>100</int>
-
-	<cpu:PushImmediateToStack/>
-	<hex>10000000</hex>
+	<hex>10CF0000</hex>
 
 	<cpu:PushImmediateToStack/>
 	<addressOf ref="strings.application" type="Absolute32"/>
 
-	<cpu:PushImmediateToStack/>
-	<addressOf ref="strings.application" type="Absolute32"/>
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="window.class.handle" type="Absolute32"/>
 
 	<cpu:PushImmediateToStack/>
 	<hex>02000000</hex>
@@ -234,15 +294,55 @@
 	<cpu:ReturnToNearCaller/>
 
 	<label id="window.handleMessage">
-		<cpu:JumpToRelative8/>
-		<sbyte>-2</sbyte>
+		<cpu:MathImmediate8ToOperandFunction/>
+		<math:CompareWithIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>8</byte>
+		<byte>2</byte>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="windowClosed" type="Relative8"/>
 		
+		<cpu:LogicFunction/>
+		<logic:PushIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>16</byte>
+
+		<cpu:LogicFunction/>
+		<logic:PushIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>16</byte>
+
+		<cpu:LogicFunction/>
+		<logic:PushIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>16</byte>
+
+		<cpu:LogicFunction/>
+		<logic:PushIndexAddressPlusImmediate8/>
+		<index:SP/>
+		<byte>16</byte>
+
 		<!--Call DefWindowProc(windowHandle, type, parameter, parameter2)-->
 		<cpu:LogicFunction/>
 		<logic:CallImmediateAddress/>
 		<addressOf ref="user32.defWindowProc.address" type="Absolute32"/>
 
-		<cpu:ReturnToNearCaller/>
+		<cpu:ReturnToNearCallerAndPullImmediate/>
+		<int>16</int>
+			
+		<label id="windowClosed"/>
+
+		<!--Call PostQuitMessage(exitCode)-->
+		<cpu:PushImmediateToStack/>
+		<int>0</int>
+
+		<cpu:LogicFunction/>
+		<logic:CallImmediateAddress/>
+		<addressOf ref="user32.postQuitMessage.address" type="Absolute32"/>
+		
+		<cpu:ReturnToNearCallerAndPullImmediate/>
+		<int>16</int>
 	</label>
 
 	<label id="kernel32.fileName"/>
@@ -255,6 +355,10 @@
 
 	<label id="user32.fileName"/>
 	<string>user32.dll</string>
+	<byte>0</byte>
+
+	<label id="user32.loadCursor.name"/>
+	<string>LoadCursorA</string>
 	<byte>0</byte>
 
 	<label id="user32.registerClass.name"/>
@@ -277,19 +381,26 @@
 	<string>DefWindowProcA</string>
 	<byte>0</byte>
 
+	<label id="user32.postQuitMessage.name"/>
+	<string>PostQuitMessage</string>
+	<byte>0</byte>
+
 	<label id="strings.application"/>
 	<string>Application</string>
 	<byte>0</byte>
 
 	<var:integer id="user32.handle">0</var:integer>
+	<var:integer id="user32.loadCursor.address">0</var:integer>
 	<var:integer id="user32.registerClass.address">0</var:integer>
 	<var:integer id="user32.createWindow.address">0</var:integer>
 	<var:integer id="user32.getMessage.address">0</var:integer>
 	<var:integer id="user32.dispatchMessage.address">0</var:integer>
 	<var:integer id="user32.defWindowProc.address">0</var:integer>
+	<var:integer id="user32.postQuitMessage.address">0</var:integer>
 	<var:integer id="kernel32.handle">0</var:integer>
 	<var:integer id="kernel32.getModuleHandle.address">0</var:integer>
 	<var:integer id="module.handle">0</var:integer>
+	<var:integer id="cursor.handle">0</var:integer>
 	<var:integer id="window.handle">0</var:integer>
 
 	<label id="message"/>
@@ -316,13 +427,15 @@
 		<!--Icon-->
 		<int>0</int>
 		<!--Cursor-->
-		<int>0</int>
+		<var:integer id="window.class.cursorHandle">0</var:integer>
 		<!--Background-->
-		<int>5</int>
+		<int>6</int>
 		<!--<int>0</int>-->
 		<!--Menu-->
 		<int>0</int>
 		<!--Name-->
 		<addressOf ref="strings.application" type="Absolute32"/>
 	</label>
+
+	<var:integer id="window.class.handle">0</var:integer>
 </scope>
