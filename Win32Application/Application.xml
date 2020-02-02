@@ -52,6 +52,21 @@
 	<cpu:CopyAXToAbsoluteMemory/>
 	<addressOf ref="kernel32.getModuleHandle.address" type="Absolute32"/>
 
+	<!--Get LoadIcon address-->
+	<cpu:PushImmediateToStack/>
+	<addressOf ref="user32.loadIcon.name" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="user32.handle" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:CallImmediateAddress/>
+	<addressOf ref="ExeHeader.GetProcAddress" type="Absolute32"/>
+
+	<cpu:CopyAXToAbsoluteMemory/>
+	<addressOf ref="user32.loadIcon.address" type="Absolute32"/>
+
 	<!--Get LoadCursor address-->
 	<cpu:PushImmediateToStack/>
 	<addressOf ref="user32.loadCursor.name" type="Absolute32"/>
@@ -168,6 +183,21 @@
 	<cpu:CopyAXToAbsoluteMemory/>
 	<addressOf ref="module.handle" type="Absolute32"/>
 
+	<!--Call LoadIcon(moduleHandle, iconName)-->
+	<cpu:PushImmediateToStack/>
+	<int>32512</int>
+	<!--<int>32518</int>-->
+
+	<cpu:PushImmediateToStack/>
+	<int>0</int>
+
+	<cpu:LogicFunction/>
+	<logic:CallImmediateAddress/>
+	<addressOf ref="user32.loadIcon.address" type="Absolute32"/>
+
+	<cpu:CopyAXToAbsoluteMemory/>
+	<addressOf ref="icon.handle" type="Absolute32"/>
+
 	<!--Call LoadCursor(moduleHandle, cursorName)-->
 	<cpu:PushImmediateToStack/>
 	<int>32512</int>
@@ -189,6 +219,12 @@
 
 	<cpu:CopyAXToAbsoluteMemory/>
 	<addressOf ref="window.class.moduleHandle" type="Absolute32"/>
+
+	<cpu:CopyAbsoluteMemoryToAX/>
+	<addressOf ref="icon.handle" type="Absolute32"/>
+
+	<cpu:CopyAXToAbsoluteMemory/>
+	<addressOf ref="window.class.iconHandle" type="Absolute32"/>
 
 	<cpu:CopyAbsoluteMemoryToAX/>
 	<addressOf ref="cursor.handle" type="Absolute32"/>
@@ -221,16 +257,18 @@
 	<int>0</int>
 
 	<cpu:PushImmediateToStack/>
-	<int>768</int>
+	<hex>80000000</hex>
+	<!--<int>768</int>-->
 
 	<cpu:PushImmediateToStack/>
-	<int>1024</int>
+	<hex>80000000</hex>
+	<!--<int>1024</int>-->
 
 	<cpu:PushImmediateToStack/>
-	<int>100</int>
+	<hex>80000000</hex>
 
 	<cpu:PushImmediateToStack/>
-	<int>100</int>
+	<hex>80000000</hex>
 
 	<cpu:PushImmediateToStack/>
 	<hex>10CF0000</hex>
@@ -243,7 +281,8 @@
 	<addressOf ref="window.class.handle" type="Absolute32"/>
 
 	<cpu:PushImmediateToStack/>
-	<hex>02000000</hex>
+	<hex>00000000</hex>
+	<!--<hex>02000000</hex>-->
 
 	<cpu:LogicFunction/>
 	<logic:CallImmediateAddress/>
@@ -357,6 +396,10 @@
 	<string>user32.dll</string>
 	<byte>0</byte>
 
+	<label id="user32.loadIcon.name"/>
+	<string>LoadIconA</string>
+	<byte>0</byte>
+
 	<label id="user32.loadCursor.name"/>
 	<string>LoadCursorA</string>
 	<byte>0</byte>
@@ -390,6 +433,7 @@
 	<byte>0</byte>
 
 	<var:integer id="user32.handle">0</var:integer>
+	<var:integer id="user32.loadIcon.address">0</var:integer>
 	<var:integer id="user32.loadCursor.address">0</var:integer>
 	<var:integer id="user32.registerClass.address">0</var:integer>
 	<var:integer id="user32.createWindow.address">0</var:integer>
@@ -400,6 +444,7 @@
 	<var:integer id="kernel32.handle">0</var:integer>
 	<var:integer id="kernel32.getModuleHandle.address">0</var:integer>
 	<var:integer id="module.handle">0</var:integer>
+	<var:integer id="icon.handle">0</var:integer>
 	<var:integer id="cursor.handle">0</var:integer>
 	<var:integer id="window.handle">0</var:integer>
 
@@ -425,7 +470,7 @@
 		<!--Instance-->
 		<var:integer id="window.class.moduleHandle">0</var:integer>
 		<!--Icon-->
-		<int>0</int>
+		<var:integer id="window.class.iconHandle">0</var:integer>
 		<!--Cursor-->
 		<var:integer id="window.class.cursorHandle">0</var:integer>
 		<!--Background-->
