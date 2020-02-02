@@ -19,7 +19,6 @@ namespace OZone.Programs
 		Relative16,
 		Relative24,
 		Relative32,
-		Relative64,
-		//Offset16
+		Relative64
 	}
 }

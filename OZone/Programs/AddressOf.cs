@@ -8,6 +8,7 @@ namespace OZone.Programs
 {
 	public class AddressOf : ProgramSegment
 	{
+		public string Reference;
 		public ProgramSegment Segment;
 		public ReferenceType Type;
 		public int Offset;

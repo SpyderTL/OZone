@@ -7,7 +7,7 @@ namespace OZone.Programs.Compilers
 {
 	public class WebAssemblyBinaryCompiler : BinaryCompiler
 	{
-		public override void Compile(Program program, MemoryAddress baseAddress, BinaryWriter writer)
+		public override void Compile(Program program, MemoryAddress baseAddress)
 		{
 			// Assign memory addresses
 			MemoryAddress position = new MemoryAddress { Segment = baseAddress.Segment, Offset = baseAddress.Offset };
@@ -23,8 +23,10 @@ namespace OZone.Programs.Compilers
 
 				position.Offset += GetLength(segment);
 			}
+		}
 
-			// Compile program bytes
+		public override void Write(Program program, BinaryWriter writer)
+		{
 			foreach (ProgramSegment segment in program.Segments)
 			{
 				if (segment is IntValue)

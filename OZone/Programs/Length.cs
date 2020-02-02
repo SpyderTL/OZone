@@ -8,17 +8,37 @@ namespace OZone.Programs
 {
 	public class Length : ProgramSegment
 	{
-		public ProgramSegment Start;
-		public ProgramSegment End;
+		public string From;
+		public string To;
+		public LengthType Type;
+
+		public ProgramSegment FromSegment;
+		public ProgramSegment ToSegment;
 
 		public override uint GetLength()
 		{
-			return 1;
+			switch (Type)
+			{
+				case LengthType.Absolute16:
+					return 2;
+
+				default:
+					return 4;
+			}
 		}
 
 		public override void Write(System.IO.BinaryWriter writer)
 		{
-			writer.Write((byte)(End.Address.Offset - Start.Address.Offset));
+			switch (Type)
+			{
+				case LengthType.Absolute16:
+					writer.Write((short)(ToSegment.Address.Offset - FromSegment.Address.Offset));
+					break;
+
+				default:
+					writer.Write((int)(ToSegment.Address.Offset - FromSegment.Address.Offset));
+					break;
+			}
 		}
 	}
 }

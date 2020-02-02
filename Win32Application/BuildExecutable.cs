@@ -26,23 +26,43 @@ namespace Win32Application
 			Console.WriteLine("Writing test.exe");
 
 			var compiler = new BinaryCompiler();
+			var position = new MemoryAddress { Offset = 0x00400000 };
 
 			using (Stream stream = File.Create("test.exe"))
 			using (BinaryWriter writer = new BinaryWriter(stream))
 			{
+				var programs = new List<Program>();
+				var exports = new Dictionary<string, Label>();
+
+				exports["Project.Start"] = new Label { Address = new MemoryAddress { Offset = position.Offset } };
+
 				foreach (var file in project.Files)
 				{
-					//var filename = Path.Combine(project.Name, Path.GetFileName(program.Path) + ".program");
-
 					var program = ProgramReader.Read(XDocument.Load(file.OutputPath));
 
-					//program.Segments.OfType<Label>().Where(l => l.Export);
+					if (file.Address == null)
+						file.Address = position;
 
 					compiler.Compile(
 						program,
-						file.Address,
-						writer);
+						file.Address);
+
+					position.Offset += (uint)program.Segments.Sum(x => compiler.GetLength(x));
+
+					programs.Add(program);
+
+					foreach (var label in program.Segments.OfType<Label>())
+						if (label.Export != null)
+							exports[label.Export] = label;
 				}
+
+				exports["Project.End"] = new Label { Address = new MemoryAddress { Offset = position.Offset } };
+
+				foreach (var program in programs)
+					compiler.Link(program, exports);
+
+				foreach (var program in programs)
+					compiler.Write(program, writer);
 			}
 		}
 	}

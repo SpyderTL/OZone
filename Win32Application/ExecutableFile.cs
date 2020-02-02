@@ -51,19 +51,19 @@ namespace Win32Application
 
 		public void Save(Stream stream)
 		{
-			var compiler = new BinaryCompiler();
+			//var compiler = new BinaryCompiler();
 
-			using (var writer = new BinaryWriter(stream))
-			{
-				// Build Header
-				var header = new Program();
+			//using (var writer = new BinaryWriter(stream))
+			//{
+			//	// Build Header
+			//	var header = new Program();
 
-				compiler.Compile(header, null, writer);
+			//	compiler.Compile(header, null);
 
-				// Write Programs
-				foreach(var program in _programs)
-					compiler.Compile(program.Program, program.Address, writer);
-			}
+			//	// Write Programs
+			//	foreach(var program in _programs)
+			//		compiler.Compile(program.Program, program.Address);
+			//}
 		}
 
 		private struct ExecutableProgram

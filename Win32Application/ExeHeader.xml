@@ -31,7 +31,8 @@
 	<short>0</short>
 	<short>0</short>
 	<short>0</short>
-	<addressOf ref="signature" type="Absolute32"/>
+	<length from="Project.Start" to="signature" type="Absolute32"/>
+	<!--<addressOf ref="signature" type="Local32"/>-->
 
 	
 	
@@ -56,7 +57,8 @@
 	<int>0</int>
 
 	<!--Optional Header Length-->
-	<short>224</short>
+	<length from="optionalHeader" to="optionalHeaderEnd" type="Absolute16"/>
+	<!--<short>224</short>-->
 
 	<!--Characteristics-->
 	<hex>0103</hex>
@@ -65,7 +67,8 @@
 
 
 	<!--Portable Executable Optional Header-->
-
+	<label id="optionalHeader"/>
+	
 	<!--Signature-->
 	<hex>010b</hex>
 
@@ -76,29 +79,36 @@
 	<byte>0</byte>
 
 	<!--Code Length-->
-	<int>34</int>
+	<length from="program" to="Project.End" type="Absolute32"/>
+	<!--<int>34</int>-->
 
 	<!--Initialized Data Length-->
-	<int>34</int>
+	<length from="program" to="Project.End" type="Absolute32"/>
+	<!--<int>34</int>-->
 
 	<!--Uninitialized Data Length-->
 	<int>0</int>
 
 	<!--Entry Point Location-->
-	<addressOf ref="program" type="Absolute32"/>
+	<!--<addressOf ref="Application.EntryPoint" type="Local32"/>-->
+	<!--<addressOf ref="program" type="Local32"/>-->
+	<length from="Project.Start" to="Application.EntryPoint" type="Absolute32"/>
 
 	<!--Code Base Address-->
-	<hex>00400000</hex>
+	<addressOf ref="Project.Start" type="Absolute32"/>
+	<!--<hex>00400000</hex>-->
 
 	<!--Data Base Address-->
-	<hex>00400000</hex>
+	<addressOf ref="Project.Start" type="Absolute32"/>
+	<!--<hex>00400000</hex>-->
 	
 	
 	
 	<!--Windows Specific Header-->
 
 	<!--Image Base Address-->
-	<hex>00400000</hex>
+	<addressOf ref="Project.Start" type="Absolute32"/>
+	<!--<hex>00400000</hex>-->
 
 	<!--Section Alignment-->
 	<int>1</int>
@@ -128,10 +138,12 @@
 	<int>0</int>
 
 	<!--Image Length (File Size)-->
-	<hex>000001cb</hex>
+	<length from="Project.Start" to="Project.End" type="Absolute32"/>
+	<!--<hex>000001cb</hex>-->
 
 	<!--Header Length-->
-	<addressOf ref="importTable" type="Absolute32"/>
+	<length from="Project.Start" to="importTable" type="Absolute32"/>
+	<!--<addressOf ref="importTable" type="Local32"/>-->
 
 	<!--Checksum-->
 	<int>0</int>
@@ -168,8 +180,10 @@
 	<int>0</int>
 
 	<!--Import-->
-	<addressOf ref="importTable" type="Absolute32"/>
-	<hex>00000049</hex>
+	<length from="Project.Start" to="importTable" type="Absolute32"/>
+	<!--<addressOf ref="importTable" type="Local32"/>-->
+	<length from="importTable" to="importTableEnd" type="Absolute32"/>
+	<!--<hex>00000049</hex>-->
 
 	<int>0</int>
 	<int>0</int>
@@ -213,6 +227,8 @@
 	<int>0</int>
 	<int>0</int>
 
+	<label id="optionalHeaderEnd"/>
+	
 	<!--Section Table-->
 
 	<!--Name-->
@@ -222,16 +238,20 @@
 	<byte>0</byte>
 
 	<!--Virtual Size-->
-	<int>34</int>
+	<length from="program" to="Project.End" type="Absolute32"/>
+	<!--<int>34</int>-->
 
 	<!--Virtual Address-->
-	<addressOf ref="importTable" type="Absolute32"/>
+	<length from="Project.Start" to="importTable" type="Absolute32"/>
+	<!--<addressOf ref="importTable" type="Local32"/>-->
 
 	<!--Data Size-->
-	<hex>0000006b</hex>
+	<length from="program" to="Project.End" type="Absolute32"/>
+	<!--<hex>0000006b</hex>-->
 
 	<!--Data Location-->
-	<addressOf ref="importTable" type="Absolute32"/>
+	<length from="Project.Start" to="importTable" type="Absolute32"/>
+	<!--<addressOf ref="importTable" type="Local32"/>-->
 
 	<!--Relocation Table Location-->
 	<int>0</int>
@@ -254,7 +274,7 @@
 
 	<!--Original Import Table Location-->
 	<int>0</int>
-	<!--<addressOf ref="methodTable" type="Absolute32"/>-->
+	<!--<addressOf ref="methodTable" type="Local32"/>-->
 
 	<!--Timestamp-->
 	<int>0</int>
@@ -263,10 +283,12 @@
 	<int>0</int>
 
 	<!--Name Pointer-->
-	<addressOf ref="user32FileName" type="Absolute32"/>
+	<length from="Project.Start" to="user32FileName" type="Absolute32"/>
+	<!--<addressOf ref="user32FileName" type="Local32"/>-->
 
 	<!--Import Table Location-->
-	<addressOf ref="methodTable" type="Absolute32"/>
+	<length from="Project.Start" to="methodTable" type="Absolute32"/>
+	<!--<addressOf ref="methodTable" type="Local32"/>-->
 	
 	<!--End Of Import Table-->
 	<int>0</int>
@@ -282,14 +304,18 @@
 
 	<!--Method Table-->
 	<label id="methodTable"/>
-	<addressOf ref="messageBoxA" type="Absolute32"/>
+	
+	<label id="messageBoxAExport" export="ExeHeader.MessageBoxA"/>
+	<length from="Project.Start" to="messageBoxA" type="Absolute32"/>
+	<!--<addressOf ref="messageBoxA" type="Local32"/>-->
+	
 	<int>0</int>
 
 	<label id="messageBoxA"/>
-	<!--Ordinal-->
 	<short>0</short>
 	<string>MessageBoxA</string>
 	<byte>0</byte>
 
+	<label id="importTableEnd"/>
 	<label id="program"/>
 </scope>

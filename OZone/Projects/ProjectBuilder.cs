@@ -100,8 +100,8 @@ namespace OZone.Projects
 						case ProjectFileType.Class:
 							Console.WriteLine("Building " + Path.GetFileName(file.Path));
 
-							using(var reader = XmlTextReader.Create(file.Path))
-							using (var writer = XmlTextWriter.Create(file.OutputPath, settings))
+							using(var reader = XmlReader.Create(file.Path))
+							using (var writer = XmlWriter.Create(file.OutputPath, settings))
 							{
 								try
 								{
@@ -125,7 +125,7 @@ namespace OZone.Projects
 							Bitmap bitmap = new Bitmap(Image.FromFile(file.Path, true));
 
 							using(var memory = new MemoryStream())
-							using(var writer = XmlTextWriter.Create(memory))
+							using(var writer = XmlWriter.Create(memory))
 							{
 								writer.WriteStartElement("image", "http://metalx.org/Image");
 								writer.WriteAttributeString("width", bitmap.Width.ToString());
@@ -174,8 +174,8 @@ namespace OZone.Projects
 
 								memory.Position = 0;
 
-								using(var reader = XmlTextReader.Create(memory))
-								using(var writer2 = XmlTextWriter.Create(file.OutputPath, settings))
+								using(var reader = XmlReader.Create(memory))
+								using(var writer2 = XmlWriter.Create(file.OutputPath, settings))
 									ProgramBuilder.Build(reader, writer2, transforms);
 							}
 

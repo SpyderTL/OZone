@@ -12,9 +12,9 @@
 	xmlns:shift="http://metalx.org/Intel/80386/Shift"
 	xmlns:logic="http://metalx.org/Intel/80386/Logic">
 
-	<label id="showMessageBox" segment="0000" offset="00400193"/>
+	<!--<label id="showMessageBox" segment="0000" offset="00400193"/>-->
 
-	<label id="loop"/>
+	<label id="entryPoint" export="Application.EntryPoint"/>
 	
 	<cpu:CopyImmediateToAX/>
 	<addressOf ref="helloWorld" type="Absolute32"/>
@@ -29,10 +29,7 @@
 
 	<cpu:LogicFunction/>
 	<logic:CallImmediateAddress/>
-	<addressOf ref="showMessageBox" type="Absolute32"/>
-
-	<cpu:JumpToRelative8/>
-	<addressOf ref="loop" type="Relative8"/>
+	<addressOf ref="ExeHeader.MessageBoxA" type="Absolute32"/>
 
 	<cpu:ReturnToNearCaller/>
 

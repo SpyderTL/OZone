@@ -45,6 +45,7 @@
 				<xsd:any minOccurs="0" maxOccurs="unbounded"/>
 			</xsd:sequence>
 			<xsd:attribute name="id" type="xsd:ID"/>
+			<xsd:attribute name="export" type="xsd:string"/>
 			<xsd:attribute name="segment" type="xsd:hexBinary"/>
 			<xsd:attribute name="offset" type="xsd:hexBinary"/>
 		</xsd:complexType>
@@ -52,6 +53,20 @@
 	<xsd:element name="align">
 		<xsd:complexType>
 			<xsd:attribute name="bytes" type="xsd:unsignedInt"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="length">
+		<xsd:complexType>
+			<xsd:attribute name="from" type="xsd:IDREF"/>
+			<xsd:attribute name="to" type="xsd:IDREF"/>
+			<xsd:attribute name="type" use="required">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="Absolute16"/>
+						<xsd:enumeration value="Absolute32"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
 		</xsd:complexType>
 	</xsd:element>
 	<xsd:element name="addressOf">
