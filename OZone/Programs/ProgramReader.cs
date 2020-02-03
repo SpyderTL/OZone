@@ -217,26 +217,6 @@ namespace OZone.Programs
 						yield return new Scope { Segments = ReadSegments(element).ToArray() };
 						break;
 
-					//case "length":
-					//	ProgramSegment start = null;
-					//	ProgramSegment end = null;
-
-					//	if (labels.ContainsKey(element.Attribute("start").Value))
-					//		start = labels[element.Attribute("start").Value];
-					//	else
-					//		throw new Exception("Label reference not found.\r\n\r\n" + element.ToString());
-
-					//	if (labels.ContainsKey(element.Attribute("end").Value))
-					//		end = labels[element.Attribute("end").Value];
-					//	else
-					//		throw new Exception("Label reference not found.\r\n\r\n" + element.ToString());
-
-					//	var length = new Length { Start = start, End = end };
-
-					//	yield return length;
-
-					//	break;
-
 					default:
 						if (((IXmlLineInfo)element).HasLineInfo())
 							throw new Exception("Unknown Tag on Line " + ((IXmlLineInfo)element).LineNumber + ": " + element.ToString());

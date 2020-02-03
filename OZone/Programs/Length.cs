@@ -25,6 +25,9 @@ namespace OZone.Programs
 				case LengthType.Absolute16:
 					return 2;
 
+				case LengthType.Absolute64:
+					return 8;
+
 				default:
 					return 4;
 			}
@@ -40,6 +43,10 @@ namespace OZone.Programs
 
 				case LengthType.Absolute16:
 					writer.Write((short)(ToSegment.Address.Offset - FromSegment.Address.Offset));
+					break;
+
+				case LengthType.Absolute64:
+					writer.Write((long)(ToSegment.Address.Offset - FromSegment.Address.Offset));
 					break;
 
 				default:

@@ -9,6 +9,7 @@ namespace OZone.Programs
 	{
 		Absolute8,
 		Absolute16,
-		Absolute32
+		Absolute32,
+		Absolute64
 	}
 }
