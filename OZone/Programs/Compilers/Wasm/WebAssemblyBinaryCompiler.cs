@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Diagnostics;
 using System;
+using System.Collections.Generic;
 
 namespace OZone.Programs.Compilers
 {
@@ -12,7 +13,12 @@ namespace OZone.Programs.Compilers
 			// Assign memory addresses
 			MemoryAddress position = new MemoryAddress { Segment = baseAddress.Segment, Offset = baseAddress.Offset };
 
-			foreach(ProgramSegment segment in program.Segments)
+			Compile(program.Segments, position);
+		}
+
+		private void Compile(IEnumerable<ProgramSegment> segments, MemoryAddress position)
+		{
+			foreach (ProgramSegment segment in segments)
 			{
 				if (segment.Address == null)
 					segment.Address = new MemoryAddress
@@ -21,7 +27,10 @@ namespace OZone.Programs.Compilers
 						Segment = position.Segment
 					};
 
-				position.Offset += GetLength(segment);
+				if (segment is Scope scope)
+					Compile(scope.Segments, position);
+				else
+					position.Offset += GetLength(segment);
 			}
 		}
 

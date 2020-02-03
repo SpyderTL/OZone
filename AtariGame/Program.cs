@@ -28,6 +28,7 @@ namespace AtariGame
 				MemoryAddress address = new MemoryAddress { Offset = 0xf000 };
 
 				compiler.Compile(program, address);
+				compiler.Link(program, new Dictionary<string, Label>());
 				compiler.Write(program, writer);
 
 				writer.Seek(0x0ffc, SeekOrigin.Begin);

@@ -24,7 +24,8 @@ namespace GbGame
 					"../../InterruptHandlers.xml",
 					"../../../OZone/Platforms/Nintendo/GameBoy/Operators.xslt");
 
-				compiler.Compile(handlers, null);
+				compiler.Compile(handlers, new MemoryAddress());
+				compiler.Link(handlers, new Dictionary<string, Label>());
 				compiler.Write(handlers, writer);
 
 				// Interrupt Handlers
@@ -36,7 +37,8 @@ namespace GbGame
 					"../../Header.xml",
 					"../../../OZone/Platforms/Nintendo/GameBoy/Operators.xslt");
 
-				compiler.Compile(header, null);
+				compiler.Compile(header, new MemoryAddress());
+				compiler.Link(header, new Dictionary<string, Label>());
 				compiler.Write(header, writer);
 
 				// Interrupt Handlers
@@ -49,6 +51,7 @@ namespace GbGame
 					"../../../OZone/Platforms/Nintendo/GameBoy/Operators.xslt");
 
 				compiler.Compile(program, new MemoryAddress { Offset = 0x0150 });
+				compiler.Link(program, new Dictionary<string, Label>());
 				compiler.Write(program, writer);
 
 				stream.Position = 0x0134;

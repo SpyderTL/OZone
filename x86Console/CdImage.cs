@@ -446,6 +446,7 @@ namespace x86Console
 				{
 					memory.Position = program.Block * _blockLength;
 					compiler.Compile(program.Program, program.Address);
+					compiler.Link(program.Program, new Dictionary<string, Label>());
 					compiler.Write(program.Program, writer);
 				}
 

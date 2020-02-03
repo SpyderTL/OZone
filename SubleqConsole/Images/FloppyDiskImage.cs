@@ -107,6 +107,8 @@ namespace SubleqConsole.Images
 					else
 						program.Compiler.Compile(program.Program, new MemoryAddress { Segment = program.Address.Segment, Offset = program.Address.Offset >> 2 });
 
+					program.Compiler.Link(program.Program, new Dictionary<string, Label>());
+
 					program.Compiler.Write(program.Program, writer);
 				}
 

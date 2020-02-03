@@ -31,7 +31,7 @@
 
 			<!--Types-->
 			<byte>1</byte>
-			<length start="typesStart" end="typesEnd"/>
+			<length from="typesStart" to="typesEnd" type="Absolute8"/>
 
 			<label id="typesStart"/>
 
@@ -70,7 +70,7 @@
 
 			<!--Functions-->
 			<byte>3</byte>
-			<length start="functionsStart" end="functionsEnd"/>
+			<length from="functionsStart" to="functionsEnd" type="Absolute8"/>
 
 			<label id="functionsStart"/>
 
@@ -95,7 +95,7 @@
 			<!--Exports-->
 			<byte>7</byte>
 
-			<length start="exportsStart" end="exportsEnd"/>
+			<length from="exportsStart" to="exportsEnd" type="Absolute8"/>
 
 			<label id="exportsStart"/>
 
@@ -120,7 +120,7 @@
 
 			<!--Code-->
 			<byte>10</byte>
-			<length start="codeStart" end="codeEnd"/>
+			<length from="codeStart" to="codeEnd" type="Absolute8"/>
 
 			<label id="codeStart"/>
 
@@ -130,7 +130,7 @@
 
 			<xsl:for-each select="mod:function">
 				<scope>
-					<length start="functionStart" end="functionEnd"/>
+					<length from="functionStart" to="functionEnd" type="Absolute8"/>
 
 					<label id="functionStart"/>
 

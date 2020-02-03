@@ -25,6 +25,7 @@ namespace SnesGame
 				var header = ProgramBuilder.Build("../../SnesHeader.xml");
 
 				compiler.Compile(header, new MemoryAddress());
+				compiler.Link(header, new Dictionary<string, Label>());
 				compiler.Write(header, writer);
 
 
@@ -38,6 +39,7 @@ namespace SnesGame
 					"../../../OZone/Platforms/Mos/65816/Operators.xslt");
 
 				compiler.Compile(defaultHandler, new MemoryAddress { Offset = 0x8000 });
+				compiler.Link(defaultHandler, new Dictionary<string, Label>());
 				compiler.Write(defaultHandler, writer);
 
 				// VBlank Handler
@@ -50,6 +52,7 @@ namespace SnesGame
 					"../../../OZone/Platforms/Mos/65816/Operators.xslt");
 
 				compiler.Compile(vblankHandler, new MemoryAddress { Offset = 0x8100 });
+				compiler.Link(vblankHandler, new Dictionary<string, Label>());
 				compiler.Write(vblankHandler, writer);
 
 				// Reset Handler
@@ -62,6 +65,7 @@ namespace SnesGame
 					"../../../OZone/Platforms/Mos/65816/Operators.xslt");
 
 				compiler.Compile(resetHandler, new MemoryAddress { Offset = 0x8200 });
+				compiler.Link(resetHandler, new Dictionary<string, Label>());
 				compiler.Write(resetHandler, writer);
 
 				stream.SetLength(0x400000);

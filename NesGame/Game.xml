@@ -9,73 +9,73 @@
 	<cpu:ClearDecimalFlag/>
 	
 	<!--Set up PPU-->
-	<cpu:CopyImmediateToAccumulator/>
+	<cpu:CopyImmediate8ToAccumulator/>
 	<binary>00000000</binary>
 
-	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<cpu:CopyAccumulatorToImmediate16Address/>
 	<nes:PpuControl0/>
 
-	<cpu:CopyImmediateToAccumulator/>
+	<cpu:CopyImmediate8ToAccumulator/>
 	<binary>00011000</binary>
 	
-	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<cpu:CopyAccumulatorToImmediate16Address/>
 	<nes:PpuControl1/>
 
 	<!--Fill Palette-->
 	<ppu:BackgroundColor label="backgroundColor"/>
 	
-	<cpu:CopyImmediateToAccumulator />
+	<cpu:CopyImmediate8ToAccumulator />
 	<addressOf ref="backgroundColor" type="Absolute16High8"/>
 
-	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<cpu:CopyAccumulatorToImmediate16Address/>
 	<nes:PpuAddress/>
 
-	<cpu:CopyImmediateToAccumulator />
+	<cpu:CopyImmediate8ToAccumulator />
 	<addressOf ref="backgroundColor" type="Absolute16Low8"/>
 
-	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<cpu:CopyAccumulatorToImmediate16Address/>
 	<nes:PpuAddress/>
 
-	<cpu:CopyImmediateToAccumulator/>
+	<cpu:CopyImmediate8ToAccumulator/>
 	<hex>00</hex>
 
-	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<cpu:CopyAccumulatorToImmediate16Address/>
 	<nes:PpuData/>
 	
 	<!--Wait For VBlank-->
 	<label id="waitForVBlank"/>
 	
-	<cpu:CopyAbsoluteMemoryToAccumulator/>
+	<cpu:CopyImmediate16AddressToAccumulator/>
 	<nes:PpuStatus/>
 
-	<cpu:BranchToRelativeMemoryIfPositive/>
+	<cpu:BranchToRelative8IfPositive/>
 	<addressOf ref="waitForVBlank" type="Relative8"/>
 	
 	<!--Update Palette-->
-	<cpu:CopyImmediateToAccumulator />
+	<cpu:CopyImmediate8ToAccumulator />
 	<addressOf ref="backgroundColor" type="Absolute16High8"/>
 
-	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<cpu:CopyAccumulatorToImmediate16Address/>
 	<nes:PpuAddress/>
 
-	<cpu:CopyImmediateToAccumulator />
+	<cpu:CopyImmediate8ToAccumulator />
 	<addressOf ref="backgroundColor" type="Absolute16Low8"/>
 
-	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<cpu:CopyAccumulatorToImmediate16Address/>
 	<nes:PpuAddress/>
 
-	<cpu:CopyAbsoluteMemoryToAccumulator/>
+	<cpu:CopyImmediate16AddressToAccumulator/>
 	<hex>0000</hex>
 
-	<cpu:AddImmediateToAccumulator/>
+	<cpu:AddImmediate8ToAccumulator/>
 	<hex>10</hex>
 
-	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<cpu:CopyAccumulatorToImmediate16Address/>
 	<hex>0000</hex>
 
-	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<cpu:CopyAccumulatorToImmediate16Address/>
 	<nes:PpuData/>
 
-	<cpu:JumpToAbsoluteMemory/>
+	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="waitForVBlank" type="Absolute16"/>
 </scope>

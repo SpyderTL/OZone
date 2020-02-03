@@ -450,6 +450,7 @@ namespace SubleqConsole.Images
 				{
 					memory.Position = program.Block * _blockLength;
 					program.Compiler.Compile(program.Program, program.Address);
+					program.Compiler.Link(program.Program, new Dictionary<string, Label>());
 					program.Compiler.Write(program.Program, writer);
 				}
 

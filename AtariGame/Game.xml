@@ -11,106 +11,106 @@
 	<cpu:ClearDecimalFlag/>
 
 	<!--Setup Stack Pointer-->
-	<cpu:CopyImmediateToXIndex/>
+	<cpu:CopyImmediate8ToXIndex/>
 	<hex>ff</hex>
 
 	<cpu:CopyXIndexToStackPointer/>
 
 	<!--Clear Memory-->
-	<cpu:CopyImmediateToAccumulator/>
+	<cpu:CopyImmediate8ToAccumulator/>
 	<byte>0</byte>
 
 	<label id="clearMemory"/>
 
-	<cpu:CopyAccumulatorToZeroPageXIndexMemory/>
+	<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
 
 	<cpu:DecrementXIndex/>
 
-	<cpu:BranchToRelativeMemoryIfNotZero/>
+	<cpu:BranchToRelative8IfNotZero/>
 	<addressOf ref="clearMemory" type="Relative8"/>
 
 	<!--Setup Player-->
-	<cpu:CopyImmediateToAccumulator/>
+	<cpu:CopyImmediate8ToAccumulator/>
 	<hex>88</hex>
 
-	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<cpu:CopyAccumulatorToImmediate8Address/>
 	<tia:Player0Color/>
 
 	<!--Render Screen-->
 	<label id="renderScreen"/>
 
 	<!--Wait For VSync-->
-	<cpu:CopyImmediateToAccumulator/>
+	<cpu:CopyImmediate8ToAccumulator/>
 	<binary>00000010</binary>
 
-	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<cpu:CopyAccumulatorToImmediate8Address/>
 	<tia:VerticalSync/>
 
-	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<cpu:CopyAccumulatorToImmediate8Address/>
 	<tia:WaitForHorizontalSync/>
 
-	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<cpu:CopyAccumulatorToImmediate8Address/>
 	<tia:WaitForHorizontalSync/>
 
-	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<cpu:CopyAccumulatorToImmediate8Address/>
 	<tia:WaitForHorizontalSync/>
 
-	<cpu:CopyImmediateToAccumulator/>
+	<cpu:CopyImmediate8ToAccumulator/>
 	<binary>00000000</binary>
 
-	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<cpu:CopyAccumulatorToImmediate8Address/>
 	<tia:VerticalSync/>
 
 	<!--Set Timer-->
-	<cpu:CopyImmediateToAccumulator/>
+	<cpu:CopyImmediate8ToAccumulator/>
 	<byte>43</byte>
 
-	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<cpu:CopyAccumulatorToImmediate16Address/>
 	<pia:SetTimer64/>
 
 	<!--Update Screen-->
-	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<cpu:CopyAccumulatorToImmediate8Address/>
 	<tia:WaitForHorizontalSync/>
 
-	<cpu:CopyAccumulatorToAbsoluteMemory/>
+	<cpu:CopyAccumulatorToImmediate16Address/>
 	<tia:MoveAllObjects/>
 
 	<!--Wait For Timer-->
 	<label id="waitForTimer"/>
 
-	<cpu:CopyAbsoluteMemoryToAccumulator/>
+	<cpu:CopyImmediate16AddressToAccumulator/>
 	<pia:TimerValue/>
 
-	<cpu:BranchToRelativeMemoryIfNotZero/>
+	<cpu:BranchToRelative8IfNotZero/>
 	<addressOf ref="waitForTimer" type="Relative8"/>
 
 	<!--Turn Off Vertical Blank-->
-	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<cpu:CopyAccumulatorToImmediate8Address/>
 	<tia:WaitForHorizontalSync/>
 
-	<cpu:CopyImmediateToAccumulator/>
+	<cpu:CopyImmediate8ToAccumulator/>
 	<binary>00000000</binary>
 
-	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<cpu:CopyAccumulatorToImmediate8Address/>
 	<tia:VerticalBlank/>
 
 	<!--Reset Current Scan Line-->
-	<cpu:CopyImmediateToYIndex/>
+	<cpu:CopyImmediate8ToYIndex/>
 	<byte>191</byte>
 
-	<cpu:CopyImmediateToXIndex/>
+	<cpu:CopyImmediate8ToXIndex/>
 	<byte>0</byte>
 
 	<!--Render Scan Line-->
 	<label id="renderScanLine"/>
 
-	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<cpu:CopyAccumulatorToImmediate8Address/>
 	<tia:WaitForHorizontalSync/>
 
-	<cpu:CopyAbsoluteXIndexMemoryToAccumulator/>
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
 	<addressOf ref="player.image" type="Absolute16"/>
 
-	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<cpu:CopyAccumulatorToImmediate8Address/>
 	<tia:Player0Graphics/>
 
 	<cpu:IncrementXIndex/>
@@ -118,31 +118,31 @@
 	<!--Decrement Scan Line Counter-->
 	<cpu:DecrementYIndex/>
 
-	<cpu:BranchToRelativeMemoryIfNotZero/>
+	<cpu:BranchToRelative8IfNotZero/>
 	<addressOf ref="renderScanLine" type="Relative8"/>
 
 	<!--Turn On VBlank-->
-	<cpu:CopyImmediateToAccumulator/>
+	<cpu:CopyImmediate8ToAccumulator/>
 	<binary>00000010</binary>
 
-	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<cpu:CopyAccumulatorToImmediate8Address/>
 	<tia:VerticalBlank/>
 
 	<!--Wait For Overscan Period-->
-	<cpu:CopyImmediateToXIndex/>
+	<cpu:CopyImmediate8ToXIndex/>
 	<byte>30</byte>
 
 	<label id="waitForOverscan"/>
 
-	<cpu:CopyAccumulatorToZeroPageMemory/>
+	<cpu:CopyAccumulatorToImmediate8Address/>
 	<tia:WaitForHorizontalSync/>
 
 	<cpu:DecrementXIndex/>
 
-	<cpu:BranchToRelativeMemoryIfNotZero/>
+	<cpu:BranchToRelative8IfNotZero/>
 	<addressOf ref="waitForOverscan" type="Relative8"/>
 
-	<cpu:JumpToAbsoluteMemory/>
+	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="renderScreen" type="Absolute16"/>
 
 	<!--Data-->

@@ -36,6 +36,7 @@ namespace NesGame
 				MemoryAddress address = new MemoryAddress { Offset = 0x8000 };
 
 				compiler.Compile(program, address);
+				compiler.Link(program, new Dictionary<string, Label>());
 				compiler.Write(program, writer);
 
 				writer.Seek(0x7ffc + 16, SeekOrigin.Begin);

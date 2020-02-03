@@ -55,6 +55,7 @@ namespace x86Console
 				{
 					stream.Position = program.Address.Offset - _baseAddress.Offset;
 					compiler.Compile(program.Program, program.Address);
+					compiler.Link(program.Program, new Dictionary<string, Label>());
 					compiler.Write(program.Program, writer);
 				}
 

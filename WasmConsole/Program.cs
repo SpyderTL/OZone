@@ -26,6 +26,7 @@ namespace WasmConsole
 			using (BinaryWriter writer = new BinaryWriter(stream))
 			{
 				compiler.Compile(program, address);
+				compiler.Link(program, new Dictionary<string, Label>());
 				compiler.Write(program, writer);
 			}
 		}

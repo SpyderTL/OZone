@@ -7,6 +7,7 @@ namespace OZone.Programs
 {
 	public enum LengthType
 	{
+		Absolute8,
 		Absolute16,
 		Absolute32
 	}

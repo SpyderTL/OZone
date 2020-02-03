@@ -24,6 +24,7 @@ namespace GbaGame
 					"../../../OZone/Platforms/Arm/Arm7/Operators.xslt");
 
 				compiler.Compile(header, new MemoryAddress { Offset = 0x800000 });
+				compiler.Link(header, new Dictionary<string, Label>());
 				compiler.Write(header, writer);
 
 				Console.WriteLine("Building GbaGame.xml");
@@ -33,6 +34,7 @@ namespace GbaGame
 					"../../../OZone/Platforms/Arm/Arm7/Operators.xslt");
 
 				compiler.Compile(program, new MemoryAddress { Offset = 0x8000c0 });
+				compiler.Link(program, new Dictionary<string, Label>());
 				compiler.Write(program, writer);
 
 				int checksum = 0;

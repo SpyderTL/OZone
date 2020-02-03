@@ -47,6 +47,8 @@ namespace Win32Application
 						program,
 						file.Address);
 
+					compiler.Link(program, new Dictionary<string, Label>());
+
 					position.Offset += (uint)program.Segments.Sum(x => compiler.GetLength(x));
 
 					programs.Add(program);

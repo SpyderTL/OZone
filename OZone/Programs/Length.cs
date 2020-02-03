@@ -19,6 +19,9 @@ namespace OZone.Programs
 		{
 			switch (Type)
 			{
+				case LengthType.Absolute8:
+					return 1;
+
 				case LengthType.Absolute16:
 					return 2;
 
@@ -31,6 +34,10 @@ namespace OZone.Programs
 		{
 			switch (Type)
 			{
+				case LengthType.Absolute8:
+					writer.Write((byte)(ToSegment.Address.Offset - FromSegment.Address.Offset));
+					break;
+
 				case LengthType.Absolute16:
 					writer.Write((short)(ToSegment.Address.Offset - FromSegment.Address.Offset));
 					break;

@@ -26,6 +26,7 @@ namespace DosConsole
 			using (var writer = new BinaryWriter(stream))
 			{
 				compiler.Compile(program, new MemoryAddress { Segment = 0x0000, Offset = 0x0100 });
+				compiler.Link(program, new Dictionary<string, Label>());
 				compiler.Write(program, writer);
 
 				writer.Flush();

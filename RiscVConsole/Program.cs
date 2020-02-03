@@ -27,6 +27,7 @@ namespace RiscVConsole
 					});
 
 				compiler.Compile(program, address);
+				compiler.Link(program, new Dictionary<string, Label>());
 				compiler.Write(program, writer);
 
 				Console.WriteLine(writer.BaseStream.Position);

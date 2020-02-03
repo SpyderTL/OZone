@@ -23,6 +23,7 @@ namespace x16Console
 			using (BinaryWriter writer = new BinaryWriter(stream))
 			{
 				compiler.Compile(program, address);
+				compiler.Link(program, new Dictionary<string, Label>());
 				compiler.Write(program, writer);
 
 				program = ProgramBuilder.Build(
@@ -50,6 +51,7 @@ namespace x16Console
 				address.Offset = 0x810;
 
 				compiler.Compile(program, address);
+				compiler.Link(program, new Dictionary<string, Label>());
 				compiler.Write(program, writer);
 
 				writer.Flush();

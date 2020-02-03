@@ -25,6 +25,7 @@ namespace C64Console
 			using (BinaryWriter writer = new BinaryWriter(stream))
 			{
 				compiler.Compile(program, address);
+				compiler.Link(program, new Dictionary<string, Label>());
 				compiler.Write(program, writer);
 
 				program = ProgramBuilder.Build(
@@ -55,6 +56,7 @@ namespace C64Console
 				//address.Offset = (uint)binaryWriter.BaseStream.Position + 0x4000;
 
 				compiler.Compile(program, address);
+				compiler.Link(program, new Dictionary<string, Label>());
 				compiler.Write(program, writer);
 
 				Console.WriteLine(writer.BaseStream.Position);
