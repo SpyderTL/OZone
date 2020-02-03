@@ -54,7 +54,8 @@ namespace x86Console
 				foreach(var program in _programs)
 				{
 					stream.Position = program.Address.Offset - _baseAddress.Offset;
-					compiler.Compile(program.Program, program.Address, writer);
+					compiler.Compile(program.Program, program.Address);
+					compiler.Write(program.Program, writer);
 				}
 
 				// Write Catalog

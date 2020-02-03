@@ -449,7 +449,8 @@ namespace SubleqConsole.Images
 				foreach(var program in _programs)
 				{
 					memory.Position = program.Block * _blockLength;
-					program.Compiler.Compile(program.Program, program.Address, writer);
+					program.Compiler.Compile(program.Program, program.Address);
+					program.Compiler.Write(program.Program, writer);
 				}
 
 				// Write Program List

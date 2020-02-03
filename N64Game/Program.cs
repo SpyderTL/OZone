@@ -37,7 +37,8 @@ namespace N64Game
 					"../../Header.xml",
 					"../../../OZone/Platforms/Mips/Mips3/Instructions.xslt");
 
-				compiler.Compile(header, new MemoryAddress { Offset = 0x80000000 }, writer);
+				compiler.Compile(header, new MemoryAddress { Offset = 0x80000000 });
+				compiler.Write(header, writer);
 
 				Console.WriteLine("Building BootCode6501.xml");
 
@@ -45,7 +46,8 @@ namespace N64Game
 					"../../BootCode6501.xml",
 					"../../../OZone/Platforms/Mips/Mips3/Instructions.xslt");
 
-				compiler.Compile(bootCode, new MemoryAddress { Offset = 0x80000040 }, writer);
+				compiler.Compile(bootCode, new MemoryAddress { Offset = 0x80000040 });
+				compiler.Write(bootCode, writer);
 
 				Console.WriteLine("Building N64Game.xml");
 
@@ -53,7 +55,8 @@ namespace N64Game
 					"../../N64Game.xml",
 					"../../../OZone/Platforms/Mips/Mips3/Instructions.xslt");
 
-				compiler.Compile(program, new MemoryAddress { Offset = 0x80001000 }, writer);
+				compiler.Compile(program, new MemoryAddress { Offset = 0x80001000 });
+				compiler.Write(program, writer);
 
 				stream.SetLength(0x800000);
 

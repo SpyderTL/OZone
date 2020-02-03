@@ -453,7 +453,9 @@ namespace x86Console32
 				foreach(var program in _programs)
 				{
 					memory.Position = program.Block * _blockLength;
-					compiler.Compile(program.Program, program.Address, writer);
+					compiler.Compile(program.Program, program.Address);
+					compiler.Link(program.Program, new Dictionary<string, Label>());
+					compiler.Write(program.Program, writer);
 				}
 
 				// Write Program List

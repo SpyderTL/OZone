@@ -15,7 +15,7 @@ namespace AtariGame
 			var compiler = new BinaryCompiler();
 
 			using(Stream stream = File.Create("AtariGame.bin"))
-			using(BinaryWriter binaryWriter = new BinaryWriter(stream))
+			using(BinaryWriter writer = new BinaryWriter(stream))
 			{
 				Console.WriteLine("Building Game.xml");
 
@@ -27,12 +27,13 @@ namespace AtariGame
 
 				MemoryAddress address = new MemoryAddress { Offset = 0xf000 };
 
-				compiler.Compile(program, address, binaryWriter);
+				compiler.Compile(program, address);
+				compiler.Write(program, writer);
 
-				binaryWriter.Seek(0x0ffc, SeekOrigin.Begin);
+				writer.Seek(0x0ffc, SeekOrigin.Begin);
 
-				binaryWriter.Write((ushort)0xf000);
-				binaryWriter.Write((ushort)0xf000);
+				writer.Write((ushort)0xf000);
+				writer.Write((ushort)0xf000);
 			}
 		}
 	}

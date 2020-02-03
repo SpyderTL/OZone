@@ -20,9 +20,10 @@ namespace x16Console
 			var address = new MemoryAddress { Offset = 0x07ff };
 
 			using (Stream stream = File.Create("x16Demo.prg"))
-			using (BinaryWriter binaryWriter = new BinaryWriter(stream))
+			using (BinaryWriter writer = new BinaryWriter(stream))
 			{
-				compiler.Compile(program, address, binaryWriter);
+				compiler.Compile(program, address);
+				compiler.Write(program, writer);
 
 				program = ProgramBuilder.Build(
 					"../../x16Demo21.xml",
@@ -48,11 +49,12 @@ namespace x16Console
 
 				address.Offset = 0x810;
 
-				compiler.Compile(program, address, binaryWriter);
+				compiler.Compile(program, address);
+				compiler.Write(program, writer);
 
-				binaryWriter.Flush();
+				writer.Flush();
 
-				Console.WriteLine(binaryWriter.BaseStream.Position);
+				Console.WriteLine(writer.BaseStream.Position);
 
 				//var delta = 1.0 / 255.0;
 

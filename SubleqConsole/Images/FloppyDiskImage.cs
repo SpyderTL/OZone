@@ -103,9 +103,11 @@ namespace SubleqConsole.Images
 					memory.Position = program.Block * _blockLength;
 
 					if(program.Compiler is BinaryCompiler)
-						program.Compiler.Compile(program.Program, program.Address, writer);
+						program.Compiler.Compile(program.Program, program.Address);
 					else
-						program.Compiler.Compile(program.Program, new MemoryAddress { Segment = program.Address.Segment, Offset = program.Address.Offset >> 2 }, writer);
+						program.Compiler.Compile(program.Program, new MemoryAddress { Segment = program.Address.Segment, Offset = program.Address.Offset >> 2 });
+
+					program.Compiler.Write(program.Program, writer);
 				}
 
 				// Write Program List

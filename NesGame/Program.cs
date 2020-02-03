@@ -15,12 +15,12 @@ namespace NesGame
 			var compiler = new BinaryCompiler();
 
 			using (Stream stream = File.Create("NesGame.nes"))
-			using(BinaryWriter binaryWriter = new BinaryWriter(stream))
+			using(BinaryWriter writer = new BinaryWriter(stream))
 			{
 				Console.WriteLine("Writing iNes Header");
 
-				binaryWriter.Write(new char[] { 'N', 'E', 'S', (char)0x1a });
-				binaryWriter.Write(new Byte[] { 
+				writer.Write(new char[] { 'N', 'E', 'S', (char)0x1a });
+				writer.Write(new Byte[] { 
 					2, 0, 0, 0,
 					0, 0, 0, 0,
 					0, 0, 0, 0});
@@ -35,13 +35,14 @@ namespace NesGame
 
 				MemoryAddress address = new MemoryAddress { Offset = 0x8000 };
 
-				compiler.Compile(program, address, binaryWriter);
+				compiler.Compile(program, address);
+				compiler.Write(program, writer);
 
-				binaryWriter.Seek(0x7ffc + 16, SeekOrigin.Begin);
+				writer.Seek(0x7ffc + 16, SeekOrigin.Begin);
 
-				binaryWriter.Write((ushort)0x0000);
-				binaryWriter.Write((ushort)0x8000);
-				binaryWriter.Write((ushort)0x0000);
+				writer.Write((ushort)0x0000);
+				writer.Write((ushort)0x8000);
+				writer.Write((ushort)0x0000);
 			}
 		}
 	}

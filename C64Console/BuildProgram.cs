@@ -22,9 +22,10 @@ namespace C64Console
 
 			//using(Stream stream = File.Create("C64Console.bin"))
 			using (Stream stream = File.Create("C64Console.prg"))
-			using (BinaryWriter binaryWriter = new BinaryWriter(stream))
+			using (BinaryWriter writer = new BinaryWriter(stream))
 			{
-				compiler.Compile(program, address, binaryWriter);
+				compiler.Compile(program, address);
+				compiler.Write(program, writer);
 
 				program = ProgramBuilder.Build(
 					"../../C64Console.xml",
@@ -53,9 +54,10 @@ namespace C64Console
 				//address.Offset = (uint)binaryWriter.BaseStream.Position + 0x8000;
 				//address.Offset = (uint)binaryWriter.BaseStream.Position + 0x4000;
 
-				compiler.Compile(program, address, binaryWriter);
+				compiler.Compile(program, address);
+				compiler.Write(program, writer);
 
-				Console.WriteLine(binaryWriter.BaseStream.Position);
+				Console.WriteLine(writer.BaseStream.Position);
 
 				//binaryWriter.BaseStream.SetLength(1024 * 16);
 			}

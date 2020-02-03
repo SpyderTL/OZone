@@ -79,8 +79,11 @@ namespace PiConsole
 
 			using (BinaryWriter writer = new BinaryWriter(stream))
 			{
-				foreach(var program in _programs)
-					compiler.Compile(program.Program, program.Address, writer);
+				foreach (var program in _programs)
+				{
+					compiler.Compile(program.Program, program.Address);
+					compiler.Write(program.Program, writer);
+				}
 
 				writer.Flush();
 			}

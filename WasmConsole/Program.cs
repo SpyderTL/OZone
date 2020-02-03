@@ -23,9 +23,10 @@ namespace WasmConsole
 			var address = new MemoryAddress { Offset = 0x0000 };
 
 			using (Stream stream = File.Create("Console.wasm"))
-			using (BinaryWriter binaryWriter = new BinaryWriter(stream))
+			using (BinaryWriter writer = new BinaryWriter(stream))
 			{
-				compiler.Compile(program, address, binaryWriter);
+				compiler.Compile(program, address);
+				compiler.Write(program, writer);
 			}
 		}
 	}

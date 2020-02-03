@@ -99,7 +99,8 @@ namespace C64Console
 				foreach (var program in _programs)
 				{
 					memory.Position = program.Block * _blockLength;
-					compiler.Compile(program.Program, program.Address, writer);
+					compiler.Compile(program.Program, program.Address);
+					compiler.Write(program.Program, writer);
 				}
 
 				// Write Program List
