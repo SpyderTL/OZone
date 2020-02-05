@@ -11,7 +11,6 @@
 	xmlns:imm="http://metalx.org/Amd/Amd64/Immediate"
 	xmlns:shift="http://metalx.org/Amd/Amd64/Shift"
 	xmlns:logic="http://metalx.org/Amd/Amd64/Logic"
-	xmlns:ext="http://metalx.org/Amd/Amd64/ExtendedOperators"
 	xmlns:index="http://metalx.org/Amd/Amd64/Index">
 
 	<label id="entryPoint" export="Application.EntryPoint"/>
@@ -20,14 +19,14 @@
 	
 	<!--Write-->
 	<cpu:CopyImmediateToAX/>
-	<int>1</int>
+	<int>4</int>
 	
 	<!--Stdout-->
-	<cpu:CopyImmediateToDI/>
+	<cpu:CopyImmediateToBX/>
 	<int>1</int>
 	
 	<!--String-->
-	<cpu:CopyImmediateToSI/>
+	<cpu:CopyImmediateToCX/>
 	<addressOf ref="prompt" type="Absolute32"/>
 	
 	<!--Length-->
@@ -35,19 +34,19 @@
 	<int>1</int>
 
 	<!--Call Linux Kernel-->
-	<cpu:ExtendedOperator/>
-	<ext:CallSystem/>
+	<cpu:CallImmediate8Interrupt/>
+	<hex>80</hex>
 	
 	<!--Read-->
 	<cpu:CopyImmediateToAX/>
-	<int>0</int>
+	<int>3</int>
 
 	<!--Stdin-->
-	<cpu:CopyImmediateToDI/>
+	<cpu:CopyImmediateToBX/>
 	<int>0</int>
 
 	<!--String-->
-	<cpu:CopyImmediateToSI/>
+	<cpu:CopyImmediateToCX/>
 	<addressOf ref="buffer" type="Absolute32"/>
 
 	<!--Length-->
@@ -55,8 +54,8 @@
 	<int>255</int>
 
 	<!--Call Linux Kernel-->
-	<cpu:ExtendedOperator/>
-	<ext:CallSystem/>
+	<cpu:CallImmediate8Interrupt/>
+	<hex>80</hex>
 
 	<!--Length-->
 	<cpu:CopyRegisterToOperand/>
@@ -64,19 +63,19 @@
 
 	<!--Write-->
 	<cpu:CopyImmediateToAX/>
-	<int>1</int>
+	<int>4</int>
 
 	<!--Stdout-->
-	<cpu:CopyImmediateToDI/>
+	<cpu:CopyImmediateToBX/>
 	<int>1</int>
 
 	<!--String-->
-	<cpu:CopyImmediateToSI/>
+	<cpu:CopyImmediateToCX/>
 	<addressOf ref="buffer" type="Absolute32"/>
 
 	<!--Call Linux Kernel-->
-	<cpu:ExtendedOperator/>
-	<ext:CallSystem/>
+	<cpu:CallImmediate8Interrupt/>
+	<hex>80</hex>
 
 	<cpu:JumpToRelative/>
 	<addressOf ref="showPrompt" type="Relative32"/>

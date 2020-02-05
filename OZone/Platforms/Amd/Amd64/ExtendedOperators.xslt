@@ -9,6 +9,9 @@
 	<xsl:template match="ex:DescriptorTableFunction">
 		<xsl:element name="hex">01</xsl:element>
 	</xsl:template>
+	<xsl:template match="ex:CallSystem">
+		<xsl:element name="hex">05</xsl:element>
+	</xsl:template>
 	<xsl:template match="ex:CopyControlRegisterToRegister">
 		<xsl:element name="hex">20</xsl:element>
 	</xsl:template>
