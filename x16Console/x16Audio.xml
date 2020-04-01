@@ -30,12 +30,19 @@
 	<label id="Waveform0" offset="01f9c3"/>
 
 	<!--Kernel Methods-->
+	
 	<!--SetFileParameters(fileNumber, deviceNumber, secondaryAddress)-->
 	<label id="Kernal.SetFileParameters" offset="FFBA"/>
+	
 	<!--SetFileName(length, addressLow, addressHigh)-->
 	<label id="Kernal.SetFileName" offset="FFBD"/>
+	
 	<!--LoadFile(verifyOnly, addressLow, addressHigh)-->
 	<label id="Kernal.LoadFile" offset="FFD5"/>
+	
+	<!--WriteCharacter(character)-->
+	<label id="Kernal.WriteCharacter" offset="FFD2"/>
+	
 	<!--GetDateTime()-->
 	<label id="Kernal.GetDateTime" offset="FF50"/>
 
@@ -45,7 +52,7 @@
 	<label id="VoiceNotes" offset="0450"/>
 	<label id="TrackDelay" offset="0460"/>
 	<label id="TrackStatus" offset="04a0"/>
-	<label id="MidiData" offset="1200"/>
+	<label id="MidiData" offset="2000"/>
 
 	<!--Tables-->
 	<label id="Tracks" offset="50"/>
@@ -60,6 +67,9 @@
 	<label id="Time" offset="4a"/>
 	<label id="ElapsedTime" offset="4c"/>
 	<label id="Quantity" offset="30"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="getTime" type="Absolute16"/>
 
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="clearSoundBuffer" type="Absolute16"/>
@@ -81,9 +91,6 @@
 
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="readMidiFile" type="Absolute16"/>
-
-	<cpu:CallImmediate16Address/>
-	<addressOf ref="getTime" type="Absolute16"/>
 
 	<label id="loop"/>
 
@@ -390,13 +397,13 @@
 		<cpu:RollImmediate8AddressLeft/>
 		<hex>25</hex>
 
-		<!--<cpu:ShiftImmediate8AddressLeft/>
+		<cpu:ShiftImmediate8AddressLeft/>
 		<hex>24</hex>
 
 		<cpu:RollImmediate8AddressLeft/>
 		<hex>25</hex>
 
-		<cpu:ShiftImmediate8AddressLeft/>
+		<!--<cpu:ShiftImmediate8AddressLeft/>
 		<hex>24</hex>
 
 		<cpu:RollImmediate8AddressLeft/>
@@ -420,9 +427,15 @@
 	</label>
 
 	<label id="updateTrack">
+		<!--<cpu:CopyImmediate8ToAccumulator/>
+		<string>.</string>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.WriteCharacter" type="Absolute16"/>-->
+
 		<!--Get Track Delay-->
 		<cpu:CopyImmediate8AddressToAccumulator/>
-		<byte>23</byte>
+		<hex>23</hex>
 
 		<cpu:ShiftAccumulatorLeft/>
 
@@ -448,6 +461,9 @@
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<hex>27</hex>
 
+		<!--<cpu:BranchToRelative8IfPositive/>
+		<addressOf ref="updateTrack_done" type="Relative8"/>-->		
+		
 		<!--<cpu:AndAccumulatorWithImmediate8/>
 		<binary>10000000</binary>
 
@@ -456,8 +472,21 @@
 
 		<cpu:BranchToRelative8IfPositive/>
 		<addressOf ref="updateTrack_done" type="Relative8"/>
+		
+		<!--<cpu:CopyImmediate8ToAccumulator/>
+		<string>!</string>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.WriteCharacter" type="Absolute16"/>-->
 
 		<!--Restore Midi State-->
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>23</hex>
+
+		<cpu:ShiftAccumulatorLeft/>
+
+		<cpu:CopyAccumulatorToXIndex/>
+
 		<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
 		<addressOf ref="Tracks" type="Absolute16Low8"/>
 
@@ -475,7 +504,7 @@
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<addressOf ref="MidiStatus" type="Absolute16Low8"/>
-		
+
 		<label id="updateTrack_loop"/>
 
 		<cpu:CallImmediate16Address/>
@@ -504,6 +533,9 @@
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<hex>27</hex>
 
+		<!--<cpu:CompareAccumulatorToImmediate8/>
+		<byte>0</byte>-->
+
 		<!--<cpu:AndAccumulatorWithImmediate8/>
 		<binary>10000000</binary>
 
@@ -513,11 +545,10 @@
 		<cpu:BranchToRelative8IfNegative/>
 		<addressOf ref="updateTrack_loop" type="Relative8"/>
 
-		<label id="updateTrack_done"/>
-
+		
 		<!--Save MIDI State-->
 		<cpu:CopyImmediate8AddressToAccumulator/>
-		<byte>23</byte>
+		<hex>23</hex>
 
 		<cpu:ShiftAccumulatorLeft/>
 
@@ -552,6 +583,30 @@
 
 		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
 		<addressOf ref="Tracks" type="Absolute16Low8" offset="1"/>
+
+		<cpu:ReturnFromSubroutine/>
+
+		<label id="updateTrack_done"/>
+
+		<!--Save MIDI State-->
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>23</hex>
+
+		<cpu:ShiftAccumulatorLeft/>
+
+		<cpu:CopyAccumulatorToXIndex/>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>26</hex>
+
+		<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+		<addressOf ref="TrackDelay" type="Absolute16"/>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>27</hex>
+
+		<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+		<addressOf ref="TrackDelay" type="Absolute16" offset="1"/>
 
 		<cpu:ReturnFromSubroutine/>
 	</label>
@@ -707,11 +762,23 @@
 	</label>
 	
 	<label id="handleMidiEvent">
+		<!--<cpu:CopyImmediate8ToAccumulator/>
+		<string>.</string>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.WriteCharacter" type="Absolute16"/>-->
+
 		<cpu:CopyImmediate8AddressToAccumulator/>
 		<addressOf ref="MidiStatus" type="Absolute16Low8"/>
 
 		<cpu:AndAccumulatorWithImmediate8/>
 		<hex>f0</hex>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<hex>80</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="noteOff" type="Relative8"/>
 
 		<cpu:CompareAccumulatorToImmediate8/>
 		<hex>90</hex>
@@ -749,6 +816,18 @@
 		
 		<label id="noteOff"/>
 
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<addressOf ref="MidiStatus" type="Absolute16Low8"/>
+
+		<cpu:AndAccumulatorWithImmediate8/>
+		<hex>0f</hex>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<hex>09</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="drums" type="Relative8"/>
+
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="handleNoteOff" type="Absolute16"/>
 
@@ -762,6 +841,12 @@
 	</label>
 
 	<label id="handleNoteOn">
+		<!--<cpu:CopyImmediate8ToAccumulator/>
+		<string>!</string>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.WriteCharacter" type="Absolute16"/>-->
+
 		<cpu:CopyImmediate8AddressToAccumulator/>
 		<addressOf ref="MidiStatus" type="Absolute16Low8"/>
 
