@@ -8,7 +8,7 @@ namespace OZone.Programs.Compilers
 {
 	public abstract class ProgramCompiler
 	{
-		public abstract void Compile(Program program, MemoryAddress baseAddress);
+		public abstract uint Compile(Program program, MemoryAddress baseAddress);
 		public abstract void Write(Program program, BinaryWriter writer);
 		public abstract uint GetLength(ProgramSegment segment);
 

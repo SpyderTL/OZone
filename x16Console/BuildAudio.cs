@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace x16Console
 {
-	class BuildDemo
+	class BuildAudio
 	{
 		static void Main(string[] args)
 		{
@@ -19,7 +19,7 @@ namespace x16Console
 
 			var address = new MemoryAddress { Offset = 0x07ff };
 
-			using (Stream stream = File.Create("x16Demo.prg"))
+			using (Stream stream = File.Create("x16Audio.prg"))
 			using (BinaryWriter writer = new BinaryWriter(stream))
 			{
 				compiler.Compile(program, address);
@@ -27,7 +27,7 @@ namespace x16Console
 				compiler.Write(program, writer);
 
 				program = ProgramBuilder.Build(
-					"../../x16Demo.xml",
+					"../../x16Audio.xml",
 					new KeyValuePair<string, string>[]
 					{
 						//new KeyValuePair<string, string>("http://metalx.org/C64Console/Functions/Screen", "../../Functions/Screen.xslt"),
@@ -57,79 +57,6 @@ namespace x16Console
 				writer.Flush();
 
 				Console.WriteLine(writer.BaseStream.Position);
-
-				//var delta = 1.0 / 255.0;
-
-				//for (var x = 0; x < 256; x++)
-				//{
-				//System.Diagnostics.Debug.WriteLine("<hex>" + ((byte)((Math.Sin(x * delta) * 128) + 128)).ToString("X2") + "</hex>");
-				//System.Diagnostics.Debug.WriteLine(Math.Asin(x * delta));
-				//System.Diagnostics.Debug.WriteLine("<hex>" + ((byte)((Math.Asin(x * delta) * 128) + 128)).ToString("X2") + "</hex>");
-				//}
-
-				var reader = new BinaryReader(File.OpenRead(@"..\..\commander-x16-2.ico"));
-
-				var reserved = reader.ReadUInt16();
-				var type = reader.ReadUInt16();
-				var imageCount = reader.ReadUInt16();
-
-				for (var image = 0; image < imageCount; image++)
-				{
-					var width = reader.ReadByte();
-					var height = reader.ReadByte();
-					var paletteSize = reader.ReadByte();
-					var reserved2 = reader.ReadByte();
-					var planeCount = reader.ReadUInt16();
-					var bitsPerPixel = reader.ReadUInt16();
-					var size = reader.ReadUInt32();
-					var offset = reader.ReadUInt32();
-				}
-
-				//reader.BaseStream.Position = 17558;
-				//reader.BaseStream.Position = 0x4496;
-				reader.BaseStream.Position = 0x44be;
-
-				for (var entry = 0; entry < 16; entry++)
-				{
-					var blue = reader.ReadByte();
-					var green = reader.ReadByte();
-					var red = reader.ReadByte();
-					var alpha = reader.ReadByte();
-
-					System.Diagnostics.Debug.WriteLine("<hex>" + ((blue >> 4) | (green & 0xf0)).ToString("X2") + "</hex>");
-					System.Diagnostics.Debug.WriteLine("<hex>" + (red >> 4).ToString("X2") + "</hex>");
-				}
-
-				reader.BaseStream.Position = 16750;
-
-				var lines = new List<string>();
-
-				for (var row = 0; row < 92; row++)
-				{
-					var line = string.Empty;
-
-					for (var column = 0; column < 46; column++)
-					{
-						var data = reader.ReadByte();
-
-						//System.Diagnostics.Debug.WriteLine("<hex>" + (data >> 4).ToString("X2") + "</hex>");
-						//System.Diagnostics.Debug.WriteLine("<hex>" + (data & 0x0f).ToString("X2") + "</hex>");
-
-						line += "<hex>" + (data >> 4).ToString("X2") + "</hex>" + "\r\n";
-						line += "<hex>" + (data & 0x0f).ToString("X2") + "</hex>" + "\r\n";
-					}
-
-					reader.ReadBytes(2);
-
-					lines.Add(line);
-				}
-
-				lines.Reverse();
-
-				foreach (var line in lines)
-				{
-					//System.Diagnostics.Debug.Write(line);
-				}
 			}
 		}
 	}

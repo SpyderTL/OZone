@@ -8,16 +8,18 @@ namespace OZone.Programs.Compilers
 {
 	public class WebAssemblyBinaryCompiler : BinaryCompiler
 	{
-		public override void Compile(Program program, MemoryAddress baseAddress)
+		public override uint Compile(Program program, MemoryAddress baseAddress)
 		{
 			// Assign memory addresses
 			MemoryAddress position = new MemoryAddress { Segment = baseAddress.Segment, Offset = baseAddress.Offset };
 
-			Compile(program.Segments, position);
+			return Compile(program.Segments, position);
 		}
 
-		private void Compile(IEnumerable<ProgramSegment> segments, MemoryAddress position)
+		private uint Compile(IEnumerable<ProgramSegment> segments, MemoryAddress position)
 		{
+			var length = 0U;
+
 			foreach (ProgramSegment segment in segments)
 			{
 				if (segment.Address == null)
@@ -28,10 +30,17 @@ namespace OZone.Programs.Compilers
 					};
 
 				if (segment is Scope scope)
-					Compile(scope.Segments, position);
+					length += Compile(scope.Segments, position);
 				else
-					position.Offset += GetLength(segment);
+				{
+					var length2 = GetLength(segment);
+
+					length += length2;
+					position.Offset += length2;
+				}
 			}
+
+			return length;
 		}
 
 		public override void Write(Program program, BinaryWriter writer)

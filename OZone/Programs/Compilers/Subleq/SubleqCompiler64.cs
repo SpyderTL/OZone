@@ -7,8 +7,10 @@ namespace OZone.Programs.Compilers.Subleq
 {
 	public class SubleqCompiler64 : ProgramCompiler
 	{
-		public override void Compile(Program program, MemoryAddress baseAddress)
+		public override uint Compile(Program program, MemoryAddress baseAddress)
 		{
+			var length = 0U;
+
 			// Assign memory addresses
 			MemoryAddress position = new MemoryAddress { Segment = baseAddress.Segment, Offset = baseAddress.Offset };
 
@@ -21,13 +23,13 @@ namespace OZone.Programs.Compilers.Subleq
 						Segment = position.Segment
 					};
 
-				if (segment is StringValue)
-					position.Offset += (uint)(((StringValue)segment).Value.Length);
-				else if (segment is Label)
-					continue;
-				else
-					position.Offset += 1;
+				var length2 = GetLength(segment);
+
+				length += length2;
+				position.Offset += length2;
 			}
+
+			return length;
 		}
 
 		public override void Write(Program program, BinaryWriter writer)
