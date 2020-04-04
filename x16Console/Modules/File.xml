@@ -16,13 +16,61 @@
 	<!--Kernel Methods-->
 	<!--SetFileParameters(fileNumber, deviceNumber, secondaryAddress)-->
 	<label id="Kernal.SetFileParameters" offset="FFBA"/>
+
 	<!--SetFileName(length, addressLow, addressHigh)-->
 	<label id="Kernal.SetFileName" offset="FFBD"/>
+
 	<!--LoadFile(verifyOnly, addressLow, addressHigh)-->
 	<label id="Kernal.LoadFile" offset="FFD5"/>
 
-	<label id="load" export="File.Load">
+	<label id="fileName" export="File.Load.FileName"/>
+	<short>0</short>
+
+	<label id="loadAddress" export="File.Load.Address"/>
+	<short>0</short>
+
+	<label id="load" export="File.Load.EntryPoint">
 		<!--Set Filename-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="fileName" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>02</hex>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="fileName" type="Absolute16" offset="1"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>03</hex>
+
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:PushAccumulatorToStack/>
+
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>2</byte>
+
+		<cpu:AddImmediate8AddressToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:CopyAccumulatorToXIndex/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:AddImmediate8AddressToAccumulator/>
+		<hex>03</hex>
+
+		<cpu:CopyAccumulatorToYIndex/>
+
+		<cpu:PullAccumulatorFromStack/>
+
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Kernal.SetFileName" type="Absolute16"/>
 
@@ -43,11 +91,11 @@
 		<cpu:CopyImmediate8ToAccumulator/>
 		<byte>0</byte>
 
-		<cpu:CopyImmediate8AddressToXIndex/>
-		<hex>02</hex>
+		<cpu:CopyImmediate16AddressToXIndex/>
+		<addressOf ref="loadAddress" type="Absolute16"/>
 
-		<cpu:CopyImmediate8AddressToXIndex/>
-		<hex>03</hex>
+		<cpu:CopyImmediate16AddressToYIndex/>
+		<addressOf ref="loadAddress" type="Absolute16" offset="1"/>
 
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Kernal.LoadFile" type="Absolute16"/>

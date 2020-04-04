@@ -29,23 +29,6 @@
 	<label id="Volume0" offset="01f9c2"/>
 	<label id="Waveform0" offset="01f9c3"/>
 
-	<!--Kernel Methods-->
-
-	<!--SetFileParameters(fileNumber, deviceNumber, secondaryAddress)-->
-	<label id="Kernal.SetFileParameters" offset="FFBA"/>
-
-	<!--SetFileName(length, addressLow, addressHigh)-->
-	<label id="Kernal.SetFileName" offset="FFBD"/>
-
-	<!--LoadFile(verifyOnly, addressLow, addressHigh)-->
-	<label id="Kernal.LoadFile" offset="FFD5"/>
-
-	<!--WriteCharacter(character)-->
-	<label id="Kernal.WriteCharacter" offset="FFD2"/>
-
-	<!--GetDateTime()-->
-	<label id="Kernal.GetDateTime" offset="FF50"/>
-
 	<!--Buffers-->
 	<label id="SoundBuffer" offset="0400"/>
 	<label id="VoiceChannels" offset="0440"/>
@@ -53,7 +36,7 @@
 	<label id="TrackDelay" offset="0460"/>
 	<label id="TrackStatus" offset="0560"/>
 	<label id="TrackStopped" offset="0660"/>
-	<label id="MidiData" offset="0d00"/>
+	<label id="MidiData" offset="0e00"/>
 
 	<!--Tables-->
 	<label id="Tracks" offset="50"/>
@@ -67,10 +50,8 @@
 
 	<label id="Time" offset="4a"/>
 	<label id="Elapsed" offset="4c"/>
+	<label id="Stopped" offset="4e"/>
 	<label id="Quantity" offset="30"/>
-
-	<cpu:CallImmediate16Address/>
-	<addressOf ref="getTime" type="Absolute16"/>
 
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="clearSoundBuffer" type="Absolute16"/>
@@ -93,6 +74,9 @@
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="readMidiFile" type="Absolute16"/>
 
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="getTime" type="Absolute16"/>
+
 	<label id="loop"/>
 
 	<cpu:CallImmediate16Address/>
@@ -103,15 +87,15 @@
 
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="updateSoundGenerator" type="Absolute16"/>
-	
-	<!--<cpu:CopyImmediate8AddressToAccumulator/>
-	<addressOf ref="Elapsed" type="Absolute16Low8"/>
+
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<addressOf ref="Stopped" type="Absolute16Low8"/>
 	
 	<cpu:CompareAccumulatorToImmediate8/>
 	<byte>0</byte>
 	
 	<cpu:BranchToRelative8IfNotEqual/>
-	<addressOf ref="exit" type="Relative8"/>-->
+	<addressOf ref="exit" type="Relative8"/>
 
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="loop" type="Absolute16"/>
@@ -122,7 +106,7 @@
 
 	<label id="getTime">
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="Kernal.GetDateTime" type="Absolute16"/>
+		<addressOf ref="System.GetDateTime" type="Absolute16"/>
 
 		<cpu:CopyImmediate8AddressToAccumulator/>
 		<hex>08</hex>
@@ -135,7 +119,7 @@
 
 	<label id="getElapsed">
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="Kernal.GetDateTime" type="Absolute16"/>
+		<addressOf ref="System.GetDateTime" type="Absolute16"/>
 
 		<cpu:SetCarryFlag/>
 
@@ -182,44 +166,32 @@
 	</label>
 
 	<label id="loadMidiFile">
-		<!--Set Filename-->
 		<cpu:CopyImmediate8ToAccumulator/>
-		<length from="fileName" to="freeMemory" type="Absolute8"/>
-
-		<cpu:CopyImmediate8ToXIndex/>
 		<addressOf ref="fileName" type="Absolute16Low8"/>
 
-		<cpu:CopyImmediate8ToYIndex/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="File.Load.FileName" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
 		<addressOf ref="fileName" type="Absolute16High8"/>
 
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="Kernal.SetFileName" type="Absolute16"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="File.Load.FileName" type="Absolute16" offset="1"/>
 
-		<!--Set File Parameters-->
 		<cpu:CopyImmediate8ToAccumulator/>
-		<byte>1</byte>
-
-		<cpu:CopyImmediate8ToXIndex/>
-		<byte>8</byte>
-
-		<cpu:CopyImmediate8ToYIndex/>
-		<byte>0</byte>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="Kernal.SetFileParameters" type="Absolute16"/>
-
-		<!--Load File-->
-		<cpu:CopyImmediate8ToAccumulator/>
-		<byte>0</byte>
-
-		<cpu:CopyImmediate8ToXIndex/>
 		<addressOf ref="MidiData" type="Absolute16Low8"/>
 
-		<cpu:CopyImmediate8ToYIndex/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="File.Load.Address" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
 		<addressOf ref="MidiData" type="Absolute16High8"/>
 
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="File.Load.Address" type="Absolute16" offset="1"/>
+
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="Kernal.LoadFile" type="Absolute16"/>
+		<addressOf ref="File.Load.EntryPoint" type="Absolute16"/>
 
 		<cpu:ReturnFromSubroutine/>
 	</label>
@@ -484,18 +456,24 @@
 		<cpu:RollImmediate8AddressLeft/>
 		<hex>25</hex>
 
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>24</hex>
+
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>25</hex>
+
 		<!--<cpu:ShiftImmediate8AddressLeft/>
 		<hex>24</hex>
 
 		<cpu:RollImmediate8AddressLeft/>
 		<hex>25</hex>-->
 
-		<!--<cpu:ShiftImmediate8AddressLeft/>
-		<hex>24</hex>
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>1</byte>
 
-		<cpu:RollImmediate8AddressLeft/>
-		<hex>25</hex>-->
-
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="Stopped" type="Absolute16Low8"/>
+		
 		<label id="updateTracks_updateTrack"/>
 		
 		<cpu:CopyImmediate8AddressToYIndex/>
@@ -509,6 +487,12 @@
 		
 		<cpu:BranchToRelative8IfEqual/>
 		<addressOf ref="nextTrack" type="Relative8"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="Stopped" type="Absolute16Low8"/>
 
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="updateTrack" type="Absolute16"/>
@@ -528,12 +512,6 @@
 	</label>
 
 	<label id="updateTrack">
-		<!--<cpu:CopyImmediate8ToAccumulator/>
-		<string>.</string>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="Kernal.WriteCharacter" type="Absolute16"/>-->
-
 		<!--Get Track Delay-->
 		<cpu:CopyImmediate8AddressToAccumulator/>
 		<hex>23</hex>
@@ -573,12 +551,6 @@
 
 		<cpu:BranchToRelative8IfPositive/>
 		<addressOf ref="updateTrack_done" type="Relative8"/>
-
-		<!--<cpu:CopyImmediate8ToAccumulator/>
-		<string>!</string>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="Kernal.WriteCharacter" type="Absolute16"/>-->
 
 		<!--Restore Midi State-->
 		<cpu:CopyImmediate8AddressToAccumulator/>
@@ -883,12 +855,6 @@
 	</label>
 
 	<label id="handleMidiEvent">
-		<!--<cpu:CopyImmediate8ToAccumulator/>
-		<string>.</string>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="Kernal.WriteCharacter" type="Absolute16"/>-->
-
 		<cpu:CopyImmediate8AddressToAccumulator/>
 		<addressOf ref="MidiStatus" type="Absolute16Low8"/>
 
@@ -989,7 +955,7 @@
 		<string>O</string>
 
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="Kernal.WriteCharacter" type="Absolute16"/>
+		<addressOf ref="Console.WriteCharacter.EntryPoint" type="Absolute16"/>
 
 		<cpu:CopyImmediate8AddressToAccumulator/>
 		<addressOf ref="MidiStatus" type="Absolute16Low8"/>
@@ -1126,20 +1092,7 @@
 		<addressOf ref="MidiValue" type="Absolute16Low8"/>
 
 		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
-		<addressOf ref="VoiceNotes" type="Absolute16"/>
-
-		
-		<!--<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		
-		<cpu:ReturnFromSubroutine/>-->
-	
+		<addressOf ref="VoiceNotes" type="Absolute16"/>	
 	
 		<cpu:ReturnFromSubroutine/>
 	</label>
@@ -1149,21 +1102,7 @@
 		<string>X</string>
 
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="Kernal.WriteCharacter" type="Absolute16"/>
-		
-		
-		<!--<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		
-		<cpu:ReturnFromSubroutine/>-->
-		
-		
+		<addressOf ref="Console.WriteCharacter.EntryPoint" type="Absolute16"/>		
 
 		<cpu:CopyImmediate8AddressToAccumulator/>
 		<addressOf ref="MidiStatus" type="Absolute16Low8"/>
@@ -1228,8 +1167,6 @@
 		<hex>2b</hex>
 
 		<!--Voice Off-->
-
-
 		<cpu:CopyXIndexToAccumulator/>
 		<cpu:PushAccumulatorToStack/>
 
@@ -1237,14 +1174,10 @@
 		<string>!</string>
 
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="Kernal.WriteCharacter" type="Absolute16"/>
+		<addressOf ref="Console.WriteCharacter.EntryPoint" type="Absolute16"/>
 
 		<cpu:PullAccumulatorFromStack/>
 		<cpu:CopyAccumulatorToXIndex/>
-
-
-
-
 
 		<cpu:CopyImmediate8ToYIndex/>
 		<byte>2</byte>
@@ -1279,21 +1212,6 @@
 		<cpu:BranchToRelative8IfNotZero/>
 		<addressOf ref="handleNoteOff_forEachVoice" type="Relative8"/>
 
-		
-		
-		<!--<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:PullAccumulatorFromStack/>
-		
-		<cpu:ReturnFromSubroutine/>-->
-		
-	
-	
 		<cpu:ReturnFromSubroutine/>
 	</label>
 
@@ -1831,7 +1749,6 @@
 	<!--Variables-->
 	<var:short id="trackCount">0</var:short>
 	<var:short id="ticksPerBeat">0</var:short>
-	<label id="fileName"/>
-	<string>x16audio.mid</string>
+	<var:string id="fileName">x16audio.mid</var:string>
 	<label id="freeMemory"/>
 </scope>
