@@ -13,7 +13,7 @@
 	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
 	xmlns:var="http://metalx.org/Variable">
 
-	<label id="MidiData" offset="0e00"/>
+	<label id="MidiData" offset="1000"/>
 
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="SoundGenerator.Reset" type="Absolute16"/>
@@ -31,13 +31,27 @@
 	<addressOf ref="readMidiFile" type="Absolute16"/>
 	
 	<label id="loop"/>
-
+	
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="MidiFile.Update" type="Absolute16"/>
 	
+	<cpu:CopyImmediate8AddressToAccumulator/>
+	<addressOf ref="MidiFile.Elapsed" type="Absolute16Low8"/>
+	
+	<cpu:CompareAccumulatorToImmediate8/>
+	<byte>0</byte>
+	
+	<cpu:BranchToRelative8IfEqual/>
+	<addressOf ref="skipUpdate" type="Relative8"/>
+	
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="MidiSoundGenerator.Update" type="Absolute16"/>
+	
+	<label id="skipUpdate"/>
+	
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="SoundGenerator.WriteRegisters" type="Absolute16"/>
-
+	
 	<cpu:CopyImmediate8AddressToAccumulator/>
 	<addressOf ref="MidiFile.Stopped" type="Absolute16Low8"/>
 	
@@ -46,12 +60,12 @@
 	
 	<cpu:BranchToRelative8IfNotEqual/>
 	<addressOf ref="exit" type="Relative8"/>
-
+	
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="loop" type="Absolute16"/>
-
+	
 	<label id="exit"/>
-
+	
 	<cpu:ReturnFromSubroutine/>
 
 	<label id="loadMidiFile">

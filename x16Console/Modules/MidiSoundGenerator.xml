@@ -52,7 +52,97 @@
 
 		<cpu:ReturnFromSubroutine/>
 	</label>
-	
+
+	<label id="update" export="MidiSoundGenerator.Update">
+		<scope>
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>16</byte>
+
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>22</hex>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
+
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>23</hex>
+
+			<label id="forEachVoice"/>
+
+			<cpu:CopyImmediate8AddressToYIndex/>
+			<hex>23</hex>
+
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="VoiceChannels" type='Absolute16'/>
+
+			<cpu:CompareAccumulatorToImmediate8/>
+			<byte>9</byte>
+
+			<cpu:BranchToRelative8IfNotEqual/>
+			<addressOf ref="nextVoice" type="Relative8"/>
+
+			<cpu:CopyYIndexToAccumulator/>
+
+			<cpu:ShiftAccumulatorLeft/>
+			<cpu:ShiftAccumulatorLeft/>
+
+			<cpu:CopyAccumulatorToYIndex/>
+
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="SoundGenerator.Volume" type="Absolute16"/>
+
+			<cpu:AndAccumulatorWithImmediate8/>
+			<binary>00111111</binary>
+
+			<cpu:SetCarryFlag/>
+
+			<cpu:SubtractImmediate8FromAccumulator/>
+			<byte>2</byte>
+
+			<cpu:BranchToRelative8IfNegative/>
+			<addressOf ref="voiceOff" type="Relative8"/>
+
+			<cpu:OrAccumulatorWithImmediate8/>
+			<binary>11000000</binary>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="SoundGenerator.Volume" type="Absolute16"/>
+			
+			<cpu:JumpToImmediate16Address/>
+			<addressOf ref="nextVoice" type="Absolute16"/>
+			
+			<label id="voiceOff"/>
+			
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
+			
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="SoundGenerator.Volume" type="Absolute16"/>
+			
+			<cpu:CopyImmediate8AddressToYIndex/>
+			<hex>23</hex>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>ff</hex>
+			
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="VoiceChannels" type='Absolute16'/>
+
+			<label id="nextVoice"/>
+
+			<cpu:IncrementImmediate8Address/>
+			<hex>23</hex>
+
+			<cpu:DecrementImmediate8Address/>
+			<hex>22</hex>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="forEachVoice" type="Relative8"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
 	<label id="processEvent" export="MidiSoundGenerator.ProcessEvent">
 		<cpu:CopyImmediate16AddressToAccumulator/>
 		<addressOf ref="Midi.Status" type="Absolute16"/>
@@ -79,8 +169,22 @@
 		<cpu:CompareAccumulatorToImmediate8/>
 		<hex>90</hex>
 
-		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="notNoteOn" type="Relative8"/>
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="noteOn" type="Relative8"/>
+
+		<cpu:ReturnFromSubroutine/>
+
+		<label id="noteOn"/>
+
+		<!--Check Velocity-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Midi.Value2" type="Absolute16"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="noteOff" type="Relative8"/>
 
 		<cpu:CopyImmediate16AddressToAccumulator/>
 		<addressOf ref="Midi.Status" type="Absolute16"/>
@@ -92,17 +196,7 @@
 		<hex>09</hex>
 
 		<cpu:BranchToRelative8IfEqual/>
-		<addressOf ref="drums" type="Relative8"/>
-
-		<!--Check Velocity-->
-		<cpu:CopyImmediate16AddressToAccumulator/>
-		<addressOf ref="Midi.Value2" type="Absolute16"/>
-
-		<cpu:CompareAccumulatorToImmediate8/>
-		<byte>0</byte>
-
-		<cpu:BranchToRelative8IfEqual/>
-		<addressOf ref="noteOff" type="Relative8"/>
+		<addressOf ref="drumsOn" type="Relative8"/>
 
 		<!--Note On-->
 		<cpu:CallImmediate16Address/>
@@ -122,283 +216,582 @@
 		<hex>09</hex>
 
 		<cpu:BranchToRelative8IfEqual/>
-		<addressOf ref="drums" type="Relative8"/>
+		<addressOf ref="drumsOff" type="Relative8"/>
 
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="handleNoteOff" type="Absolute16"/>
 
 		<cpu:ReturnFromSubroutine/>
 
-		<label id="drums"/>
+		<label id="drumsOn"/>
 
-		<label id="notNoteOn"/>
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="handleDrumOn" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+
+		<label id="drumsOff"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="handleDrumOff" type="Absolute16"/>
 
 		<cpu:ReturnFromSubroutine/>
 	</label>
 
 	<label id="handleNoteOn">
-		<cpu:CopyImmediate8ToAccumulator/>
-		<string>O</string>
+		<!--<cpu:ReturnFromSubroutine/>-->
+		
+		<scope>
+			<cpu:CopyImmediate8ToAccumulator/>
+			<string>O</string>
 
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="Console.WriteCharacter" type="Absolute16"/>
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="Console.WriteCharacter" type="Absolute16"/>
 
-		<cpu:CopyImmediate16AddressToAccumulator/>
-		<addressOf ref="Midi.Status" type="Absolute16"/>
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="Midi.Status" type="Absolute16"/>
 
-		<cpu:AndAccumulatorWithImmediate8/>
-		<hex>0f</hex>
+			<cpu:AndAccumulatorWithImmediate8/>
+			<hex>0f</hex>
 
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<hex>28</hex>
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>28</hex>
 
-		<!--Find Voice-->
-		<cpu:CopyImmediate8ToXIndex/>
-		<byte>16</byte>
+			<!--Find Voice-->
+			<cpu:CopyImmediate8ToXIndex/>
+			<byte>16</byte>
 
-		<cpu:CopyImmediate8ToYIndex/>
-		<byte>0</byte>
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>0</byte>
 
-		<label id="forEachVoice"/>
+			<label id="forEachVoice"/>
 
-		<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
-		<addressOf ref="VoiceChannels" type="Absolute16"/>
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="VoiceChannels" type="Absolute16"/>
 
-		<cpu:CompareAccumulatorToImmediate8/>
-		<hex>ff</hex>
+			<cpu:CompareAccumulatorToImmediate8/>
+			<hex>ff</hex>
 
-		<cpu:BranchToRelative8IfEqual/>
-		<addressOf ref="voiceFound" type="Relative8"/>
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="voiceFound" type="Relative8"/>
 
-		<cpu:IncrementYIndex/>
+			<cpu:IncrementYIndex/>
 
-		<cpu:DecrementXIndex/>
+			<cpu:DecrementXIndex/>
 
-		<cpu:BranchToRelative8IfNotZero/>
-		<addressOf ref="forEachVoice" type="Relative8"/>
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="forEachVoice" type="Relative8"/>
 
-		<!--No Voice Available-->
-		<cpu:ReturnFromSubroutine/>
+			<!--No Voice Available-->
+			<cpu:ReturnFromSubroutine/>
 
-		<!--<cpu:CopyImmediate8ToYIndex/>
+			<!--<cpu:CopyImmediate8ToYIndex/>
 		<byte>0</byte>-->
 
-		<label id="voiceFound"/>
+			<label id="voiceFound"/>
 
-		<cpu:CopyYIndexToImmediate8Address/>
-		<hex>29</hex>
+			<cpu:CopyYIndexToImmediate8Address/>
+			<hex>29</hex>
 
-		<!--Get Voice Address-->
-		<cpu:CopyYIndexToAccumulator/>
+			<!--Get Voice Address-->
+			<cpu:CopyYIndexToAccumulator/>
 
-		<cpu:ShiftAccumulatorLeft/>
-		<cpu:ShiftAccumulatorLeft/>
+			<cpu:ShiftAccumulatorLeft/>
+			<cpu:ShiftAccumulatorLeft/>
 
-		<cpu:ClearCarryFlag/>
+			<cpu:ClearCarryFlag/>
 
-		<cpu:AddImmediate8ToAccumulator/>
-		<addressOf ref="SoundGenerator.Registers" type="Absolute16Low8"/>
+			<cpu:AddImmediate8ToAccumulator/>
+			<addressOf ref="SoundGenerator.Registers" type="Absolute16Low8"/>
 
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<hex>2a</hex>
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>2a</hex>
 
-		<cpu:CopyImmediate8ToAccumulator/>
-		<byte>0</byte>
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
 
-		<cpu:AddImmediate8ToAccumulator/>
-		<addressOf ref="SoundGenerator.Registers" type="Absolute16High8"/>
+			<cpu:AddImmediate8ToAccumulator/>
+			<addressOf ref="SoundGenerator.Registers" type="Absolute16High8"/>
 
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<hex>2b</hex>
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>2b</hex>
 
-		<!--Get Note Frequency-->
-		<cpu:CopyImmediate16AddressToAccumulator/>
-		<addressOf ref="Midi.Value" type="Absolute16"/>
+			<!--Get Note Frequency-->
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="Midi.Value" type="Absolute16"/>
 
-		<cpu:ShiftAccumulatorLeft/>
+			<cpu:ShiftAccumulatorLeft/>
 
-		<cpu:CopyAccumulatorToYIndex/>
+			<cpu:CopyAccumulatorToYIndex/>
 
-		<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
-		<addressOf ref="notes" type="Absolute16" offset="1"/>
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="notes" type="Absolute16" offset="1"/>
 
-		<cpu:PushAccumulatorToStack/>
+			<cpu:PushAccumulatorToStack/>
 
-		<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
-		<addressOf ref="notes" type="Absolute16"/>
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="notes" type="Absolute16"/>
 
-		<cpu:CopyImmediate8ToYIndex/>
-		<byte>0</byte>
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>0</byte>
 
-		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-		<hex>2a</hex>
+			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+			<hex>2a</hex>
 
-		<cpu:PullAccumulatorFromStack/>
+			<cpu:PullAccumulatorFromStack/>
 
-		<cpu:IncrementYIndex/>
+			<cpu:IncrementYIndex/>
 
-		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-		<hex>2a</hex>
+			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+			<hex>2a</hex>
 
-		<!--Volume + Left/Right-->
-		<cpu:CopyImmediate16AddressToAccumulator/>
-		<addressOf ref="Midi.Value2" type="Absolute16"/>
+			<!--Volume + Left/Right-->
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="Midi.Value2" type="Absolute16"/>
 
-		<cpu:ShiftAccumulatorRight/>
+			<cpu:ShiftAccumulatorRight/>
 
-		<cpu:OrAccumulatorWithImmediate8/>
-		<binary>11000000</binary>
+			<cpu:OrAccumulatorWithImmediate8/>
+			<binary>11000000</binary>
 
-		<cpu:IncrementYIndex/>
+			<cpu:IncrementYIndex/>
 
-		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-		<hex>2a</hex>
+			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+			<hex>2a</hex>
 
-		<!--Waveform: Pulse Duty: 63-->
-		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>3f</hex>
+			<!--Waveform: Pulse Duty: 63-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>3f</hex>
 
-		<cpu:IncrementYIndex/>
+			<cpu:IncrementYIndex/>
 
-		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-		<hex>2a</hex>
+			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+			<hex>2a</hex>
 
-		<!--Update Voice Channel-->
-		<cpu:CopyImmediate8AddressToYIndex/>
-		<hex>29</hex>
+			<!--Update Voice Channel-->
+			<cpu:CopyImmediate8AddressToYIndex/>
+			<hex>29</hex>
 
-		<cpu:CopyImmediate8AddressToAccumulator/>
-		<hex>28</hex>
+			<cpu:CopyImmediate8AddressToAccumulator/>
+			<hex>28</hex>
 
-		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
-		<addressOf ref="VoiceChannels" type="Absolute16"/>
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="VoiceChannels" type="Absolute16"/>
 
-		<!--Update Voice Note-->
-		<cpu:CopyImmediate16AddressToAccumulator/>
-		<addressOf ref="Midi.Value" type="Absolute16"/>
+			<!--Update Voice Note-->
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="Midi.Value" type="Absolute16"/>
 
-		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
-		<addressOf ref="VoiceNotes" type="Absolute16"/>
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="VoiceNotes" type="Absolute16"/>
 
-		<cpu:ReturnFromSubroutine/>
+			<cpu:ReturnFromSubroutine/>
+		</scope>
 	</label>
 
 	<label id="handleNoteOff">
-		<cpu:CopyImmediate8ToAccumulator/>
-		<string>X</string>
+		<scope>
+			<cpu:CopyImmediate8ToAccumulator/>
+			<string>X</string>
 
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="Console.WriteCharacter" type="Absolute16"/>
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="Console.WriteCharacter" type="Absolute16"/>
 
-		<cpu:CopyImmediate16AddressToAccumulator/>
-		<addressOf ref="Midi.Status" type="Absolute16"/>
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="Midi.Status" type="Absolute16"/>
 
-		<cpu:AndAccumulatorWithImmediate8/>
-		<hex>0f</hex>
+			<cpu:AndAccumulatorWithImmediate8/>
+			<hex>0f</hex>
 
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<hex>28</hex>
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>28</hex>
 
-		<!--Find Voices-->
-		<cpu:CopyImmediate8ToXIndex/>
-		<byte>16</byte>
+			<!--Find Voices-->
+			<cpu:CopyImmediate8ToXIndex/>
+			<byte>16</byte>
 
-		<cpu:CopyImmediate8ToYIndex/>
-		<byte>0</byte>
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>0</byte>
 
-		<label id="handleNoteOff_forEachVoice"/>
+			<label id="handleNoteOff_forEachVoice"/>
 
-		<cpu:CopyYIndexToImmediate8Address/>
-		<hex>29</hex>
+			<cpu:CopyYIndexToImmediate8Address/>
+			<hex>29</hex>
 
-		<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
-		<addressOf ref="VoiceChannels" type="Absolute16"/>
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="VoiceChannels" type="Absolute16"/>
 
-		<cpu:CompareAccumulatorToImmediate8Address/>
-		<hex>28</hex>
+			<cpu:CompareAccumulatorToImmediate8Address/>
+			<hex>28</hex>
 
-		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="notVoice" type="Relative8"/>
+			<cpu:BranchToRelative8IfNotEqual/>
+			<addressOf ref="notVoice" type="Relative8"/>
 
-		<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
-		<addressOf ref="VoiceNotes" type="Absolute16"/>
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="VoiceNotes" type="Absolute16"/>
 
-		<cpu:CompareAccumulatorToImmediate16Address/>
-		<addressOf ref="Midi.Value" type="Absolute16"/>
+			<cpu:CompareAccumulatorToImmediate16Address/>
+			<addressOf ref="Midi.Value" type="Absolute16"/>
 
-		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="notVoice" type="Relative8"/>
+			<cpu:BranchToRelative8IfNotEqual/>
+			<addressOf ref="notVoice" type="Relative8"/>
 
-		<!--Get Voice Address-->
-		<cpu:CopyYIndexToAccumulator/>
+			<!--Get Voice Address-->
+			<cpu:CopyYIndexToAccumulator/>
 
-		<cpu:ShiftAccumulatorLeft/>
-		<cpu:ShiftAccumulatorLeft/>
+			<cpu:ShiftAccumulatorLeft/>
+			<cpu:ShiftAccumulatorLeft/>
 
-		<cpu:ClearCarryFlag/>
+			<cpu:ClearCarryFlag/>
 
-		<cpu:AddImmediate8ToAccumulator/>
-		<addressOf ref="SoundGenerator.Registers" type="Absolute16Low8"/>
+			<cpu:AddImmediate8ToAccumulator/>
+			<addressOf ref="SoundGenerator.Registers" type="Absolute16Low8"/>
 
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<hex>2a</hex>
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>2a</hex>
 
-		<cpu:CopyImmediate8ToAccumulator/>
-		<byte>0</byte>
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
 
-		<cpu:AddImmediate8ToAccumulator/>
-		<addressOf ref="SoundGenerator.Registers" type="Absolute16High8"/>
+			<cpu:AddImmediate8ToAccumulator/>
+			<addressOf ref="SoundGenerator.Registers" type="Absolute16High8"/>
 
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<hex>2b</hex>
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>2b</hex>
 
-		<!--Voice Off-->
-		<cpu:CopyXIndexToAccumulator/>
-		<cpu:PushAccumulatorToStack/>
+			<!--Voice Off-->
+			<cpu:CopyXIndexToAccumulator/>
+			<cpu:PushAccumulatorToStack/>
 
-		<cpu:CopyImmediate8ToAccumulator/>
-		<string>!</string>
+			<cpu:CopyImmediate8ToAccumulator/>
+			<string>!</string>
 
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="Console.WriteCharacter" type="Absolute16"/>
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="Console.WriteCharacter" type="Absolute16"/>
 
-		<cpu:PullAccumulatorFromStack/>
-		<cpu:CopyAccumulatorToXIndex/>
+			<cpu:PullAccumulatorFromStack/>
+			<cpu:CopyAccumulatorToXIndex/>
 
-		<cpu:CopyImmediate8ToYIndex/>
-		<byte>2</byte>
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>2</byte>
 
-		<cpu:CopyImmediate8ToAccumulator/>
-		<byte>0</byte>
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
 
-		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-		<hex>2a</hex>
+			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+			<hex>2a</hex>
 
-		<!--Clear Voice Channel-->
-		<cpu:CopyImmediate8AddressToYIndex/>
-		<hex>29</hex>
+			<!--Clear Voice Channel-->
+			<cpu:CopyImmediate8AddressToYIndex/>
+			<hex>29</hex>
 
-		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>ff</hex>
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>ff</hex>
 
-		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
-		<addressOf ref="VoiceChannels" type="Absolute16"/>
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="VoiceChannels" type="Absolute16"/>
 
-		<!--<cpu:ReturnFromSubroutine/>-->
+			<!--<cpu:ReturnFromSubroutine/>-->
 
-		<label id="notVoice"/>
+			<label id="notVoice"/>
 
-		<cpu:CopyImmediate8AddressToYIndex/>
-		<hex>29</hex>
+			<cpu:CopyImmediate8AddressToYIndex/>
+			<hex>29</hex>
 
-		<cpu:IncrementYIndex/>
+			<cpu:IncrementYIndex/>
 
-		<cpu:DecrementXIndex/>
+			<cpu:DecrementXIndex/>
 
-		<cpu:BranchToRelative8IfNotZero/>
-		<addressOf ref="handleNoteOff_forEachVoice" type="Relative8"/>
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="handleNoteOff_forEachVoice" type="Relative8"/>
 
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
+	<label id="handleDrumOn">
+		<scope>
+			
+			<!--<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="Midi.Value" type="Absolute16"/>
+			
+			<cpu:CompareAccumulatorToImmediate8/>
+			<hex>29</hex>
+			
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="go" type="Relative8"/>
+			
+			<cpu:ReturnFromSubroutine/>
+			
+			<label id="go"/>-->
+			
+			<cpu:CopyImmediate8ToAccumulator/>
+			<string>*</string>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="Console.WriteCharacter" type="Absolute16"/>
+
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="Midi.Status" type="Absolute16"/>
+
+			<cpu:AndAccumulatorWithImmediate8/>
+			<hex>0f</hex>
+
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>28</hex>
+
+			<!--Find Voice-->
+			<cpu:CopyImmediate8ToXIndex/>
+			<byte>16</byte>
+
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>0</byte>
+
+			<label id="forEachVoice"/>
+
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="VoiceChannels" type="Absolute16"/>
+
+			<cpu:CompareAccumulatorToImmediate8/>
+			<hex>ff</hex>
+
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="voiceFound" type="Relative8"/>
+
+			<cpu:IncrementYIndex/>
+
+			<cpu:DecrementXIndex/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="forEachVoice" type="Relative8"/>
+
+			<!--No Voice Available-->
+			<cpu:ReturnFromSubroutine/>
+
+			<!--<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>-->
+
+			<label id="voiceFound"/>
+
+			<cpu:CopyYIndexToImmediate8Address/>
+			<hex>29</hex>
+
+			<!--Get Voice Address-->
+			<cpu:CopyYIndexToAccumulator/>
+
+			<cpu:ShiftAccumulatorLeft/>
+			<cpu:ShiftAccumulatorLeft/>
+
+			<cpu:ClearCarryFlag/>
+
+			<cpu:AddImmediate8ToAccumulator/>
+			<addressOf ref="SoundGenerator.Registers" type="Absolute16Low8"/>
+
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>2a</hex>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
+
+			<cpu:AddImmediate8ToAccumulator/>
+			<addressOf ref="SoundGenerator.Registers" type="Absolute16High8"/>
+
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>2b</hex>
+
+			<!--Get Note Frequency-->
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="Midi.Value" type="Absolute16"/>
+
+			<cpu:ShiftAccumulatorLeft/>
+
+			<cpu:CopyAccumulatorToYIndex/>
+
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="drums" type="Absolute16" offset="1"/>
+
+			<cpu:PushAccumulatorToStack/>
+
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="drums" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>0</byte>
+
+			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+			<hex>2a</hex>
+
+			<cpu:PullAccumulatorFromStack/>
+
+			<cpu:IncrementYIndex/>
+
+			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+			<hex>2a</hex>
+
+			<!--Volume + Left/Right-->
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="Midi.Value2" type="Absolute16"/>
+
+			<!--<cpu:ShiftAccumulatorRight/>-->
+
+			<cpu:OrAccumulatorWithImmediate8/>
+			<binary>11000000</binary>
+
+			<cpu:IncrementYIndex/>
+
+			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+			<hex>2a</hex>
+
+			<!--Waveform: Noise Duty: 63-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>ff</hex>
+
+			<cpu:IncrementYIndex/>
+
+			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+			<hex>2a</hex>
+
+			<!--Update Voice Channel-->
+			<cpu:CopyImmediate8AddressToYIndex/>
+			<hex>29</hex>
+
+			<cpu:CopyImmediate8AddressToAccumulator/>
+			<hex>28</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="VoiceChannels" type="Absolute16"/>
+
+			<!--Update Voice Note-->
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="Midi.Value" type="Absolute16"/>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="VoiceNotes" type="Absolute16"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
+	<label id="handleDrumOff">
 		<cpu:ReturnFromSubroutine/>
+		
+		<scope>
+			<cpu:CopyImmediate8ToAccumulator/>
+			<string>-</string>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="Console.WriteCharacter" type="Absolute16"/>
+
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="Midi.Status" type="Absolute16"/>
+
+			<cpu:AndAccumulatorWithImmediate8/>
+			<hex>0f</hex>
+
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>28</hex>
+
+			<!--Find Voices-->
+			<cpu:CopyImmediate8ToXIndex/>
+			<byte>16</byte>
+
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>0</byte>
+
+			<label id="handleNoteOff_forEachVoice"/>
+
+			<cpu:CopyYIndexToImmediate8Address/>
+			<hex>29</hex>
+
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="VoiceChannels" type="Absolute16"/>
+
+			<cpu:CompareAccumulatorToImmediate8Address/>
+			<hex>28</hex>
+
+			<cpu:BranchToRelative8IfNotEqual/>
+			<addressOf ref="notVoice" type="Relative8"/>
+
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="VoiceNotes" type="Absolute16"/>
+
+			<cpu:CompareAccumulatorToImmediate16Address/>
+			<addressOf ref="Midi.Value" type="Absolute16"/>
+
+			<cpu:BranchToRelative8IfNotEqual/>
+			<addressOf ref="notVoice" type="Relative8"/>
+
+			<!--Get Voice Address-->
+			<cpu:CopyYIndexToAccumulator/>
+
+			<cpu:ShiftAccumulatorLeft/>
+			<cpu:ShiftAccumulatorLeft/>
+
+			<cpu:ClearCarryFlag/>
+
+			<cpu:AddImmediate8ToAccumulator/>
+			<addressOf ref="SoundGenerator.Registers" type="Absolute16Low8"/>
+
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>2a</hex>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
+
+			<cpu:AddImmediate8ToAccumulator/>
+			<addressOf ref="SoundGenerator.Registers" type="Absolute16High8"/>
+
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>2b</hex>
+
+			<!--Voice Off-->
+			<cpu:CopyXIndexToAccumulator/>
+			<cpu:PushAccumulatorToStack/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<string>!</string>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="Console.WriteCharacter" type="Absolute16"/>
+
+			<cpu:PullAccumulatorFromStack/>
+			<cpu:CopyAccumulatorToXIndex/>
+
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>2</byte>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
+
+			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+			<hex>2a</hex>
+
+			<!--Clear Voice Channel-->
+			<cpu:CopyImmediate8AddressToYIndex/>
+			<hex>29</hex>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>ff</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="VoiceChannels" type="Absolute16"/>
+
+			<!--<cpu:ReturnFromSubroutine/>-->
+
+			<label id="notVoice"/>
+
+			<cpu:CopyImmediate8AddressToYIndex/>
+			<hex>29</hex>
+
+			<cpu:IncrementYIndex/>
+
+			<cpu:DecrementXIndex/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="handleNoteOff_forEachVoice" type="Relative8"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
 	</label>
 
 	<label id="notes">
@@ -522,5 +915,188 @@
 		<hex>49D2</hex>
 		<hex>4E36</hex>
 		<hex>52DC</hex>
+	</label>
+
+	<label id="drums">
+		<!--00-->
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+	
+		<!--08-->
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+	
+		<!--10-->
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+	
+		<!--18-->
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+	
+		<!--20-->
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<!--Acoustic Bass Drum-->
+		<hex>0100</hex>
+		<!--Bass Drum 1-->
+		<hex>0200</hex>
+		<!--Side Stick-->
+		<hex>3000</hex>
+		<!--Acoustic Snare-->
+		<hex>8000</hex>
+		<!--Hand Clap-->
+		<hex>5000</hex>
+	
+		<!--28-->
+		<!--Electric Snare-->
+		<hex>2000</hex>
+		<!--Low Floor Tom-->
+		<hex>0300</hex>
+		<!--Closed Hi-hat-->
+		<hex>f800</hex>
+		<!--High Floor Tom-->
+		<hex>0400</hex>
+		<!--Pedal Hi-hat-->
+		<hex>2000</hex>
+		<!--Low Tom-->
+		<hex>0500</hex>
+		<!--Open Hi-hat-->
+		<hex>f000</hex>
+		<!--Low-Mid Tom-->
+		<hex>0600</hex>
+	
+		<!--30-->
+		<!--Hi-Mid Tom-->
+		<hex>0700</hex>
+		<!--Crash Cymbal 1-->
+		<hex>e000</hex>
+		<!--High Tom-->
+		<hex>0800</hex>
+		<!--Ride Cymbal 1-->
+		<hex>e000</hex>
+		<!--Chinese Cymbal-->
+		<hex>e000</hex>
+		<!--Ride Bell-->
+		<hex>1500</hex>
+		<!--Tambourine-->
+		<hex>f000</hex>
+		<!--Splash Cymbal-->
+		<hex>e000</hex>
+	
+		<!--38-->
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+	
+		<!--40-->
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+	
+		<!--48-->
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+	
+		<!--50-->
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+	
+		<!--00-->
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+	
+		<!--00-->
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+	
+		<!--00-->
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+	
+		<!--00-->
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+	
+		<!--00-->
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
+		<hex>2000</hex>
 	</label>
 </scope>
