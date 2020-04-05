@@ -298,6 +298,12 @@
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<addressOf ref="Elapsed" type="Absolute16Low8"/>
 
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="Elapsed" type="Absolute16Low8" offset="1"/>
+
 		<cpu:CopyImmediate8AddressToAccumulator/>
 		<hex>08</hex>
 
@@ -499,7 +505,7 @@
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Midi.Status" type="Absolute16"/>
 
-		<label id="updateTrack_loop"/>
+		<label id="updateTrack_loop"/>		
 
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="readMidiEvent" type="Absolute16"/>
@@ -511,18 +517,11 @@
 		<hex>ff</hex>
 
 		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="notMeta" type="Relative8"/>
+		<addressOf ref="updateTrack_notMetaEvent" type="Relative8"/>
 
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="handleMetaEvent" type="Absolute16"/>
 
-		<cpu:ReturnFromSubroutine/>
-
-		<label id="notMeta"/>
-		
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="Midi.Send" type="Absolute16"/>
-		
 		<!--Check Track Stopped-->
 		<cpu:CopyImmediate8AddressToYIndex/>
 		<hex>23</hex>
@@ -534,11 +533,16 @@
 		<byte>0</byte>
 		
 		<cpu:BranchToRelative8IfEqual/>
-		<addressOf ref="notStopped" type="Relative8"/>
+		<addressOf ref="updateTrack_nextEvent" type="Relative8"/>
 		
 		<cpu:ReturnFromSubroutine/>
-		
-		<label id="notStopped"/>
+
+		<label id="updateTrack_notMetaEvent"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Midi.Send" type="Absolute16"/>
+
+		<label id="updateTrack_nextEvent"/>
 		
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="readQuantity" type="Absolute16"/>
