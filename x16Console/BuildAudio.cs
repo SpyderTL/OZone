@@ -11,7 +11,7 @@ namespace x16Console
 {
 	class BuildAudio
 	{
-		static void Main(string[] args)
+		static void Main()
 		{
 			var transformFiles = new KeyValuePair<string, string>[]
 			{
@@ -24,6 +24,21 @@ namespace x16Console
 				new KeyValuePair<string, string>("http://metalx.org/Mos/6502/Operators", "../../../OZone/Platforms/Mos/6502/Operators.xslt")
 			};
 
+			var sourceFiles = new string[]
+			{
+				"../../x16Program.xml",
+				"../../x16Audio.xml",
+				"../../Modules/Console.xml",
+				"../../Modules/File.xml",
+				"../../Modules/MemoryReader.xml",
+				"../../Modules/Midi.xml",
+				"../../Modules/MidiFile.xml",
+				"../../Modules/MidiSoundGenerator.xml",
+				"../../Modules/SoundGenerator.xml",
+				"../../Modules/System.xml",
+				"../../Modules/Video.xml",
+			};
+
 			var compiler = new BinaryCompiler();
 			var address = new MemoryAddress { Offset = 0x07ff };
 
@@ -33,73 +48,20 @@ namespace x16Console
 				var programs = new List<Program>();
 				var exports = new Dictionary<string, Label>();
 
-				var program = ProgramBuilder.Build("../../x16Program.xml");
+				foreach (var sourceFile in sourceFiles)
+				{
+					var program = ProgramBuilder.Build(sourceFile, transformFiles);
 
-				var length = compiler.Compile(program, address);
+					var length = compiler.Compile(program, address);
 
-				address.Offset += length;
+					address.Offset += length;
 
-				programs.Add(program);
+					programs.Add(program);
 
-				foreach (var label in program.Segments.OfType<Label>())
-					if (label.Export != null)
-						exports[label.Export] = label;
-
-				program = ProgramBuilder.Build(
-					"../../x16Audio.xml",
-					transformFiles);
-
-				length = compiler.Compile(program, address);
-
-				address.Offset += length;
-
-				programs.Add(program);
-
-				foreach (var label in program.Segments.OfType<Label>())
-					if (label.Export != null)
-						exports[label.Export] = label;
-
-				program = ProgramBuilder.Build(
-					"../../Modules/File.xml",
-					transformFiles);
-
-				length = compiler.Compile(program, address);
-
-				address.Offset += length;
-
-				programs.Add(program);
-
-				foreach (var label in program.Segments.OfType<Label>())
-					if (label.Export != null)
-						exports[label.Export] = label;
-
-				program = ProgramBuilder.Build(
-					"../../Modules/Console.xml",
-					transformFiles);
-
-				length = compiler.Compile(program, address);
-
-				address.Offset += length;
-
-				programs.Add(program);
-
-				foreach (var label in program.Segments.OfType<Label>())
-					if (label.Export != null)
-						exports[label.Export] = label;
-
-				program = ProgramBuilder.Build(
-					"../../Modules/System.xml",
-					transformFiles);
-
-				length = compiler.Compile(program, address);
-
-				address.Offset += length;
-
-				programs.Add(program);
-
-				foreach (var label in program.Segments.OfType<Label>())
-					if (label.Export != null)
-						exports[label.Export] = label;
+					foreach (var label in program.Segments.OfType<Label>())
+						if (label.Export != null)
+							exports[label.Export] = label;
+				}
 
 				foreach (var program2 in programs)
 					compiler.Link(program2, exports);

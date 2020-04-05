@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.Net.Compilers.Toolset.3.5.0\build\Microsoft.Net.Compilers.Toolset.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.Toolset.3.5.0\build\Microsoft.Net.Compilers.Toolset.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -40,6 +41,8 @@
     </SccAuxPath>
     <SccProvider>
     </SccProvider>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -263,7 +266,11 @@
     <None Include="Functions\6502\Memory.xsd">
       <SubType>Designer</SubType>
     </None>
+    <None Include="packages.config" />
     <None Include="Platforms\Berkeley\RiscV\Operators.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Platforms\Mos\6502\Operators.xsd">
       <SubType>Designer</SubType>
     </None>
     <None Include="Platforms\Yamaha\Opl2\Registers.xsd">
@@ -934,9 +941,6 @@
     <None Include="Platforms\Mips\Mips3\Instructions.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Platforms\Mos\6502\Operators.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Platforms\Mos\65816\Operators.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -983,7 +987,9 @@
     <None Include="Platforms\W3c\Wasm\Operators.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Programs\Program.xsd" />
+    <None Include="Programs\Program.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Resources\Image.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -2603,6 +2609,12 @@
     <Folder Include="Structures\x64\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.Toolset.3.5.0\build\Microsoft.Net.Compilers.Toolset.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.Toolset.3.5.0\build\Microsoft.Net.Compilers.Toolset.props'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
