@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:mem="http://metalx.org/6502/Functions/Memory"
+	xmlns:str="http://metalx.org/6502/Functions/String"
+	xmlns:mm="http://metalx.org/6502/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+ 
+	<label id="Show" export="Browser.Show">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="loadDirectory" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16Low8"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>20</hex>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16Low8" offset="1"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>6</byte>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader.Skip" type="Absolute16"/>
+		
+		<!--Read Disk Name-->
+		<label id="forEachCharacter"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+		
+		<cpu:CompareAccumulatorToImmediate8/>
+		<byte>0</byte>
+		
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="forEachCharacter" type="Relative8"/>
+		
+		<!--Read File Names-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>16</byte>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>10</hex>
+		
+		<label id="forEachFile"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>4</byte>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader.Skip" type="Absolute16"/>
+		
+		<label id="forEachCharacter2"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+		
+		<cpu:PushAccumulatorToStack/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Console.WriteCharacter" type="Absolute16"/>
+		
+		<cpu:PullAccumulatorFromStack/>
+		
+		<cpu:CompareAccumulatorToImmediate8/>
+		<byte>0</byte>
+		
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="forEachCharacter2" type="Relative8"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>0d</hex>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Console.WriteCharacter" type="Absolute16"/>
+		
+		<cpu:DecrementImmediate8Address/>
+		<hex>10</hex>
+		
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="forEachFile" type="Relative8"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="loadDirectory">
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="filename" type="Absolute16Low8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="File.Load.Filename" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="filename" type="Absolute16High8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="File.Load.Filename" type="Absolute16" offset="1"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="File.Load.Address" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>20</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="File.Load.Address" type="Absolute16" offset="1"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="File.Load" type="Absolute16"/>
+	
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="filename"/>
+	<short>1</short><petscii:Dollar/>
+</scope>

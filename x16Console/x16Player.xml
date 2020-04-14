@@ -13,7 +13,15 @@
 	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
 	xmlns:var="http://metalx.org/Variable">
 
-	<label id="MidiData" offset="1200"/>
+	<!--<label id="MidiData" offset="a000"/>-->
+
+	<!--<cpu:CallImmediate16Address/>
+	<addressOf ref="Browser.Show" type="Absolute16"/>-->
+	
+	<!--<cpu:BranchToRelative8IfCarry/>
+	<sbyte>-2</sbyte>-->
+
+	<!--<cpu:ReturnFromSubroutine/>-->
 
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="SoundGenerator.Reset" type="Absolute16"/>
@@ -29,7 +37,7 @@
 	
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="readMidiFile" type="Absolute16"/>
-	
+
 	<label id="loop"/>
 	
 	<cpu:CallImmediate16Address/>
@@ -69,26 +77,33 @@
 	<cpu:ReturnFromSubroutine/>
 
 	<label id="loadMidiFile">
+		<!--Bank 1-->
 		<cpu:CopyImmediate8ToAccumulator/>
-		<addressOf ref="fileName" type="Absolute16Low8"/>
+		<byte>1</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<hex>9F61</hex>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="filename" type="Absolute16Low8"/>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="File.Load.FileName" type="Absolute16"/>
+		<addressOf ref="File.Load.Filename" type="Absolute16"/>
 
 		<cpu:CopyImmediate8ToAccumulator/>
-		<addressOf ref="fileName" type="Absolute16High8"/>
+		<addressOf ref="filename" type="Absolute16High8"/>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="File.Load.FileName" type="Absolute16" offset="1"/>
+		<addressOf ref="File.Load.Filename" type="Absolute16" offset="1"/>
 
 		<cpu:CopyImmediate8ToAccumulator/>
-		<addressOf ref="MidiData" type="Absolute16Low8"/>
+		<hex>00</hex>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="File.Load.Address" type="Absolute16"/>
 
 		<cpu:CopyImmediate8ToAccumulator/>
-		<addressOf ref="MidiData" type="Absolute16High8"/>
+		<hex>a0</hex>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="File.Load.Address" type="Absolute16" offset="1"/>
@@ -101,16 +116,25 @@
 
 	<label id="readMidiFile">
 		<cpu:CopyImmediate8ToAccumulator/>
-		<addressOf ref="MidiData" type="Absolute16Low8"/>
+		<hex>00</hex>
 
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="BankReader.Position" type="Absolute16"/>
 
 		<cpu:CopyImmediate8ToAccumulator/>
-		<addressOf ref="MidiData" type="Absolute16High8"/>
+		<hex>20</hex>
 
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8" offset="1"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="1"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="2"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="3"/>
 		
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="MidiFile.Reset" type="Absolute16"/>
@@ -119,5 +143,5 @@
 	</label>
 
 	<!--Variables-->
-	<var:string id="fileName">x16audio.mid</var:string>
+	<var:string id="filename">x16audio.mid</var:string>
 </scope>

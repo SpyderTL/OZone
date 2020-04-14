@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace x16Console
 {
-	class BuildAudio
+	class BuildPlayer
 	{
 		static void Main()
 		{
@@ -19,6 +19,7 @@ namespace x16Console
 				new KeyValuePair<string, string>("http://metalx.org/6502/Functions/String", "../../../OZone/Functions/6502/String.xslt"),
 				new KeyValuePair<string, string>("http://metalx.org/6502/Functions/MemoryManager", "../../../OZone/Functions/6502/MemoryManager.xslt"),
 				new KeyValuePair<string, string>("http://metalx.org/Ansi/Ascii", "../../../OZone/Platforms/Ansi/Ascii/Ascii.xslt"),
+				new KeyValuePair<string, string>("http://metalx.org/Commodore64/Petscii", "../../../OZone/Platforms/Commodore/C64/Petscii.xslt"),
 				new KeyValuePair<string, string>("http://metalx.org/Variable", "../../../OZone/Structures/6502/Variable.xslt"),
 				new KeyValuePair<string, string>("http://metalx.org/Class", "../../../OZone/Structures/6502/Class.xslt"),
 				new KeyValuePair<string, string>("http://metalx.org/Mos/6502/Operators", "../../../OZone/Platforms/Mos/6502/Operators.xslt")
@@ -27,7 +28,9 @@ namespace x16Console
 			var sourceFiles = new string[]
 			{
 				"../../x16Program.xml",
-				"../../x16Audio.xml",
+				"../../x16Player.xml",
+				"../../Modules/BankReader.xml",
+				"../../Modules/Browser.xml",
 				"../../Modules/Console.xml",
 				"../../Modules/File.xml",
 				"../../Modules/MemoryReader.xml",
@@ -42,7 +45,7 @@ namespace x16Console
 			var compiler = new BinaryCompiler();
 			var address = new MemoryAddress { Offset = 0x07ff };
 
-			using (Stream stream = File.Create("x16Audio.prg"))
+			using (Stream stream = File.Create("x16player.prg"))
 			using (BinaryWriter writer = new BinaryWriter(stream))
 			{
 				var programs = new List<Program>();

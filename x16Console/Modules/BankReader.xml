@@ -17,10 +17,184 @@
 	<int>0</int>
 
 	<label id="ReadByte" export="BankReader.ReadByte">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="calculatePage" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="setPage" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Position" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>02</hex>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Position" type="Absolute16" offset="1"/>
+
+		<cpu:AndAccumulatorWithImmediate8/>
+		<hex>1f</hex>
+
+		<cpu:OrAccumulatorWithImmediate8/>
+		<hex>a0</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>03</hex>
+
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:IncrementImmediate16Address/>
+		<addressOf ref="Position" type="Absolute16"/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="notPage" type="Relative8"/>
+
+		<cpu:IncrementImmediate16Address/>
+		<addressOf ref="Position" type="Absolute16" offset="1"/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="notPage" type="Relative8"/>
+
+		<cpu:IncrementImmediate16Address/>
+		<addressOf ref="Position" type="Absolute16" offset="2"/>
+
+		<label id="notPage"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="Peek" export="BankReader.Peek">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="calculatePage" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="setPage" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Position" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>02</hex>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Position" type="Absolute16" offset="1"/>
+
+		<cpu:AndAccumulatorWithImmediate8/>
+		<hex>1f</hex>
+
+		<cpu:OrAccumulatorWithImmediate8/>
+		<hex>a0</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>03</hex>
+
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>02</hex>
+
+		<label id="notPage"/>
+
 		<cpu:ReturnFromSubroutine/>
 	</label>
 
 	<label id="Skip" export="BankReader.Skip">
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:AddImmediate16AddressToAccumulator/>
+		<addressOf ref="Position" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Position" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:AddImmediate16AddressToAccumulator/>
+		<addressOf ref="Position" type="Absolute16" offset="1"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Position" type="Absolute16" offset="1"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:AddImmediate16AddressToAccumulator/>
+		<addressOf ref="Position" type="Absolute16" offset="2"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Position" type="Absolute16" offset="2"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:AddImmediate16AddressToAccumulator/>
+		<addressOf ref="Position" type="Absolute16" offset="3"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Position" type="Absolute16" offset="3"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="calculatePage">
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Position" type="Absolute16" offset="1"/>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>02</hex>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Position" type="Absolute16" offset="2"/>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>03</hex>
+		
+		<cpu:ShiftImmediate8AddressRight/>
+		<hex>03</hex>
+		
+		<cpu:RollImmediate8AddressRight/>
+		<hex>02</hex>
+			
+		<cpu:ShiftImmediate8AddressRight/>
+		<hex>03</hex>
+		
+		<cpu:RollImmediate8AddressRight/>
+		<hex>02</hex>
+			
+		<cpu:ShiftImmediate8AddressRight/>
+		<hex>03</hex>
+		
+		<cpu:RollImmediate8AddressRight/>
+		<hex>02</hex>
+			
+		<cpu:ShiftImmediate8AddressRight/>
+		<hex>03</hex>
+		
+		<cpu:RollImmediate8AddressRight/>
+		<hex>02</hex>
+			
+		<cpu:ShiftImmediate8AddressRight/>
+		<hex>03</hex>
+		
+		<cpu:RollImmediate8AddressRight/>
+		<hex>02</hex>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>02</hex>
+			
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="setPage">
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<hex>9F61</hex>
+		
 		<cpu:ReturnFromSubroutine/>
 	</label>
 </scope>

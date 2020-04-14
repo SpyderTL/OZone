@@ -18,12 +18,12 @@
 	<label id="Kernal.SetFileParameters" offset="FFBA"/>
 
 	<!--SetFileName(length, addressLow, addressHigh)-->
-	<label id="Kernal.SetFileName" offset="FFBD"/>
+	<label id="Kernal.SetFilename" offset="FFBD"/>
 
 	<!--LoadFile(verifyOnly, addressLow, addressHigh)-->
 	<label id="Kernal.LoadFile" offset="FFD5"/>
 
-	<label id="fileName" export="File.Load.FileName"/>
+	<label id="filename" export="File.Load.Filename"/>
 	<short>0</short>
 
 	<label id="loadAddress" export="File.Load.Address"/>
@@ -32,13 +32,13 @@
 	<label id="load" export="File.Load">
 		<!--Set Filename-->
 		<cpu:CopyImmediate16AddressToAccumulator/>
-		<addressOf ref="fileName" type="Absolute16"/>
+		<addressOf ref="filename" type="Absolute16"/>
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<hex>02</hex>
 
 		<cpu:CopyImmediate16AddressToAccumulator/>
-		<addressOf ref="fileName" type="Absolute16" offset="1"/>
+		<addressOf ref="filename" type="Absolute16" offset="1"/>
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<hex>03</hex>
@@ -72,7 +72,7 @@
 		<cpu:PullAccumulatorFromStack/>
 
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="Kernal.SetFileName" type="Absolute16"/>
+		<addressOf ref="Kernal.SetFilename" type="Absolute16"/>
 
 		<!--Set File Parameters-->
 		<cpu:CopyImmediate8ToAccumulator/>

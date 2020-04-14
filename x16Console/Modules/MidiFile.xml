@@ -116,7 +116,8 @@
 		
 		<cpu:CopyImmediate8AddressToAccumulator/>
 		<hex>23</hex>
-		
+
+		<cpu:ShiftAccumulatorLeft/>
 		<cpu:ShiftAccumulatorLeft/>
 		
 		<cpu:CopyAccumulatorToXIndex/>
@@ -124,14 +125,26 @@
 		<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
 		<addressOf ref="Tracks" type="Absolute16Low8"/>
 		
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="BankReader.Position" type="Absolute16"/>
 
 		<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
 		<addressOf ref="Tracks" type="Absolute16Low8" offset="1"/>
-		
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8" offset="1"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="1"/>
+
+		<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
+		<addressOf ref="Tracks" type="Absolute16Low8" offset="2"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="2"/>
+
+		<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
+		<addressOf ref="Tracks" type="Absolute16Low8" offset="3"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="3"/>
 
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="readQuantity" type="Absolute16"/>
@@ -140,27 +153,34 @@
 		<hex>23</hex>
 		
 		<cpu:ShiftAccumulatorLeft/>
-		
+		<cpu:ShiftAccumulatorLeft/>
+
 		<cpu:CopyAccumulatorToXIndex/>
-		
-		<cpu:CopyImmediate8AddressToAccumulator/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16"/>
 
 		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
 		<addressOf ref="Tracks" type="Absolute16Low8"/>
-		
-		<cpu:CopyImmediate8AddressToAccumulator/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8" offset="1"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="1"/>
 
 		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
 		<addressOf ref="Tracks" type="Absolute16Low8" offset="1"/>
-		
-		<cpu:CopyXIndexToAccumulator/>
-		
-		<cpu:ShiftAccumulatorLeft/>
-		
-		<cpu:CopyAccumulatorToXIndex/>
-		
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="2"/>
+
+		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+		<addressOf ref="Tracks" type="Absolute16Low8" offset="2"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="3"/>
+
+		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+		<addressOf ref="Tracks" type="Absolute16Low8" offset="3"/>
+				
 		<cpu:CopyImmediate8AddressToAccumulator/>
 		<addressOf ref="Quantity" type="Absolute16Low8"/>
 		
@@ -202,30 +222,30 @@
 		<byte>8</byte>
 
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader.Skip" type="Absolute16"/>
+		<addressOf ref="BankReader.Skip" type="Absolute16"/>
 
 		<!--Track Count-->
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+		<addressOf ref="BankReader.ReadByte" type="Absolute16"/>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="trackCount" type="Absolute16" offset="1"/>
 
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+		<addressOf ref="BankReader.ReadByte" type="Absolute16"/>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="trackCount" type="Absolute16"/>
 
 		<!--Ticks Per Beat-->
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+		<addressOf ref="BankReader.ReadByte" type="Absolute16"/>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="ticksPerBeat" type="Absolute16" offset="1"/>
 
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+		<addressOf ref="BankReader.ReadByte" type="Absolute16"/>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="ticksPerBeat" type="Absolute16"/>
@@ -235,20 +255,32 @@
 
 	<label id="readMidiFileTrackHeader">
 		<cpu:CopyImmediate8ToAccumulator/>
-		<byte>6</byte>
+		<byte>4</byte>
 
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader.Skip" type="Absolute16"/>
+		<addressOf ref="BankReader.Skip" type="Absolute16"/>
 
 		<!--Length-->
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+		<addressOf ref="BankReader.ReadByte" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>27</hex>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="BankReader.ReadByte" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>26</hex>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="BankReader.ReadByte" type="Absolute16"/>
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<hex>25</hex>
 
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+		<addressOf ref="BankReader.ReadByte" type="Absolute16"/>
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<hex>24</hex>
@@ -258,41 +290,72 @@
 		<hex>23</hex>
 
 		<cpu:ShiftAccumulatorLeft/>
+		<cpu:ShiftAccumulatorLeft/>
 
 		<cpu:CopyAccumulatorToXIndex/>
 
-		<cpu:CopyImmediate8AddressToAccumulator/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8"/>
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16"/>
 
 		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
 		<addressOf ref="Tracks" type="Absolute16Low8"/>
 
-		<cpu:CopyImmediate8AddressToAccumulator/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8" offset="1"/>
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="1"/>
 
 		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
 		<addressOf ref="Tracks" type="Absolute16Low8" offset="1"/>
 
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="2"/>
+
+		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+		<addressOf ref="Tracks" type="Absolute16Low8" offset="2"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="3"/>
+
+		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+		<addressOf ref="Tracks" type="Absolute16Low8" offset="3"/>
+
 		<!--Skip Track Data-->
 		<cpu:ClearCarryFlag/>
 
-		<cpu:CopyImmediate8AddressToAccumulator/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8"/>
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16"/>
 
 		<cpu:AddImmediate8AddressToAccumulator/>
 		<hex>24</hex>
 
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="BankReader.Position" type="Absolute16"/>
 
-		<cpu:CopyImmediate8AddressToAccumulator/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8" offset="1"/>
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="1"/>
 
 		<cpu:AddImmediate8AddressToAccumulator/>
 		<hex>25</hex>
 
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8" offset="1"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="1"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="2"/>
+
+		<cpu:AddImmediate8AddressToAccumulator/>
+		<hex>26</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="2"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="3"/>
+
+		<cpu:AddImmediate8AddressToAccumulator/>
+		<hex>27</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="3"/>
 
 		<cpu:ReturnFromSubroutine/>
 	</label>
@@ -450,7 +513,7 @@
 		<cpu:RollImmediate8AddressLeft/>
 		<hex>27</hex>
 
-		<!--<cpu:ShiftImmediate8AddressLeft/>
+		<cpu:ShiftImmediate8AddressLeft/>
 		<hex>24</hex>
 
 		<cpu:RollImmediate8AddressLeft/>
@@ -460,7 +523,7 @@
 		<hex>26</hex>
 
 		<cpu:RollImmediate8AddressLeft/>
-		<hex>27</hex>-->
+		<hex>27</hex>
 
 		<!--<cpu:ShiftImmediate8AddressLeft/>
 		<hex>24</hex>
@@ -565,9 +628,14 @@
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<hex>2b</hex>
 
-		<cpu:BranchToRelative8IfPositive/>
-		<addressOf ref="updateTrack_done" type="Relative8"/>
+		<cpu:BranchToRelative8IfNegative/>
+		<addressOf ref="updateTrack_notDone" type="Relative8"/>
+		
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="updateTrack_done" type="Absolute16"/>
 
+		<label id="updateTrack_notDone"/>
+		
 		<!--Restore Midi State-->
 		<cpu:CopyImmediate8AddressToXIndex/>
 		<hex>23</hex>
@@ -579,7 +647,8 @@
 		<addressOf ref="Midi.Status" type="Absolute16"/>
 
 		<cpu:CopyXIndexToAccumulator/>
-		
+
+		<cpu:ShiftAccumulatorLeft/>
 		<cpu:ShiftAccumulatorLeft/>
 
 		<cpu:CopyAccumulatorToXIndex/>
@@ -587,14 +656,26 @@
 		<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
 		<addressOf ref="Tracks" type="Absolute16Low8"/>
 
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="BankReader.Position" type="Absolute16"/>
 
 		<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
 		<addressOf ref="Tracks" type="Absolute16Low8" offset="1"/>
 
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8" offset="1"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="1"/>
+
+		<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
+		<addressOf ref="Tracks" type="Absolute16Low8" offset="2"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="2"/>
+
+		<cpu:CopyImmediate8PlusXIndexAddressToAccumulator/>
+		<addressOf ref="Tracks" type="Absolute16Low8" offset="3"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="3"/>
 
 		<label id="updateTrack_loop"/>		
 
@@ -692,27 +773,34 @@
 		<cpu:CopyXIndexToAccumulator/>
 
 		<cpu:ShiftAccumulatorLeft/>
-
-		<cpu:CopyAccumulatorToXIndex/>
-
-		<cpu:CopyImmediate8AddressToAccumulator/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8"/>
-
-		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
-		<addressOf ref="Tracks" type="Absolute16Low8"/>
-
-		<cpu:CopyImmediate8AddressToAccumulator/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8" offset="1"/>
-
-		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
-		<addressOf ref="Tracks" type="Absolute16Low8" offset="1"/>
-		
-		<cpu:CopyXIndexToAccumulator/>
-
 		<cpu:ShiftAccumulatorLeft/>
 
 		<cpu:CopyAccumulatorToXIndex/>
 
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+		<addressOf ref="Tracks" type="Absolute16Low8"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="1"/>
+
+		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+		<addressOf ref="Tracks" type="Absolute16Low8" offset="1"/>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="2"/>
+
+		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+		<addressOf ref="Tracks" type="Absolute16Low8" offset="2"/>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="3"/>
+
+		<cpu:CopyAccumulatorToImmediate8PlusXIndexAddress/>
+		<addressOf ref="Tracks" type="Absolute16Low8" offset="3"/>
+		
 		<cpu:CopyImmediate8AddressToAccumulator/>
 		<hex>28</hex>
 
@@ -779,7 +867,7 @@
 
 	<label id="readMidiEvent">
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader.Peek" type="Absolute16"/>
+		<addressOf ref="BankReader.Peek" type="Absolute16"/>
 
 		<cpu:AndAccumulatorWithImmediate8/>
 		<binary>10000000</binary>
@@ -788,7 +876,7 @@
 		<addressOf ref="readMidiEvent_skip" type="Relative8"/>
 
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+		<addressOf ref="BankReader.ReadByte" type="Absolute16"/>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Midi.Status" type="Absolute16"/>
@@ -824,7 +912,7 @@
 		<label id="notSystemEvent"/>
 
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+		<addressOf ref="BankReader.ReadByte" type="Absolute16"/>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Midi.Value" type="Absolute16"/>
@@ -849,7 +937,7 @@
 		<addressOf ref="noMidiValue2" type="Relative8"/>
 
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+		<addressOf ref="BankReader.ReadByte" type="Absolute16"/>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Midi.Value2" type="Absolute16"/>
@@ -860,20 +948,32 @@
 
 		<label id="metaEvent"/>
 		
-		<cpu:CopyImmediate8AddressToAccumulator/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8"/>
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16"/>
 		
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="metaEventData" type="Absolute16"/>
 
-		<cpu:CopyImmediate8AddressToAccumulator/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8" offset="1"/>
-		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="1"/>
+
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="metaEventData" type="Absolute16" offset="1"/>
 
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="2"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="metaEventData" type="Absolute16" offset="2"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="3"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="metaEventData" type="Absolute16" offset="3"/>
+
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+		<addressOf ref="BankReader.ReadByte" type="Absolute16"/>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Midi.Value" type="Absolute16"/>
@@ -1171,7 +1271,7 @@
 		<addressOf ref="readQuantity_shift" type="Absolute16"/>
 
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+		<addressOf ref="BankReader.ReadByte" type="Absolute16"/>
 
 		<cpu:PushAccumulatorToStack/>
 
@@ -1289,20 +1389,38 @@
 		<cpu:CopyImmediate8AddressToAccumulator/>
 		<addressOf ref="Quantity" type="Absolute16Low8"/>
 
-		<cpu:AddImmediate8AddressToAccumulator/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8"/>
+		<cpu:AddImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16"/>
 
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="BankReader.Position" type="Absolute16"/>
 
 		<cpu:CopyImmediate8AddressToAccumulator/>
 		<addressOf ref="Quantity" type="Absolute16Low8" offset="1"/>
 
-		<cpu:AddImmediate8AddressToAccumulator/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8" offset="1"/>
+		<cpu:AddImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="1"/>
 
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16Low8" offset="1"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="1"/>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<addressOf ref="Quantity" type="Absolute16Low8" offset="2"/>
+
+		<cpu:AddImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="2"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="2"/>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<addressOf ref="Quantity" type="Absolute16Low8" offset="3"/>
+
+		<cpu:AddImmediate16AddressToAccumulator/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="3"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="BankReader.Position" type="Absolute16" offset="3"/>
 
 		<cpu:ReturnFromSubroutine/>
 	</label>
