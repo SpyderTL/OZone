@@ -13,28 +13,36 @@
 	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
 	xmlns:var="http://metalx.org/Variable">
 
-	<!--<label id="MidiData" offset="a000"/>-->
-
 	<!--<cpu:CallImmediate16Address/>
 	<addressOf ref="Browser.Show" type="Absolute16"/>-->
 	
-	<!--<cpu:BranchToRelative8IfCarry/>
-	<sbyte>-2</sbyte>-->
-
-	<!--<cpu:ReturnFromSubroutine/>-->
-
+	<cpu:CopyImmediate8ToAccumulator/>
+	<addressOf ref="filename" type="Absolute16Low8"/>
+	
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>02</hex>
+	
+	<cpu:CopyImmediate8ToAccumulator/>
+	<addressOf ref="filename" type="Absolute16High8"/>
+	
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>03</hex>
+		
 	<cpu:CallImmediate16Address/>
-	<addressOf ref="SoundGenerator.Reset" type="Absolute16"/>
-
-	<cpu:CallImmediate16Address/>
-	<addressOf ref="MidiSoundGenerator.Reset" type="Absolute16"/>
-
+	<addressOf ref="Console.ReadLine" type="Absolute16"/>
+	
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="loadMidiFile" type="Absolute16"/>
 
 	<cpu:BranchToRelative8IfCarry/>
 	<addressOf ref="exit" type="Relative8"/>
 	
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="SoundGenerator.Reset" type="Absolute16"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="MidiSoundGenerator.Reset" type="Absolute16"/>
+
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="readMidiFile" type="Absolute16"/>
 
@@ -143,5 +151,7 @@
 	</label>
 
 	<!--Variables-->
-	<var:string id="filename">x16audio.mid</var:string>
+	<label id="filename"/>
+	<short>0</short>
+	<empty length="64"/>
 </scope>

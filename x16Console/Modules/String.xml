@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:mem="http://metalx.org/6502/Functions/Memory"
+	xmlns:str="http://metalx.org/6502/Functions/String"
+	xmlns:mm="http://metalx.org/6502/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<label id="Clear" export="String.Clear">
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<hex>02</hex>
+
+		<cpu:IncrementYIndex/>
+
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<hex>02</hex>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+	
+	<label id="Append" export="String.Append">
+		<cpu:PushAccumulatorToStack/>
+		
+		<!--Get data-->
+		<cpu:ClearCarryFlag/>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>2</byte>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>04</hex>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>03</hex>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>05</hex>
+
+		<!--Find Next Character-->
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
+
+		<cpu:ClearCarryFlag/>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:AddImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>04</hex>
+
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>1</byte>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>05</hex>
+
+		<cpu:AddImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>05</hex>
+		
+		<!--Write Character-->
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
+		
+		<cpu:PullAccumulatorFromStack/>
+
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<hex>04</hex>
+
+		<!--Increment Length-->
+		<cpu:ClearCarryFlag/>
+
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>1</byte>
+
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<hex>02</hex>
+
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>1</byte>
+
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<hex>02</hex>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="TrimEnd" export="String.TrimEnd">
+		<!--Increment Length-->
+		<cpu:SetCarryFlag/>
+
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>1</byte>
+
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<hex>02</hex>
+
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>1</byte>
+
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<hex>02</hex>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+</scope>

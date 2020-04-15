@@ -13,6 +13,8 @@
 	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
 	xmlns:var="http://metalx.org/Variable">
 
+	<!--ReadCharacter()-->
+	<label id="Kernal.ReadCharacter" offset="FFE4"/>
 	<!--WriteCharacter(character)-->
 	<label id="Kernal.WriteCharacter" offset="FFD2"/>
 
@@ -22,4 +24,67 @@
 
 		<cpu:ReturnFromSubroutine/>
 	</label>
+
+	<label id="ReadCharacter" export="Console.ReadCharacter">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.ReadCharacter" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="WriteLine" export="Console.WriteLine">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="WriteString" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<petscii:Return/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.WriteCharacter" type="Absolute16"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="ReadLine" export="Console.ReadLine">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="String.Clear" type="Absolute16"/>
+		
+		<label id="forEachCharacter"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.ReadCharacter" type="Absolute16"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="forEachCharacter" type="Relative8"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.WriteCharacter" type="Absolute16"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<petscii:Return/>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="end" type="Relative8"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="String.Append" type="Absolute16"/>
+		
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="forEachCharacter" type="Absolute16"/>
+		
+		<label id="end"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+	
+	<label id="WriteString" export="Console.WriteString">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.ReadCharacter" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
 </scope>

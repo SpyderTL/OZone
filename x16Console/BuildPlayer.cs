@@ -37,6 +37,7 @@ namespace x16Console
 				"../../Modules/Midi.xml",
 				"../../Modules/MidiFile.xml",
 				"../../Modules/MidiSoundGenerator.xml",
+				"../../Modules/String.xml",
 				"../../Modules/SoundGenerator.xml",
 				"../../Modules/System.xml",
 				"../../Modules/Video.xml",

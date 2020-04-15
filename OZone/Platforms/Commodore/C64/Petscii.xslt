@@ -19,7 +19,7 @@
 		<xsl:element name="prg:hex">09</xsl:element>
 	</xsl:template>
 	<xsl:template match="ns:Return">
-		<xsl:element name="prg:hex">13</xsl:element>
+		<xsl:element name="prg:hex">0d</xsl:element>
 	</xsl:template>
 	<xsl:template match="ns:CharacterSet2">
 		<xsl:element name="prg:hex">0e</xsl:element>
