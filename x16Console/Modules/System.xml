@@ -16,11 +16,20 @@
 	<!--WriteCharacter(character)-->
 	<!--GetDateTime()-->
 	<label id="Kernal.GetDateTime" offset="FF50"/>
+	
+	<label id="RamBank" offset="9F61"/>
 
 	<label id="GetDateTime" export="System.GetDateTime">
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Kernal.GetDateTime" type="Absolute16"/>
 
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="SetRamBank" export="System.SetRamBank">
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<hex>9F61</hex>
+		
 		<cpu:ReturnFromSubroutine/>
 	</label>
 </scope>

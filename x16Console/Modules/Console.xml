@@ -17,6 +17,35 @@
 	<label id="Kernal.ReadCharacter" offset="FFE4"/>
 	<!--WriteCharacter(character)-->
 	<label id="Kernal.WriteCharacter" offset="FFD2"/>
+	<!--SetCursor(x,y,read)-->
+	<label id="Kernal.SetCursor" offset="FFF0"/>
+	<!--InitializeVideo()-->
+	<label id="Kernal.InitializeVideo" offset="FF81"/>
+
+	<label id="Reset" export="Console.Reset">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.InitializeVideo" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="SetPosition" export="Console.SetPosition">
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.SetCursor" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="GetPosition" export="Console.GetPosition">
+		<cpu:SetCarryFlag/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.SetCursor" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
 
 	<label id="WriteCharacter" export="Console.WriteCharacter">
 		<cpu:CallImmediate16Address/>
