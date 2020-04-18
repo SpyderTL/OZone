@@ -41,50 +41,51 @@
 
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Kernal.WriteCharacter" type="Absolute16"/>
-		
+
 		<cpu:ReturnFromSubroutine/>
 	</label>
 
 	<label id="ReadLine" export="Console.ReadLine">
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="String.Clear" type="Absolute16"/>
-		
-		<label id="forEachCharacter"/>
-		
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="Kernal.ReadCharacter" type="Absolute16"/>
+		<scope>
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="String.Clear" type="Absolute16"/>
 
-		<cpu:CompareAccumulatorToImmediate8/>
-		<byte>0</byte>
+			<label id="forEachCharacter"/>
 
-		<cpu:BranchToRelative8IfEqual/>
-		<addressOf ref="forEachCharacter" type="Relative8"/>
-		
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="Kernal.WriteCharacter" type="Absolute16"/>
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="Kernal.ReadCharacter" type="Absolute16"/>
 
-		<cpu:CompareAccumulatorToImmediate8/>
-		<petscii:Return/>
+			<cpu:CompareAccumulatorToImmediate8/>
+			<byte>0</byte>
 
-		<cpu:BranchToRelative8IfEqual/>
-		<addressOf ref="end" type="Relative8"/>
-		
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="String.Append" type="Absolute16"/>
-		
-		<cpu:JumpToImmediate16Address/>
-		<addressOf ref="forEachCharacter" type="Absolute16"/>
-		
-		<label id="end"/>
-		
-		<cpu:ReturnFromSubroutine/>
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="forEachCharacter" type="Relative8"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="Kernal.WriteCharacter" type="Absolute16"/>
+
+			<cpu:CompareAccumulatorToImmediate8/>
+			<petscii:Return/>
+
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="end" type="Relative8"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="String.Append" type="Absolute16"/>
+
+			<cpu:JumpToImmediate16Address/>
+			<addressOf ref="forEachCharacter" type="Absolute16"/>
+
+			<label id="end"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
 	</label>
-	
+
 	<label id="WriteString" export="Console.WriteString">
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Kernal.ReadCharacter" type="Absolute16"/>
 
 		<cpu:ReturnFromSubroutine/>
 	</label>
-
 </scope>
