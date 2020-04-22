@@ -44,7 +44,7 @@
 	<addressOf ref="exit" type="Relative8"/>
 	
 	<cpu:CallImmediate16Address/>
-	<addressOf ref="MidiScreen.Reset" type="Absolute16"/>
+	<addressOf ref="VolumeScreen.Reset" type="Absolute16"/>
 
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="readMidiFile" type="Absolute16"/>
@@ -66,10 +66,11 @@
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="MidiSoundGenerator.Update" type="Absolute16"/>
 	
-	<label id="skipUpdate"/>
-	
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="SoundGenerator.WriteRegisters" type="Absolute16"/>
+	
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="VolumeScreen.Update" type="Absolute16"/>
 	
 	<cpu:CopyImmediate8AddressToAccumulator/>
 	<addressOf ref="MidiFile.Stopped" type="Absolute16Low8"/>
@@ -79,6 +80,8 @@
 	
 	<cpu:BranchToRelative8IfNotEqual/>
 	<addressOf ref="exit" type="Relative8"/>
+	
+	<label id="skipUpdate"/>
 	
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="Console.ReadCharacter" type="Absolute16"/>
@@ -172,5 +175,13 @@
 		<addressOf ref="MidiFile.Reset" type="Absolute16"/>
 
 		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="screenReset">
+		<addressOf ref="MidiScreen.Reset" type="Absolute16"/>
+	</label>
+
+	<label id="screenProcessEvent">
+		<addressOf ref="MidiScreen.ProcessEvent" type="Absolute16"/>
 	</label>
 </scope>

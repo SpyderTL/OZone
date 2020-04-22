@@ -12,13 +12,13 @@
 	xmlns:ascii="http://metalx.org/Ansi/Ascii"
 	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
 	xmlns:var="http://metalx.org/Variable">
- 
+
 	<label id="Reset" export="GuitarScreen.Reset">
 		<scope>
 			<cpu:CallImmediate16Address/>
 			<addressOf ref="Screen.Clear" type="Absolute16"/>
 
-			<!--Draw Top-->
+			<!--Labels-->
 			<cpu:CopyImmediate8ToAccumulator/>
 			<hex>10</hex>
 
@@ -26,7 +26,7 @@
 			<addressOf ref="Video.AddressHigh" type="Absolute16"/>
 
 			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>19</hex>
+			<hex>14</hex>
 
 			<cpu:CopyAccumulatorToImmediate16Address/>
 			<addressOf ref="Video.AddressMid" type="Absolute16"/>
@@ -38,88 +38,50 @@
 			<addressOf ref="Video.AddressLow" type="Absolute16"/>
 
 			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>4f</hex>
+			<byte>80</byte>
 
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>03</hex>
 
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>01</hex>
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>0</byte>
 
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
+			<label id="loop3"/>
 
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>77</hex>
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="notes" type="Absolute16"/>
 
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>01</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToXIndex/>
-			<byte>24</byte>
+			<!--<cpu:SetCarryFlag/>
 			
+			<cpu:SubtractImmediate8FromAccumulator/>
+			<hex>40</hex>-->
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="Video.Data0" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>01</hex>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="Video.Data0" type="Absolute16"/>
+
+			<cpu:IncrementYIndex/>
+
+			<cpu:DecrementImmediate8Address/>
+			<hex>03</hex>
+
+			<cpu:BranchToRelative8IfNotEqual/>
+			<addressOf ref="loop3" type="Relative8"/>
+
+			<!--Notes-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>16</byte>
+
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>02</hex>
+
 			<label id="loop"/>
-			
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>4f</hex>
 
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>01</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>77</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>01</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-			
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>77</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>01</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-
-			<cpu:DecrementXIndex/>
-			
-			<cpu:BranchToRelative8IfNotZero/>
-			<addressOf ref="loop" type="Relative8"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>65</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>01</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-			
-			<!--Draw Mid-->
 			<cpu:CopyImmediate8ToAccumulator/>
 			<hex>10</hex>
 
@@ -127,7 +89,12 @@
 			<addressOf ref="Video.AddressHigh" type="Absolute16"/>
 
 			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>1a</hex>
+			<hex>15</hex>
+
+			<cpu:ClearCarryFlag/>
+
+			<cpu:AddImmediate8AddressToAccumulator/>
+			<hex>02</hex>
 
 			<cpu:CopyAccumulatorToImmediate16Address/>
 			<addressOf ref="Video.AddressMid" type="Absolute16"/>
@@ -139,149 +106,369 @@
 			<addressOf ref="Video.AddressLow" type="Absolute16"/>
 
 			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>4f</hex>
+			<byte>80</byte>
 
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>03</hex>
 
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>01</hex>
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>0</byte>
 
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>77</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>01</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToXIndex/>
-			<byte>24</byte>
-			
 			<label id="loop2"/>
-			
+
 			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>4f</hex>
+			<hex>51</hex>
 
 			<cpu:CopyAccumulatorToImmediate16Address/>
 			<addressOf ref="Video.Data0" type="Absolute16"/>
 
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>01</hex>
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="colors" type="Absolute16"/>
 
 			<cpu:CopyAccumulatorToImmediate16Address/>
 			<addressOf ref="Video.Data0" type="Absolute16"/>
 
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>77</hex>
+			<cpu:IncrementYIndex/>
 
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
+			<cpu:DecrementImmediate8Address/>
+			<hex>03</hex>
 
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>01</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-			
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>77</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>01</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-
-			<cpu:DecrementXIndex/>
-			
-			<cpu:BranchToRelative8IfNotZero/>
+			<cpu:BranchToRelative8IfNotEqual/>
 			<addressOf ref="loop2" type="Relative8"/>
 
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>65</hex>
+			<cpu:DecrementImmediate8Address/>
+			<hex>02</hex>
 
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>01</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-			
-			<!--Draw Bottom-->
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>10</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.AddressHigh" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>1b</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.AddressMid" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>00</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.AddressLow" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>4c</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>01</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>6f</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>01</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>7a</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>01</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
+			<cpu:BranchToRelative8IfNotEqual/>
+			<addressOf ref="loop" type="Relative8"/>
 
 			<cpu:ReturnFromSubroutine/>
 		</scope>
 	</label>
 
-<!--
-4f		77		50	
-65		20		67
-4c		6f		7a
--->
+	<label id="ProcessEvent" export="GuitarScreen.ProcessEvent">
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Midi.Status" type="Absolute16"/>
+
+		<cpu:AndAccumulatorWithImmediate8/>
+		<hex>f0</hex>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<hex>80</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notNoteOff" type="Relative8"/>
+
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="noteOff" type="Absolute16"/>
+
+		<label id="notNoteOff"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<hex>90</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notNoteOn" type="Relative8"/>
+
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="noteOn" type="Absolute16"/>
+
+		<label id="notNoteOn"/>
+
+		<cpu:ReturnFromSubroutine/>
+
+		<label id="noteOn"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Midi.Value2" type="Absolute16"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notSilent" type="Relative8"/>
+
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="noteOff" type="Absolute16"/>
+
+		<label id="notSilent"/>
+
+		<!--Get Note-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Midi.Value" type="Absolute16"/>
+
+		<cpu:SetCarryFlag/>
+
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>24</byte>
+
+		<cpu:ShiftAccumulatorLeft/>
+
+		<cpu:ClearCarryFlag/>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>1</byte>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>05</hex>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>0d</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>02</hex>
+
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="draw" type="Absolute16"/>
+
+		<label id="noteOff"/>
+
+		<!--Get Note-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Midi.Value" type="Absolute16"/>
+
+		<cpu:SetCarryFlag/>
+
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>24</byte>
+
+		<cpu:CopyAccumulatorToYIndex/>
+
+		<cpu:ShiftAccumulatorLeft/>
+
+		<cpu:ClearCarryFlag/>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>1</byte>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>05</hex>
+
+		<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+		<addressOf ref="colors" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>02</hex>
+
+		<label id="draw"/>
+
+		<!--Get Channel-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Midi.Status" type="Absolute16"/>
+
+		<cpu:AndAccumulatorWithImmediate8/>
+		<hex>0f</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>04</hex>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>10</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Video.AddressHigh" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>16</hex>
+
+		<cpu:ClearCarryFlag/>
+
+		<cpu:AddImmediate8AddressToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Video.AddressMid" type="Absolute16"/>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>05</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Video.AddressLow" type="Absolute16"/>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Video.Data0" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="colors">
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0c</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+	</label>
+
+	<label id="notes">
+		<hex>03</hex>
+		<hex>20</hex>
+		<hex>04</hex>
+		<hex>20</hex>
+		<hex>05</hex>
+		<hex>06</hex>
+		<hex>20</hex>
+		<hex>07</hex>
+		<hex>20</hex>
+		<hex>01</hex>
+		<hex>20</hex>
+		<hex>02</hex>
+
+		<hex>03</hex>
+		<hex>20</hex>
+		<hex>04</hex>
+		<hex>20</hex>
+		<hex>05</hex>
+		<hex>06</hex>
+		<hex>20</hex>
+		<hex>07</hex>
+		<hex>20</hex>
+		<hex>01</hex>
+		<hex>20</hex>
+		<hex>02</hex>
+
+		<hex>03</hex>
+		<hex>20</hex>
+		<hex>04</hex>
+		<hex>20</hex>
+		<hex>05</hex>
+		<hex>06</hex>
+		<hex>20</hex>
+		<hex>07</hex>
+		<hex>20</hex>
+		<hex>01</hex>
+		<hex>20</hex>
+		<hex>02</hex>
+
+		<hex>03</hex>
+		<hex>20</hex>
+		<hex>04</hex>
+		<hex>20</hex>
+		<hex>05</hex>
+		<hex>06</hex>
+		<hex>20</hex>
+		<hex>07</hex>
+		<hex>20</hex>
+		<hex>01</hex>
+		<hex>20</hex>
+		<hex>02</hex>
+
+		<hex>03</hex>
+		<hex>20</hex>
+		<hex>04</hex>
+		<hex>20</hex>
+		<hex>05</hex>
+		<hex>06</hex>
+		<hex>20</hex>
+		<hex>07</hex>
+		<hex>20</hex>
+		<hex>01</hex>
+		<hex>20</hex>
+		<hex>02</hex>
+
+		<hex>03</hex>
+		<hex>20</hex>
+		<hex>04</hex>
+		<hex>20</hex>
+		<hex>05</hex>
+		<hex>06</hex>
+		<hex>20</hex>
+		<hex>07</hex>
+		<hex>20</hex>
+		<hex>01</hex>
+		<hex>20</hex>
+		<hex>02</hex>
+
+		<hex>03</hex>
+		<hex>20</hex>
+		<hex>04</hex>
+		<hex>20</hex>
+		<hex>05</hex>
+		<hex>06</hex>
+		<hex>20</hex>
+		<hex>07</hex>
+	</label>
 </scope>

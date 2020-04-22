@@ -119,11 +119,14 @@
 	</label>
 
 	<label id="TrimEnd" export="String.TrimEnd">
-		<!--Increment Length-->
-		<cpu:SetCarryFlag/>
+		<!--Decrement Length-->
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
 
 		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 		<hex>02</hex>
+
+		<cpu:SetCarryFlag/>
 
 		<cpu:SubtractImmediate8FromAccumulator/>
 		<byte>1</byte>
@@ -131,8 +134,7 @@
 		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 		<hex>02</hex>
 
-		<cpu:CopyImmediate8ToYIndex/>
-		<byte>1</byte>
+		<cpu:IncrementYIndex/>
 
 		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
 		<hex>02</hex>
