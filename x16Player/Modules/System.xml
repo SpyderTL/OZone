@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:mem="http://metalx.org/6502/Functions/Memory"
+	xmlns:str="http://metalx.org/6502/Functions/String"
+	xmlns:mm="http://metalx.org/6502/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+ 
+	<!--WriteCharacter(character)-->
+	<!--GetDateTime()-->
+	<label id="Kernal.GetDateTime" offset="FF50"/>
+	
+	<label id="RamBank" offset="9F61"/>
+
+	<label id="GetDateTime" export="System.GetDateTime">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.GetDateTime" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="SetRamBank" export="System.SetRamBank">
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<hex>9F61</hex>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+</scope>

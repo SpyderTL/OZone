@@ -211,23 +211,89 @@
 		<addressOf ref="setScreen" type="Absolute16"/>
 		
 		<label id="notOne"/>
-		
+
 		<cpu:CompareAccumulatorToImmediate8/>
 		<petscii:Two/>
 
 		<cpu:BranchToRelative8IfNotEqual/>
 		<addressOf ref="notTwo" type="Relative8"/>
-		
+
 		<cpu:CopyImmediate8ToAccumulator/>
 		<byte>1</byte>
-		
+
 		<cpu:JumpToImmediate16Address/>
 		<addressOf ref="setScreen" type="Absolute16"/>
-		
+
 		<label id="notTwo"/>
 
+		<cpu:CompareAccumulatorToImmediate8/>
+		<petscii:Three/>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notThree" type="Relative8"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>2</byte>
+
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="setScreen" type="Absolute16"/>
+
+		<label id="notThree"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<petscii:Plus/>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notPlus" type="Relative8"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="channel" type="Absolute16"/>
+
+		<cpu:ClearCarryFlag/>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>1</byte>
+
+		<cpu:AndAccumulatorWithImmediate8/>
+		<hex>0f</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="channel" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="resetScreen" type="Absolute16"/>
+
 		<cpu:ReturnFromSubroutine/>
-	
+		
+		<label id="notPlus"/>
+		
+		<cpu:CompareAccumulatorToImmediate8/>
+		<petscii:Minus/>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notMinus" type="Relative8"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="channel" type="Absolute16"/>
+
+		<cpu:SetCarryFlag/>
+
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>1</byte>
+
+		<cpu:AndAccumulatorWithImmediate8/>
+		<hex>0f</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="channel" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="resetScreen" type="Absolute16"/>
+
+		<label id="notMinus"/>
+
+		<cpu:ReturnFromSubroutine/>
+
 		<label id="setScreen"/>
 		
 		<cpu:CopyAccumulatorToImmediate16Address/>
@@ -249,7 +315,7 @@
 		<cpu:ShiftAccumulatorLeft/>
 		
 		<cpu:CopyAccumulatorToYIndex/>
-		
+
 		<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
 		<addressOf ref="screenReset" type="Absolute16"/>
 		
@@ -261,7 +327,10 @@
 		
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="resetAddress" type="Absolute16" offset="1"/>
-		
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="channel" type="Absolute16"/>
+
 		<cpu:CallImmediate16Address/>
 		<label id="resetAddress"/>
 		<hex>0000</hex>
@@ -319,20 +388,24 @@
 		<cpu:ReturnFromSubroutine/>
 	</label>
 
+	<var:byte id="channel">0</var:byte>
 	<var:byte id="screen">0</var:byte>
 
 	<label id="screenReset">
 		<addressOf ref="VolumeScreen.Reset" type="Absolute16"/>
 		<addressOf ref="MidiScreen.Reset" type="Absolute16"/>
+		<addressOf ref="GuitarScreen.Reset" type="Absolute16"/>
 	</label>
 
 	<label id="screenProcessEvent">
 		<addressOf ref="VolumeScreen.ProcessEvent" type="Absolute16"/>
 		<addressOf ref="MidiScreen.ProcessEvent" type="Absolute16"/>
+		<addressOf ref="GuitarScreen.ProcessEvent" type="Absolute16"/>
 	</label>
 
 	<label id="screenUpdate">
 		<addressOf ref="VolumeScreen.Update" type="Absolute16"/>
 		<addressOf ref="MidiScreen.Update" type="Absolute16"/>
+		<addressOf ref="GuitarScreen.Update" type="Absolute16"/>
 	</label>
 </scope>

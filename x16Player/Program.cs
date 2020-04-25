@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace x16Console
+namespace x16Player
 {
-	class BuildPlayer
+	class Program
 	{
 		static void Main()
 		{
@@ -53,7 +53,7 @@ namespace x16Console
 			using (Stream stream = File.Create("x16player.prg"))
 			using (BinaryWriter writer = new BinaryWriter(stream))
 			{
-				var programs = new List<Program>();
+				var programs = new List<OZone.Programs.Program>();
 				var exports = new Dictionary<string, Label>();
 
 				foreach (var sourceFile in sourceFiles)
