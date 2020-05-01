@@ -1,0 +1,280 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:int="http://metalx.org/6502/Functions/Integer">
+
+	<label id="Address" export="String32.Address"/>
+	<int>0</int>
+
+	<label id="Address2" export="String32.Address2"/>
+	<int>0</int>
+
+	<label id="Length" export="String32.Length"/>
+	<int>0</int>
+
+	<label id="Create" export="String32.Create">
+		<cpu:ClearCarryFlag/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Length" type="Absolute16"/>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>4</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryManager32.Length" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Length" type="Absolute16" offset="1"/>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryManager32.Length" type="Absolute16" offset="1"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Length" type="Absolute16" offset="2"/>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryManager32.Length" type="Absolute16" offset="2"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Length" type="Absolute16" offset="3"/>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryManager32.Length" type="Absolute16" offset="3"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryManager32.CheckOut" type="Absolute16"/>
+
+		<int:Copy source="MemoryManager32.Address" destination="Address"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="Clear" export="String32.Clear">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="setWriterPosition" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryWriter32.WriteByte" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryWriter32.WriteByte" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryWriter32.WriteByte" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryWriter32.WriteByte" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="Append" export="String32.Append">
+		<cpu:PushAccumulatorToStack/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="setReaderPosition" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="setWriterPosition" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader32.ReadInteger" type="Absolute16"/>
+
+		<int:Add ref="MemoryReader32.Value" value="1" destination="MemoryWriter32.Value"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryWriter32.WriteInteger" type="Absolute16"/>
+
+		<int:Add ref="MemoryWriter32.Position" ref2="MemoryReader32.Value" destination="MemoryWriter32.Position"/>
+
+		<cpu:PullAccumulatorFromStack/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryWriter32.WriteByte" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="TrimEnd" export="String32.TrimEnd">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="setReaderPosition" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="setWriterPosition" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader32.ReadInteger" type="Absolute16"/>
+
+		<int:Subtract ref="MemoryReader32.Value" value="1" destination="MemoryWriter32.Value"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryWriter32.WriteInteger" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="Equals" export="String32.Equals">
+		<scope>
+			<int:Copy source="Address" destination="MemoryReader32.Position"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="MemoryReader32.ReadInteger" type="Absolute16"/>
+
+			<int:Copy source="MemoryReader32.Value" destination="length"/>
+
+			<int:Copy source="MemoryReader32.Position" destination="position"/>
+
+			<int:Copy source="Address2" destination="MemoryReader32.Position"/>
+			
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="MemoryReader32.ReadInteger" type="Absolute16"/>
+			
+			<int:Compare ref="length" ref2="MemoryReader32.Value"/>
+
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="sameLength" type="Relative8"/>
+
+			<cpu:SetCarryFlag/>
+
+			<cpu:ReturnFromSubroutine/>
+
+			<label id="sameLength"/>
+
+			<int:Copy source="MemoryReader32.Position" destination="position2"/>
+
+			<label id="forEachCharacter"/>
+
+			<int:Copy source="position" destination="MemoryReader32.Position"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="MemoryReader32.ReadByte" type="Absolute16"/>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="value" type="Absolute16"/>
+
+			<int:Copy source="MemoryReader32.Position" destination="position"/>
+
+			<int:Copy source="position2" destination="MemoryReader32.Position"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="MemoryReader32.ReadByte" type="Absolute16"/>
+
+			<cpu:CompareAccumulatorToImmediate16Address/>
+			<addressOf ref="value" type="Absolute16"/>
+
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="equal" type="Relative8"/>
+
+			<cpu:SetCarryFlag/>
+
+			<cpu:ReturnFromSubroutine/>
+
+			<label id="equal"/>
+
+			<int:Copy source="MemoryReader32.Position" destination="position2"/>
+
+			<int:Subtract ref="length" value="1" destination="length"/>
+
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="length" type="Absolute16"/>
+
+			<cpu:OrAccumulatorWithImmediate16Address/>
+			<addressOf ref="length" type="Absolute16" offset="1"/>
+
+			<cpu:OrAccumulatorWithImmediate16Address/>
+			<addressOf ref="length" type="Absolute16" offset="2"/>
+
+			<cpu:OrAccumulatorWithImmediate16Address/>
+			<addressOf ref="length" type="Absolute16" offset="3"/>
+
+			<cpu:BranchToRelative8IfZero/>
+			<addressOf ref="done" type="Relative8"/>
+			
+			<cpu:JumpToImmediate16Address/>
+			<addressOf ref="forEachCharacter" type="Absolute16"/>
+			
+			<label id="done"/>
+			
+			<cpu:ClearCarryFlag/>
+
+			<cpu:ReturnFromSubroutine/>
+
+			<var:integer id="position">0</var:integer>
+			<var:integer id="position2">0</var:integer>
+			<var:integer id="length">0</var:integer>
+			<var:byte id="value">0</var:byte>
+		</scope>
+	</label>
+
+	<label id="setReaderPosition">
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Address" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryReader32.Position" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Address" type="Absolute16" offset="1"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryReader32.Position" type="Absolute16" offset="1"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Address" type="Absolute16" offset="2"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryReader32.Position" type="Absolute16" offset="2"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Address" type="Absolute16" offset="3"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryReader32.Position" type="Absolute16" offset="3"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="setWriterPosition">
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Address" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryWriter32.Position" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Address" type="Absolute16" offset="1"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryWriter32.Position" type="Absolute16" offset="1"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Address" type="Absolute16" offset="2"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryWriter32.Position" type="Absolute16" offset="2"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Address" type="Absolute16" offset="3"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryWriter32.Position" type="Absolute16" offset="3"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+</scope>

@@ -13,33 +13,17 @@
 	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
 	xmlns:var="http://metalx.org/Variable">
  
-	<!--GetDateTime()-->
-	<label id="Kernal.GetDateTime" offset="FF50"/>
+	<label id="Parameter" export="Function.Parameter"/>
+	<int>0</int>
 	
-	<!--SetInteruptTable(low, high)-->
-	<label id="Kernal.SetInterruptTable" offset="FF8A"/>
-
-	<label id="RamBank" offset="9F61"/>
-
-	<label id="GetDateTime" export="System.GetDateTime">
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="Kernal.GetDateTime" type="Absolute16"/>
-
-		<cpu:ReturnFromSubroutine/>
-	</label>
-
-	<label id="SetRamBank" export="System.SetRamBank">
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<hex>9F61</hex>
-		
-		<cpu:ReturnFromSubroutine/>
-	</label>
+	<label id="Result" export="Function.Result"/>
+	<int>0</int>
 	
-	<label id="SetInterruptTable" export="System.SetInterruptTable">
+	<label id="Execute" export="Function.Execute">
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="Kernal.SetInterruptTable" type="Absolute16"/>
+		<label id="Address" export="Function.Address"/>
+		<short>0</short>
 
 		<cpu:ReturnFromSubroutine/>
 	</label>
-
 </scope>

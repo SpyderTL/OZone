@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:int="http://metalx.org/6502/Functions/Integer">
+
+	<var:hexadecimal id="Pointer">00002000</var:hexadecimal>
+
+	<label id="Length" export="MemoryManager32.Length"/>
+	<int>0</int>
+
+	<label id="Address" export="MemoryManager32.Address"/>
+	<int>0</int>
+	
+	<label id="Reset" export="MemoryManager32.Reset">
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Pointer" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Pointer" type="Absolute16" offset="2"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Pointer" type="Absolute16" offset="3"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>20</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Pointer" type="Absolute16" offset="1"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="CheckOut" export="MemoryManager32.CheckOut">
+		<!--Get Address-->
+		<int:Copy source="Pointer" destination="Address"/>
+		
+		<!--Update Pointer-->
+		<int:Add ref="Pointer" ref2="Length" destination="Pointer"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+</scope>

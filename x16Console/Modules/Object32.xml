@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:int="http://metalx.org/6502/Functions/Integer">
+
+	<label id="Address" export="Object32.Address"/>
+	<int>0</int>
+
+	<label id="Length" export="Object32.Length"/>
+	<int>0</int>
+	
+	<label id="Type" export="Object32.Type"/>
+	<byte>0</byte>
+	
+	<label id="Create" export="Object32.Create">
+		<int:Copy value="12" destination="MemoryManager32.Length"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryManager32.CheckOut" type="Absolute16"/>
+
+		<int:Copy source="MemoryManager32.Address" destination="MemoryWriter32.Position"/>
+		
+		<int:Copy source="Address" destination="MemoryWriter32.Value"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryWriter32.WriteInteger" type="Absolute16"/>
+
+		<int:Copy source="Length" destination="MemoryWriter32.Value"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryWriter32.WriteInteger" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Type" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryWriter32.WriteByte" type="Absolute16"/>
+		
+		<int:Copy source="MemoryManager32.Address" destination="Address"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+</scope>
