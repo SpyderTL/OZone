@@ -4,7 +4,8 @@
 	xmlns="http://metalx.org/Program"
 	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
 	xmlns:var="http://metalx.org/Variable"
-	xmlns:int="http://metalx.org/6502/Functions/Integer">
+	xmlns:int="http://metalx.org/6502/Functions/Integer"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii">
 
 	<label id="Object" export="Command.Object"/>
 	<int>0</int>
@@ -15,11 +16,49 @@
 	<label id="Result" export="Command.Result"/>
 	<int>0</int>
 
+	<label id="Token" export="Command.Token"/>
+	<int>0</int>
+
 	<label id="Execute" export="Command.Execute">
 		<int:Copy source="Object" destination="Result"/>
+		
+		<int:Copy source="Text" destination="MemoryReader32.Position"/>
 
-		<label id="nextObject"/>
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader32.ReadInteger" type="Absolute16"/>
 
+		<int:Copy source="MemoryReader32.Value" destination="length"/>
+
+		<int:Copy source="MemoryReader32.Position" destination="position"/>
+
+		<label id="forEachObject"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="readToken" type="Absolute16"/>
+		
+		<cpu:BranchToRelative8IfNotCarry/>
+		<addressOf ref="notLastToken" type="Relative8"/>
+		
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="lastToken" type="Absolute16"/>
+		
+		<label id="notLastToken"/>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="type" type="Absolute16"/>
+		
+		<cpu:CompareAccumulatorToImmediate8/>
+		<byte>1</byte>
+		
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="character" type="Relative8"/>		
+		
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="forEachObject" type="Absolute16"/>
+				
+		<label id="character"/>
+
+		<!--Find Member-->
 		<int:Add ref="Result" value="8" destination="MemoryReader32.Position"/>
 
 		<cpu:CallImmediate16Address/>
@@ -31,34 +70,34 @@
 
 		<cpu:BranchToRelative8IfNotEqual/>
 		<addressOf ref="notDictionary" type="Relative8"/>
-		
+
 		<int:Copy source="Result" destination="MemoryReader32.Position"/>
-		
+
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="MemoryReader32.ReadByte" type="Absolute16"/>
-		
+
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Dictionary32.Address" type="Absolute16"/>
 
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="MemoryReader32.ReadByte" type="Absolute16"/>
-		
+
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Dictionary32.Address" type="Absolute16" offset="1"/>
 
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="MemoryReader32.ReadByte" type="Absolute16"/>
-		
+
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Dictionary32.Address" type="Absolute16" offset="2"/>
 
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="MemoryReader32.ReadByte" type="Absolute16"/>
-		
+
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Dictionary32.Address" type="Absolute16" offset="3"/>
 
-		<int:Copy source="Text" destination="Dictionary32.Key"/>
+		<int:Copy source="Token" destination="Dictionary32.Key"/>
 
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Dictionary32.Find" type="Absolute16"/>
@@ -69,12 +108,10 @@
 		<int:Copy source="Dictionary32.Value" destination="Result"/>
 		
 		<cpu:JumpToImmediate16Address/>
-		<addressOf ref="nextObject" type="Absolute16"/>
-
-		<!--<cpu:ClearCarryFlag/>-->
+		<addressOf ref="forEachObject" type="Absolute16"/>
 
 		<label id="notFound"/>
-
+		
 		<cpu:ReturnFromSubroutine/>
 
 		<label id="notDictionary"/>
@@ -84,48 +121,222 @@
 		<byte>7</byte>
 
 		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="notFunction" type="Relative8"/>
+		<addressOf ref="notFunction" type="Relative8"/>		
 		
 		<int:Copy source="Result" destination="MemoryReader32.Position"/>
-		
+
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="MemoryReader32.ReadByte" type="Absolute16"/>
-		
+
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Function.Address" type="Absolute16"/>
-		
+
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="MemoryReader32.ReadByte" type="Absolute16"/>
-		
+
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Function.Address" type="Absolute16" offset="1"/>
-		
+
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Function.Execute" type="Absolute16"/>
-		
+
 		<int:Copy source="Function.Result" destination="Result"/>
-		
-		<cpu:ClearCarryFlag/>
-		
-		<cpu:ReturnFromSubroutine/>
+
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="forEachObject" type="Absolute16"/>
 		
 		<label id="notFunction"/>
-		
+
 		<!--String-->
 		<cpu:CompareAccumulatorToImmediate8/>
 		<byte>3</byte>
 
 		<cpu:BranchToRelative8IfNotEqual/>
 		<addressOf ref="notString" type="Relative8"/>
-				
+
+		<cpu:ClearCarryFlag/>
+
+		<cpu:ReturnFromSubroutine/>
+
+		<label id="notString"/>
+		
+		<cpu:SetCarryFlag/>
+
+		<cpu:ReturnFromSubroutine/>
+		
+		<label id="lastToken"/>
+		
+		<!--Find Member-->
+		<int:Add ref="Result" value="8" destination="MemoryReader32.Position"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader32.ReadByte" type="Absolute16"/>
+
+		<!--Function-->
+		<cpu:CompareAccumulatorToImmediate8/>
+		<byte>7</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFunction2" type="Relative8"/>
+		
+		<int:Copy source="Result" destination="MemoryReader32.Position"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader32.ReadByte" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Function.Address" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader32.ReadByte" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Function.Address" type="Absolute16" offset="1"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Function.Execute" type="Absolute16"/>
+
+		<int:Copy source="Function.Result" destination="Result"/>
+		
+		<label id="notFunction2"/>
+		
 		<cpu:ClearCarryFlag/>
 		
 		<cpu:ReturnFromSubroutine/>
 		
-		<label id="notString"/>
+		<!--Read Token-->
+		<label id="readToken"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="checkLength" type="Absolute16"/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="notDone2" type="Relative8"/>
 		
 		<cpu:SetCarryFlag/>
 		
 		<cpu:ReturnFromSubroutine/>
+		
+		<label id="notDone2"/>
+
+		<int:Copy source="Token" destination="String32.Address"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="String32.Clear" type="Absolute16"/>
+
+		<!--Read First Character-->
+		<int:Copy source="position" destination="MemoryReader32.Position"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader32.ReadByte" type="Absolute16"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<!--<ascii:Period/>-->
+		<string>.</string>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notPeriod" type="Relative8"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="String32.Append" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>3</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="type" type="Absolute16"/>
+
+		<int:Add ref="position" value="1" destination="position"/>
+		<int:Subtract ref="length" value="1" destination="length"/>
+
+		<cpu:ClearCarryFlag/>
+
+		<cpu:ReturnFromSubroutine/>
+
+		<label id="notPeriod"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="String32.Append" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>1</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="type" type="Absolute16"/>
+
+		<int:Add ref="position" value="1" destination="position"/>
+		<int:Subtract ref="length" value="1" destination="length"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="checkLength" type="Absolute16"/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="forEachCharacter" type="Relative8"/>
+		
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="lastCharacter" type="Absolute16"/>
+
+		<label id="forEachCharacter"/>
+
+		<int:Copy source="position" destination="MemoryReader32.Position"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader32.ReadByte" type="Absolute16"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<!--<ascii:Period/>-->
+		<string>.</string>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notPeriod2" type="Relative8"/>
+
+		<cpu:ClearCarryFlag/>
+
+		<cpu:ReturnFromSubroutine/>
+
+		<label id="notPeriod2"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="String32.Append" type="Absolute16"/>
+
+		<int:Copy source="MemoryReader32.Position" destination="position"/>
+
+		<int:Add ref="position" value="1" destination="position"/>
+		<int:Subtract ref="length" value="1" destination="length"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="checkLength" type="Absolute16"/>
+
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="lastCharacter" type="Relative8"/>
+
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="forEachCharacter" type="Absolute16"/>
+
+		<label id="lastCharacter"/>
+
+		<cpu:ClearCarryFlag/>
+
+		<cpu:ReturnFromSubroutine/>
+
+		<label id="checkLength"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="length" type="Absolute16"/>
+
+		<cpu:OrAccumulatorWithImmediate16Address/>
+		<addressOf ref="length" type="Absolute16" offset="1"/>
+
+		<cpu:OrAccumulatorWithImmediate16Address/>
+		<addressOf ref="length" type="Absolute16" offset="2"/>
+
+		<cpu:OrAccumulatorWithImmediate16Address/>
+		<addressOf ref="length" type="Absolute16" offset="3"/>
+
+		<cpu:ReturnFromSubroutine/>
+
+		<var:integer id="position">0</var:integer>
+		<var:integer id="length">0</var:integer>
+		<var:byte id="type">0</var:byte>
 	</label>
 </scope>
