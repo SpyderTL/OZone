@@ -291,78 +291,6 @@
 
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="createString" type="Absolute16"/>
-	
-	<!--<int:Copy value="8" destination="String32.Length"/>
-	
-	<cpu:CallImmediate16Address/>
-	<addressOf ref="String32.Create" type="Absolute16"/>
-	
-	<cpu:CopyImmediate8ToAccumulator/>
-	<string>T</string>
-
-	<cpu:CallImmediate16Address/>
-	<addressOf ref="String32.Append" type="Absolute16"/>
-	
-	<cpu:CopyImmediate8ToAccumulator/>
-	<string>e</string>
-
-	<cpu:CallImmediate16Address/>
-	<addressOf ref="String32.Append" type="Absolute16"/>
-	
-	<cpu:CopyImmediate8ToAccumulator/>
-	<string>s</string>
-
-	<cpu:CallImmediate16Address/>
-	<addressOf ref="String32.Append" type="Absolute16"/>
-	
-	<cpu:CopyImmediate8ToAccumulator/>
-	<string>t</string>
-
-	<cpu:CallImmediate16Address/>
-	<addressOf ref="String32.Append" type="Absolute16"/>-->
-	
-	<int:Copy source="String32.Address" destination="Dictionary32.Key"/>
-
-	<int:Copy value="8" destination="String32.Length"/>
-
-	<cpu:CallImmediate16Address/>
-	<addressOf ref="String32.Create" type="Absolute16"/>
-
-	<cpu:CopyImmediate8ToAccumulator/>
-	<string>b</string>
-
-	<cpu:CallImmediate16Address/>
-	<addressOf ref="String32.Append" type="Absolute16"/>
-
-	<int:Copy source="String32.Address" destination="Object32.Address"/>
-
-	<int:Copy value="5" destination="Object32.Length"/>
-
-	<cpu:CopyImmediate8ToAccumulator/>
-	<byte>3</byte>
-
-	<cpu:CopyAccumulatorToImmediate16Address/>
-	<addressOf ref="Object32.Type" type="Absolute16"/>
-
-	<cpu:CallImmediate16Address/>
-	<addressOf ref="Object32.Create" type="Absolute16"/>
-
-	<int:Copy source="Object32.Address" destination="Dictionary32.Value"/>
-
-	<cpu:CallImmediate16Address/>
-	<addressOf ref="Dictionary32.Append" type="Absolute16"/>
-
-	<!--Test dictionary entries-->
-	<int:Copy value="8" destination="String32.Length"/>
-
-	<cpu:CallImmediate16Address/>
-	<addressOf ref="String32.Create" type="Absolute16"/>
-
-	<cpu:CopyImmediate8ToAccumulator/>
-	<string>b</string>
-
-	<cpu:CallImmediate16Address/>
-	<addressOf ref="String32.Append" type="Absolute16"/>
 
 	<int:Copy source="String32.Address" destination="Dictionary32.Key"/>
 
@@ -422,16 +350,20 @@
 	<!--Test dictionary entries-->
 	<int:Copy source="Object32.Address" destination="Dictionary32.Value"/>
 
-	<int:Copy value="8" destination="String32.Length"/>
+	<cpu:CopyImmediate8ToAccumulator/>
+	<addressOf ref="Self" type="Absolute16Low8"/>
 
-	<cpu:CallImmediate16Address/>
-	<addressOf ref="String32.Create" type="Absolute16"/>
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="MemoryReader.Position" type="Absolute16"/>
 
 	<cpu:CopyImmediate8ToAccumulator/>
-	<string>c</string>
+	<addressOf ref="Self" type="Absolute16High8"/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="MemoryReader.Position"  type="Absolute16" offset="1"/>
 
 	<cpu:CallImmediate16Address/>
-	<addressOf ref="String32.Append" type="Absolute16"/>
+	<addressOf ref="createString" type="Absolute16"/>
 
 	<int:Copy source="String32.Address" destination="Dictionary32.Key"/>
 
@@ -749,125 +681,174 @@
 	</label>
 
 	<label id="drawObject">
-		<int:Add ref="result" value="8" destination="MemoryReader32.Position"/>
+		<scope>
+			<int:Add ref="result" value="8" destination="MemoryReader32.Position"/>
 
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader32.ReadByte" type="Absolute16"/>
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="MemoryReader32.ReadByte" type="Absolute16"/>
 
-		<!--Byte Array-->
-		<cpu:CompareAccumulatorToImmediate8/>
-		<byte>0</byte>
+			<!--Byte Array-->
+			<cpu:CompareAccumulatorToImmediate8/>
+			<byte>0</byte>
 
-		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="notByteArray" type="Relative8"/>
+			<cpu:BranchToRelative8IfNotEqual/>
+			<addressOf ref="notByteArray" type="Relative8"/>
 
-		<cpu:ReturnFromSubroutine/>
+			<cpu:ReturnFromSubroutine/>
 
-		<label id="notByteArray"/>
+			<label id="notByteArray"/>
 
-		<!--Integer-->
-		<cpu:CompareAccumulatorToImmediate8/>
-		<byte>1</byte>
+			<!--Integer-->
+			<cpu:CompareAccumulatorToImmediate8/>
+			<byte>1</byte>
 
-		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="notInteger" type="Relative8"/>
+			<cpu:BranchToRelative8IfNotEqual/>
+			<addressOf ref="notInteger" type="Relative8"/>
 
-		<cpu:ReturnFromSubroutine/>
+			<cpu:ReturnFromSubroutine/>
 
-		<label id="notInteger"/>
+			<label id="notInteger"/>
 
-		<!--Decimal-->
-		<cpu:CompareAccumulatorToImmediate8/>
-		<byte>2</byte>
+			<!--Decimal-->
+			<cpu:CompareAccumulatorToImmediate8/>
+			<byte>2</byte>
 
-		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="notDecimal" type="Relative8"/>
+			<cpu:BranchToRelative8IfNotEqual/>
+			<addressOf ref="notDecimal" type="Relative8"/>
 
-		<cpu:ReturnFromSubroutine/>
+			<cpu:ReturnFromSubroutine/>
 
-		<label id="notDecimal"/>
+			<label id="notDecimal"/>
 
-		<!--String-->
-		<cpu:CompareAccumulatorToImmediate8/>
-		<byte>3</byte>
+			<!--String-->
+			<cpu:CompareAccumulatorToImmediate8/>
+			<byte>3</byte>
 
-		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="notString" type="Relative8"/>
+			<cpu:BranchToRelative8IfNotEqual/>
+			<addressOf ref="notString" type="Relative8"/>
 
-		<int:Copy source="result" destination="MemoryReader32.Position"/>
+			<int:Copy source="result" destination="MemoryReader32.Position"/>
 
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader32.ReadInteger" type="Absolute16"/>
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="MemoryReader32.ReadInteger" type="Absolute16"/>
 
-		<int:Copy source="MemoryReader32.Value" destination="MemoryReader32.Position"/>
+			<int:Copy source="MemoryReader32.Value" destination="MemoryReader32.Position"/>
 
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="drawString32" type="Absolute16"/>
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="drawString32" type="Absolute16"/>
 
-		<cpu:ReturnFromSubroutine/>
+			<cpu:ReturnFromSubroutine/>
 
-		<label id="notString"/>
+			<label id="notString"/>
 
-		<!--Array-->
-		<cpu:CompareAccumulatorToImmediate8/>
-		<byte>4</byte>
+			<!--Array-->
+			<cpu:CompareAccumulatorToImmediate8/>
+			<byte>4</byte>
 
-		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="notArray" type="Relative8"/>
+			<cpu:BranchToRelative8IfNotEqual/>
+			<addressOf ref="notArray" type="Relative8"/>
 
-		<cpu:ReturnFromSubroutine/>
+			<cpu:ReturnFromSubroutine/>
 
-		<label id="notArray"/>
+			<label id="notArray"/>
 
-		<!--List-->
-		<cpu:CompareAccumulatorToImmediate8/>
-		<byte>5</byte>
+			<!--List-->
+			<cpu:CompareAccumulatorToImmediate8/>
+			<byte>5</byte>
 
-		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="notList" type="Relative8"/>
+			<cpu:BranchToRelative8IfNotEqual/>
+			<addressOf ref="notList" type="Relative8"/>
 
-		<cpu:ReturnFromSubroutine/>
+			<cpu:ReturnFromSubroutine/>
 
-		<label id="notList"/>
+			<label id="notList"/>
 
-		<!--Dictionary-->
-		<cpu:CompareAccumulatorToImmediate8/>
-		<byte>6</byte>
+			<!--Dictionary-->
+			<cpu:CompareAccumulatorToImmediate8/>
+			<byte>6</byte>
 
-		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="notDictionary" type="Relative8"/>
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="dictionary" type="Relative8"/>
 
-		<cpu:CopyImmediate8ToAccumulator/>
-		<addressOf ref="Dictionary" type="Absolute16Low8"/>
+			<cpu:JumpToImmediate16Address/>
+			<addressOf ref="dictionary" type="Absolute16"/>
+				
+			<label id="dictionary"/>
+				   
+			<int:Copy source="result" destination="MemoryReader32.Position"/>
 
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16"/>
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="MemoryReader32.ReadInteger" type="Absolute16"/>
 
-		<cpu:CopyImmediate8ToAccumulator/>
-		<addressOf ref="Dictionary" type="Absolute16High8"/>
+			<int:Copy source="MemoryReader32.Value" destination="MemoryReader32.Position"/>
 
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="MemoryReader.Position" type="Absolute16" offset="1"/>
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="MemoryReader32.ReadInteger" type="Absolute16"/>
 
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="drawString" type="Absolute16"/>
+			<int:Copy source="MemoryReader32.Value" destination="count"/>
+			
+			<label id="forEachItem"/>
+			
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="MemoryReader32.ReadInteger" type="Absolute16"/>
+			
+			<int:Copy source="MemoryReader32.Position" destination="position"/>
+			
+			<int:Copy source="MemoryReader32.Value" destination="MemoryReader32.Position"/>
+			
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="drawString32" type="Absolute16"/>
+			
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="newLine" type="Absolute16"/>
+			
+			<int:Add ref="position" value="4" destination="MemoryReader32.Position"/>
+			
+			<int:Subtract ref="count" value="1" destination="count"/>
+			
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="count" type="Absolute16"/>
+			
+			<cpu:OrAccumulatorWithImmediate16Address/>
+			<addressOf ref="count" type="Absolute16" offset="1"/>
+			
+			<cpu:OrAccumulatorWithImmediate16Address/>
+			<addressOf ref="count" type="Absolute16" offset="2"/>
+			
+			<cpu:OrAccumulatorWithImmediate16Address/>
+			<addressOf ref="count" type="Absolute16" offset="3"/>
+			
+			<cpu:BranchToRelative8IfZero/>
+			<addressOf ref="lastItem" type="Relative8"/>
+			
+			<cpu:JumpToImmediate16Address/>
+			<addressOf ref="forEachItem" type="Absolute16"/>
+			
+			<label id="lastItem"/>
 
-		<cpu:ReturnFromSubroutine/>
+			<cpu:ReturnFromSubroutine/>
 
-		<label id="notDictionary"/>
+			<label id="notDictionary"/>
 
-		<!--Function-->
-		<cpu:CompareAccumulatorToImmediate8/>
-		<byte>7</byte>
+			<!--Function-->
+			<cpu:CompareAccumulatorToImmediate8/>
+			<byte>7</byte>
 
-		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="notFunction" type="Relative8"/>
+			<cpu:BranchToRelative8IfNotEqual/>
+			<addressOf ref="notFunction" type="Relative8"/>
 
-		<cpu:ReturnFromSubroutine/>
+			<cpu:ReturnFromSubroutine/>
 
-		<label id="notFunction"/>
+			<label id="notFunction"/>
 
-		<cpu:ReturnFromSubroutine/>
+			<cpu:ReturnFromSubroutine/>
+
+			<label id="position"/>
+			<int>0</int>
+
+			<label id="count"/>
+			<int>0</int>
+		</scope>
 	</label>
 
 	<label id="drawString">
@@ -1663,6 +1644,7 @@
 	<var:string id="Function">Function</var:string>
 
 	<var:string id="Test">Test</var:string>
+	<var:string id="Self">Self</var:string>
 
 	<label id="test">
 		<int:Copy value="16" destination="String32.Length"/>
