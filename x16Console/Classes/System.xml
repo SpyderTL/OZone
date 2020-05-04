@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:var="http://metalx.org/Variable"
+	xmlns:int="http://metalx.org/6502/Functions/Integer">
+	
+	<label id="Create" export="System.Create">
+		<int:Copy value="8" destination="Dictionary32.Length"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Dictionary32.Create" type="Absolute16"/>
+		
+		<!--GetTime-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="GetTime_Name" type="Absolute16Low8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="GetTime_Name" type="Absolute16High8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16" offset="1"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader.ReadString" type="Absolute16"/>
+		
+		<int:Copy source="String32.Address" destination="Dictionary32.Key"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="GetTime" type="Absolute16Low8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object32.Address" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="GetTime" type="Absolute16High8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object32.Address" type="Absolute16" offset="1"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object32.Address" type="Absolute16" offset="2"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object32.Address" type="Absolute16" offset="3"/>
+		
+		<int:Copy value="0" destination="Object32.Length"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>7</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object32.Type" type="Absolute16"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Object32.Create" type="Absolute16"/>
+		
+		<int:Copy source="Object32.Address" destination="Dictionary32.Value"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Dictionary32.Append" type="Absolute16"/>
+		
+		<!--Create Object-->
+		<int:Copy source="Dictionary32.Address" destination="Object32.Address"/>
+		
+		<int:Copy value="70" destination="Object32.Length"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>6</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object32.Type" type="Absolute16"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Object32.Create" type="Absolute16"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<var:string id="GetTime_Name">GetTime</var:string>
+	
+	<label id="GetTime">
+			
+	
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+</scope>

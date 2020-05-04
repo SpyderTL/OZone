@@ -55,6 +55,73 @@
 		<cpu:ReturnFromSubroutine/>
 	</label>
 
+	<label id="ReadString" export="MemoryReader.ReadString">
+		<scope>
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="ReadShort" type="Absolute16"/>
+
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="Value" type="Absolute16"/>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="String32.Length" type="Absolute16"/>
+
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="Value" type="Absolute16" offset="1"/>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="String32.Length" type="Absolute16" offset="1"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="String32.Length" type="Absolute16" offset="2"/>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="String32.Length" type="Absolute16" offset="3"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="String32.Create" type="Absolute16"/>
+
+			<label id="forEachCharacter"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="ReadByte" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="String32.Append" type="Absolute16"/>
+
+			<cpu:SetCarryFlag/>
+
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="Value" type="Absolute16"/>
+
+			<cpu:SubtractImmediate8FromAccumulator/>
+			<byte>1</byte>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="Value" type="Absolute16" />
+
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="Value" type="Absolute16" offset="1"/>
+
+			<cpu:SubtractImmediate8FromAccumulator/>
+			<byte>0</byte>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="Value" type="Absolute16" offset="1" />
+
+			<cpu:OrAccumulatorWithImmediate16Address/>
+			<addressOf ref="Value" type="Absolute16"/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="forEachCharacter" type="Relative8"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
 	<label id="Skip" export="MemoryReader.Skip">
 		<cpu:ClearCarryFlag/>
 

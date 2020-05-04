@@ -26,7 +26,8 @@ namespace x16Console
 				"../../Modules/MemoryWriter32.xml",
 				"../../Modules/Object32.xml",
 				"../../Modules/String32.xml",
-				"../../Modules/System.xml"
+				"../../Modules/System.xml",
+				"../../Classes/System.xml",
 			};
 
 			var transformFiles = new KeyValuePair<string, string>[]
