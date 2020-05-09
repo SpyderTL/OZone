@@ -68,9 +68,14 @@
 		<cpu:CompareAccumulatorToImmediate8/>
 		<byte>6</byte>
 
-		<cpu:BranchToRelative8IfNotEqual/>
-		<addressOf ref="notDictionary" type="Relative8"/>
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="dictionary" type="Relative8"/>
+		
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="notDictionary" type="Absolute16"/>
 
+		<label id="dictionary"/>
+		
 		<int:Copy source="Result" destination="MemoryReader32.Position"/>
 
 		<cpu:CallImmediate16Address/>
@@ -102,10 +107,49 @@
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Dictionary32.Find" type="Absolute16"/>
 
-		<cpu:BranchToRelative8IfCarry/>
-		<addressOf ref="notFound" type="Relative8"/>
+		<cpu:BranchToRelative8IfNotCarry/>
+		<addressOf ref="found" type="Relative8"/>
+		
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="notFound" type="Absolute16"/>
+		
+		<label id="found"/>
 
 		<int:Copy source="Dictionary32.Value" destination="Result"/>
+		
+		<!--Check Function-->
+		<int:Add ref="Result" value="8" destination="MemoryReader32.Position"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader32.ReadByte" type="Absolute16"/>
+
+		<!--Function-->
+		<cpu:CompareAccumulatorToImmediate8/>
+		<byte>7</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFunction3" type="Relative8"/>
+		
+		<int:Copy source="Result" destination="MemoryReader32.Position"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader32.ReadByte" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Function.Address" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader32.ReadByte" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Function.Address" type="Absolute16" offset="1"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Function.Execute" type="Absolute16"/>
+
+		<int:Copy source="Function.Result" destination="Result"/>
+		
+		<label id="notFunction3"/>
 		
 		<cpu:JumpToImmediate16Address/>
 		<addressOf ref="forEachObject" type="Absolute16"/>
@@ -159,7 +203,20 @@
 		<cpu:ReturnFromSubroutine/>
 
 		<label id="notString"/>
-		
+
+		<!--Integer-->
+		<cpu:CompareAccumulatorToImmediate8/>
+		<byte>1</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notInteger" type="Relative8"/>
+
+		<cpu:ClearCarryFlag/>
+
+		<cpu:ReturnFromSubroutine/>
+
+		<label id="notInteger"/>
+
 		<cpu:SetCarryFlag/>
 
 		<cpu:ReturnFromSubroutine/>
@@ -167,13 +224,13 @@
 		<label id="lastToken"/>
 		
 		<!--Find Member-->
-		<int:Add ref="Result" value="8" destination="MemoryReader32.Position"/>
+		<!--<int:Add ref="Result" value="8" destination="MemoryReader32.Position"/>
 
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader32.ReadByte" type="Absolute16"/>
+		<addressOf ref="MemoryReader32.ReadByte" type="Absolute16"/>-->
 
 		<!--Function-->
-		<cpu:CompareAccumulatorToImmediate8/>
+		<!--<cpu:CompareAccumulatorToImmediate8/>
 		<byte>7</byte>
 
 		<cpu:BranchToRelative8IfNotEqual/>
@@ -198,7 +255,7 @@
 
 		<int:Copy source="Function.Result" destination="Result"/>
 		
-		<label id="notFunction2"/>
+		<label id="notFunction2"/>-->
 		
 		<cpu:ClearCarryFlag/>
 		

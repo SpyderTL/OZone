@@ -613,6 +613,21 @@
 			<cpu:BranchToRelative8IfNotEqual/>
 			<addressOf ref="notInteger" type="Relative8"/>
 
+			<int:Copy source="result" destination="MemoryReader32.Position"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="MemoryReader32.ReadInteger" type="Absolute16"/>
+
+			<int:Copy source="MemoryReader32.Value" destination="Integer.Value"/>
+			
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="Integer.ToString" type="Absolute16"/>
+			
+			<int:Copy source="String32.Address" destination="MemoryReader32.Position"/>
+			
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="drawString32" type="Absolute16"/>
+			
 			<cpu:ReturnFromSubroutine/>
 
 			<label id="notInteger"/>

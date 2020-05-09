@@ -20,6 +20,7 @@ namespace x16Console
 				"../../Modules/Command.xml",
 				"../../Modules/Dictionary32.xml",
 				"../../Modules/Function.xml",
+				"../../Modules/Integer.xml",
 				"../../Modules/MemoryManager32.xml",
 				"../../Modules/MemoryReader.xml",
 				"../../Modules/MemoryReader32.xml",

@@ -87,9 +87,91 @@
 	<var:string id="GetTime_Name">GetTime</var:string>
 	
 	<label id="GetTime">
-			
+		<int:Copy value="8" destination="Dictionary32.Length"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Dictionary32.Create" type="Absolute16"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="System.GetDateTime" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="year" type="Absolute16Low8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16"/>
 	
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="year" type="Absolute16High8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16" offset="1"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader.ReadString" type="Absolute16"/>
+		
+		<int:Copy source="String32.Address" destination="Dictionary32.Key"/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>02</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object32.Address" type="Absolute16"/>
+	
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>03</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object32.Address" type="Absolute16" offset="1"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object32.Address" type="Absolute16" offset="2"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object32.Address" type="Absolute16" offset="3"/>
+		
+		<int:Copy value="0" destination="Object32.Length"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>1</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object32.Type" type="Absolute16"/>
+	
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Object32.Create" type="Absolute16"/>
+		
+		<int:Copy source="Object32.Address" destination="Dictionary32.Value"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Dictionary32.Append" type="Absolute16"/>
+		
+		<int:Copy source="Dictionary32.Address" destination="Object32.Address"/>
+		
+		<int:Copy value="70" destination="Object32.Length"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>6</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object32.Type" type="Absolute16"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Object32.Create" type="Absolute16"/>
+		
+		<int:Copy source="Object32.Address" destination="Function.Result"/>
+		
 		<cpu:ReturnFromSubroutine/>
 	</label>
 
+	<var:string id="year">Year</var:string>
+	<var:string id="month">Month</var:string>
+	<var:string id="day">Day</var:string>
+	<var:string id="hour">Hour</var:string>
+	<var:string id="minute">Minute</var:string>
+	<var:string id="second">Second</var:string>
+	<var:string id="jiffy">Jiffy</var:string>
 </scope>
