@@ -16,6 +16,8 @@ namespace x16Game
 			var transformFiles = new KeyValuePair<string, string>[]
 			{
 				new KeyValuePair<string, string>("http://metalx.org/Commodore64/Petscii", "../../../OZone/Platforms/Commodore/C64/Petscii.xslt"),
+				new KeyValuePair<string, string>("http://metalx.org/6502/Functions/Short", "../../../OZone/Functions/6502/Short.xslt"),
+				new KeyValuePair<string, string>("http://metalx.org/6502/Functions/Integer", "../../../OZone/Functions/6502/Integer.xslt"),
 				new KeyValuePair<string, string>("http://metalx.org/Variable", "../../../OZone/Structures/6502/Variable.xslt"),
 				new KeyValuePair<string, string>("http://metalx.org/Mos/6502/Operators", "../../../OZone/Platforms/Mos/6502/Operators.xslt")
 			};
@@ -24,6 +26,10 @@ namespace x16Game
 			{
 				"../../x16Program.xml",
 				"../../x16Game.xml",
+				"../../Modules/Graphics.xml",
+				"../../Modules/MemoryReader.xml",
+				"../../Modules/Screen.xml",
+				"../../Modules/Sprite.xml",
 				"../../Modules/Video.xml",
 			};
 

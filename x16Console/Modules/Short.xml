@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:mem="http://metalx.org/6502/Functions/Memory"
+	xmlns:str="http://metalx.org/6502/Functions/String"
+	xmlns:int="http://metalx.org/6502/Functions/Integer"
+	xmlns:mm="http://metalx.org/6502/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<label id="Value" export="Integer.Value"/>
+	<int>0</int>
+
+	<label id="ToString" export="Integer.ToString">
+		<int:Copy value="10" destination="String32.Length"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="String32.Create" type="Absolute16"/>
+		
+		<!--Set Count-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>10</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="count" type="Absolute16"/>
+		
+		<!--Set Index-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="index" type="Absolute16"/>
+		
+		<label id="forEachDigit"/>
+		
+		<!--Get Value-->
+		
+		<!--Reset Character-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<string>0</string>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="character" type="Absolute16"/>
+		
+		<!--Append Character-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="character" type="Absolute16"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="String32.Append" type="Absolute16"/>
+		
+		<!--Decrement Count-->
+		<cpu:DecrementImmediate16Address/>
+		<addressOf ref="count" type="Absolute16"/>
+		
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="forEachDigit" type="Relative8"/>
+
+		<cpu:ReturnFromSubroutine/>
+	
+		<label id="character"/>
+		<string>0</string>
+		
+		<label id="value"/>
+		<int>0</int>
+	
+		<label id="index"/>
+		<byte>0</byte>
+	
+		<label id="count"/>
+		<byte>10</byte>
+	</label>
+
+	<label id="digits">
+		<int>1000000000</int>
+		<int>0100000000</int>
+		<int>0010000000</int>
+		<int>0001000000</int>
+		<int>0000100000</int>
+		<int>0000010000</int>
+		<int>0000001000</int>
+		<int>0000000100</int>
+		<int>0000000010</int>
+		<int>0000000001</int>
+	</label>
+</scope>

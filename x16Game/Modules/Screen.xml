@@ -12,22 +12,16 @@
 	xmlns:ascii="http://metalx.org/Ansi/Ascii"
 	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
 	xmlns:var="http://metalx.org/Variable">
-
-	<label id="Enable" export="Graphics.Enable">
-		
-		
-		<cpu:ReturnFromSubroutine/>
-	</label>
-
-	<label id="LoadPalette" export="Graphics.LoadPalette">
+ 
+	<label id="Clear" export="Screen.Clear">
 		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>11</hex>
+		<hex>10</hex>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Video.AddressHigh" type="Absolute16"/>
 
 		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>fa</hex>
+		<hex>00</hex>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Video.AddressMid" type="Absolute16"/>
@@ -37,23 +31,39 @@
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Video.AddressLow" type="Absolute16"/>
-		
-		<cpu:CopyImmediate8AddressToXIndex/>
-		<byte>32</byte>
-		
-		<label id="forEachColor"/>
-		
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
-		
+
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>61</byte>
+
+		<label id="loopY"/>
+
+		<cpu:CopyImmediate8ToXIndex/>
+		<byte>128</byte>
+
+		<label id="loopX"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<petscii:Space/>
+
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Video.Data0" type="Absolute16"/>
-		
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>01</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Video.Data0" type="Absolute16"/>
+
 		<cpu:DecrementXIndex/>
-		
+
 		<cpu:BranchToRelative8IfNotZero/>
-		<addressOf ref="forEachColor" type="Relative8"/>
-		
+		<addressOf ref="loopX" type="Relative8"/>
+
+		<cpu:DecrementYIndex/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="loopY" type="Relative8"/>
+
 		<cpu:ReturnFromSubroutine/>
 	</label>
 </scope>
