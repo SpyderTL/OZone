@@ -42,6 +42,9 @@
 
 	<label id="Palette" export="Sprite.Palette"/>
 	<byte>0</byte>
+	
+	<label id="Collision" export="Sprite.Collision"/>
+	<byte>0</byte>
 
 	<label id="Enable" export="Sprite.Enable">
 		<cpu:CopyImmediate8ToAccumulator/>
@@ -172,12 +175,18 @@
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Video.Data0" type="Absolute16"/>
 		
-		<!--Depth / Flip Vertical / Flip Horizontal-->
+		<!--Collision / Depth / Flip Vertical / Flip Horizontal-->
 		<cpu:CopyImmediate16AddressToAccumulator/>
-		<addressOf ref="Depth" type="Absolute16"/>
-		
+		<addressOf ref="Collision" type="Absolute16"/>
+
 		<cpu:ShiftAccumulatorLeft/>
-		
+		<cpu:ShiftAccumulatorLeft/>
+
+		<cpu:OrAccumulatorWithImmediate16Address/>
+		<addressOf ref="Depth" type="Absolute16"/>
+
+		<cpu:ShiftAccumulatorLeft/>
+
 		<cpu:OrAccumulatorWithImmediate16Address/>
 		<addressOf ref="FlipVertical" type="Absolute16"/>
 	

@@ -28,6 +28,7 @@ namespace x16Game
 				"../../x16Game.xml",
 				"../../Modules/Graphics.xml",
 				"../../Modules/MemoryReader.xml",
+				"../../Modules/Object.xml",
 				"../../Modules/Screen.xml",
 				"../../Modules/Sprite.xml",
 				"../../Modules/Video.xml",
