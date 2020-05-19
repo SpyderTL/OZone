@@ -26,7 +26,10 @@ namespace x16Game
 			{
 				"../../x16Program.xml",
 				"../../x16Game.xml",
+				"../../Modules/Controller.xml",
 				"../../Modules/Graphics.xml",
+				"../../Modules/Level.xml",
+				"../../Modules/Logic.xml",
 				"../../Modules/MemoryReader.xml",
 				"../../Modules/Object.xml",
 				"../../Modules/Random.xml",

@@ -35,13 +35,16 @@
 	<label id="loop"/>
 
 	<cpu:CallImmediate16Address/>
-	<addressOf ref="wait" type="Absolute16"/>
+	<addressOf ref="updateInput" type="Absolute16"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="Level.Update" type="Absolute16"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="Logic.Update" type="Absolute16"/>
 
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="scrollStars" type="Absolute16"/>
-
-	<cpu:CallImmediate16Address/>
-	<addressOf ref="updateInput" type="Absolute16"/>
 
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="updateProjectiles" type="Absolute16"/>
@@ -49,6 +52,9 @@
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="handleCollisions" type="Absolute16"/>
 
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="wait" type="Absolute16"/>
+	
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="updateObjects" type="Absolute16"/>
 
@@ -433,12 +439,25 @@
 
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Sprite.Update" type="Absolute16"/>
+		
+		<!--Set Logic-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Logic.Controller" type="Absolute16Low8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+		<addressOf ref="Object.Logic" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Logic.Controller" type="Absolute16High8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+		<addressOf ref="Object.Logic2" type="Absolute16"/>
 
 		<cpu:ReturnFromSubroutine/>
 	</label>
 
 	<label id="loadLevel">
-		<cpu:CopyImmediate8ToYIndex/>
+		<!--<cpu:CopyImmediate8ToYIndex/>
 		<byte>1</byte>
 
 		<cpu:CopyImmediate8ToAccumulator/>
@@ -471,7 +490,7 @@
 		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
 		<addressOf ref="Object.Y2" type="Absolute16"/>
 
-		<!--Update Sprite-->
+		--><!--Update Sprite--><!--
 		<cpu:CopyImmediate8ToAccumulator/>
 		<hex>00</hex>
 
@@ -553,6 +572,33 @@
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Sprite.Update" type="Absolute16"/>
 
+		--><!--Set Logic--><!--
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Logic.Enemy" type="Absolute16Low8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+		<addressOf ref="Object.Logic" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Logic.Enemy" type="Absolute16High8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+		<addressOf ref="Object.Logic2" type="Absolute16"/>-->
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Level.Level1" type="Absolute16Low8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Level.Next" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Level.Level1" type="Absolute16High8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Level.Next" type="Absolute16" offset="1"/>
+		
+		<short:Copy value="240" destination="Level.Timer"/>
+		
 		<cpu:ReturnFromSubroutine/>
 	</label>
 
@@ -878,173 +924,170 @@
 	</label>
 
 	<label id="updateInput">
-		<scope>
-			<cpu:CallImmediate16Address/>
-			<addressOf ref="Kernal.ScanJoysticks" type="Absolute16"/>
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Controller.Update" type="Absolute16"/>
+		
+		<!--<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Controller.State" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>22</hex>
+		
+		<cpu:AndAccumulatorWithImmediate8/>
+		<binary>00001000</binary>
 
-			<cpu:CallImmediate16Address/>
-			<addressOf ref="Kernal.GetJoystick" type="Absolute16"/>
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="notUp" type="Relative8"/>
 
-			<cpu:CopyAccumulatorToImmediate8Address/>
-			<hex>22</hex>
+		<cpu:SetCarryFlag/>
 
-			<cpu:AndAccumulatorWithImmediate8/>
-			<binary>00001000</binary>
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Object.Y" type="Absolute16"/>
 
-			<cpu:BranchToRelative8IfNotZero/>
-			<addressOf ref="notUp" type="Relative8"/>
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>4</byte>
 
-			<cpu:SetCarryFlag/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object.Y" type="Absolute16"/>
 
-			<cpu:CopyImmediate16AddressToAccumulator/>
-			<addressOf ref="Object.Y" type="Absolute16"/>
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Object.Y2" type="Absolute16"/>
 
-			<cpu:SubtractImmediate8FromAccumulator/>
-			<byte>4</byte>
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>0</byte>
 
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Object.Y" type="Absolute16"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object.Y2" type="Absolute16"/>
 
-			<cpu:CopyImmediate16AddressToAccumulator/>
-			<addressOf ref="Object.Y2" type="Absolute16"/>
+		<label id="notUp"/>
 
-			<cpu:SubtractImmediate8FromAccumulator/>
-			<byte>0</byte>
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>22</hex>
 
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Object.Y2" type="Absolute16"/>
+		<cpu:AndAccumulatorWithImmediate8/>
+		<binary>00000100</binary>
 
-			<label id="notUp"/>
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="notDown" type="Relative8"/>
 
-			<cpu:CopyImmediate8AddressToAccumulator/>
-			<hex>22</hex>
+		<cpu:ClearCarryFlag/>
 
-			<cpu:AndAccumulatorWithImmediate8/>
-			<binary>00000100</binary>
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Object.Y" type="Absolute16"/>
 
-			<cpu:BranchToRelative8IfNotZero/>
-			<addressOf ref="notDown" type="Relative8"/>
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>4</byte>
 
-			<cpu:ClearCarryFlag/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object.Y" type="Absolute16"/>
 
-			<cpu:CopyImmediate16AddressToAccumulator/>
-			<addressOf ref="Object.Y" type="Absolute16"/>
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Object.Y2" type="Absolute16"/>
 
-			<cpu:AddImmediate8ToAccumulator/>
-			<byte>4</byte>
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>0</byte>
 
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Object.Y" type="Absolute16"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object.Y2" type="Absolute16"/>
 
-			<cpu:CopyImmediate16AddressToAccumulator/>
-			<addressOf ref="Object.Y2" type="Absolute16"/>
+		<label id="notDown"/>
 
-			<cpu:AddImmediate8ToAccumulator/>
-			<byte>0</byte>
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>22</hex>
 
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Object.Y2" type="Absolute16"/>
+		<cpu:AndAccumulatorWithImmediate8/>
+		<binary>00000010</binary>
 
-			<label id="notDown"/>
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="notLeft" type="Relative8"/>
 
-			<cpu:CopyImmediate8AddressToAccumulator/>
-			<hex>22</hex>
+		<cpu:SetCarryFlag/>
 
-			<cpu:AndAccumulatorWithImmediate8/>
-			<binary>00000010</binary>
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Object.X" type="Absolute16"/>
 
-			<cpu:BranchToRelative8IfNotZero/>
-			<addressOf ref="notLeft" type="Relative8"/>
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>4</byte>
 
-			<cpu:SetCarryFlag/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object.X" type="Absolute16"/>
 
-			<cpu:CopyImmediate16AddressToAccumulator/>
-			<addressOf ref="Object.X" type="Absolute16"/>
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Object.X2" type="Absolute16"/>
 
-			<cpu:SubtractImmediate8FromAccumulator/>
-			<byte>4</byte>
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>0</byte>
 
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Object.X" type="Absolute16"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object.X2" type="Absolute16"/>
 
-			<cpu:CopyImmediate16AddressToAccumulator/>
-			<addressOf ref="Object.X2" type="Absolute16"/>
+		<label id="notLeft"/>
 
-			<cpu:SubtractImmediate8FromAccumulator/>
-			<byte>0</byte>
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>22</hex>
 
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Object.X2" type="Absolute16"/>
+		<cpu:AndAccumulatorWithImmediate8/>
+		<binary>00000001</binary>
 
-			<label id="notLeft"/>
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="notRight" type="Relative8"/>
 
-			<cpu:CopyImmediate8AddressToAccumulator/>
-			<hex>22</hex>
+		<cpu:ClearCarryFlag/>
 
-			<cpu:AndAccumulatorWithImmediate8/>
-			<binary>00000001</binary>
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Object.X" type="Absolute16"/>
 
-			<cpu:BranchToRelative8IfNotZero/>
-			<addressOf ref="notRight" type="Relative8"/>
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>4</byte>
 
-			<cpu:ClearCarryFlag/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object.X" type="Absolute16"/>
 
-			<cpu:CopyImmediate16AddressToAccumulator/>
-			<addressOf ref="Object.X" type="Absolute16"/>
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Object.X2" type="Absolute16"/>
 
-			<cpu:AddImmediate8ToAccumulator/>
-			<byte>4</byte>
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>0</byte>
 
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Object.X" type="Absolute16"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object.X2" type="Absolute16"/>
 
-			<cpu:CopyImmediate16AddressToAccumulator/>
-			<addressOf ref="Object.X2" type="Absolute16"/>
+		<label id="notRight"/>
 
-			<cpu:AddImmediate8ToAccumulator/>
-			<byte>0</byte>
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>22</hex>
 
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Object.X2" type="Absolute16"/>
+		<cpu:AndAccumulatorWithImmediate8/>
+		<binary>10000000</binary>
 
-			<label id="notRight"/>
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="notFire" type="Relative8"/>
 
-			<cpu:CopyImmediate8AddressToAccumulator/>
-			<hex>22</hex>
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="last" type="Absolute16"/>
 
-			<cpu:AndAccumulatorWithImmediate8/>
-			<binary>10000000</binary>
+		<cpu:AndAccumulatorWithImmediate8/>
+		<binary>10000000</binary>
 
-			<cpu:BranchToRelative8IfNotZero/>
-			<addressOf ref="notFire" type="Relative8"/>
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notFire" type="Relative8"/>
 
-			<cpu:CopyImmediate16AddressToAccumulator/>
-			<addressOf ref="last" type="Absolute16"/>
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="createProjectile" type="Absolute16"/>
 
-			<cpu:AndAccumulatorWithImmediate8/>
-			<binary>10000000</binary>
+		<label id="notFire"/>
 
-			<cpu:BranchToRelative8IfZero/>
-			<addressOf ref="notFire" type="Relative8"/>
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>22</hex>
 
-			<cpu:CallImmediate16Address/>
-			<addressOf ref="createProjectile" type="Absolute16"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="last" type="Absolute16"/>
 
-			<label id="notFire"/>
+		<cpu:ReturnFromSubroutine/>-->
 
-			<cpu:CopyImmediate8AddressToAccumulator/>
-			<hex>22</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="last" type="Absolute16"/>
-
-			<cpu:ReturnFromSubroutine/>
-
-			<var:byte id="last">0</var:byte>
-
-			<label id="Kernal.ScanJoysticks" offset="FF53"/>
-			<label id="Kernal.GetJoystick" offset="FF56"/>
-		</scope>
+		<!--<var:byte id="last">0</var:byte>-->
+			
+		<cpu:ReturnFromSubroutine/>
 	</label>
 
 	<label id="createProjectile">
@@ -1169,6 +1212,19 @@
 
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Sprite.Update" type="Absolute16"/>
+
+		<!--Set Logic-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Logic.Projectile" type="Absolute16Low8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+		<addressOf ref="Object.Logic" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Logic.Projectile" type="Absolute16High8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+		<addressOf ref="Object.Logic2" type="Absolute16"/>
 
 		<cpu:ReturnFromSubroutine/>
 	</label>
@@ -1333,21 +1389,21 @@
 	</label>
 
 	<label id="sprite3">
-		<hex>0000001000000000</hex>
-		<hex>0000001000000000</hex>
-		<hex>0000001101000000</hex>
-		<hex>0000001101000000</hex>
-		<hex>0000001101000000</hex>
-		<hex>0020001101200000</hex>
-		<hex>0020001101200000</hex>
-		<hex>0010101111100000</hex>
-		<hex>0210142111140002</hex>
-		<hex>0240112212410002</hex>
-		<hex>0110111212110001</hex>
-		<hex>0111111111110101</hex>
-		<hex>1111211121111101</hex>
-		<hex>1101221121021101</hex>
-		<hex>1100221020021001</hex>
-		<hex>0100001000000001</hex>
+		<hex>0000003030000000</hex>
+		<hex>0000003030000000</hex>
+		<hex>0000332223320300</hex>
+		<hex>0000302223320000</hex>
+		<hex>0000003333030000</hex>
+		<hex>0000305553350000</hex>
+		<hex>0030335555353300</hex>
+		<hex>3033335555353333</hex>
+		<hex>0033335555353303</hex>
+		<hex>0023332020302303</hex>
+		<hex>3023032020002333</hex>
+		<hex>3032030000003332</hex>
+		<hex>3022030000002332</hex>
+		<hex>3022030000002332</hex>
+		<hex>3033030000003333</hex>
+		<hex>0033000000003003</hex>
 	</label>
 </scope>
