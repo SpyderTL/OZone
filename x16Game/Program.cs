@@ -39,6 +39,27 @@ namespace x16Game
 				"../../Modules/Video.xml",
 			};
 
+			var resources = new string[]
+			{
+				"../../Resources/Player.bmp",
+				"../../Resources/Projectile.bmp",
+				"../../Resources/EnemyA.bmp",
+				"../../Resources/EnemyA2.bmp",
+				"../../Resources/EnemyB.bmp",
+				"../../Resources/EnemyB2.bmp",
+				"../../Resources/EnemyC.bmp",
+				"../../Resources/EnemyC2.bmp",
+				"../../Resources/PlayerExplosion.bmp",
+				"../../Resources/PlayerExplosion2.bmp",
+				"../../Resources/PlayerExplosion3.bmp",
+				"../../Resources/PlayerExplosion4.bmp",
+				"../../Resources/EnemyExplosion.bmp",
+				"../../Resources/EnemyExplosion2.bmp",
+				"../../Resources/EnemyExplosion3.bmp",
+				"../../Resources/EnemyExplosion4.bmp",
+				"../../Resources/EnemyExplosion5.bmp",
+			};
+
 			var compiler = new BinaryCompiler();
 			var address = new MemoryAddress { Offset = 0x07ff };
 
@@ -48,6 +69,7 @@ namespace x16Game
 				var programs = new List<OZone.Programs.Program>();
 				var exports = new Dictionary<string, Label>();
 
+				// Compile Programs
 				foreach (var sourceFile in sourceFiles)
 				{
 					var program = ProgramBuilder.Build(sourceFile, transformFiles);
@@ -61,6 +83,20 @@ namespace x16Game
 					foreach (var label in program.Segments.OfType<Label>())
 						if (label.Export != null)
 							exports[label.Export] = label;
+				}
+
+				// Compile Resources
+				foreach (var resource in resources)
+				{
+					var program = ResourceBuilder.Build(resource);
+
+					var length = compiler.Compile(program, address);
+
+					exports["Resources." + Path.GetFileNameWithoutExtension(resource)] = new Label { Address = new MemoryAddress { Offset = address.Offset } };
+
+					address.Offset += length;
+
+					programs.Add(program);
 				}
 
 				foreach (var program2 in programs)

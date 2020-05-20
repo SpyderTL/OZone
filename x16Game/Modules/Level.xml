@@ -36,6 +36,28 @@
 
 		<cpu:ReturnFromSubroutine/>
 	</label>
+	
+	<label id="yield">
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:PullAccumulatorFromStack/>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>1</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+		<addressOf ref="Next" type="Absolute16"/>
+
+		<cpu:PullAccumulatorFromStack/>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+		<addressOf ref="Next" type="Absolute16" offset="1"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
 
 	<label id="Level1" export="Level.Level1">
 		<cpu:CallImmediate16Address/>
@@ -53,20 +75,11 @@
 		<cpu:CopyImmediate8ToAccumulator/>
 		<byte>240</byte>
 		
-		<!--<cpu:CallImmediate16Address/>
-		<addressOf ref="Random.Next" type="Absolute16"/>-->
-
 		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
 		<addressOf ref="Object.X" type="Absolute16"/>
 		
 		<cpu:CopyImmediate8ToAccumulator/>
 		<byte>1</byte>
-
-		<!--<cpu:CallImmediate16Address/>
-		<addressOf ref="Random.Next" type="Absolute16"/>-->
-		
-		<!--<cpu:AndAccumulatorWithImmediate8/>
-		<binary>00000001</binary>-->
 
 		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
 		<addressOf ref="Object.X2" type="Absolute16"/>
@@ -85,13 +98,13 @@
 
 		<!--Update Sprite-->
 		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>00</hex>
+		<hex>80</hex>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Sprite.Address" type="Absolute16"/>
 
 		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>20</hex>
+		<hex>02</hex>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Sprite.Address" type="Absolute16" offset="1"/>
