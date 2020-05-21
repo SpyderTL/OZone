@@ -27,6 +27,7 @@ namespace x16Game
 				"../../x16Program.xml",
 				"../../x16Game.xml",
 				"../../Modules/Controller.xml",
+				"../../Modules/Formation.xml",
 				"../../Modules/Graphics.xml",
 				"../../Modules/Level.xml",
 				"../../Modules/Logic.xml",

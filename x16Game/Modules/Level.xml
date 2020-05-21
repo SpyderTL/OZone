@@ -45,7 +45,7 @@
 		<cpu:AddImmediate8ToAccumulator/>
 		<byte>1</byte>
 		
-		<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Next" type="Absolute16"/>
 
 		<cpu:PullAccumulatorFromStack/>
@@ -53,144 +53,60 @@
 		<cpu:AddImmediate8ToAccumulator/>
 		<byte>0</byte>
 		
-		<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Next" type="Absolute16" offset="1"/>
 
 		<cpu:ReturnFromSubroutine/>
 	</label>
 
 	<label id="Level1" export="Level.Level1">
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="Object.Create" type="Absolute16"/>
+		<short:Copy source="Formation.Right" destination="Formation.X"/>
+		<short:Copy source="Formation.Top" destination="Formation.Y"/>
 		
-		<cpu:CopyImmediate16AddressToYIndex/>
-		<addressOf ref="Object.Index" type="Absolute16"/>
-		
-		<cpu:CopyImmediate8ToAccumulator/>
-		<byte>3</byte>
-
-		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
-		<addressOf ref="Object.Type" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<byte>240</byte>
-		
-		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
-		<addressOf ref="Object.X" type="Absolute16"/>
-		
-		<cpu:CopyImmediate8ToAccumulator/>
-		<byte>1</byte>
-
-		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
-		<addressOf ref="Object.X2" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>f0</hex>
-		
-		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
-		<addressOf ref="Object.Y" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>ff</hex>
-
-		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
-		<addressOf ref="Object.Y2" type="Absolute16"/>
-
-		<!--Update Sprite-->
-		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>80</hex>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Sprite.Address" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>02</hex>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Sprite.Address" type="Absolute16" offset="1"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>01</hex>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Sprite.Address" type="Absolute16" offset="2"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>00</hex>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Sprite.Address" type="Absolute16" offset="3"/>
-
-		<cpu:CopyYIndexToImmediate16Address/>
-		<addressOf ref="Sprite.Index" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<byte>240</byte>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Sprite.X" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<byte>0</byte>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Sprite.X" type="Absolute16" offset="1"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>f0</hex>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Sprite.Y" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>ff</hex>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Sprite.Y" type="Absolute16" offset="1"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<byte>1</byte>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Sprite.Width" type="Absolute16"/>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Sprite.Height" type="Absolute16"/>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Sprite.Collision" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<byte>3</byte>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Sprite.Depth" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<byte>0</byte>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Sprite.Palette" type="Absolute16"/>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="Sprite.Update" type="Absolute16"/>
-
-		<!--Set Logic-->
 		<cpu:CopyImmediate8ToAccumulator/>
 		<addressOf ref="Logic.Enemy" type="Absolute16Low8"/>
 		
-		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
-		<addressOf ref="Object.Logic" type="Absolute16"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Formation.Logic" type="Absolute16"/>
 		
 		<cpu:CopyImmediate8ToAccumulator/>
 		<addressOf ref="Logic.Enemy" type="Absolute16High8"/>
 		
-		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
-		<addressOf ref="Object.Logic2" type="Absolute16"/>
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Formation.Logic" type="Absolute16" offset="1"/>
 		
-		<!--Set Timer-->
-		<short:Copy value="10" destination="Timer"/>
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Formation.Alpha" type="Absolute16"/>
 		
-		<cpu:ReturnFromSubroutine/>
+		<short:Copy value="250" destination="Timer"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="yield" type="Absolute16"/>
+		
+		<short:Copy source="Formation.Left" destination="Formation.X"/>
+		<short:Copy source="Formation.Top" destination="Formation.Y"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Logic.Enemy2" type="Absolute16Low8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Formation.Logic" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Logic.Enemy2" type="Absolute16High8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Formation.Logic" type="Absolute16" offset="1"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Formation.Beta" type="Absolute16"/>
+		
+		<short:Copy value="250" destination="Timer"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="yield" type="Absolute16"/>
+		
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="Level1" type="Absolute16"/>
 	</label>
 </scope>
