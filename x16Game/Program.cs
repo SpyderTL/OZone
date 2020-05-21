@@ -50,6 +50,7 @@ namespace x16Game
 				"../../Resources/EnemyB2.bmp",
 				"../../Resources/EnemyC.bmp",
 				"../../Resources/EnemyC2.bmp",
+				"../../Resources/Projectile2.bmp",
 				"../../Resources/PlayerExplosion.bmp",
 				"../../Resources/PlayerExplosion2.bmp",
 				"../../Resources/PlayerExplosion3.bmp",
