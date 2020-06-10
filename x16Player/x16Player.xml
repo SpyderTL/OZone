@@ -23,6 +23,21 @@
 	<addressOf ref="MidiSoundGenerator.Reset" type="Absolute16"/>
 
 	<cpu:CopyImmediate8ToAccumulator/>
+	<addressOf ref="prompt" type="Absolute16Low8"/>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>02</hex>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<addressOf ref="prompt" type="Absolute16High8"/>
+
+	<cpu:CopyAccumulatorToImmediate8Address/>
+	<hex>03</hex>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="Console.WriteLine" type="Absolute16"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
 	<hex>00</hex>
 
 	<cpu:CopyAccumulatorToImmediate8Address/>
@@ -390,6 +405,8 @@
 
 	<var:byte id="channel">0</var:byte>
 	<var:byte id="screen">0</var:byte>
+
+	<var:string id="prompt">ENTER MIDI FILENAME:</var:string>
 
 	<label id="screenReset">
 		<addressOf ref="VolumeScreen.Reset" type="Absolute16"/>

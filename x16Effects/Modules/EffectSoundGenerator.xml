@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:mem="http://metalx.org/6502/Functions/Memory"
+	xmlns:str="http://metalx.org/6502/Functions/String"
+	xmlns:mm="http://metalx.org/6502/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<label id="Update" export="EffectSoundGenerator.Update">
+		<scope>
+			<cpu:CopyImmediate8ToXIndex/>
+			<byte>15</byte>
+
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>63</byte>
+
+			<label id="forEachVoice"/>
+
+			<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+			<addressOf ref="Effect.Status" type="Absolute16"/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="active" type="Relative8"/>
+			
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
+			
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="SoundGenerator.Registers" type="Absolute16"/>
+			
+			<cpu:DecrementYIndex/>
+			
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="SoundGenerator.Registers" type="Absolute16"/>
+			
+			<cpu:DecrementYIndex/>
+			
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="SoundGenerator.Registers" type="Absolute16"/>
+			
+			<cpu:DecrementYIndex/>
+			
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="SoundGenerator.Registers" type="Absolute16"/>
+			
+			<cpu:DecrementYIndex/>
+			
+			<cpu:JumpToImmediate16Address/>
+			<addressOf ref="next" type="Absolute16"/>
+			
+			<label id="active"/>
+						
+			<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+			<addressOf ref="Effect.Waveform" type="Absolute16"/>
+			
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="SoundGenerator.Registers" type="Absolute16"/>
+			
+			<cpu:DecrementYIndex/>
+			
+			<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+			<addressOf ref="Effect.Volume" type="Absolute16"/>
+			
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="SoundGenerator.Registers" type="Absolute16"/>
+			
+			<cpu:DecrementYIndex/>
+			
+			<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+			<addressOf ref="Effect.FrequencyHigh" type="Absolute16"/>
+			
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="SoundGenerator.Registers" type="Absolute16"/>
+			
+			<cpu:DecrementYIndex/>
+			
+			<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+			<addressOf ref="Effect.FrequencyLow" type="Absolute16"/>
+			
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="SoundGenerator.Registers" type="Absolute16"/>
+			
+			<cpu:DecrementYIndex/>
+			
+			<label id="next"/>
+			
+			<cpu:DecrementXIndex/>
+
+			<cpu:BranchToRelative8IfPositive/>
+			<addressOf ref="forEachVoice" type="Relative8"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+</scope>

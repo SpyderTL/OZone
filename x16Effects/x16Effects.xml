@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:mem="http://metalx.org/6502/Functions/Memory"
+	xmlns:str="http://metalx.org/6502/Functions/String"
+	xmlns:mm="http://metalx.org/6502/Functions/MemoryManager"
+	xmlns:short="http://metalx.org/6502/Functions/Short"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="Effect.Reset" type="Absolute16"/>
+	
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="SoundGenerator.Reset" type="Absolute16"/>
+	
+	<label id="loop"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="updateEffects" type="Absolute16"/>
+	
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="updateInput" type="Absolute16"/>
+
+	<cpu:CopyImmediate16AddressToAccumulator/>
+	<addressOf ref="Stop" type="Absolute16"/>
+	
+	<cpu:BranchToRelative8IfZero/>
+	<addressOf ref="loop" type="Relative8"/>
+	
+	<cpu:ReturnFromSubroutine/>
+
+	<var:byte id="Stop">0</var:byte>
+
+	<label id="updateInput">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Console.ReadCharacter" type="Absolute16"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<petscii:Stop/>
+		
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notStop" type="Relative8"/>
+		
+		<cpu:IncrementImmediate16Address/>
+		<addressOf ref="Stop" type="Absolute16"/>
+		
+		<label id="notStop"/>
+		
+		<cpu:CompareAccumulatorToImmediate8/>
+		<petscii:One/>
+		
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notOne" type="Relative8"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Effect.Play" type="Absolute16"/>
+		
+		<label id="notOne"/>
+		
+		<cpu:CompareAccumulatorToImmediate8/>
+		<petscii:Two/>
+		
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notTwo" type="Relative8"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Effect.Play2" type="Absolute16"/>
+		
+		<label id="notTwo"/>
+		
+		<cpu:CompareAccumulatorToImmediate8/>
+		<petscii:Three/>
+		
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notThree" type="Relative8"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Effect.Play3" type="Absolute16"/>
+		
+		<label id="notThree"/>
+		
+		<cpu:CompareAccumulatorToImmediate8/>
+		<petscii:Four/>
+		
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFour" type="Relative8"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Effect.Play4" type="Absolute16"/>
+		
+		<label id="notFour"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="updateEffects">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Effect.Update" type="Absolute16"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="EffectSoundGenerator.Update" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="SoundGenerator.WriteRegisters" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+</scope>

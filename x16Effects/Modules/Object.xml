@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:mem="http://metalx.org/6502/Functions/Memory"
+	xmlns:str="http://metalx.org/6502/Functions/String"
+	xmlns:mm="http://metalx.org/6502/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<label id="Type" export="Object.Type" offset="9e00"/>
+	<label id="X" export="Object.X" offset="9d00"/>
+	<label id="X2" export="Object.X2" offset="9c00"/>
+	<label id="Y" export="Object.Y" offset="9b00"/>
+	<label id="Y2" export="Object.Y2" offset="9a00"/>
+	<label id="Logic" export="Object.Logic" offset="9900"/>
+	<label id="Logic2" export="Object.Logic2" offset="9800"/>
+	<label id="State" export="Object.State" offset="9700"/>
+	<label id="State2" export="Object.State2" offset="9600"/>
+
+	<label id="Index" export="Object.Index"/>
+	<byte>0</byte>
+
+	<label id="Reset" export="Object.Reset">
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:CopyAccumulatorToYIndex/>
+		
+		<label id="forEachObject"/>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+		<addressOf ref="Type" type="Absolute16"/>
+		
+		<cpu:DecrementYIndex/>
+		
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="forEachObject" type="Relative8"/>
+	
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="Create" export="Object.Create">
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:CopyAccumulatorToYIndex/>
+		
+		<label id="forEachObject2"/>
+		
+		<cpu:CompareAccumulatorToImmediate16PlusYIndexAddress/>
+		<addressOf ref="Type" type="Absolute16"/>
+		
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notEmpty" type="Relative8"/>
+		
+		<cpu:CopyYIndexToAccumulator/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Index" type="Absolute16"/>
+		
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:ReturnFromSubroutine/>
+		
+		<label id="notEmpty"/>
+		
+		<cpu:IncrementYIndex/>
+		
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="forEachObject2" type="Relative8"/>
+		
+		<cpu:SetCarryFlag/>
+	
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="Destroy" export="Object.Destroy">
+		<cpu:CopyImmediate16AddressToYIndex/>
+		<addressOf ref="Index" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+		<addressOf ref="Type" type="Absolute16"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+</scope>

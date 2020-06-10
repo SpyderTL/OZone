@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:mem="http://metalx.org/6502/Functions/Memory"
+	xmlns:str="http://metalx.org/6502/Functions/String"
+	xmlns:mm="http://metalx.org/6502/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<!--Sound Registers-->
+	<label id="FrequencyLow0" offset="01f9c0"/>
+	<label id="FrequencyHigh0" offset="01f9c1"/>
+	<label id="Volume0" offset="01f9c2"/>
+	<label id="Waveform0" offset="01f9c3"/>
+
+	<label id="Registers" offset="0400" export="SoundGenerator.Registers"/>
+	
+	<label id="FrequencyLow" offset="0400" export="SoundGenerator.FrequencyLow"/>
+	<label id="FrequencyHigh" offset="0401" export="SoundGenerator.FrequencyHigh"/>
+	<label id="Volume" offset="0402" export="SoundGenerator.Volume"/>
+	<label id="Waveform" offset="0403" export="SoundGenerator.Waveform"/>
+	
+	<label id="Reset" export="SoundGenerator.Reset">
+		<!--Clear Sound Buffer-->
+		<cpu:CopyImmediate8ToXIndex/>
+		<hex>40</hex>
+
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="SoundGenerator.Registers" type="Absolute16Low8"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>22</hex>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="SoundGenerator.Registers" type="Absolute16High8"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>23</hex>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<label id="clearSoundBuffer_loop"/>
+
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<hex>22</hex>
+
+		<cpu:IncrementYIndex/>
+
+		<cpu:DecrementXIndex/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="clearSoundBuffer_loop" type="Relative8"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="WriteRegisters" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="WriteRegisters" export="SoundGenerator.WriteRegisters">
+		<!--Update Sound Generator-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="FrequencyLow0" type="Absolute16Low8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Video.AddressLow" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="FrequencyLow0" type="Absolute16High8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Video.AddressMid" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>11</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Video.AddressHigh" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToXIndex/>
+		<hex>40</hex>
+
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Registers" type="Absolute16Low8"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>22</hex>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Registers" type="Absolute16High8"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>23</hex>
+
+		<label id="copySoundRegisters"/>
+
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>22</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Video.Data0" type="Absolute16"/>
+
+		<cpu:IncrementYIndex/>
+
+		<cpu:DecrementXIndex/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="copySoundRegisters" type="Relative8"/>
+
+		<cpu:ReturnFromSubroutine/>	
+	</label>
+</scope>

@@ -1,0 +1,652 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:mem="http://metalx.org/6502/Functions/Memory"
+	xmlns:str="http://metalx.org/6502/Functions/String"
+	xmlns:mm="http://metalx.org/6502/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<label id="Status" offset="0500" export="Effect.Status"/>
+	<label id="PositionLow" offset="0510"/>
+	<label id="PositionHigh" offset="0520"/>
+	<label id="TimerLow" offset="0530"/>
+	<label id="TimerHigh" offset="0540"/>
+	<label id="FrequencyLow" offset="0550" export="Effect.FrequencyLow"/>
+	<label id="FrequencyHigh" offset="0560" export="Effect.FrequencyHigh"/>
+	<label id="Volume" offset="0570" export="Effect.Volume"/>
+	<label id="Waveform" offset="0580" export="Effect.Waveform"/>
+
+	<label id="Reset" export="Effect.Reset">
+		<scope>
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
+
+			<cpu:CopyImmediate8ToXIndex/>
+			<byte>16</byte>
+
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>0</byte>
+
+			<label id="forEachVoice"/>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Status" type="Absolute16"/>
+
+			<cpu:IncrementYIndex/>
+
+			<cpu:DecrementXIndex/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="forEachVoice" type="Relative8"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
+	<label id="Play" export="Effect.Play">
+		<scope>
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="findVoice" type="Absolute16"/>
+
+			<cpu:BranchToRelative8IfNotCarry/>
+			<addressOf ref="notBusy" type="Relative8"/>
+
+			<cpu:ReturnFromSubroutine/>
+
+			<label id="notBusy"/>
+
+			<!--Status: Active-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>1</byte>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Status" type="Absolute16"/>
+
+			<!--Frequency: 049D-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>04</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="FrequencyHigh" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>9D</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="FrequencyLow" type="Absolute16"/>
+
+			<!--Volume: 63 R+L-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>ff</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Volume" type="Absolute16"/>
+
+			<!--Waveform: Square (50%)-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<binary>00011111</binary>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Waveform" type="Absolute16"/>
+
+			<!--Timer: 0100-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>01</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="TimerHigh" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>00</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="TimerLow" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="yield" type="Absolute16"/>
+
+			<!--Frequency: 093A-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>09</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="FrequencyHigh" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>3A</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="FrequencyLow" type="Absolute16"/>
+
+			<!--Volume: 63 R+L-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>ff</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Volume" type="Absolute16"/>
+
+			<!--Waveform: Square (50%)-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<binary>00011111</binary>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Waveform" type="Absolute16"/>
+
+			<!--Timer: 0100-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>01</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="TimerHigh" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>00</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="TimerLow" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="yield" type="Absolute16"/>
+
+			<!--Status: Idle-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Status" type="Absolute16"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
+	<label id="Play2" export="Effect.Play2">
+		<scope>
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="findVoice" type="Absolute16"/>
+
+			<cpu:BranchToRelative8IfNotCarry/>
+			<addressOf ref="notBusy" type="Relative8"/>
+
+			<cpu:ReturnFromSubroutine/>
+
+			<label id="notBusy"/>
+
+			<!--Status: Active-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>1</byte>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Status" type="Absolute16"/>
+
+			<!--Frequency: 049D-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>04</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="FrequencyHigh" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>9D</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="FrequencyLow" type="Absolute16"/>
+
+			<!--Volume: 63 R+L-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>ff</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Volume" type="Absolute16"/>
+
+			<!--Waveform: Square (50%)-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<binary>00011111</binary>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Waveform" type="Absolute16"/>
+
+			<!--Timer: 0100-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>01</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="TimerHigh" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>00</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="TimerLow" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="yield" type="Absolute16"/>
+
+			<!--Frequency: 093A-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>09</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="FrequencyHigh" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>3A</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="FrequencyLow" type="Absolute16"/>
+
+			<!--Volume: 63 R+L-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>ff</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Volume" type="Absolute16"/>
+
+			<!--Waveform: Square (50%)-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<binary>00011111</binary>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Waveform" type="Absolute16"/>
+
+			<label id="loop"/>
+			
+			<!--Timer: 0020-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>00</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="TimerHigh" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>20</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="TimerLow" type="Absolute16"/>
+			
+			<cpu:SetCarryFlag/>
+			
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="Volume" type="Absolute16"/>
+			
+			<cpu:SubtractImmediate8FromAccumulator/>
+			<byte>1</byte>
+			
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Volume" type="Absolute16"/>
+			
+			<cpu:CompareAccumulatorToImmediate8/>
+			<binary>11000000</binary>
+			
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="done" type="Relative8"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="yield" type="Absolute16"/>
+			
+			<cpu:JumpToImmediate16Address/>
+			<addressOf ref="loop" type="Absolute16"/>
+			
+			<label id="done"/>
+
+			<!--Status: Idle-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Status" type="Absolute16"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
+	<label id="Play3" export="Effect.Play3">
+		<scope>
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="findVoice" type="Absolute16"/>
+
+			<cpu:BranchToRelative8IfNotCarry/>
+			<addressOf ref="notBusy" type="Relative8"/>
+
+			<cpu:ReturnFromSubroutine/>
+
+			<label id="notBusy"/>
+
+			<!--Status: Active-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>1</byte>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Status" type="Absolute16"/>
+
+			<!--Frequency: 049D-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>04</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="FrequencyHigh" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>9D</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="FrequencyLow" type="Absolute16"/>
+
+			<!--Volume: 63 R+L-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>ff</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Volume" type="Absolute16"/>
+
+			<!--Waveform: Noise-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<binary>11000000</binary>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Waveform" type="Absolute16"/>
+
+			<!--Timer: 0500-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>05</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="TimerHigh" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>00</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="TimerLow" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="yield" type="Absolute16"/>
+
+			<!--Frequency: 093A-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>09</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="FrequencyHigh" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>3A</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="FrequencyLow" type="Absolute16"/>
+
+			<!--Volume: 63 R+L-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>ff</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Volume" type="Absolute16"/>
+
+			<!--Waveform: Noise-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<binary>11000000</binary>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Waveform" type="Absolute16"/>
+
+			<!--Timer: 0180-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>01</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="TimerHigh" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>80</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="TimerLow" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="yield" type="Absolute16"/>
+
+			<!--Status: Idle-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Status" type="Absolute16"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
+	<label id="Play4" export="Effect.Play4">
+		<scope>
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="findVoice" type="Absolute16"/>
+
+			<cpu:BranchToRelative8IfNotCarry/>
+			<addressOf ref="notBusy" type="Relative8"/>
+
+			<cpu:ReturnFromSubroutine/>
+
+			<label id="notBusy"/>
+
+			<!--Status: Active-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>1</byte>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Status" type="Absolute16"/>
+
+			<!--Frequency: 0200-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>02</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="FrequencyHigh" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>00</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="FrequencyLow" type="Absolute16"/>
+
+			<!--Volume: 63 R+L-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>ff</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Volume" type="Absolute16"/>
+
+			<!--Waveform: Noise-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<binary>11000000</binary>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Waveform" type="Absolute16"/>
+
+			<label id="loop"/>
+			
+			<!--Timer: 0020-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>00</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="TimerHigh" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>50</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="TimerLow" type="Absolute16"/>
+			
+			<cpu:SetCarryFlag/>
+			
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="Volume" type="Absolute16"/>
+			
+			<cpu:SubtractImmediate8FromAccumulator/>
+			<byte>1</byte>
+			
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Volume" type="Absolute16"/>
+			
+			<cpu:CompareAccumulatorToImmediate8/>
+			<binary>11000000</binary>
+			
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="done" type="Relative8"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="yield" type="Absolute16"/>
+			
+			<cpu:JumpToImmediate16Address/>
+			<addressOf ref="loop" type="Absolute16"/>
+			
+			<label id="done"/>
+
+			<!--Status: Idle-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Status" type="Absolute16"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
+	<label id="Update" export="Effect.Update">
+		<scope>
+			<cpu:CopyImmediate8ToXIndex/>
+			<byte>16</byte>
+
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>0</byte>
+
+			<label id="forEachVoice"/>
+
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="Status" type="Absolute16"/>
+
+			<cpu:CompareAccumulatorToImmediate8/>
+			<byte>0</byte>
+
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="inactive" type="Relative8"/>
+
+			<cpu:SetCarryFlag/>
+
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="TimerLow" type="Absolute16"/>
+
+			<cpu:SubtractImmediate8FromAccumulator/>
+			<byte>1</byte>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="TimerLow" type="Absolute16"/>
+
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="TimerHigh" type="Absolute16"/>
+
+			<cpu:SubtractImmediate8FromAccumulator/>
+			<byte>0</byte>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="TimerHigh" type="Absolute16"/>
+
+			<cpu:BranchToRelative8IfPositive/>
+			<addressOf ref="inactive" type="Relative8"/>
+
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="PositionLow" type="Absolute16"/>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="address" type="Absolute16"/>
+
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="PositionHigh" type="Absolute16"/>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="address" type="Absolute16" offset="1"/>
+
+			<cpu:CallImmediate16Address/>
+			<label id="address"/>
+			<short>0</short>
+
+			<label id="inactive"/>
+
+			<cpu:IncrementYIndex/>
+
+			<cpu:DecrementXIndex/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="forEachVoice" type="Relative8"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
+	<label id="findVoice">
+		<scope>
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
+
+			<cpu:CopyImmediate8ToXIndex/>
+			<byte>16</byte>
+
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>0</byte>
+
+			<label id="forEachVoice"/>
+
+			<cpu:CompareAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Status" type="Absolute16"/>
+
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="found" type="Relative8"/>
+
+			<cpu:IncrementYIndex/>
+
+			<cpu:DecrementXIndex/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="forEachVoice" type="Relative8"/>
+
+			<cpu:SetCarryFlag/>
+
+			<cpu:ReturnFromSubroutine/>
+
+			<label id="found"/>
+
+			<cpu:ClearCarryFlag/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
+	<label id="yield">
+		<cpu:ClearCarryFlag/>
+
+		<cpu:PullAccumulatorFromStack/>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>1</byte>
+
+		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+		<addressOf ref="PositionLow" type="Absolute16"/>
+
+		<cpu:PullAccumulatorFromStack/>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+		<addressOf ref="PositionHigh" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+</scope>
