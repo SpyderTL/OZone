@@ -19,7 +19,7 @@ namespace x16Effects
 				new KeyValuePair<string, string>("http://metalx.org/6502/Functions/Short", "../../../OZone/Functions/6502/Short.xslt"),
 				new KeyValuePair<string, string>("http://metalx.org/6502/Functions/Integer", "../../../OZone/Functions/6502/Integer.xslt"),
 				new KeyValuePair<string, string>("http://metalx.org/Variable", "../../../OZone/Structures/6502/Variable.xslt"),
-				new KeyValuePair<string, string>("http://metalx.org/Mos/6502/Operators", "../../../OZone/Platforms/Mos/6502/Operators.xslt")
+				new KeyValuePair<string, string>("http://metalx.org/Wdc/65C02/Operators", "../../../OZone/Platforms/Wdc/65C02/Operators.xslt")
 			};
 
 			var sourceFiles = new string[]
