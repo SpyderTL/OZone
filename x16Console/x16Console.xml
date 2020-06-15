@@ -2,21 +2,19 @@
 
 <scope
 	xmlns="http://metalx.org/Program"
-	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:cpu="http://metalx.org/Wdc/65C02/Operators"
 	xmlns:vid="http://metalx.org/Commodore64/Video"
 	xmlns:sys="http://metalx.org/Commodore64/System"
 	xmlns:key="http://metalx.org/Commodore64/Keyboard"
 	xmlns:kernel="http://metalx.org/Commodore64/Kernel"
 	xmlns:color="http://metalx.org/Commodore64/Color"
-	xmlns:mem="http://metalx.org/6502/Functions/Memory"
-	xmlns:str="http://metalx.org/6502/Functions/String"
-	xmlns:mm="http://metalx.org/6502/Functions/MemoryManager"
-	xmlns:clsf="http://metalx.org/C64/Functions/Class"
-	xmlns:cls="http://metalx.org/Class"
+	xmlns:mem="http://metalx.org/65C02/Functions/Memory"
+	xmlns:str="http://metalx.org/65C02/Functions/String"
+	xmlns:mm="http://metalx.org/65C02/Functions/MemoryManager"
 	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
 	xmlns:ascii="http://metalx.org/Ansi/Ascii"
 	xmlns:var="http://metalx.org/Variable"
-	xmlns:int="http://metalx.org/6502/Functions/Integer">
+	xmlns:int="http://metalx.org/65C02/Functions/Integer">
 
 	<!--Hardware Registers-->
 	<label id="VideoAddressLow" offset="9f20"/>
@@ -321,29 +319,6 @@
 	<addressOf ref="Object32.Create" type="Absolute16"/>
 
 	<int:Copy source="Object32.Address" destination="Command.Object"/>
-
-	<!--Test dictionary entries-->
-	<int:Copy source="Object32.Address" destination="Dictionary32.Value"/>
-
-	<cpu:CopyImmediate8ToAccumulator/>
-	<addressOf ref="Self" type="Absolute16Low8"/>
-
-	<cpu:CopyAccumulatorToImmediate16Address/>
-	<addressOf ref="MemoryReader.Position" type="Absolute16"/>
-
-	<cpu:CopyImmediate8ToAccumulator/>
-	<addressOf ref="Self" type="Absolute16High8"/>
-
-	<cpu:CopyAccumulatorToImmediate16Address/>
-	<addressOf ref="MemoryReader.Position"  type="Absolute16" offset="1"/>
-
-	<cpu:CallImmediate16Address/>
-	<addressOf ref="MemoryReader.ReadString" type="Absolute16"/>
-
-	<int:Copy source="String32.Address" destination="Dictionary32.Key"/>
-
-	<cpu:CallImmediate16Address/>
-	<addressOf ref="Dictionary32.Append" type="Absolute16"/>
 
 	<label id="showPrompt"/>
 
@@ -1570,106 +1545,4 @@
 	<var:string id="Test">Test</var:string>
 	<var:string id="Self">Self</var:string>
 	<var:string id="System_Name">System</var:string>
-
-	<label id="test">
-		<int:Copy value="16" destination="String32.Length"/>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="String32.Create" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<string>H</string>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="String32.Append" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<string>e</string>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="String32.Append" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<string>l</string>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="String32.Append" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<string>l</string>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="String32.Append" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<string>o</string>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="String32.Append" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<string>,</string>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="String32.Append" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<string xml:space="preserve"> </string>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="String32.Append" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<string>w</string>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="String32.Append" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<string>o</string>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="String32.Append" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<string>r</string>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="String32.Append" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<string>l</string>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="String32.Append" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<string>d</string>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="String32.Append" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<string>!</string>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="String32.Append" type="Absolute16"/>
-
-		<int:Copy source="String32.Address" destination="Object32.Address"/>
-
-		<int:Copy value="20" destination="Object32.Length"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<byte>3</byte>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Object32.Type" type="Absolute16"/>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="Object32.Create" type="Absolute16"/>
-
-		<int:Copy source="Object32.Address" destination="Function.Result"/>
-
-		<cpu:ReturnFromSubroutine/>
-	</label>
 </scope>

@@ -2,11 +2,11 @@
 
 <scope
 	xmlns="http://metalx.org/Program"
-	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
-	xmlns:mem="http://metalx.org/6502/Functions/Memory"
-	xmlns:str="http://metalx.org/6502/Functions/String"
-	xmlns:int="http://metalx.org/6502/Functions/Integer"
-	xmlns:mm="http://metalx.org/6502/Functions/MemoryManager"
+	xmlns:cpu="http://metalx.org/Wdc/65C02/Operators"
+	xmlns:mem="http://metalx.org/65C02/Functions/Memory"
+	xmlns:str="http://metalx.org/65C02/Functions/String"
+	xmlns:int="http://metalx.org/65C02/Functions/Integer"
+	xmlns:mm="http://metalx.org/65C02/Functions/MemoryManager"
 	xmlns:clsf="http://metalx.org/C64/Functions/Class"
 	xmlns:cls="http://metalx.org/Class"
 	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
@@ -22,6 +22,9 @@
 
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="String32.Create" type="Absolute16"/>
+		
+		<!--Get Value-->
+		<int:Copy source="Value" destination="value"/>
 		
 		<!--Set Count-->
 		<cpu:CopyImmediate8ToAccumulator/>
@@ -39,8 +42,6 @@
 		
 		<label id="forEachDigit"/>
 		
-		<!--Get Value-->
-		
 		<!--Reset Character-->
 		<cpu:CopyImmediate8ToAccumulator/>
 		<string>0</string>
@@ -48,12 +49,67 @@
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="character" type="Absolute16"/>
 		
+		<!--Get Digit Value-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="index" type="Absolute16"/>
+
+		<cpu:ShiftAccumulatorLeft/>
+		<cpu:ShiftAccumulatorLeft/>
+
+		<cpu:CopyAccumulatorToXIndex/>
+
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="digits" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="digitValue" type="Absolute16"/>
+
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="digits" type="Absolute16" offset="1"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="digitValue" type="Absolute16" offset="1"/>
+
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="digits" type="Absolute16" offset="2"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="digitValue" type="Absolute16" offset="2"/>
+
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="digits" type="Absolute16" offset="3"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="digitValue" type="Absolute16" offset="3"/>
+		
+		<!--Increment Digit-->
+		<label id="whileGreater"/>
+		
+		<int:Compare ref="value" ref2="digitValue"/>
+
+		<cpu:BranchToRelative8IfLess/>
+		<addressOf ref="digitDone" type="Relative8"/>
+
+		<int:Subtract ref="value" ref2="digitValue" destination="value"/>
+
+		<cpu:IncrementImmediate16Address/>
+		<addressOf ref="character" type="Absolute16"/>
+
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="whileGreater" type="Absolute16"/>
+		
+		<label id="digitDone"/>
+
 		<!--Append Character-->
 		<cpu:CopyImmediate16AddressToAccumulator/>
 		<addressOf ref="character" type="Absolute16"/>
 		
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="String32.Append" type="Absolute16"/>
+		
+		<!--Increment Index-->
+		<cpu:IncrementImmediate16Address/>
+		<addressOf ref="index" type="Absolute16"/>
 		
 		<!--Decrement Count-->
 		<cpu:DecrementImmediate16Address/>
@@ -66,10 +122,13 @@
 	
 		<label id="character"/>
 		<string>0</string>
-		
+
 		<label id="value"/>
 		<int>0</int>
-	
+
+		<label id="digitValue"/>
+		<int>0</int>
+
 		<label id="index"/>
 		<byte>0</byte>
 	

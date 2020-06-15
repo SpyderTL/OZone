@@ -2,9 +2,9 @@
 
 <scope
 	xmlns="http://metalx.org/Program"
-	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:cpu="http://metalx.org/Wdc/65C02/Operators"
 	xmlns:var="http://metalx.org/Variable"
-	xmlns:int="http://metalx.org/6502/Functions/Integer">
+	xmlns:int="http://metalx.org/65C02/Functions/Integer">
 	
 	<label id="Create" export="System.Create">
 		<int:Copy value="8" destination="Dictionary32.Length"/>
@@ -87,14 +87,17 @@
 	<var:string id="GetTime_Name">GetTime</var:string>
 	
 	<label id="GetTime">
+		<!--Create Dictionary-->
 		<int:Copy value="8" destination="Dictionary32.Length"/>
 		
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Dictionary32.Create" type="Absolute16"/>
 		
+		<!--Get Date And Time-->
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="System.GetDateTime" type="Absolute16"/>
-		
+				
+		<!--Set Year-->
 		<cpu:CopyImmediate8ToAccumulator/>
 		<addressOf ref="year" type="Absolute16Low8"/>
 		
@@ -112,14 +115,22 @@
 		
 		<int:Copy source="String32.Address" destination="Dictionary32.Key"/>
 		
+		<cpu:ClearCarryFlag/>
+		
 		<cpu:CopyImmediate8AddressToAccumulator/>
 		<hex>02</hex>
+		
+		<cpu:AddImmediate8ToAccumulator/>
+		<hex>6C</hex>
 		
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Object32.Address" type="Absolute16"/>
 	
-		<cpu:CopyImmediate8AddressToAccumulator/>
-		<hex>03</hex>
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+		
+		<cpu:AddImmediate8ToAccumulator/>
+		<hex>07</hex>
 		
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Object32.Address" type="Absolute16" offset="1"/>
@@ -132,7 +143,7 @@
 		
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Object32.Address" type="Absolute16" offset="3"/>
-		
+				
 		<int:Copy value="0" destination="Object32.Length"/>
 		
 		<cpu:CopyImmediate8ToAccumulator/>
@@ -149,6 +160,60 @@
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Dictionary32.Append" type="Absolute16"/>
 		
+		<!--Set Month-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="month" type="Absolute16Low8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16"/>
+	
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="month" type="Absolute16High8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16" offset="1"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader.ReadString" type="Absolute16"/>
+		
+		<int:Copy source="String32.Address" destination="Dictionary32.Key"/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>03</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object32.Address" type="Absolute16"/>
+	
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object32.Address" type="Absolute16" offset="1"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object32.Address" type="Absolute16" offset="2"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object32.Address" type="Absolute16" offset="3"/>
+				
+		<int:Copy value="0" destination="Object32.Length"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>1</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Object32.Type" type="Absolute16"/>
+	
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Object32.Create" type="Absolute16"/>
+		
+		<int:Copy source="Object32.Address" destination="Dictionary32.Value"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Dictionary32.Append" type="Absolute16"/>
+
+		
+		<!--Create Object-->
 		<int:Copy source="Dictionary32.Address" destination="Object32.Address"/>
 		
 		<int:Copy value="70" destination="Object32.Length"/>

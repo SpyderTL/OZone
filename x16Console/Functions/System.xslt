@@ -5,7 +5,7 @@
 	xmlns="http://metalx.org/Program"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:sys="http://metalx.org/C64Console/Functions/System"
-	xmlns:cpu="http://metalx.org/Mos/6502/Operators">
+	xmlns:cpu="http://metalx.org/Wdc/65C02/Operators">
 
 	<xsl:output method="xml" indent="yes"/>
 
