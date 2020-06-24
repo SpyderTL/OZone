@@ -1,0 +1,394 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Wdc/65C02/Operators"
+	xmlns:mem="http://metalx.org/65C02/Functions/Memory"
+	xmlns:str="http://metalx.org/65C02/Functions/String"
+	xmlns:mm="http://metalx.org/65C02/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<label id="Top" export="Dialog.Top"/>
+	<byte>0</byte>
+	
+	<label id="Bottom" export="Dialog.Bottom"/>
+	<byte>0</byte>
+	
+	<label id="Left" export="Dialog.Left"/>
+	<byte>0</byte>
+	
+	<label id="Right" export="Dialog.Right"/>
+	<byte>0</byte>
+	
+	<label id="Draw" export="Dialog.Draw">
+		<!--Get Row-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Top" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>22</hex>
+		
+		<!--Get Column-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Left" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>23</hex>
+		
+		<!--Calculate Address-->
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>22</hex>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>24</hex>
+		
+		<cpu:CopyZeroToImmediate8Address/>
+		<hex>25</hex>
+		
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>24</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>25</hex>
+
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>24</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>25</hex>
+
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>24</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>25</hex>
+
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>24</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>25</hex>
+
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>24</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>25</hex>
+		
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>24</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>25</hex>
+		
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>24</hex>
+		
+		<cpu:AddImmediate8AddressToAccumulator/>
+		<hex>23</hex>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>24</hex>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>25</hex>
+		
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>25</hex>
+		
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>24</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>25</hex>
+		
+		<!--First Row-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>10</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressHigh" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>25</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressMid" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>24</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressLow" type="Absolute16"/>
+		
+		<!--Top Left-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>119</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+
+		<cpu:CopyZeroToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+		
+		<cpu:IncrementImmediate8Address/>
+		<hex>23</hex>
+		
+		<!--Top-->
+		<label id="forEachColumn"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>120</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+
+		<cpu:CopyZeroToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+		
+		<cpu:IncrementImmediate8Address/>
+		<hex>23</hex>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Right" type="Absolute16"/>
+		
+		<cpu:DecrementAccumulator/>
+		
+		<cpu:CompareAccumulatorToImmediate8Address/>
+		<hex>23</hex>
+		
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="forEachColumn" type="Relative8"/>
+		
+		<!--Top Right-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>121</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+
+		<cpu:CopyZeroToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+		
+		<!--Next Row-->
+		<cpu:IncrementImmediate8Address/>
+		<hex>22</hex>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Left" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>23</hex>
+		
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>24</hex>
+		
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>128</byte>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>24</hex>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>25</hex>
+		
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>25</hex>
+		
+		<!--Middle Rows-->
+		<label id="forEachRow"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>10</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressHigh" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>25</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressMid" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>24</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressLow" type="Absolute16"/>
+		
+		<!--Left-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>122</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+
+		<cpu:CopyZeroToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+		
+		<cpu:IncrementImmediate8Address/>
+		<hex>23</hex>
+		
+		<!--Center-->
+		<label id="forEachColumn2"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>65</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+
+		<cpu:CopyZeroToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+		
+		<cpu:IncrementImmediate8Address/>
+		<hex>23</hex>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Right" type="Absolute16"/>
+		
+		<cpu:DecrementAccumulator/>
+		
+		<cpu:CompareAccumulatorToImmediate8Address/>
+		<hex>23</hex>
+		
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="forEachColumn2" type="Relative8"/>
+		
+		<!--Right-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>123</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+
+		<cpu:CopyZeroToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+		
+		<!--Next Row-->
+		<cpu:IncrementImmediate8Address/>
+		<hex>22</hex>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Left" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>23</hex>
+
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>24</hex>
+		
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>128</byte>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>24</hex>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>25</hex>
+		
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>25</hex>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Bottom" type="Absolute16"/>
+		
+		<cpu:DecrementAccumulator/>
+		
+		<cpu:CompareAccumulatorToImmediate8Address/>
+		<hex>22</hex>
+		
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="forEachRow" type="Relative8"/>
+		
+		<!--Bottom Row-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>10</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressHigh" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>25</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressMid" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>24</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressLow" type="Absolute16"/>
+		
+		<!--Bottom Left-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>124</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+
+		<cpu:CopyZeroToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+		
+		<cpu:IncrementImmediate8Address/>
+		<hex>23</hex>
+		
+		<!--Bottom-->
+		<label id="forEachColumn3"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>125</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+
+		<cpu:CopyZeroToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+		
+		<cpu:IncrementImmediate8Address/>
+		<hex>23</hex>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Right" type="Absolute16"/>
+		
+		<cpu:DecrementAccumulator/>
+		
+		<cpu:CompareAccumulatorToImmediate8Address/>
+		<hex>23</hex>
+		
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="forEachColumn3" type="Relative8"/>
+		
+		<!--Bottom Right-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>126</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+
+		<cpu:CopyZeroToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+</scope>

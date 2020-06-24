@@ -27,6 +27,7 @@ namespace x16Rpg
 				"../../x16Program.xml",
 				"../../x16Rpg.xml",
 				"../../Modules/Controller.xml",
+				"../../Modules/Dialog.xml",
 				"../../Modules/Formation.xml",
 				"../../Modules/Graphics.xml",
 				"../../Modules/Level.xml",
@@ -169,7 +170,8 @@ namespace x16Rpg
 				"../../Resources/Characters/character_124.bmp",
 				"../../Resources/Characters/character_125.bmp",
 				"../../Resources/Characters/character_126.bmp",
-				"../../Resources/Characters/character_127.bmp",
+				//"../../Resources/Characters/character_127.bmp",
+				"../../Resources/Backgrounds/background_0_character_0.bmp",
 				"../../Resources/Battle/pointer.bmp",
 			};
 
