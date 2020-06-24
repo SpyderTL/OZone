@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Wdc/65C02/Operators"
+	xmlns:mem="http://metalx.org/65C02/Functions/Memory"
+	xmlns:str="http://metalx.org/65C02/Functions/String"
+	xmlns:mm="http://metalx.org/65C02/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<label id="Seed" export="Random.Seed"/>
+	<hex>ffff</hex>
+	
+	<label id="Next" export="Random.Next">
+		<cpu:CopyImmediate8ToXIndex/>
+		<byte>8</byte>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Seed" type='Absolute16'/>
+		
+		<label id="loop"/>
+		
+		<cpu:ShiftAccumulatorLeft/>
+		
+		<cpu:RollImmediate16AddressLeft/>
+		<addressOf ref="Seed" type="Absolute16" offset="1"/>
+		
+		<cpu:BranchToRelative8IfCarry/>
+		<addressOf ref="carry" type="Relative8"/>
+		
+		<cpu:ExclusiveOrAccumulatorWithImmediate8/>
+		<byte>39</byte>
+		
+		<label id="carry"/>
+	
+		<cpu:DecrementXIndex/>
+		
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="loop" type="Relative8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Seed" type='Absolute16'/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+</scope>

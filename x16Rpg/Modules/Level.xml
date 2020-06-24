@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Wdc/65C02/Operators"
+	xmlns:mem="http://metalx.org/65C02/Functions/Memory"
+	xmlns:str="http://metalx.org/65C02/Functions/String"
+	xmlns:mm="http://metalx.org/65C02/Functions/MemoryManager"
+	xmlns:short="http://metalx.org/65C02/Functions/Short"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<label id="Next" export="Level.Next"/>
+	<short>0</short>
+
+	<label id="Timer" export="Level.Timer"/>
+	<short>0</short>
+
+	<label id="Update" export="Level.Update">
+		<short:Subtract ref="Timer" value="1" destination="Timer"/>
+
+		<cpu:BranchToRelative8IfPositive/>
+		<addressOf ref="done" type="Relative8"/>
+
+		<short:Copy source="Next" destination="address"/>
+
+		<cpu:CallImmediate16Address/>
+		<label id="address"/>
+		<short>0</short>
+
+		<label id="done"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="yield">
+		<cpu:ClearCarryFlag/>
+
+		<cpu:PullAccumulatorFromStack/>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>1</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Next" type="Absolute16"/>
+
+		<cpu:PullAccumulatorFromStack/>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Next" type="Absolute16" offset="1"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="Level1" export="Level.Level1">
+		<short:Copy source="Formation.Right" destination="Formation.X"/>
+		<short:Copy source="Formation.Top" destination="Formation.Y"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Logic.Enemy" type="Absolute16Low8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Formation.Logic" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Logic.Enemy" type="Absolute16High8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Formation.Logic" type="Absolute16" offset="1"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Formation.Alpha" type="Absolute16"/>
+
+		<short:Copy value="250" destination="Timer"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="yield" type="Absolute16"/>
+
+		<short:Copy source="Formation.Left" destination="Formation.X"/>
+		<short:Copy source="Formation.Top" destination="Formation.Y"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Logic.Enemy2" type="Absolute16Low8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Formation.Logic" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Logic.Enemy2" type="Absolute16High8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Formation.Logic" type="Absolute16" offset="1"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Formation.Beta" type="Absolute16"/>
+
+		<short:Copy value="250" destination="Timer"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="yield" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>8</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="count" type="Absolute16"/>
+
+		<label id="loop"/>
+
+		<short:Copy value="8" destination="Timer"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="yield" type="Absolute16"/>
+
+		<short:Copy source="Formation.Right" destination="Formation.X"/>
+		<short:Copy source="Formation.Top" destination="Formation.Y"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Logic.Enemy" type="Absolute16Low8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Formation.Logic" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Logic.Enemy" type="Absolute16High8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Formation.Logic" type="Absolute16" offset="1"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Formation.EnemyA" type="Absolute16"/>
+		
+		<cpu:DecrementImmediate16Address/>
+		<addressOf ref="count" type="Absolute16"/>
+		
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="loop" type="Relative8"/>
+
+		<short:Copy value="250" destination="Timer"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="yield" type="Absolute16"/>
+
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="Level1" type="Absolute16"/>
+
+		<label id="count"/>
+		<byte>0</byte>
+	</label>
+</scope>

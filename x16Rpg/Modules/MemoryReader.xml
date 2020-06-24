@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Wdc/65C02/Operators"
+	xmlns:cpu2="http://metalx.org/Wdc/65C02/Operators"
+	xmlns:mem="http://metalx.org/65C02/Functions/Memory"
+	xmlns:str="http://metalx.org/65C02/Functions/String"
+	xmlns:mm="http://metalx.org/65C02/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+ 
+	<label id="Position" offset="40" export="MemoryReader.Position"/>
+	<label id="Value" export="MemoryReader.Value"/>
+	<short>0</short>
+
+	<label id="ReadByte" export="MemoryReader.ReadByte">
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
+		
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<addressOf ref="Position" type="Absolute16Low8"/>
+		
+		<cpu:IncrementImmediate8Address/>
+		<addressOf ref="Position" type="Absolute16Low8"/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="ReadByte_Skip" type="Relative8"/>
+
+		<cpu:IncrementImmediate8Address/>
+		<addressOf ref="Position" type="Absolute16Low8" offset="1"/>
+
+		<label id="ReadByte_Skip"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="ReadShort" export="MemoryReader.ReadShort">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="ReadByte" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Value" type="Absolute16"/>
+	
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="ReadByte" type="Absolute16"/>
+	
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Value" type="Absolute16" offset="1"/>
+	
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="Skip" export="MemoryReader.Skip">
+		<cpu:ClearCarryFlag/>
+
+		<cpu:AddImmediate8AddressToAccumulator/>
+		<addressOf ref="Position" type="Absolute16Low8"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="Position" type="Absolute16Low8"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:AddImmediate8AddressToAccumulator/>
+		<addressOf ref="Position" type="Absolute16Low8" offset="1"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="Position" type="Absolute16Low8" offset="1"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="Peek" export="MemoryReader.Peek">
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<addressOf ref="Position" type="Absolute16Low8"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+</scope>

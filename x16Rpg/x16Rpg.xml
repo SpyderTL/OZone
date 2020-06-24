@@ -1,0 +1,431 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Wdc/65C02/Operators"
+	xmlns:mem="http://metalx.org/65C02/Functions/Memory"
+	xmlns:str="http://metalx.org/65C02/Functions/String"
+	xmlns:mm="http://metalx.org/65C02/Functions/MemoryManager"
+	xmlns:short="http://metalx.org/65C02/Functions/Short"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="Screen.Disable" type="Absolute16"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="Graphics.Enable" type="Absolute16"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="Screen.Clear" type="Absolute16"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="loadPalette" type="Absolute16"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="loadTiles" type="Absolute16"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="loadSprites" type="Absolute16"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="createPointer" type="Absolute16"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="Screen.Enable" type="Absolute16"/>
+
+	<label id="loop"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="updateInput" type="Absolute16"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="wait" type="Absolute16"/>
+
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="loop" type="Absolute16"/>
+
+	<label id="exit"/>
+
+	<cpu:ReturnFromSubroutine/>
+
+	<label id="loadPalette">
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="palette" type="Absolute16Low8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="palette" type="Absolute16High8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16" offset="1"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Graphics.LoadPalette" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="loadTiles">
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Resources.character_0" type="Absolute16Low8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Resources.character_0" type="Absolute16High8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16" offset="1"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Graphics.LoadTiles" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="loadSprites">
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Resources.pointer" type="Absolute16Low8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="Resources.pointer" type="Absolute16High8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16" offset="1"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.Address" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.Address" type="Absolute16" offset="1"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>01</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.Address" type="Absolute16" offset="2"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.Address" type="Absolute16" offset="3"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Sprite.Load16" type="Absolute16"/>
+
+		<!--Enable Sprites-->
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Sprite.Enable" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="createPointer">
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.Index" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.Address" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.Address" type="Absolute16" offset="1"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>01</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.Address" type="Absolute16" offset="2"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.Address" type="Absolute16" offset="3"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.X" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.X" type="Absolute16" offset="1"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.Y" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.Y" type="Absolute16" offset="1"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>3</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.Depth" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>1</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.Width" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>1</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.Height" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>1</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.Palette" type="Absolute16"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Sprite.Update" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="wait">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.GetDateTime" type="Absolute16"/>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>08</hex>
+
+		<cpu:CompareAccumulatorToImmediate16Address/>
+		<addressOf ref="time" type="Absolute16"/>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="wait" type="Relative8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="time" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+
+		<var:byte id="time">0</var:byte>
+
+		<label id="Kernal.GetDateTime" offset="FF50"/>
+	</label>
+
+	<label id="updateInput">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Controller.Update" type="Absolute16"/>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Controller.State" type="Absolute16"/>
+		
+		<cpu:TestAndAccumulatorWithImmediate8/>
+		<binary>00001000</binary>
+		
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="notUp" type="Relative8"/>
+		
+		<short:Subtract ref="Y" value="1" destination="Y"/>
+		
+		<label id="notUp"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Controller.State" type="Absolute16"/>
+		
+		<cpu:TestAndAccumulatorWithImmediate8/>
+		<binary>00000100</binary>
+		
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="notDown" type="Relative8"/>
+		
+		<short:Add ref="Y" value="1" destination="Y"/>
+		
+		<label id="notDown"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Controller.State" type="Absolute16"/>
+		
+		<cpu:TestAndAccumulatorWithImmediate8/>
+		<binary>00000010</binary>
+		
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="notLeft" type="Relative8"/>
+		
+		<short:Subtract ref="X" value="1" destination="X"/>
+		
+		<label id="notLeft"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Controller.State" type="Absolute16"/>
+		
+		<cpu:TestAndAccumulatorWithImmediate8/>
+		<binary>00000001</binary>
+		
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="notRight" type="Relative8"/>
+		
+		<short:Add ref="X" value="1" destination="X"/>
+		
+		<label id="notRight"/>
+		
+		<short:Copy source="X" destination="Sprite.X"/>
+		<short:Copy source="Y" destination="Sprite.Y"/>
+		
+		<cpu:CopyZeroToImmediate16Address/>
+		<addressOf ref="Sprite.Index" type="Absolute16"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Sprite.UpdatePosition" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+
+		<var:short id="X">0</var:short>
+		<var:short id="Y">0</var:short>
+	</label>
+
+	<label id="palette">
+		<!--0x00 (Font)-->
+		<hex>0000</hex>
+		<hex>0777</hex>
+		<hex>000F</hex>
+		<hex>0FFF</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+			
+		<!--0x10 (Pointer)-->
+		<hex>0000</hex>
+		<hex>0FFF</hex>
+		<hex>0BBB</hex>
+		<hex>0777</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+	</label>
+	
+	<label id="fullPalette">
+		<!--00-->
+		<hex>0777</hex>
+		<hex>000F</hex>
+		<hex>000B</hex>
+		<hex>042B</hex>
+		<hex>0908</hex>
+		<hex>0A02</hex>
+		<hex>0A10</hex>
+		<hex>0810</hex>
+		<hex>0530</hex>
+		<hex>0070</hex>
+		<hex>0060</hex>
+		<hex>0050</hex>
+		<hex>0045</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		
+		<!--10-->
+		<hex>0BBB</hex>
+		<hex>007F</hex>
+		<hex>005F</hex>
+		<hex>064F</hex>
+		<hex>0D0C</hex>
+		<hex>0E05</hex>
+		<hex>0F30</hex>
+		<hex>0E51</hex>
+		<hex>0A70</hex>
+		<hex>00B0</hex>
+		<hex>00A0</hex>
+		<hex>00A4</hex>
+		<hex>0088</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		
+		<!--20-->
+		<hex>0FFF</hex>
+		<hex>03BF</hex>
+		<hex>068F</hex>
+		<hex>097F</hex>
+		<hex>0F7F</hex>
+		<hex>0F59</hex>
+		<hex>0F75</hex>
+		<hex>0FA4</hex>
+		<hex>0FB0</hex>
+		<hex>0BF1</hex>
+		<hex>05D5</hex>
+		<hex>05F9</hex>
+		<hex>00ED</hex>
+		<hex>0777</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+		
+		<!--30-->
+		<hex>0FFF</hex>
+		<hex>0AEF</hex>
+		<hex>0BBF</hex>
+		<hex>0DBF</hex>
+		<hex>0FBF</hex>
+		<hex>0FAC</hex>
+		<hex>0FDB</hex>
+		<hex>0FEA</hex>
+		<hex>0FD7</hex>
+		<hex>0DF7</hex>
+		<hex>0BFB</hex>
+		<hex>0BFD</hex>
+		<hex>00FF</hex>
+		<hex>0FDF</hex>
+		<hex>0000</hex>
+		<hex>0000</hex>
+	</label>
+</scope>

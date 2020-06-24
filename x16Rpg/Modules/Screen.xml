@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Wdc/65C02/Operators"
+	xmlns:mem="http://metalx.org/65C02/Functions/Memory"
+	xmlns:str="http://metalx.org/65C02/Functions/String"
+	xmlns:mm="http://metalx.org/65C02/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<label id="Enable" export="Screen.Enable">
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Vera.Options" type="Absolute16"/>
+		
+		<cpu:OrAccumulatorWithImmediate8/>
+		<binary>00100000</binary>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.Options" type="Absolute16"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+		
+	<label id="Disable" export="Screen.Disable">
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Vera.Options" type="Absolute16"/>
+		
+		<cpu:AndAccumulatorWithImmediate8/>
+		<binary>11001111</binary>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.Options" type="Absolute16"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+		
+	<label id="Clear" export="Screen.Clear">
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>10</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressHigh" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressMid" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressLow" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>30</byte>
+
+		<label id="loopY"/>
+
+		<cpu:CopyImmediate8ToXIndex/>
+		<byte>32</byte>
+
+		<label id="loopX"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+		<!--<byte>65</byte>-->
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+
+		<cpu:DecrementXIndex/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="loopX" type="Relative8"/>
+
+		<cpu:DecrementYIndex/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="loopY" type="Relative8"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+</scope>

@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Wdc/65C02/Operators"
+	xmlns:mem="http://metalx.org/65C02/Functions/Memory"
+	xmlns:str="http://metalx.org/65C02/Functions/String"
+	xmlns:mm="http://metalx.org/65C02/Functions/MemoryManager"
+	xmlns:int="http://metalx.org/65C02/Functions/Integer"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<!--A (10000000)-->
+	<!--B (01000000)-->
+	<!--Select (00100000)-->
+	<!--Start (00010000)-->
+	<!--Up (00001000)-->
+	<!--Down (00000100)-->
+	<!--Left (00000010)-->
+	<!--Right (00000001)-->
+	
+	<label id="State" export="Controller.State"/>
+	<int>0</int>
+	
+	<label id="Last" export="Controller.Last"/>
+	<int>0</int>
+	
+	<label id="Kernal.ScanJoysticks" offset="FF53"/>
+	<label id="Kernal.GetJoystick" offset="FF56"/>
+
+	<label id="Update" export="Controller.Update">
+		<int:Copy source="State" destination="Last"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.GetJoystick" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="State" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+</scope>
