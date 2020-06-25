@@ -5,6 +5,7 @@
 	xmlns:cpu="http://metalx.org/Wdc/65C02/Operators"
 	xmlns:mem="http://metalx.org/65C02/Functions/Memory"
 	xmlns:str="http://metalx.org/65C02/Functions/String"
+	xmlns:short="http://metalx.org/65C02/Functions/Short"
 	xmlns:mm="http://metalx.org/65C02/Functions/MemoryManager"
 	xmlns:clsf="http://metalx.org/C64/Functions/Class"
 	xmlns:cls="http://metalx.org/Class"
@@ -390,5 +391,314 @@
 		<addressOf ref="Vera.Data0" type="Absolute16"/>
 		
 		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="DrawString" export="Dialog.DrawString">
+		<!--Get Row-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Top" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>22</hex>
+		
+		<!--Get Column-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Left" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>23</hex>
+		
+		<!--Calculate Address-->
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>22</hex>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>24</hex>
+		
+		<cpu:CopyZeroToImmediate8Address/>
+		<hex>25</hex>
+		
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>24</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>25</hex>
+
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>24</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>25</hex>
+
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>24</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>25</hex>
+
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>24</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>25</hex>
+
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>24</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>25</hex>
+		
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>24</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>25</hex>
+		
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>24</hex>
+		
+		<cpu:AddImmediate8AddressToAccumulator/>
+		<hex>23</hex>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>24</hex>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>25</hex>
+		
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>25</hex>
+		
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>24</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>25</hex>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>10</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressHigh" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>25</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressMid" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>24</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressLow" type="Absolute16"/>
+		
+		<!--Get String Length-->
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>26</hex>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>27</hex>
+		
+		<label id="forEachCharacter"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToXIndex/>
+		
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="characters" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+		
+		<cpu:CopyZeroToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+		
+		<cpu:SetCarryFlag/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>26</hex>
+		
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>1</byte>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>26</hex>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>27</hex>
+		
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>27</hex>
+		
+		<cpu:OrAccumulatorWithImmediate8Address/>
+		<hex>26</hex>
+		
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="forEachCharacter" type="Relative8"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="characters">
+		<!--00-->
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+	
+		<!--10-->
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+	
+		<!--20-->
+		<hex>41</hex>
+		<hex>44</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>3f</hex>
+		<hex>41</hex>
+		<hex>40</hex>
+		<hex>41</hex>
+	
+		<!--30-->
+		<hex>00</hex>
+		<hex>01</hex>
+		<hex>02</hex>
+		<hex>03</hex>
+		<hex>04</hex>
+		<hex>05</hex>
+		<hex>06</hex>
+		<hex>07</hex>
+		<hex>08</hex>
+		<hex>09</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+	
+		<!--40-->
+		<hex>41</hex>
+		<hex>0a</hex>
+		<hex>0b</hex>
+		<hex>0c</hex>
+		<hex>0d</hex>
+		<hex>0e</hex>
+		<hex>0f</hex>
+		<hex>10</hex>
+		<hex>11</hex>
+		<hex>12</hex>
+		<hex>13</hex>
+		<hex>14</hex>
+		<hex>15</hex>
+		<hex>16</hex>
+		<hex>17</hex>
+		<hex>18</hex>
+	
+		<!--50-->
+		<hex>19</hex>
+		<hex>1a</hex>
+		<hex>1b</hex>
+		<hex>1c</hex>
+		<hex>1d</hex>
+		<hex>1e</hex>
+		<hex>1f</hex>
+		<hex>20</hex>
+		<hex>21</hex>
+		<hex>22</hex>
+		<hex>23</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+	
+		<!--60-->
+		<hex>41</hex>
+		<hex>24</hex>
+		<hex>25</hex>
+		<hex>26</hex>
+		<hex>27</hex>
+		<hex>28</hex>
+		<hex>29</hex>
+		<hex>2a</hex>
+		<hex>2b</hex>
+		<hex>2c</hex>
+		<hex>2d</hex>
+		<hex>2e</hex>
+		<hex>2f</hex>
+		<hex>30</hex>
+		<hex>31</hex>
+		<hex>32</hex>
+	
+		<!--70-->
+		<hex>33</hex>
+		<hex>34</hex>
+		<hex>35</hex>
+		<hex>36</hex>
+		<hex>37</hex>
+		<hex>38</hex>
+		<hex>39</hex>
+		<hex>3a</hex>
+		<hex>3b</hex>
+		<hex>3c</hex>
+		<hex>3d</hex>
+		<hex>3e</hex>
+		<hex>3f</hex>
+		<hex>41</hex>
+		<hex>41</hex>
+		<hex>41</hex>
 	</label>
 </scope>
