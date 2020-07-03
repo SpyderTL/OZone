@@ -15,14 +15,12 @@
 	xmlns:var="http://metalx.org/Variable">
  
 	<label id="Position" offset="40" export="MemoryReader.Position"/>
+	
 	<label id="Value" export="MemoryReader.Value"/>
 	<short>0</short>
 
 	<label id="ReadByte" export="MemoryReader.ReadByte">
-		<cpu:CopyImmediate8ToYIndex/>
-		<byte>0</byte>
-		
-		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<cpu:CopyImmediate8PointerAddressToAccumulator/>
 		<addressOf ref="Position" type="Absolute16Low8"/>
 		
 		<cpu:IncrementImmediate8Address/>
@@ -77,10 +75,7 @@
 	</label>
 
 	<label id="Peek" export="MemoryReader.Peek">
-		<cpu:CopyImmediate8ToYIndex/>
-		<byte>0</byte>
-
-		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<cpu:CopyImmediate8PointerAddressToAccumulator/>
 		<addressOf ref="Position" type="Absolute16Low8"/>
 
 		<cpu:ReturnFromSubroutine/>

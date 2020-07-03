@@ -15,7 +15,6 @@ namespace x16Rpg
 		{
 			var transformFiles = new KeyValuePair<string, string>[]
 			{
-				new KeyValuePair<string, string>("http://metalx.org/Commodore64/Petscii", "../../../OZone/Platforms/Commodore/C64/Petscii.xslt"),
 				new KeyValuePair<string, string>("http://metalx.org/65C02/Functions/Short", "../../../OZone/Functions/65C02/Short.xslt"),
 				new KeyValuePair<string, string>("http://metalx.org/65C02/Functions/Integer", "../../../OZone/Functions/65C02/Integer.xslt"),
 				new KeyValuePair<string, string>("http://metalx.org/Variable", "../../../OZone/Structures/6502/Variable.xslt"),
@@ -33,9 +32,12 @@ namespace x16Rpg
 				"../../Modules/Level.xml",
 				"../../Modules/Logic.xml",
 				"../../Modules/MemoryReader.xml",
+				"../../Modules/MusicGenerator.xml",
+				"../../Modules/MusicPlayer.xml",
 				"../../Modules/Object.xml",
 				"../../Modules/Random.xml",
 				"../../Modules/Screen.xml",
+				"../../Modules/SoundGenerator.xml",
 				"../../Modules/Sprite.xml",
 				"../../Modules/System.xml",
 				"../../Modules/Vera.xml",
@@ -173,6 +175,7 @@ namespace x16Rpg
 				//"../../Resources/Characters/character_127.bmp",
 				"../../Resources/Backgrounds/background_0_character_0.bmp",
 				"../../Resources/Battle/pointer.bmp",
+				"../../Resources/Songs/song_0.bin"
 			};
 
 			var compiler = new BinaryCompiler();

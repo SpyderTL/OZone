@@ -1,0 +1,387 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Wdc/65C02/Operators"
+	xmlns:mem="http://metalx.org/65C02/Functions/Memory"
+	xmlns:str="http://metalx.org/65C02/Functions/String"
+	xmlns:mm="http://metalx.org/65C02/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<label id="Update" export="MusicGenerator.Update">
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>3</byte>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>22</hex>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>23</hex>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>24</hex>
+		
+		<label id="forEachVoice"/>
+		
+		<cpu:CopyImmediate8AddressToXIndex/>
+		<hex>23</hex>
+		
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="MusicPlayer.Flags" type="Absolute16" offset="0"/>
+		
+		<cpu:AndAccumulatorWithImmediate8/>
+		<binary>00000001</binary>
+		
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="notIdle" type="Relative8"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:CopyImmediate8AddressToYIndex/>
+		<hex>24</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+		<addressOf ref="SoundGenerator.Registers" type="Absolute16"/>
+		
+		<cpu:IncrementYIndex/>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+		<addressOf ref="SoundGenerator.Registers" type="Absolute16"/>
+		
+		<cpu:IncrementYIndex/>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+		<addressOf ref="SoundGenerator.Registers" type="Absolute16"/>
+		
+		<cpu:IncrementYIndex/>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+		<addressOf ref="SoundGenerator.Registers" type="Absolute16"/>
+		
+		<cpu:IncrementYIndex/>
+		
+		<cpu:CopyYIndexToImmediate8Address/>
+		<hex>24</hex>
+		
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="nextVoice" type="Absolute16"/>
+		
+		<label id="notIdle"/>
+		
+		<cpu:CopyImmediate16PlusXIndexAddressToYIndex/>
+		<addressOf ref="MusicPlayer.Note" type="Absolute16"/>
+		
+		<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+		<addressOf ref="frequencyHigh" type="Absolute16" offset="48"/>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>25</hex>
+		
+		<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+		<addressOf ref="frequencyLow" type="Absolute16" offset="48"/>
+		
+		<cpu:CopyImmediate8AddressToYIndex/>
+		<hex>24</hex>
+
+		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+		<addressOf ref="SoundGenerator.Registers" type="Absolute16"/>
+		
+		<cpu:IncrementYIndex/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>25</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+		<addressOf ref="SoundGenerator.Registers" type="Absolute16"/>
+		
+		<cpu:IncrementYIndex/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<binary>11111111</binary>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+		<addressOf ref="SoundGenerator.Registers" type="Absolute16"/>
+		
+		<cpu:IncrementYIndex/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<binary>00100000</binary>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+		<addressOf ref="SoundGenerator.Registers" type="Absolute16"/>
+		
+		<cpu:IncrementYIndex/>
+		
+		<cpu:CopyYIndexToImmediate8Address/>
+		<hex>24</hex>
+		
+		<label id="nextVoice"/>
+		
+		<cpu:IncrementImmediate8Address/>
+		<hex>23</hex>
+		
+		<cpu:DecrementImmediate8Address/>
+		<hex>22</hex>
+		
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="forEachVoice" type="Relative8"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="frequencyLow">
+		<hex>2C</hex>
+		<hex>2F</hex>
+		<hex>31</hex>
+		<hex>34</hex>
+		<hex>37</hex>
+		<hex>3B</hex>
+		<hex>3E</hex>
+		<hex>42</hex>
+		<hex>46</hex>
+		<hex>4A</hex>
+		<hex>4E</hex>
+		<hex>53</hex>
+		<hex>2C</hex>
+		<hex>2F</hex>
+		<hex>31</hex>
+		<hex>34</hex>
+		<hex>37</hex>
+		<hex>3B</hex>
+		<hex>3E</hex>
+		<hex>42</hex>
+		<hex>46</hex>
+		<hex>4A</hex>
+		<hex>4E</hex>
+		<hex>53</hex>
+		<hex>58</hex>
+		<hex>5D</hex>
+		<hex>63</hex>
+		<hex>68</hex>
+		<hex>6F</hex>
+		<hex>75</hex>
+		<hex>7C</hex>
+		<hex>84</hex>
+		<hex>8B</hex>
+		<hex>94</hex>
+		<hex>9C</hex>
+		<hex>A6</hex>
+		<hex>B0</hex>
+		<hex>BA</hex>
+		<hex>C5</hex>
+		<hex>D1</hex>
+		<hex>DD</hex>
+		<hex>EA</hex>
+		<hex>F8</hex>
+		<hex>07</hex>
+		<hex>17</hex>
+		<hex>27</hex>
+		<hex>39</hex>
+		<hex>4B</hex>
+		<hex>5F</hex>
+		<hex>74</hex>
+		<hex>8A</hex>
+		<hex>A2</hex>
+		<hex>BA</hex>
+		<hex>D5</hex>
+		<hex>F1</hex>
+		<hex>0E</hex>
+		<hex>2D</hex>
+		<hex>4F</hex>
+		<hex>72</hex>
+		<hex>97</hex>
+		<hex>BE</hex>
+		<hex>E8</hex>
+		<hex>14</hex>
+		<hex>43</hex>
+		<hex>75</hex>
+		<hex>A9</hex>
+		<hex>E1</hex>
+		<hex>1C</hex>
+		<hex>5B</hex>
+		<hex>9D</hex>
+		<hex>E3</hex>
+		<hex>2E</hex>
+		<hex>7D</hex>
+		<hex>D0</hex>
+		<hex>29</hex>
+		<hex>86</hex>
+		<hex>EA</hex>
+		<hex>53</hex>
+		<hex>C2</hex>
+		<hex>39</hex>
+		<hex>B6</hex>
+		<hex>3A</hex>
+		<hex>C7</hex>
+		<hex>5C</hex>
+		<hex>F9</hex>
+		<hex>A0</hex>
+		<hex>51</hex>
+		<hex>0D</hex>
+		<hex>D3</hex>
+		<hex>A6</hex>
+		<hex>85</hex>
+		<hex>71</hex>
+		<hex>6B</hex>
+		<hex>74</hex>
+		<hex>8D</hex>
+		<hex>B7</hex>
+		<hex>F2</hex>
+		<hex>40</hex>
+		<hex>A2</hex>
+		<hex>19</hex>
+		<hex>A7</hex>
+		<hex>4C</hex>
+		<hex>0A</hex>
+		<hex>E2</hex>
+		<hex>D7</hex>
+		<hex>E9</hex>
+		<hex>1B</hex>
+		<hex>6E</hex>
+		<hex>E5</hex>
+		<hex>81</hex>
+		<hex>45</hex>
+		<hex>33</hex>
+		<hex>4D</hex>
+		<hex>97</hex>
+		<hex>13</hex>
+		<hex>C4</hex>
+		<hex>AD</hex>
+		<hex>D2</hex>
+		<hex>36</hex>
+		<hex>DC</hex>
+	</label>
+
+	<label id="frequencyHigh">
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>01</hex>
+		<hex>01</hex>
+		<hex>01</hex>
+		<hex>01</hex>
+		<hex>01</hex>
+		<hex>01</hex>
+		<hex>01</hex>
+		<hex>01</hex>
+		<hex>01</hex>
+		<hex>01</hex>
+		<hex>01</hex>
+		<hex>01</hex>
+		<hex>02</hex>
+		<hex>02</hex>
+		<hex>02</hex>
+		<hex>02</hex>
+		<hex>02</hex>
+		<hex>02</hex>
+		<hex>02</hex>
+		<hex>03</hex>
+		<hex>03</hex>
+		<hex>03</hex>
+		<hex>03</hex>
+		<hex>03</hex>
+		<hex>04</hex>
+		<hex>04</hex>
+		<hex>04</hex>
+		<hex>04</hex>
+		<hex>05</hex>
+		<hex>05</hex>
+		<hex>05</hex>
+		<hex>06</hex>
+		<hex>06</hex>
+		<hex>06</hex>
+		<hex>07</hex>
+		<hex>07</hex>
+		<hex>08</hex>
+		<hex>08</hex>
+		<hex>09</hex>
+		<hex>09</hex>
+		<hex>0A</hex>
+		<hex>0A</hex>
+		<hex>0B</hex>
+		<hex>0C</hex>
+		<hex>0D</hex>
+		<hex>0D</hex>
+		<hex>0E</hex>
+		<hex>0F</hex>
+		<hex>10</hex>
+		<hex>11</hex>
+		<hex>12</hex>
+		<hex>13</hex>
+		<hex>14</hex>
+		<hex>15</hex>
+		<hex>17</hex>
+		<hex>18</hex>
+		<hex>1A</hex>
+		<hex>1B</hex>
+		<hex>1D</hex>
+		<hex>1F</hex>
+		<hex>20</hex>
+		<hex>22</hex>
+		<hex>24</hex>
+		<hex>27</hex>
+		<hex>29</hex>
+		<hex>2B</hex>
+		<hex>2E</hex>
+		<hex>31</hex>
+		<hex>34</hex>
+		<hex>37</hex>
+		<hex>3A</hex>
+		<hex>3E</hex>
+		<hex>41</hex>
+		<hex>45</hex>
+		<hex>49</hex>
+		<hex>4E</hex>
+		<hex>52</hex>
+	</label>
+
+</scope>

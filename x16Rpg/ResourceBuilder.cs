@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace x16Rpg
 {
@@ -12,13 +13,27 @@ namespace x16Rpg
 			switch (Path.GetExtension(path).ToLower())
 			{
 				case ".bmp":
-					if(path.Contains("/Battle/"))
+					if (path.Contains("/Battle/"))
 						return BuildBmp4Bpp(path);
 					else
 						return BuildBmp2Bpp(path);
+
+				case ".bin":
+					return BuildRaw(path);
 			}
 
 			return null;
+		}
+
+		private static OZone.Programs.Program BuildRaw(string path)
+		{
+			var data = File.ReadAllBytes(path);
+
+			var program = new OZone.Programs.Program();
+
+			program.Segments.AddRange(data.Select(x => new ByteValue(x)));
+
+			return program;
 		}
 
 		private static OZone.Programs.Program BuildBmp2Bpp(string path)
