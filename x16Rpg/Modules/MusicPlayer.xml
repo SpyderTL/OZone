@@ -23,7 +23,8 @@
 	<label id="flags" offset="0540" export="MusicPlayer.Flags"/>
 	<label id="note" offset="0550" export="MusicPlayer.Note"/>
 	<label id="octave" offset="0560" export="MusicPlayer.Octave"/>
-	<label id="loop" offset="0570"/>
+	<label id="tempo" offset="0570"/>
+	<label id="loop" offset="0580"/>
 
 	<label id="Play" export="MusicPlayer.Play">
 		<!--Load Pointers-->
@@ -250,11 +251,19 @@
 		<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
 		<addressOf ref="timerHigh" type="Absolute16"/>
 		
+		<label id="whileTimerElapsed"/>
+		
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="timerHigh" type="Absolute16"/>
+		
 		<cpu:BranchToRelative8IfPositive/>
 		<addressOf ref="timerNotElapsed" type="Relative8"/>
 		
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="readEvent" type="Absolute16"/>
+		
+		<cpu:JumpToRelative8Address/>
+		<addressOf ref="whileTimerElapsed" type="Relative8"/>
 		
 		<label id="timerNotElapsed"/>
 	
@@ -315,10 +324,7 @@
 		<addressOf ref="notInfiniteLoop" type="Relative8"/>
 		
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
-		
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+		<addressOf ref="readInfiniteLoop" type="Absolute16"/>
 		
 		<cpu:JumpToImmediate16Address/>
 		<addressOf ref="updatePosition" type="Absolute16"/>
@@ -333,15 +339,39 @@
 		<addressOf ref="notLoop" type="Relative8"/>
 		
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
-		
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+		<addressOf ref="readLoop" type="Absolute16"/>
 		
 		<cpu:JumpToImmediate16Address/>
 		<addressOf ref="updatePosition" type="Absolute16"/>
 		
 		<label id="notLoop"/>
+		
+		<!--Octave-->
+		<cpu:CompareAccumulatorToImmediate8/>
+		<hex>dc</hex>
+		
+		<cpu:BranchToRelative8IfGreaterOrEqual/>
+		<addressOf ref="notOctave" type="Relative8"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="readOctave" type="Absolute16"/>
+		
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="updatePosition" type="Absolute16"/>
+		
+		<label id="notOctave"/>
+		
+		<!--Reserved-->
+		<cpu:CompareAccumulatorToImmediate8/>
+		<hex>f8</hex>
+		
+		<cpu:BranchToRelative8IfGreaterOrEqual/>
+		<addressOf ref="notReserved" type="Relative8"/>
+		
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="updatePosition" type="Absolute16"/>
+		
+		<label id="notReserved"/>
 		
 		<!--Envelope-->
 		<cpu:CompareAccumulatorToImmediate8/>
@@ -353,7 +383,29 @@
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
 		
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="updatePosition" type="Absolute16"/>
+		
 		<label id="notEnvelope"/>
+		
+		<!--Tempo-->
+		<cpu:CompareAccumulatorToImmediate8/>
+		<hex>ff</hex>
+		
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="notTempo" type="Relative8"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="readTempo" type="Absolute16"/>
+		
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="updatePosition" type="Absolute16"/>
+		
+		<label id="notTempo"/>
+		
+		<!--End-->
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="readEnd" type="Absolute16"/>
 		
 		<label id="updatePosition"/>
 		
@@ -367,26 +419,58 @@
 		<addressOf ref="MemoryReader.Position" type="Absolute16Low8" offset="1"/>
 		
 		<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
-		<addressOf ref="positionHigh" type="Absolute16" offset="1"/>
+		<addressOf ref="positionHigh" type="Absolute16"/>
 		
 		<cpu:ReturnFromSubroutine/>
 	</label>
 
 	<label id="readNote">
-		<cpu:CopyAccumulatorToYIndex/>
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>23</hex>
 		
 		<cpu:AndAccumulatorWithImmediate8/>
 		<hex>0f</hex>
 		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>24</hex>
+		
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="tempo" type="Absolute16"/>
+		
 		<cpu:ShiftAccumulatorLeft/>
+		<cpu:ShiftAccumulatorLeft/>
+		<cpu:ShiftAccumulatorLeft/>
+		<cpu:ShiftAccumulatorLeft/>
+		
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:AddImmediate8AddressToAccumulator/>
+		<hex>24</hex>
+		
+		<cpu:CopyAccumulatorToYIndex/>
+		
+		<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+		<addressOf ref="tempoDuration" type="Absolute16"/>
+		
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:AddImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="timerLow" type="Absolute16"/>
 		
 		<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
 		<addressOf ref="timerLow" type="Absolute16"/>
 		
-		<cpu:CopyZeroToImmediate16PlusXIndexAddress/>
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:AddImmediate16PlusXIndexAddressToAccumulator/>
 		<addressOf ref="timerHigh" type="Absolute16"/>
 		
-		<cpu:CopyYIndexToAccumulator/>
+		<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+		<addressOf ref="timerHigh" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>23</hex>
 		
 		<cpu:ShiftAccumulatorRight/>
 		<cpu:ShiftAccumulatorRight/>
@@ -405,7 +489,307 @@
 		<cpu:ReturnFromSubroutine/>
 	</label>
 	
-	<label id="readRest">		
+	<label id="readRest">
+		<cpu:AndAccumulatorWithImmediate8/>
+		<hex>0f</hex>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>24</hex>
+		
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="tempo" type="Absolute16"/>
+		
+		<cpu:ShiftAccumulatorLeft/>
+		<cpu:ShiftAccumulatorLeft/>
+		<cpu:ShiftAccumulatorLeft/>
+		<cpu:ShiftAccumulatorLeft/>
+		
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:AddImmediate8AddressToAccumulator/>
+		<hex>24</hex>
+		
+		<cpu:CopyAccumulatorToYIndex/>
+		
+		<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+		<addressOf ref="tempoDuration" type="Absolute16"/>
+		
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:AddImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="timerLow" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+		<addressOf ref="timerLow" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:AddImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="timerHigh" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+		<addressOf ref="timerHigh" type="Absolute16"/>
+				
+		<cpu:CopyImmediate8ToAccumulator/>
+		<binary>00000000</binary>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+		<addressOf ref="flags" type="Absolute16"/>
+		
 		<cpu:ReturnFromSubroutine/>
+	</label>
+	
+	<label id="readOctave">
+		<cpu:AndAccumulatorWithImmediate8/>
+		<hex>07</hex>
+				
+		<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+		<addressOf ref="octave" type="Absolute16"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="readInfiniteLoop">	
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>23</hex>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>24</hex>
+		
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Address" type="Absolute16"/>
+		
+		<cpu:AddImmediate8AddressToAccumulator/>
+		<hex>23</hex>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16Low8"/>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Address" type="Absolute16" offset="1"/>
+		
+		<cpu:AddImmediate8AddressToAccumulator/>
+		<hex>24</hex>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16Low8" offset="1"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="readLoop">
+		<cpu:AndAccumulatorWithImmediate8/>
+		<hex>0f</hex>
+		
+		<cpu:CompareAccumulatorToImmediate16PlusXIndexAddress/>
+		<addressOf ref="loop" type="Absolute16"/>
+		
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="complete" type="Relative8"/>
+		
+		<cpu:IncrementImmediate16PlusXIndexAddress/>
+		<addressOf ref="loop" type="Absolute16"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>23</hex>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>24</hex>
+		
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Address" type="Absolute16"/>
+		
+		<cpu:AddImmediate8AddressToAccumulator/>
+		<hex>23</hex>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16Low8"/>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Address" type="Absolute16" offset="1"/>
+		
+		<cpu:AddImmediate8AddressToAccumulator/>
+		<hex>24</hex>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16Low8" offset="1"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	
+		<label id="complete"/>
+		
+		<cpu:CopyZeroToImmediate16PlusXIndexAddress/>
+		<addressOf ref="loop" type="Absolute16"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="readTempo">
+		<cpu:AndAccumulatorWithImmediate8/>
+		<hex>0f</hex>
+		
+		<cpu:SetCarryFlag/>
+		
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>9</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+		<addressOf ref="tempo" type="Absolute16"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="readEnd">
+		<cpu:CopyZeroToImmediate16PlusXIndexAddress/>
+		<addressOf ref="flags" type="Absolute16"/>
+		
+		<cpu:SetCarryFlag/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16Low8"/>
+		
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>1</byte>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16Low8"/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16Low8" offset="1"/>
+		
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>0</byte>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16Low8" offset="1"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="tempoDuration">
+		<!--00-->
+		<byte>192</byte>
+		<byte>96</byte>
+		<byte>48</byte>
+		<byte>24</byte>
+		<byte>12</byte>
+		<byte>144</byte>
+		<byte>72</byte>
+		<byte>36</byte>
+		<byte>192</byte>
+		<byte>96</byte>
+		<byte>48</byte>
+		<byte>24</byte>
+		<byte>12</byte>
+		<byte>144</byte>
+		<byte>72</byte>
+		<byte>36</byte>
+	
+		<!--01-->
+		<byte>120</byte>
+		<byte>60</byte>
+		<byte>30</byte>
+		<byte>15</byte>
+		<byte>7</byte>
+		<byte>90</byte>
+		<byte>40</byte>
+		<byte>20</byte>
+		<byte>120</byte>
+		<byte>60</byte>
+		<byte>30</byte>
+		<byte>15</byte>
+		<byte>7</byte>
+		<byte>90</byte>
+		<byte>40</byte>
+		<byte>20</byte>
+	
+		<!--02-->
+		<byte>144</byte>
+		<byte>96</byte>
+		<byte>72</byte>
+		<byte>48</byte>
+		<byte>36</byte>
+		<byte>24</byte>
+		<byte>18</byte>
+		<byte>12</byte>
+		<byte>9</byte>
+		<byte>6</byte>
+		<byte>3</byte>
+		<byte>3</byte>
+		<byte>4</byte>
+		<byte>16</byte>
+		<byte>8</byte>
+		<byte>8</byte>
+	
+		<!--03-->
+		<byte>120</byte>
+		<byte>80</byte>
+		<byte>60</byte>
+		<byte>40</byte>
+		<byte>30</byte>
+		<byte>20</byte>
+		<byte>15</byte>
+		<byte>10</byte>
+		<byte>7</byte>
+		<byte>5</byte>
+		<byte>3</byte>
+		<byte>2</byte>
+		<byte>14</byte>
+		<byte>13</byte>
+		<byte>7</byte>
+		<byte>6</byte>
+	
+		<!--04-->
+		<byte>108</byte>
+		<byte>72</byte>
+		<byte>54</byte>
+		<byte>36</byte>
+		<byte>27</byte>
+		<byte>18</byte>
+		<byte>14</byte>
+		<byte>9</byte>
+		<byte>7</byte>
+		<byte>4</byte>
+		<byte>3</byte>
+		<byte>3</byte>
+		<byte>14</byte>
+		<byte>96</byte>
+		<byte>64</byte>
+		<byte>48</byte>
+	
+		<!--05-->
+		<byte>96</byte>
+		<byte>64</byte>
+		<byte>48</byte>
+		<byte>32</byte>
+		<byte>24</byte>
+		<byte>16</byte>
+		<byte>12</byte>
+		<byte>8</byte>
+		<byte>6</byte>
+		<byte>4</byte>
+		<byte>2</byte>
+		<byte>2</byte>
+		<byte>11</byte>
+		<byte>10</byte>
+		<byte>6</byte>
+		<byte>5</byte>
 	</label>
 </scope>

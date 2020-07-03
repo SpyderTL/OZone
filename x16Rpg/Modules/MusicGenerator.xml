@@ -78,16 +78,31 @@
 		<label id="notIdle"/>
 		
 		<cpu:CopyImmediate16PlusXIndexAddressToYIndex/>
-		<addressOf ref="MusicPlayer.Note" type="Absolute16"/>
+		<addressOf ref="MusicPlayer.Octave" type="Absolute16"/>
 		
 		<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
-		<addressOf ref="frequencyHigh" type="Absolute16" offset="48"/>
+		<addressOf ref="octave" type="Absolute16"/>
+						
+		<cpu:ClearCarryFlag/>
+			
+		<cpu:AddImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="MusicPlayer.Note" type="Absolute16"/>
+		
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:AddImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="note" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToYIndex/>
+		
+		<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+		<addressOf ref="frequencyHigh" type="Absolute16"/>
 		
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<hex>25</hex>
 		
 		<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
-		<addressOf ref="frequencyLow" type="Absolute16" offset="48"/>
+		<addressOf ref="frequencyLow" type="Absolute16"/>
 		
 		<cpu:CopyImmediate8AddressToYIndex/>
 		<hex>24</hex>
@@ -112,9 +127,9 @@
 		<addressOf ref="SoundGenerator.Registers" type="Absolute16"/>
 		
 		<cpu:IncrementYIndex/>
-		
-		<cpu:CopyImmediate8ToAccumulator/>
-		<binary>00100000</binary>
+				
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="waveform" type="Absolute16"/>
 		
 		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
 		<addressOf ref="SoundGenerator.Registers" type="Absolute16"/>
@@ -136,6 +151,17 @@
 		<addressOf ref="forEachVoice" type="Relative8"/>
 		
 		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="octave">
+		<byte>0</byte>
+		<byte>12</byte>
+		<byte>24</byte>
+		<byte>36</byte>
+		<byte>48</byte>
+		<byte>60</byte>
+		<byte>72</byte>
+		<byte>84</byte>
 	</label>
 
 	<label id="frequencyLow">
@@ -384,4 +410,15 @@
 		<hex>52</hex>
 	</label>
 
+	<label id="waveform">
+		<binary>00100000</binary>
+		<binary>00100000</binary>
+		<binary>10000000</binary>
+	</label>
+
+	<label id="note">
+		<byte>48</byte>
+		<byte>48</byte>
+		<byte>36</byte>
+	</label>
 </scope>

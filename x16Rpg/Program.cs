@@ -175,7 +175,8 @@ namespace x16Rpg
 				//"../../Resources/Characters/character_127.bmp",
 				"../../Resources/Backgrounds/background_0_character_0.bmp",
 				"../../Resources/Battle/pointer.bmp",
-				"../../Resources/Songs/song_0.bin"
+				"../../Resources/Songs/song_0.bin",
+				"../../Resources/Songs/song_3.bin",
 			};
 
 			var compiler = new BinaryCompiler();
