@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Wdc/65C02/Operators"
+	xmlns:mem="http://metalx.org/65C02/Functions/Memory"
+	xmlns:str="http://metalx.org/65C02/Functions/String"
+	xmlns:mm="http://metalx.org/65C02/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<!--ReadCharacter()-->
+	<label id="Kernal.ReadCharacter" offset="FFE4"/>
+	<!--WriteCharacter(character)-->
+	<label id="Kernal.WriteCharacter" offset="FFD2"/>
+	<!--SetCursor(x,y,read)-->
+	<label id="Kernal.SetCursor" offset="FFF0"/>
+	<!--InitializeVideo()-->
+	<label id="Kernal.InitializeVideo" offset="FF81"/>
+
+	<label id="Reset" export="Console.Reset">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.InitializeVideo" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="SetPosition" export="Console.SetPosition">
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.SetCursor" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="GetPosition" export="Console.GetPosition">
+		<cpu:SetCarryFlag/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.SetCursor" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="WriteCharacter" export="Console.WriteCharacter">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.WriteCharacter" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="ReadCharacter" export="Console.ReadCharacter">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.ReadCharacter" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="WriteLine" export="Console.WriteLine">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="WriteString" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<petscii:Return/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.WriteCharacter" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="ReadLine" export="Console.ReadLine">
+		<scope>
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="String.Clear" type="Absolute16"/>
+
+			<label id="forEachCharacter"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="Kernal.ReadCharacter" type="Absolute16"/>
+
+			<cpu:CompareAccumulatorToImmediate8/>
+			<byte>0</byte>
+
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="forEachCharacter" type="Relative8"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="Kernal.WriteCharacter" type="Absolute16"/>
+
+			<cpu:CompareAccumulatorToImmediate8/>
+			<petscii:Return/>
+
+			<cpu:BranchToRelative8IfEqual/>
+			<addressOf ref="end" type="Relative8"/>
+
+			<cpu:CompareAccumulatorToImmediate8/>
+			<petscii:Delete/>
+
+			<cpu:BranchToRelative8IfNotEqual/>
+			<addressOf ref="notDelete" type="Relative8"/>
+			
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="String.TrimEnd" type="Absolute16"/>
+			
+			<cpu:JumpToImmediate16Address/>
+			<addressOf ref="forEachCharacter" type="Absolute16"/>
+
+			<label id="notDelete"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="String.Append" type="Absolute16"/>
+
+			<cpu:JumpToImmediate16Address/>
+			<addressOf ref="forEachCharacter" type="Absolute16"/>
+
+			<label id="end"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
+	<label id="WriteString" export="Console.WriteString">
+		<scope>
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>0</byte>
+
+			<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+			<hex>02</hex>
+
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>22</hex>
+			
+			<cpu:ClearCarryFlag/>
+			
+			<cpu:CopyImmediate8AddressToAccumulator/>
+			<hex>02</hex>
+			
+			<cpu:AddImmediate8ToAccumulator/>
+			<byte>2</byte>
+			
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>04</hex>
+
+			<cpu:CopyImmediate8AddressToAccumulator/>
+			<hex>03</hex>
+			
+			<cpu:AddImmediate8ToAccumulator/>
+			<byte>0</byte>
+			
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>05</hex>
+
+			<label id="forEachCharacter"/>
+
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>0</byte>
+
+			<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+			<hex>04</hex>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="Kernal.WriteCharacter" type="Absolute16"/>
+
+			<cpu:ClearCarryFlag/>
+			
+			<cpu:CopyImmediate8AddressToAccumulator/>
+			<hex>04</hex>
+			
+			<cpu:AddImmediate8ToAccumulator/>
+			<byte>1</byte>
+			
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>04</hex>
+
+			<cpu:CopyImmediate8AddressToAccumulator/>
+			<hex>05</hex>
+			
+			<cpu:AddImmediate8ToAccumulator/>
+			<byte>0</byte>
+			
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>05</hex>
+
+			<cpu:DecrementImmediate8Address/>
+			<hex>22</hex>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="forEachCharacter" type="Relative8"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+</scope>

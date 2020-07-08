@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Wdc/65C02/Operators"
+	xmlns:mem="http://metalx.org/65C02/Functions/Memory"
+	xmlns:str="http://metalx.org/65C02/Functions/String"
+	xmlns:short="http://metalx.org/65C02/Functions/Short"
+	xmlns:mm="http://metalx.org/65C02/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<label id="Update" export="ControllerMenu.Update">
+		<!--Down-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<binary>00000100</binary>
+		
+		<cpu:TestAndAccumulatorWithImmediate16Address/>
+		<addressOf ref="Controller.State" type="Absolute16"/>
+		
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="notDown" type="Relative8"/>
+		
+		<cpu:TestAndAccumulatorWithImmediate16Address/>
+		<addressOf ref="Controller.Last" type="Absolute16"/>
+		
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notDown" type="Relative8"/>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Menu.Item" type="Absolute16"/>
+		
+		<cpu:IncrementAccumulator/>
+		
+		<cpu:CompareAccumulatorToImmediate16Address/>
+		<addressOf ref="Menu.Items" type="Absolute16"/>
+		
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="notDown" type="Relative8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Menu.Item" type="Absolute16"/>
+		
+		<!--Play Sound Effect-->
+		
+		<!--Update Pointer-->
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MenuPointer.Update" type="Absolute16"/>
+		
+		<label id="notDown"/>
+		
+		<!--Up-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<binary>00001000</binary>
+		
+		<cpu:TestAndAccumulatorWithImmediate16Address/>
+		<addressOf ref="Controller.State" type="Absolute16"/>
+		
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="notUp" type="Relative8"/>
+		
+		<cpu:TestAndAccumulatorWithImmediate16Address/>
+		<addressOf ref="Controller.Last" type="Absolute16"/>
+		
+		<cpu:BranchToRelative8IfZero/>
+		<addressOf ref="notUp" type="Relative8"/>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Menu.Item" type="Absolute16"/>
+		
+		<cpu:DecrementAccumulator/>
+		
+		<cpu:BranchToRelative8IfNegative/>
+		<addressOf ref="notUp" type="Relative8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Menu.Item" type="Absolute16"/>
+		
+		<!--Play Sound Effect-->
+		
+		<!--Update Pointer-->
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MenuPointer.Update" type="Absolute16"/>
+		
+		<label id="notUp"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+</scope>

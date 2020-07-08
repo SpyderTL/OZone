@@ -18,20 +18,25 @@ namespace x16Rpg
 				new KeyValuePair<string, string>("http://metalx.org/65C02/Functions/Short", "../../../OZone/Functions/65C02/Short.xslt"),
 				new KeyValuePair<string, string>("http://metalx.org/65C02/Functions/Integer", "../../../OZone/Functions/65C02/Integer.xslt"),
 				new KeyValuePair<string, string>("http://metalx.org/Variable", "../../../OZone/Structures/6502/Variable.xslt"),
-				new KeyValuePair<string, string>("http://metalx.org/Wdc/65C02/Operators", "../../../OZone/Platforms/Wdc/65C02/Operators.xslt")
+				new KeyValuePair<string, string>("http://metalx.org/Wdc/65C02/Operators", "../../../OZone/Platforms/Wdc/65C02/Operators.xslt"),
+				new KeyValuePair<string, string>("http://metalx.org/Commodore64/Petscii", "../../../OZone/Platforms/Commodore/C64/Petscii.xslt")
 			};
 
 			var sourceFiles = new string[]
 			{
 				"../../x16Program.xml",
 				"../../x16Rpg.xml",
+				"../../Modules/Console.xml",
 				"../../Modules/Controller.xml",
+				"../../Modules/ControllerMenu.xml",
 				"../../Modules/Dialog.xml",
 				"../../Modules/Formation.xml",
 				"../../Modules/Graphics.xml",
 				"../../Modules/Level.xml",
 				"../../Modules/Logic.xml",
 				"../../Modules/MemoryReader.xml",
+				"../../Modules/Menu.xml",
+				"../../Modules/MenuPointer.xml",
 				"../../Modules/MusicGenerator.xml",
 				"../../Modules/MusicPlayer.xml",
 				"../../Modules/Object.xml",
@@ -39,6 +44,7 @@ namespace x16Rpg
 				"../../Modules/Screen.xml",
 				"../../Modules/SoundGenerator.xml",
 				"../../Modules/Sprite.xml",
+				"../../Modules/String.xml",
 				"../../Modules/System.xml",
 				"../../Modules/Vera.xml",
 			};
@@ -176,7 +182,29 @@ namespace x16Rpg
 				"../../Resources/Backgrounds/background_0_character_0.bmp",
 				"../../Resources/Battle/pointer.bmp",
 				"../../Resources/Songs/song_0.bin",
+				"../../Resources/Songs/song_1.bin",
+				"../../Resources/Songs/song_2.bin",
 				"../../Resources/Songs/song_3.bin",
+				"../../Resources/Songs/song_4.bin",
+				"../../Resources/Songs/song_5.bin",
+				"../../Resources/Songs/song_6.bin",
+				"../../Resources/Songs/song_7.bin",
+				"../../Resources/Songs/song_8.bin",
+				"../../Resources/Songs/song_9.bin",
+				"../../Resources/Songs/song_10.bin",
+				"../../Resources/Songs/song_11.bin",
+				"../../Resources/Songs/song_12.bin",
+				"../../Resources/Songs/song_13.bin",
+				"../../Resources/Songs/song_14.bin",
+				"../../Resources/Songs/song_15.bin",
+				"../../Resources/Songs/song_16.bin",
+				"../../Resources/Songs/song_17.bin",
+				"../../Resources/Songs/song_18.bin",
+				"../../Resources/Songs/song_19.bin",
+				"../../Resources/Songs/song_20.bin",
+				"../../Resources/Songs/song_21.bin",
+				"../../Resources/Songs/song_22.bin",
+				"../../Resources/Songs/song_23.bin",
 			};
 
 			var compiler = new BinaryCompiler();
