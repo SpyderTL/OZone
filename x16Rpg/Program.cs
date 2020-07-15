@@ -49,7 +49,8 @@ namespace x16Rpg
 				"../../Modules/String.xml",
 				"../../Modules/System.xml",
 				"../../Modules/Vera.xml",
-				"../../Modules/World.xml"
+				"../../Modules/World.xml",
+				"../../Modules/WorldScreen.xml"
 			};
 
 			var resources = new string[]
