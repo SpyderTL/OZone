@@ -12,6 +12,12 @@
 	xmlns:ascii="http://metalx.org/Ansi/Ascii"
 	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
 	xmlns:var="http://metalx.org/Variable">
+	
+	<label id="scrollX" export="Screen.ScrollX"/>
+	<short>0</short>
+
+	<label id="scrollY" export="Screen.ScrollY"/>
+	<short>0</short>
 
 	<label id="Enable" export="Screen.Enable">
 		<cpu:CopyImmediate16AddressToAccumulator/>
@@ -94,4 +100,33 @@
 
 		<cpu:ReturnFromSubroutine/>
 	</label>
+
+	<label id="updateScroll" export="Screen.UpdateScroll">
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="scrollX" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.HorizontalScrollLow" type="Absolute16"/>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="scrollX" type="Absolute16" offset="1"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.HorizontalScrollHigh" type="Absolute16"/>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="scrollY" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.VerticalScrollLow" type="Absolute16"/>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="scrollX" type="Absolute16" offset="1"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.VerticalScrollHigh" type="Absolute16"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
 </scope>

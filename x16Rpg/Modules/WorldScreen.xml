@@ -14,25 +14,10 @@
 	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
 	xmlns:var="http://metalx.org/Variable">
 	
+	<label id="column" export="WorldScreen.Column"/>
+	<byte>0</byte>
+	
 	<label id="drawRow" export="WorldScreen.DrawRow">
-		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>10</hex>
-		
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Vera.AddressHigh" type="Absolute16"/>
-		
-		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>00</hex>
-		
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Vera.AddressMid" type="Absolute16"/>
-		
-		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>00</hex>
-		
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Vera.AddressLow" type="Absolute16"/>
-		
 		<!--Top Row-->
 		<cpu:CopyImmediate8ToAccumulator/>
 		<byte>32</byte>
@@ -40,8 +25,8 @@
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<hex>22</hex>
 		
-		<cpu:CopyImmediate8ToXIndex/>
-		<byte>0</byte>
+		<cpu:CopyImmediate16AddressToXIndex/>
+		<addressOf ref="column" type="Absolute16"/>
 	
 		<label id="forEachTopTile"/>
 		
@@ -101,9 +86,9 @@
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<hex>22</hex>
 		
-		<cpu:CopyImmediate8ToXIndex/>
-		<byte>0</byte>
-	
+		<cpu:CopyImmediate16AddressToXIndex/>
+		<addressOf ref="column" type="Absolute16"/>
+		
 		<label id="forEachBottomTile"/>
 		
 		<cpu:CopyImmediate16PlusXIndexAddressToYIndex/>

@@ -13,6 +13,9 @@
 	xmlns:ascii="http://metalx.org/Ansi/Ascii"
 	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
 	xmlns:var="http://metalx.org/Variable">
+	
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="loadResources" type="Absolute16"/>
 
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="Screen.Disable" type="Absolute16"/>
@@ -41,6 +44,50 @@
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="showIntro" type="Absolute16"/>
 
+	<label id="loadResources">
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="bank1" type="Absolute16Low8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="File.Filename" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="bank1" type="Absolute16High8"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="File.Filename" type="Absolute16" offset="1"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="File.Address" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>a0</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="File.Address" type="Absolute16" offset="1"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>1</byte>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="System.SetRamBank" type="Absolute16"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="File.Load" type="Absolute16"/>
+		
+		<label id="stop"/>
+		
+		<cpu:BranchToRelative8IfCarry/>
+		<addressOf ref="stop" type="Relative8"/>
+		
+		<cpu:ReturnFromSubroutine/>
+			
+		<var:string id="bank1">x16rpg1.prg</var:string>
+	</label>
+
 	<label id="loadPalette">
 		<cpu:CopyImmediate8ToAccumulator/>
 		<addressOf ref="palette" type="Absolute16Low8"/>
@@ -62,13 +109,21 @@
 
 	<label id="loadDialogTiles">
 		<cpu:CopyImmediate8ToAccumulator/>
-		<addressOf ref="Resources.character_0" type="Absolute16Low8"/>
+		<byte>1</byte>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="System.SetRamBank" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<!--<addressOf ref="Resources.character_0" type="Absolute16Low8"/>-->
+		<hex>00</hex>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="MemoryReader.Position" type="Absolute16"/>
 
 		<cpu:CopyImmediate8ToAccumulator/>
-		<addressOf ref="Resources.character_0" type="Absolute16High8"/>
+		<!--<addressOf ref="Resources.character_0" type="Absolute16High8"/>-->
+		<hex>a0</hex>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="MemoryReader.Position" type="Absolute16" offset="1"/>
@@ -369,7 +424,7 @@
 			<label id="loop"/>
 
 			<cpu:CallImmediate16Address/>
-			<addressOf ref="updateInput" type="Absolute16"/>
+			<addressOf ref="updateMenuInput" type="Absolute16"/>
 
 			<cpu:CallImmediate16Address/>
 			<addressOf ref="updateAudio" type="Absolute16"/>
@@ -405,7 +460,7 @@
 		<label id="Kernal.GetDateTime" offset="FF50"/>
 	</label>
 
-	<label id="updateInput">
+	<label id="updateMenuInput">
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Controller.Update" type="Absolute16"/>
 
@@ -431,6 +486,16 @@
 		<addressOf ref="select" type="Absolute16"/>
 
 		<label id="notA"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="updateWorldInput">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Controller.Update" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="ControllerWorld.Update" type="Absolute16"/>
 
 		<cpu:ReturnFromSubroutine/>
 	</label>
@@ -508,24 +573,62 @@
 
 			<cpu:CallImmediate16Address/>
 			<addressOf ref="MusicPlayer.Play" type="Absolute16"/>
+			
+			<!--Set Camera-->
+
+			<!--Draw Tiles-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>10</hex>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="Vera.AddressHigh" type="Absolute16"/>
 
 			<cpu:CopyImmediate8ToAccumulator/>
-			<byte>178</byte>
+			<hex>00</hex>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="Vera.AddressMid" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>00</hex>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="Vera.AddressLow" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>156</byte>
 
 			<cpu:CopyAccumulatorToImmediate16Address/>
 			<addressOf ref="World.Row" type="Absolute16"/>
+			
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>32</byte>
+			
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>02</hex>
+			
+			<label id="drawRow"/>
 
 			<cpu:CallImmediate16Address/>
 			<addressOf ref="World.LoadRowTiles" type="Absolute16"/>
 
 			<cpu:CallImmediate16Address/>
 			<addressOf ref="WorldScreen.DrawRow" type="Absolute16"/>
+			
+			<cpu:IncrementImmediate16Address/>
+			<addressOf ref="World.Row" type="Absolute16"/>
 
+			<cpu:DecrementImmediate8Address/>
+			<hex>02</hex>
+			
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="drawRow" type="Relative8"/>
+			
 			<label id="loop"/>
 
-			<!--<cpu:CallImmediate16Address/>
-			<addressOf ref="updateInput" type="Absolute16"/>-->
-
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="updateWorldInput" type="Absolute16"/>
+			
 			<cpu:CallImmediate16Address/>
 			<addressOf ref="updateAudio" type="Absolute16"/>
 
@@ -609,7 +712,7 @@
 		<hex>0000</hex>
 		<hex>0000</hex>
 		<hex>0000</hex>
-		
+
 		<!--0x40 (World 2)-->
 		<hex>0000</hex>
 		<hex>00A0</hex>
@@ -627,7 +730,7 @@
 		<hex>0000</hex>
 		<hex>0000</hex>
 		<hex>0000</hex>
-		
+
 		<hex>0000</hex>
 		<hex>00A0</hex>
 		<hex>0BF1</hex>
@@ -644,7 +747,7 @@
 		<hex>0000</hex>
 		<hex>0000</hex>
 		<hex>0000</hex>
-		
+
 		<hex>0000</hex>
 		<hex>0000</hex>
 		<hex>005F</hex>
@@ -661,7 +764,7 @@
 		<hex>0000</hex>
 		<hex>0000</hex>
 		<hex>0000</hex>
-		
+
 		<hex>0000</hex>
 		<hex>0000</hex>
 		<hex>0FA4</hex>
@@ -678,7 +781,7 @@
 		<hex>0000</hex>
 		<hex>0000</hex>
 		<hex>0000</hex>
-		
+
 		<hex>0000</hex>
 		<hex>0000</hex>
 		<hex>0FA4</hex>
@@ -695,7 +798,7 @@
 		<hex>0000</hex>
 		<hex>0000</hex>
 		<hex>0000</hex>
-		
+
 		<hex>0000</hex>
 		<hex>0000</hex>
 		<hex>0FFF</hex>
@@ -712,7 +815,7 @@
 		<hex>0000</hex>
 		<hex>0000</hex>
 		<hex>0000</hex>
-		
+
 		<hex>0F30</hex>
 		<hex>0F30</hex>
 		<hex>005F</hex>
@@ -729,7 +832,7 @@
 		<hex>0000</hex>
 		<hex>0000</hex>
 		<hex>0000</hex>
-		
+
 		<hex>0FA4</hex>
 		<hex>005F</hex>
 		<hex>0F30</hex>
@@ -746,7 +849,7 @@
 		<hex>0000</hex>
 		<hex>0000</hex>
 		<hex>0000</hex>
-		
+
 		<hex>0FFF</hex>
 		<hex>0FFF</hex>
 		<hex>0FA4</hex>
@@ -763,7 +866,7 @@
 		<hex>0000</hex>
 		<hex>0000</hex>
 		<hex>0000</hex>
-		
+
 		<hex>0F30</hex>
 		<hex>0F30</hex>
 		<hex>0F30</hex>

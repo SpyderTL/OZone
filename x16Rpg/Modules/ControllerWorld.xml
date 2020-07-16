@@ -1,0 +1,347 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Wdc/65C02/Operators"
+	xmlns:mem="http://metalx.org/65C02/Functions/Memory"
+	xmlns:str="http://metalx.org/65C02/Functions/String"
+	xmlns:short="http://metalx.org/65C02/Functions/Short"
+	xmlns:mm="http://metalx.org/65C02/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<label id="count"/>
+	<byte>0</byte>
+
+	<label id="Update" export="ControllerWorld.Update">
+		<!--Down-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<binary>00000100</binary>
+
+		<cpu:TestAndAccumulatorWithImmediate16Address/>
+		<addressOf ref="Controller.State" type="Absolute16"/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="notDown" type="Relative8"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="moveDown" type="Absolute16"/>
+
+		<label id="notDown"/>
+
+		<!--Up-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<binary>00001000</binary>
+
+		<cpu:TestAndAccumulatorWithImmediate16Address/>
+		<addressOf ref="Controller.State" type="Absolute16"/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="notUp" type="Relative8"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="moveUp" type="Absolute16"/>
+
+		<label id="notUp"/>
+
+		<!--Left-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<binary>00000010</binary>
+
+		<cpu:TestAndAccumulatorWithImmediate16Address/>
+		<addressOf ref="Controller.State" type="Absolute16"/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="notLeft" type="Relative8"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="moveLeft" type="Absolute16"/>
+
+		<label id="notLeft"/>
+
+		<!--Right-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<binary>00000001</binary>
+
+		<cpu:TestAndAccumulatorWithImmediate16Address/>
+		<addressOf ref="Controller.State" type="Absolute16"/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="notRight" type="Relative8"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="moveRight" type="Absolute16"/>
+
+		<label id="notRight"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="moveDown">
+		<scope>
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>16</byte>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="count" type="Absolute16"/>
+
+			<label id="loop"/>
+
+			<cpu:IncrementImmediate16Address/>
+			<addressOf ref="Screen.ScrollY" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="Screen.UpdateScroll" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="updateAudio" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="wait" type="Absolute16"/>
+
+			<cpu:DecrementImmediate16Address/>
+			<addressOf ref="count" type="Absolute16"/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="loop" type="Relative8"/>
+
+			<cpu:IncrementImmediate16Address/>
+			<addressOf ref="Camera.Y" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="updateScreen" type="Absolute16"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
+	<label id="moveUp">
+		<scope>
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>16</byte>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="count" type="Absolute16"/>
+
+			<label id="loop"/>
+
+			<cpu:DecrementImmediate16Address/>
+			<addressOf ref="Screen.ScrollY" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="Screen.UpdateScroll" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="updateAudio" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="wait" type="Absolute16"/>
+
+			<cpu:DecrementImmediate16Address/>
+			<addressOf ref="count" type="Absolute16"/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="loop" type="Relative8"/>
+
+			<cpu:DecrementImmediate16Address/>
+			<addressOf ref="Camera.Y" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="updateScreen" type="Absolute16"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
+	<label id="moveLeft">
+		<scope>
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>16</byte>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="count" type="Absolute16"/>
+
+			<label id="loop"/>
+
+			<cpu:DecrementImmediate16Address/>
+			<addressOf ref="Screen.ScrollX" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="Screen.UpdateScroll" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="updateAudio" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="wait" type="Absolute16"/>
+
+			<cpu:DecrementImmediate16Address/>
+			<addressOf ref="count" type="Absolute16"/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="loop" type="Relative8"/>
+
+			<cpu:DecrementImmediate16Address/>
+			<addressOf ref="Camera.X" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="updateScreen" type="Absolute16"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
+	<label id="moveRight">
+		<scope>
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>16</byte>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="count" type="Absolute16"/>
+
+			<label id="loop"/>
+
+			<cpu:IncrementImmediate16Address/>
+			<addressOf ref="Screen.ScrollX" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="Screen.UpdateScroll" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="updateAudio" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="wait" type="Absolute16"/>
+
+			<cpu:DecrementImmediate16Address/>
+			<addressOf ref="count" type="Absolute16"/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="loop" type="Relative8"/>
+
+			<cpu:IncrementImmediate16Address/>
+			<addressOf ref="Camera.X" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="updateScreen" type="Absolute16"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
+	<label id="updateScreen">
+		<!--Draw Tiles-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>10</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressHigh" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressMid" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressLow" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Camera.Y" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="World.Row" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Camera.X" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="WorldScreen.Column" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>32</byte>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>02</hex>
+
+		<label id="drawRow"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="World.LoadRowTiles" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="WorldScreen.DrawRow" type="Absolute16"/>
+
+		<cpu:IncrementImmediate16Address/>
+		<addressOf ref="World.Row" type="Absolute16"/>
+
+		<cpu:DecrementImmediate8Address/>
+		<hex>02</hex>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="drawRow" type="Relative8"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>16</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Screen.ScrollX" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Screen.ScrollY" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.UpdateScroll" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="updateAudio">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MusicPlayer.Update" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MusicGenerator.Update" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Effect.Update" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="EffectGenerator.Update" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="SoundGenerator.WriteRegisters" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="wait">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.GetDateTime" type="Absolute16"/>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>08</hex>
+
+		<cpu:CompareAccumulatorToImmediate16Address/>
+		<addressOf ref="time" type="Absolute16"/>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="wait" type="Relative8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="time" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+
+		<var:byte id="time">0</var:byte>
+
+		<label id="Kernal.GetDateTime" offset="FF50"/>
+	</label>
+</scope>
