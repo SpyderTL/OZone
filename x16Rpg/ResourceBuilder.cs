@@ -15,6 +15,8 @@ namespace x16Rpg
 				case ".bmp":
 					if (path.Contains("/Battle/"))
 						return BuildBmp4Bpp(path);
+					if (path.Contains("/Sprites/"))
+						return BuildBmp4Bpp(path);
 					else
 						return BuildBmp2Bpp(path);
 

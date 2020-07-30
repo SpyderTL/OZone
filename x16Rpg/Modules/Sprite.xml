@@ -353,30 +353,129 @@
 		<cpu:ReturnFromSubroutine/>
 	</label>
 
+	<label id="UpdateSprite" export="Sprite.UpdateSprite">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="setAddress" type="Absolute16"/>
+
+		<!--Calculate Address-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Address" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>02</hex>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Address" type="Absolute16" offset="1"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>03</hex>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Address" type="Absolute16" offset="2"/>
+
+		<cpu:ShiftAccumulatorRight/>
+
+		<cpu:RollImmediate8AddressRight/>
+		<hex>03</hex>
+
+		<cpu:RollImmediate8AddressRight/>
+		<hex>02</hex>
+
+		<cpu:ShiftImmediate8AddressRight/>
+		<hex>03</hex>
+
+		<cpu:RollImmediate8AddressRight/>
+		<hex>02</hex>
+
+		<cpu:ShiftImmediate8AddressRight/>
+		<hex>03</hex>
+
+		<cpu:RollImmediate8AddressRight/>
+		<hex>02</hex>
+
+		<cpu:ShiftImmediate8AddressRight/>
+		<hex>03</hex>
+
+		<cpu:RollImmediate8AddressRight/>
+		<hex>02</hex>
+
+		<cpu:ShiftImmediate8AddressRight/>
+		<hex>03</hex>
+
+		<cpu:RollImmediate8AddressRight/>
+		<hex>02</hex>
+
+		<!--Address-->
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>03</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+
+		<!--Skip Position-->
+		<cpu:ClearCarryFlag/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Vera.AddressLow" type="Absolute16"/>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>4</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressLow" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Vera.AddressMid" type="Absolute16"/>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressMid" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Vera.AddressHigh" type="Absolute16"/>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressHigh" type="Absolute16"/>
+
+		<!--Collision / Depth / Flip Vertical / Flip Horizontal-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Collision" type="Absolute16"/>
+
+		<cpu:ShiftAccumulatorLeft/>
+		<cpu:ShiftAccumulatorLeft/>
+
+		<cpu:OrAccumulatorWithImmediate16Address/>
+		<addressOf ref="Depth" type="Absolute16"/>
+
+		<cpu:ShiftAccumulatorLeft/>
+
+		<cpu:OrAccumulatorWithImmediate16Address/>
+		<addressOf ref="FlipVertical" type="Absolute16"/>
+
+		<cpu:ShiftAccumulatorLeft/>
+
+		<cpu:OrAccumulatorWithImmediate16Address/>
+		<addressOf ref="FlipHorizontal" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.Data0" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
 	<label id="Load16" export="Sprite.Load16">
 		<scope>
-			<!--Address-->
-			<cpu:CopyImmediate16AddressToAccumulator/>
-			<addressOf ref="Address" type="Absolute16"/>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Vera.AddressLow" type="Absolute16"/>
-
-			<cpu:CopyImmediate16AddressToAccumulator/>
-			<addressOf ref="Address" type="Absolute16" offset="1"/>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Vera.AddressMid" type="Absolute16"/>
-
-			<cpu:CopyImmediate16AddressToAccumulator/>
-			<addressOf ref="Address" type="Absolute16" offset="2"/>
-
-			<cpu:OrAccumulatorWithImmediate8/>
-			<hex>10</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Vera.AddressHigh" type="Absolute16"/>
-
 			<cpu:CopyImmediate8ToAccumulator/>
 			<byte>128</byte>
 
@@ -403,28 +502,6 @@
 
 	<label id="Load32" export="Sprite.Load32">
 		<scope>
-			<!--Address-->
-			<cpu:CopyImmediate16AddressToAccumulator/>
-			<addressOf ref="Address" type="Absolute16"/>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Vera.AddressLow" type="Absolute16"/>
-
-			<cpu:CopyImmediate16AddressToAccumulator/>
-			<addressOf ref="Address" type="Absolute16" offset="1"/>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Vera.AddressMid" type="Absolute16"/>
-
-			<cpu:CopyImmediate16AddressToAccumulator/>
-			<addressOf ref="Address" type="Absolute16" offset="2"/>
-
-			<cpu:OrAccumulatorWithImmediate8/>
-			<hex>10</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Vera.AddressHigh" type="Absolute16"/>
-
 			<cpu:CopyImmediate8ToAccumulator/>
 			<byte>0</byte>
 

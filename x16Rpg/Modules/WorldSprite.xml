@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Wdc/65C02/Operators"
+	xmlns:mem="http://metalx.org/65C02/Functions/Memory"
+	xmlns:str="http://metalx.org/65C02/Functions/String"
+	xmlns:short="http://metalx.org/65C02/Functions/Short"
+	xmlns:mm="http://metalx.org/65C02/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+	
+	<label id="direction" export="WorldSprite.Direction"/>
+	<byte>0</byte>
+	
+	<label id="animation" export="WorldSprite.Animation"/>
+	<byte>0</byte>
+	
+	<label id="update" export="WorldSprite.Update">
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>1</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.Index" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="animation" type="Absolute16"/>
+		
+		<cpu:ShiftAccumulatorLeft/>
+		<cpu:ShiftAccumulatorLeft/>
+		
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:AddImmediate16AddressToAccumulator/>
+		<addressOf ref="direction" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToXIndex/>
+		
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="directionFlip" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.FlipHorizontal" type="Absolute16"/>
+		
+		<cpu:CopyZeroToImmediate16Address/>
+		<addressOf ref="Sprite.FlipVertical" type="Absolute16"/>
+		
+		<cpu:CopyZeroToImmediate16Address/>
+		<addressOf ref="Sprite.Collision" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>3</byte>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.Depth" type="Absolute16"/>
+		
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="directionSprite" type="Absolute16"/>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>02</hex>
+		
+		<cpu:CopyZeroToImmediate8Address/>
+		<hex>03</hex>
+		
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>02</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>03</hex>
+		
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>02</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>03</hex>
+		
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>02</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>03</hex>
+		
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>02</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>03</hex>
+		
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>02</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>03</hex>
+		
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>02</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>03</hex>
+		
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>02</hex>
+		
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>03</hex>
+		
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>02</hex>
+		
+		<cpu:AddImmediate8ToAccumulator/>
+		<hex>80</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.Address" type="Absolute16"/>
+		
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>03</hex>
+		
+		<cpu:AddImmediate8ToAccumulator/>
+		<hex>80</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.Address" type="Absolute16" offset="1"/>
+		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>01</hex>
+		
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sprite.Address" type="Absolute16" offset="2"/>
+		
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Sprite.UpdateSprite" type="Absolute16"/>
+		
+		<cpu:ReturnFromSubroutine/>
+	</label>
+	
+	<label id="directionSprite">
+		<!--North-->
+		<byte>1</byte>
+		
+		<!--East-->
+		<byte>2</byte>
+		
+		<!--South-->
+		<byte>0</byte>
+		
+		<!--West-->
+		<byte>2</byte>
+	</label>
+
+	<label id="directionSpriteAnimated">
+		<!--North-->
+		<byte>1</byte>
+		
+		<!--East-->
+		<byte>3</byte>
+		
+		<!--South-->
+		<byte>0</byte>
+		
+		<!--West-->
+		<byte>3</byte>
+	</label>
+
+	<label id="directionFlip">
+		<!--North-->
+		<byte>0</byte>
+		
+		<!--East-->
+		<byte>1</byte>
+		
+		<!--South-->
+		<byte>0</byte>
+		
+		<!--West-->
+		<byte>0</byte>
+	</label>
+
+	<label id="directionFlipAnimated">
+		<!--North-->
+		<byte>1</byte>
+		
+		<!--East-->
+		<byte>1</byte>
+		
+		<!--South-->
+		<byte>1</byte>
+		
+		<!--West-->
+		<byte>0</byte>
+	</label>
+</scope>

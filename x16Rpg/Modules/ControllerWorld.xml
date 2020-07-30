@@ -84,12 +84,31 @@
 	<label id="moveDown">
 		<scope>
 			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>2</byte>
+			
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="WorldSprite.Direction" type="Absolute16"/>
+			
+			<cpu:CopyImmediate8ToAccumulator/>
 			<byte>16</byte>
 
 			<cpu:CopyAccumulatorToImmediate16Address/>
 			<addressOf ref="count" type="Absolute16"/>
 
 			<label id="loop"/>
+			
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="count" type="Absolute16"/>
+			
+			<cpu:ShiftAccumulatorRight/>
+			<cpu:ShiftAccumulatorRight/>
+			<cpu:ShiftAccumulatorRight/>
+			
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="WorldSprite.Animation" type="Absolute16"/>
+			
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="WorldSprite.Update" type="Absolute16"/>
 
 			<cpu:IncrementImmediate16Address/>
 			<addressOf ref="Screen.ScrollY" type="Absolute16"/>
@@ -122,12 +141,31 @@
 	<label id="moveUp">
 		<scope>
 			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
+			
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="WorldSprite.Direction" type="Absolute16"/>
+			
+			<cpu:CopyImmediate8ToAccumulator/>
 			<byte>16</byte>
 
 			<cpu:CopyAccumulatorToImmediate16Address/>
 			<addressOf ref="count" type="Absolute16"/>
 
 			<label id="loop"/>
+
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="count" type="Absolute16"/>
+			
+			<cpu:ShiftAccumulatorRight/>
+			<cpu:ShiftAccumulatorRight/>
+			<cpu:ShiftAccumulatorRight/>
+			
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="WorldSprite.Animation" type="Absolute16"/>
+			
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="WorldSprite.Update" type="Absolute16"/>
 
 			<cpu:DecrementImmediate16Address/>
 			<addressOf ref="Screen.ScrollY" type="Absolute16"/>
@@ -160,12 +198,31 @@
 	<label id="moveLeft">
 		<scope>
 			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>3</byte>
+			
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="WorldSprite.Direction" type="Absolute16"/>
+			
+			<cpu:CopyImmediate8ToAccumulator/>
 			<byte>16</byte>
 
 			<cpu:CopyAccumulatorToImmediate16Address/>
 			<addressOf ref="count" type="Absolute16"/>
 
 			<label id="loop"/>
+
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="count" type="Absolute16"/>
+			
+			<cpu:ShiftAccumulatorRight/>
+			<cpu:ShiftAccumulatorRight/>
+			<cpu:ShiftAccumulatorRight/>
+			
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="WorldSprite.Animation" type="Absolute16"/>
+			
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="WorldSprite.Update" type="Absolute16"/>
 
 			<cpu:DecrementImmediate16Address/>
 			<addressOf ref="Screen.ScrollX" type="Absolute16"/>
@@ -198,12 +255,31 @@
 	<label id="moveRight">
 		<scope>
 			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>1</byte>
+			
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="WorldSprite.Direction" type="Absolute16"/>
+			
+			<cpu:CopyImmediate8ToAccumulator/>
 			<byte>16</byte>
 
 			<cpu:CopyAccumulatorToImmediate16Address/>
 			<addressOf ref="count" type="Absolute16"/>
 
 			<label id="loop"/>
+
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="count" type="Absolute16"/>
+			
+			<cpu:ShiftAccumulatorRight/>
+			<cpu:ShiftAccumulatorRight/>
+			<cpu:ShiftAccumulatorRight/>
+			
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="WorldSprite.Animation" type="Absolute16"/>
+			
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="WorldSprite.Update" type="Absolute16"/>
 
 			<cpu:IncrementImmediate16Address/>
 			<addressOf ref="Screen.ScrollX" type="Absolute16"/>
@@ -234,6 +310,9 @@
 	</label>
 
 	<label id="updateScreen">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.Disable" type="Absolute16"/>
+		
 		<!--Draw Tiles-->
 		<cpu:CopyImmediate8ToAccumulator/>
 		<hex>10</hex>
@@ -299,6 +378,9 @@
 
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Screen.UpdateScroll" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.Enable" type="Absolute16"/>
 
 		<cpu:ReturnFromSubroutine/>
 	</label>
