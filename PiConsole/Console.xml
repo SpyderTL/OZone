@@ -1,50 +1,41 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 
-<scope xmlns="http://metalx.org/Program" xmlns:cpu="http://metalx.org/Arm/Arm7/Operators">
-	<!--Turn On OK LED-->
-	<cpu:ImmediateData Operation="CopyOperand"  Operand="32" Rotate="4" Destination="0"/>
-	<cpu:ImmediateData Operation="OrRegisterWithOperand" Operand="32" Rotate="8" Destination="0"/>
-
-	<cpu:ImmediateData Operation="CopyOperand" Operand="1" Destination="1" Rotate="7"/>
-	<!--<cpu:ImmediateData Operation="CopyOperand" Operand="18" Destination="2"/>-->
-	<!--<cpu:RegisterDataImmediateShift Operation="AndRegisterWithOperand" Register="1" Operand="1" ShiftType="ShiftLeft" Shift="18" Destination="1"/>-->
-	<!--<cpu:RegisterDataRegisterShift Operation="AndRegisterWithOperand" Register="1" Operand="1" ShiftType="ShiftLeft" ShiftRegister="2" Destination="1"/>-->
-
-	<cpu:ImmediateOffsetMemory Register="1" AddressRegister="0" Offset="4" ApplyOffsetBeforeTransfer="true" ReadFromMemory="false" AddOffset="true"/>
-
-	<cpu:ImmediateData Operation="CopyOperand" Operand="1" Destination="1" Rotate="8"/>
-	<cpu:ImmediateOffsetMemory Register="1" AddressRegister="0" Offset="40" ApplyOffsetBeforeTransfer="true" ReadFromMemory="false" AddOffset="true"/>
-
-	<!--Find Mailbox-->
-	<cpu:ImmediateData Operation="CopyOperand"  Operand="32" Rotate="4" Destination="0"/>
-	<cpu:ImmediateData Operation="OrRegisterWithOperand" Operand="184" Rotate="12" Destination="0"/>
-	<cpu:ImmediateData Operation="OrRegisterWithOperand" Operand="128" Destination="0"/>
-
-	<label id="halt"/>
-	<cpu:BranchToRelative ref="halt"/>
-
-	<align bytes="4"/>
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Arm/Arm7/Operators">
+		
+	<label id="loop"/>
 	
-	<label id="frameBufferInfo"/>
-	<!--Width-->
-	<int>1024</int>
-	<!--Height-->
-	<int>768</int>
-	<!--Virtual Width-->
-	<int>1024</int>
-	<!--Virtual Height-->
-	<int>768</int>
-	<!--Pitch-->
-	<int>0</int>
-	<!--Depth-->
-	<int>16</int>
-	<!--X-->
-	<int>0</int>
-	<!--Y-->
-	<int>0</int>
-	<!--Pointer-->
-	<int>0</int>
-	<!--Size-->
-	<int>0</int>
+	<cpu:BranchToRelative ref="System.TurnOnLed" SetReturnAddress="true"/>
+	
+	<!--Wait-->
+	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="0" Rotate="0" Destination="1"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="0" Rotate="12" Destination="1"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="0" Rotate="8" Destination="1"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="1" Rotate="4" Destination="1"/>
+	
+	<label id="wait"/>
+	
+	<cpu:ImmediateData Operation="SubtractOperandFromRegister" Register="1" Operand="1" Rotate="0" Destination="1" SetFlags="true"/>
+	
+	<cpu:BranchToRelative Condition="NotEqual" ref="wait"/>
 
+	<!--Turn Off LED-->
+	<cpu:BranchToRelative ref="System.TurnOffLed" SetReturnAddress="true"/>
+
+	<!--Wait-->
+	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="0" Rotate="0" Destination="1"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="0" Rotate="12" Destination="1"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="0" Rotate="8" Destination="1"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="1" Rotate="4" Destination="1"/>
+	
+	<label id="wait2"/>
+	
+	<cpu:ImmediateData Operation="SubtractOperandFromRegister" Register="1" Operand="1" Rotate="0" Destination="1" SetFlags="true"/>
+	
+	<cpu:BranchToRelative Condition="NotEqual" ref="wait2"/>
+	
+	<cpu:BranchToRelative ref="loop"/>
 </scope>

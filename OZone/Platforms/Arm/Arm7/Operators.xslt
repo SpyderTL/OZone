@@ -144,7 +144,14 @@
 		</xsl:variable>
 
 		<xsl:variable name="shift">
-			<xsl:value-of select="@Shift * 128"/>
+			<xsl:choose>
+				<xsl:when test="@Shift">
+					<xsl:value-of select="@Shift * 128"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="0"/>
+				</xsl:otherwise>
+			</xsl:choose>
 		</xsl:variable>
 
 		<xsl:variable name="shiftType">

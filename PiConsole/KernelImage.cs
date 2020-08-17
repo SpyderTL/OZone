@@ -15,9 +15,9 @@ namespace PiConsole
 
 		public void Add(OZone.Programs.Program program)
 		{
-			var address = _address;
+			var address = new MemoryAddress { Offset = _address.Offset };
 
-			foreach(var segment in program.Segments)
+			foreach (var segment in program.Segments)
 			{
 				segment.Address = new MemoryAddress
 				{
@@ -47,7 +47,7 @@ namespace PiConsole
 
 		public void Add(OZone.Programs.Program program, MemoryAddress address)
 		{
-			foreach(var segment in program.Segments)
+			foreach (var segment in program.Segments)
 			{
 				segment.Address = new MemoryAddress
 				{
@@ -79,10 +79,26 @@ namespace PiConsole
 
 			using (BinaryWriter writer = new BinaryWriter(stream))
 			{
+				var exports = new Dictionary<string, Label>();
+
 				foreach (var program in _programs)
 				{
 					compiler.Compile(program.Program, program.Address);
-					compiler.Link(program.Program, new Dictionary<string, Label>());
+
+					foreach (var label in program.Program.Segments.OfType<Label>())
+					{
+						if (label.Export != null)
+							exports[label.Export] = label;
+					}
+				}
+
+				foreach (var program in _programs)
+				{
+					compiler.Link(program.Program, exports);
+				}
+
+				foreach (var program in _programs)
+				{
 					compiler.Write(program.Program, writer);
 				}
 
