@@ -20,15 +20,21 @@ namespace OZone.Programs
 			switch(Type)
 			{
 				case ReferenceType.Absolute16High8:
-				case ReferenceType.Absolute16Low8:
+				case ReferenceType.Absolute24High8:
+				case ReferenceType.Absolute32High8:
+				case ReferenceType.Absolute40High8:
+				case ReferenceType.Absolute48High8:
+				case ReferenceType.Absolute56High8:
+				case ReferenceType.Absolute64High8:
+				case ReferenceType.Absolute8:
 				case ReferenceType.Relative8:
 					return 1;
 
 				case ReferenceType.Relative24:
+				case ReferenceType.Absolute24:
 					return 3;
 
 				case ReferenceType.Pointer16:
-				case ReferenceType.Absolute26:
 				case ReferenceType.Absolute32:
 				case ReferenceType.Relative32:
 					return 4;
@@ -67,12 +73,36 @@ namespace OZone.Programs
 					writer.Write((ulong)(Segment.Address.Offset + Offset));
 					break;
 
+				case ReferenceType.Absolute8:
+					writer.Write((byte)((Segment.Address.Offset + Offset) & 0xff));
+					break;
+
 				case ReferenceType.Absolute16High8:
 					writer.Write((byte)(((Segment.Address.Offset + Offset) & 0xff00) >> 8));
 					break;
 
-				case ReferenceType.Absolute16Low8:
-					writer.Write((byte)((Segment.Address.Offset + Offset) & 0x00ff));
+				case ReferenceType.Absolute24High8:
+					writer.Write((byte)(((Segment.Address.Offset + Offset) & 0xff0000) >> 8));
+					break;
+
+				case ReferenceType.Absolute32High8:
+					writer.Write((byte)(((Segment.Address.Offset + Offset) & 0xff000000) >> 8));
+					break;
+
+				case ReferenceType.Absolute40High8:
+					writer.Write((byte)(((Segment.Address.Offset + Offset) & 0xff00000000) >> 8));
+					break;
+
+				case ReferenceType.Absolute48High8:
+					writer.Write((byte)(((Segment.Address.Offset + Offset) & 0xff0000000000) >> 8));
+					break;
+
+				case ReferenceType.Absolute56High8:
+					writer.Write((byte)(((Segment.Address.Offset + Offset) & 0xff000000000000) >> 8));
+					break;
+
+				case ReferenceType.Absolute64High8:
+					writer.Write((byte)(((ulong)(Segment.Address.Offset + Offset) & 0xff00000000000000) >> 8));
 					break;
 
 				case ReferenceType.Relative8:

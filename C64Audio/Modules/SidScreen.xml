@@ -1,0 +1,1118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:vic="http://metalx.org/Commodore64/Vic"
+	xmlns:vid="http://metalx.org/Commodore64/Video"
+	xmlns:color="http://metalx.org/Commodore64/Color"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:kernel="http://metalx.org/Commodore64/Kernel"
+	xmlns:var="http://metalx.org/Variable">
+
+	<kernel:ReadCharacter id="readCharacter"/>
+
+	<label id="Selected"/>
+	<byte>0</byte>
+
+	<label id="Show" export="SidScreen.Show">
+		<!--Clear Screen-->
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.Clear" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Selected" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="Update" export="SidScreen.Update">
+		<!--Get Key Events-->
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="readCharacter" type="Absolute16"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<hex>00</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="findEvent" type="Relative8"/>
+		
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="noEvents" type="Absolute16"/>
+
+		<label id="findEvent"/>
+		
+		<!--Reset Highlight-->
+		<cpu:PushAccumulatorToStack/>
+		
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Selected" type="Absolute16"/>
+
+		<cpu:ShiftAccumulatorLeft/>
+
+		<cpu:CopyAccumulatorToXIndex/>
+
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="screen" type="Absolute16" offset="0"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="0"/>
+
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="screen" type="Absolute16" offset="1"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="1"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<color:LightGray/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryWriter.WriteByte" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryWriter.WriteByte" type="Absolute16"/>
+
+		<cpu:PullAccumulatorFromStack/>
+		
+		<cpu:CompareAccumulatorToImmediate8/>
+		<hex>91</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notUp" type="Relative8"/>
+
+		<cpu:DecrementImmediate16Address/>
+		<addressOf ref="Selected" type="Absolute16"/>
+
+		<cpu:DecrementImmediate16Address/>
+		<addressOf ref="Selected" type="Absolute16"/>
+		
+		<cpu:DecrementImmediate16Address/>
+		<addressOf ref="Selected" type="Absolute16"/>
+		
+		<cpu:DecrementImmediate16Address/>
+		<addressOf ref="Selected" type="Absolute16"/>
+		
+		<cpu:DecrementImmediate16Address/>
+		<addressOf ref="Selected" type="Absolute16"/>
+		
+		<cpu:DecrementImmediate16Address/>
+		<addressOf ref="Selected" type="Absolute16"/>
+
+		<label id="notUp"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<hex>11</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notDown" type="Relative8"/>
+
+		<cpu:IncrementImmediate16Address/>
+		<addressOf ref="Selected" type="Absolute16"/>
+
+		<cpu:IncrementImmediate16Address/>
+		<addressOf ref="Selected" type="Absolute16"/>
+
+		<cpu:IncrementImmediate16Address/>
+		<addressOf ref="Selected" type="Absolute16"/>
+
+		<cpu:IncrementImmediate16Address/>
+		<addressOf ref="Selected" type="Absolute16"/>
+
+		<cpu:IncrementImmediate16Address/>
+		<addressOf ref="Selected" type="Absolute16"/>
+
+		<cpu:IncrementImmediate16Address/>
+		<addressOf ref="Selected" type="Absolute16"/>
+
+		<label id="notDown"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<hex>9D</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notLeft" type="Relative8"/>
+
+		<cpu:DecrementImmediate16Address/>
+		<addressOf ref="Selected" type="Absolute16"/>
+
+		<label id="notLeft"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<hex>1D</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notRight" type="Relative8"/>
+
+		<cpu:IncrementImmediate16Address/>
+		<addressOf ref="Selected" type="Absolute16"/>
+
+		<label id="notRight"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<hex>2B</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notPlus" type="Relative8"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Selected" type="Absolute16"/>
+		
+		<cpu:ShiftAccumulatorLeft/>
+		
+		<cpu:CopyAccumulatorToXIndex/>
+		
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="registers" type="Absolute16" offset="0"/>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="0"/>
+		
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="registers" type="Absolute16" offset="1"/>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="1"/>
+		
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
+		
+		<cpu:ClearCarryFlag/>
+		
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8"/>
+		
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>1</byte>
+		
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8"/>
+		
+		<label id="notPlus"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<hex>2D</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notMinus" type="Relative8"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Selected" type="Absolute16"/>
+		
+		<cpu:ShiftAccumulatorLeft/>
+		
+		<cpu:CopyAccumulatorToXIndex/>
+		
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="registers" type="Absolute16" offset="0"/>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="0"/>
+		
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="registers" type="Absolute16" offset="1"/>
+		
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="1"/>
+		
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
+		
+		<cpu:SetCarryFlag/>
+		
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8"/>
+		
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>1</byte>
+		
+		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8"/>
+
+		<label id="notMinus"/>
+
+		<!--<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Selected" type="Absolute16"/>-->
+
+		<!--Highlight Selected-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Selected" type="Absolute16"/>
+
+		<cpu:ShiftAccumulatorLeft/>
+
+		<cpu:CopyAccumulatorToXIndex/>
+
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="screen" type="Absolute16" offset="0"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="0"/>
+
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="screen" type="Absolute16" offset="1"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="1"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<color:Yellow/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryWriter.WriteByte" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryWriter.WriteByte" type="Absolute16"/>
+
+		<label id="noEvents"/>
+
+		<!--Get Pressed Key-->
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>CB</hex>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<hex>40</hex>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="notPressed" type="Relative8"/>
+
+		<!--Get Note-->
+		<cpu:CopyAccumulatorToXIndex/>
+
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="notes" type="Absolute16"/>
+
+		<cpu:ClearCarryFlag/>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<byte>16</byte>
+
+		<cpu:ShiftAccumulatorLeft/>
+
+		<cpu:CopyAccumulatorToXIndex/>
+
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="Sid.Frequency" type="Absolute16" offset="0"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sid.Registers" type="Absolute16" offset="0"/>
+
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="Sid.Frequency" type="Absolute16" offset="1"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Sid.Registers" type="Absolute16" offset="1"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f04</hex>
+
+		<cpu:OrAccumulatorWithImmediate8/>
+		<binary>00000001</binary>
+
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="done" type="Absolute16"/>
+
+		<label id="notPressed"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f04</hex>
+
+		<cpu:AndAccumulatorWithImmediate8/>
+		<binary>11111110</binary>
+
+		<label id="done"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<hex>9f04</hex>
+
+		<!--Position = 0x0400-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="0"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="1"/>
+
+		<!--Draw Channel 0 Frequency-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f01</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<!--Position = 0x0428-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>28</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="0"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="1"/>
+
+		<!--Draw Channel 0 Pulse Duty-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f03</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f02</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<!--Position = 0x0450-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>50</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="0"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="1"/>
+
+		<!--Draw Channel 0 Control-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f04</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<!--Position = 0x0478-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>78</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="0"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="1"/>
+
+		<!--Draw Channel 0 Envelope-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f06</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f05</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<!--Position = 0x0405-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>05</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="0"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="1"/>
+
+		<!--Draw Channel 1 Frequency-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f08</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f07</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<!--Position = 0x042D-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>2D</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="0"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="1"/>
+
+		<!--Draw Channel 1 Pulse Duty-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f0A</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f09</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<!--Position = 0x0455-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>55</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="0"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="1"/>
+
+		<!--Draw Channel 1 Control-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f0B</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<!--Position = 0x047D-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>7D</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="0"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="1"/>
+
+		<!--Draw Channel 1 Envelope-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f0D</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f0C</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<!--Position = 0x040A-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>0A</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="0"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="1"/>
+
+		<!--Draw Channel 2 Frequency-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f0F</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f0E</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<!--Position = 0x0432-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>32</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="0"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="1"/>
+
+		<!--Draw Channel 2 Pulse Duty-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f11</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f10</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<!--Position = 0x045A-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>5A</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="0"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="1"/>
+
+		<!--Draw Channel 2 Control-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9f12</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<!--Position = 0x0482-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>82</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="0"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="1"/>
+
+		<!--Draw Channel 2 Envelope-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9F14</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<hex>9F13</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<!--Position = 0x040F-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>0F</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="0"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="1"/>
+
+		<!--Get Pressed Key-->
+		<!--<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>CB</hex>-->
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Selected" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="screen">
+		<hex>D800</hex>
+		<hex>D802</hex>
+		<hex>D805</hex>
+		<hex>D807</hex>
+		<hex>D80A</hex>
+		<hex>D80C</hex>
+
+		<hex>D828</hex>
+		<hex>D82A</hex>
+		<hex>D82D</hex>
+		<hex>D82F</hex>
+		<hex>D832</hex>
+		<hex>D834</hex>
+
+		<hex>D850</hex>
+		<hex>D852</hex>
+		<hex>D855</hex>
+		<hex>D857</hex>
+		<hex>D85A</hex>
+		<hex>D85C</hex>
+
+		<hex>D878</hex>
+		<hex>D87A</hex>
+		<hex>D87D</hex>
+		<hex>D87F</hex>
+		<hex>D882</hex>
+		<hex>D884</hex>
+	</label>
+
+	<label id="registers">
+		<hex>9f01</hex>
+		<hex>9f00</hex>
+		<hex>9f08</hex>
+		<hex>9f07</hex>
+		<hex>9f0f</hex>
+		<hex>9f0e</hex>
+
+		<hex>9f03</hex>
+		<hex>9f02</hex>
+		<hex>9f0a</hex>
+		<hex>9f09</hex>
+		<hex>9f11</hex>
+		<hex>9f10</hex>
+
+		<hex>9f04</hex>
+		<hex>9f04</hex>
+		<hex>9f0b</hex>
+		<hex>9f0b</hex>
+		<hex>9f12</hex>
+		<hex>9f12</hex>
+		
+		<hex>9f06</hex>
+		<hex>9f05</hex>
+		<hex>9f0d</hex>
+		<hex>9f0c</hex>
+		<hex>9f14</hex>
+		<hex>9f13</hex>
+	</label>
+
+	<label id="notes">
+		<!--0x00-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>11</hex>
+		<hex>0B</hex>
+		<hex>05</hex>
+		<hex>12</hex>
+		<hex>00</hex>
+		<hex>06</hex>
+		<hex>0C</hex>
+		<hex>00</hex>
+
+		<!--0x10-->
+		<hex>13</hex>
+		<hex>0D</hex>
+		<hex>07</hex>
+		<hex>14</hex>
+		<hex>02</hex>
+		<hex>08</hex>
+		<hex>0E</hex>
+		<hex>01</hex>
+
+		<hex>15</hex>
+		<hex>0F</hex>
+		<hex>09</hex>
+		<hex>16</hex>
+		<hex>04</hex>
+		<hex>0A</hex>
+		<hex>10</hex>
+		<hex>03</hex>
+
+		<!--0x20-->
+		<hex>17</hex>
+		<hex>11</hex>
+		<hex>0B</hex>
+		<hex>18</hex>
+		<hex>06</hex>
+		<hex>0C</hex>
+		<hex>12</hex>
+		<hex>05</hex>
+
+		<hex>00</hex>
+		<hex>13</hex>
+		<hex>0D</hex>
+		<hex>00</hex>
+		<hex>08</hex>
+		<hex>14</hex>
+		<hex>00</hex>
+		<hex>07</hex>
+
+		<!--0x30-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>0E</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>09</hex>
+
+		<hex>0F</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>10</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>0A</hex>
+		<hex>00</hex>
+
+		<!--0x40-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--0x50-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--0x60-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--0x70-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--0x80-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--0x90-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--0xA0-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--0xB0-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--0xC0-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--0xD0-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--0xE0-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--0xF0-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+	</label>
+</scope>

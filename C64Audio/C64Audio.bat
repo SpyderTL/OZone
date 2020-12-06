@@ -1,0 +1,1 @@
+"C:\Games\Commodore 64\WinVICE-3.1-x64\x64.exe" -autostart "bin\Debug\c64audio.prg"

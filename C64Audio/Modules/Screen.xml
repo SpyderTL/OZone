@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:vid="http://metalx.org/Commodore64/Video"
+	xmlns:color="http://metalx.org/Commodore64/Color"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+	
+	<!--Define Memory Address Labels-->
+	<vid:BorderColor id="borderColor"/>
+	<vid:BackgroundColor0 id="backgroundColor"/>
+
+	<label id="Clear" export="Screen.Clear">
+		<scope>
+			<cpu:CopyImmediate8ToAccumulator/>
+			<color:Black/>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="borderColor" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<color:Black/>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="backgroundColor" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<string xml:space="preserve"> </string>
+
+			<cpu:CopyImmediate8ToXIndex/>
+			<hex>00</hex>
+
+			<label id="nextCharacter"/>
+
+			<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+			<hex>0400</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+			<hex>0500</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+			<hex>0600</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+			<hex>0700</hex>
+
+			<cpu:IncrementXIndex/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="nextCharacter" type="Relative8"/>
+
+			<!--Set Foreground Color-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<color:LightGray/>
+
+			<label id="nextCharacter2"/>
+
+			<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+			<hex>d800</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+			<hex>d900</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+			<hex>da00</hex>
+
+			<cpu:CopyAccumulatorToImmediate16PlusXIndexAddress/>
+			<hex>db00</hex>
+
+			<cpu:IncrementXIndex/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="nextCharacter2" type="Relative8"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
+	<label id="DrawHexadecimal" export="Screen.DrawHexadecimal">
+		<scope>
+			<!--Digit 1-->
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+			<cpu:ShiftAccumulatorRight/>
+			<cpu:ShiftAccumulatorRight/>
+			<cpu:ShiftAccumulatorRight/>
+			<cpu:ShiftAccumulatorRight/>
+
+			<cpu:CopyAccumulatorToXIndex/>
+
+			<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+			<addressOf ref="Hexadecimal.Digits" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="MemoryWriter.WriteByte" type="Absolute16"/>
+
+			<!--Digit 2-->
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="Hexadecimal.Value" type="Absolute16" offset="0"/>
+
+			<cpu:AndAccumulatorWithImmediate8/>
+			<hex>0f</hex>
+
+			<cpu:CopyAccumulatorToXIndex/>
+
+			<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+			<addressOf ref="Hexadecimal.Digits" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="MemoryWriter.WriteByte" type="Absolute16"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+</scope>

@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:var="http://metalx.org/Variable">
+
+	<!--Disable CPU Interrupts-->
+	<!--<cpu:SetInterruptDisableFlag/>-->
+
+	<!--Reset CPU State-->
+	<cpu:ClearDecimalFlag/>
+	<cpu:ClearCarryFlag/>
+	<cpu:ClearOverflowFlag/>
+
+	<!--Reset SID-->
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="Sid.Reset" type="Absolute16"/>
+	
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="Sid.Update" type="Absolute16"/>
+
+	<!--Show SID Screen-->
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="SidScreen.Show" type="Absolute16"/>
+	
+	<!--Volume Max-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>0f</hex>
+	
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="Sid.Registers" type="Absolute16" offset="24"/>
+	
+	<!--Channel 0 Frequency-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<byte>52</byte>
+
+	<cpu:ShiftAccumulatorLeft/>
+	
+	<cpu:CopyAccumulatorToXIndex/>
+
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<addressOf ref="Sid.Frequency" type="Absolute16" offset="0"/>
+	
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="Sid.Registers" type="Absolute16" offset="0"/>
+	
+	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+	<addressOf ref="Sid.Frequency" type="Absolute16" offset="1"/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="Sid.Registers" type="Absolute16" offset="1"/>
+	
+	<!--Channel 0 Saw Wave-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<binary>00100000</binary>
+	
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="Sid.Registers" type="Absolute16" offset="4"/>
+	
+	<!--Channel 0 Sustain Max-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>fc</hex>
+	
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="Sid.Registers" type="Absolute16" offset="6"/>
+	
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="Sid.Update" type="Absolute16"/>
+
+	<label id="loop"/>
+	
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="Sid.Update" type="Absolute16"/>
+	
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="SidScreen.Update" type="Absolute16"/>
+	
+	<cpu:JumpToImmediate16Address/>
+	<addressOf ref="loop" type="Absolute16"/>
+
+	<label id="stop">
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="stop" type="Absolute16"/>
+	</label>
+
+	<cpu:ReturnFromSubroutine/>
+</scope>

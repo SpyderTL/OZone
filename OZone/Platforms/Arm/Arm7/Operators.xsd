@@ -55,7 +55,60 @@
 					</xsd:restriction>
 				</xsd:simpleType>
 			</xsd:attribute>
-			<xsd:attribute name="Destination" type="Int4" use="required"/>
+			<xsd:attribute name="SetFlags" type="xsd:boolean"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="RegisterData">
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="Operation" use="required">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="AndRegisterWithOperand"/>
+						<xsd:enumeration value="ExclusiveOrRegisterWithOperand"/>
+						<xsd:enumeration value="SubtractOperandFromRegister"/>
+						<xsd:enumeration value="SubtractRegisterFromOperand"/>
+						<xsd:enumeration value="AddRegisterAndOperand"/>
+						<xsd:enumeration value="AddRegisterAndOperandWithCarry"/>
+						<xsd:enumeration value="SubtractOperandFromRegisterWithCarry"/>
+						<xsd:enumeration value="SubtractRegisterFromOperandWithCarry"/>
+						<xsd:enumeration value="TestAndRegisterWithOperand"/>
+						<xsd:enumeration value="TestExclusiveOrRegisterWithOperand"/>
+						<xsd:enumeration value="TestSubtractOperandFromRegister"/>
+						<xsd:enumeration value="TestAddRegisterAndOperand"/>
+						<xsd:enumeration value="OrRegisterWithOperand"/>
+						<xsd:enumeration value="CopyOperand"/>
+						<xsd:enumeration value="AndRegisterWithOperandComplement"/>
+						<xsd:enumeration value="CopyOperandComplement"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="Register" type="Int4" use="required"/>
+			<xsd:attribute name="Operand" type="Int4" use="required"/>
+			<xsd:attribute name="ShiftType">
+				<xsd:annotation>
+					<xsd:documentation>
+						Note: Rotate Right 0 positions will perform a 1 bit rotate right including the carry flag.
+					</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="ShiftLeft"/>
+						<xsd:enumeration value="ShiftRight"/>
+						<xsd:enumeration value="SignedShiftRight"/>
+						<xsd:enumeration value="RotateRight"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="Shift">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:short">
+						<xsd:minInclusive value="0"/>
+						<xsd:maxInclusive value="31"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="Destination" type="Int4"/>
 			<xsd:attribute name="SetFlags" type="xsd:boolean"/>
 		</xsd:complexType>
 	</xsd:element>
@@ -133,6 +186,49 @@
 			</xsd:attribute>
 			<xsd:attribute name="Register" type="Int4"/>
 			<xsd:attribute name="Operand" type="xsd:unsignedByte"/>
+			<xsd:attribute name="Rotate">
+				<xsd:annotation>
+					<xsd:documentation>
+						Rotates the immediate operand to the right by a factor of two.
+					</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:unsignedByte">
+						<xsd:minInclusive value="0"/>
+						<xsd:maxInclusive value="15"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="Destination" type="Int4" use="required"/>
+			<xsd:attribute name="SetFlags" type="xsd:boolean"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="Immediate8">
+		<xsd:complexType>
+			<xsd:attribute name="Condition" type="Condition"/>
+			<xsd:attribute name="Operation" use="required">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="AndRegisterWithOperand"/>
+						<xsd:enumeration value="ExclusiveOrRegisterWithOperand"/>
+						<xsd:enumeration value="SubtractOperandFromRegister"/>
+						<xsd:enumeration value="SubtractRegisterFromOperand"/>
+						<xsd:enumeration value="AddRegisterAndOperand"/>
+						<xsd:enumeration value="AddRegisterAndOperandWithCarry"/>
+						<xsd:enumeration value="SubtractOperandFromRegisterWithCarry"/>
+						<xsd:enumeration value="SubtractRegisterFromOperandWithCarry"/>
+						<xsd:enumeration value="TestAndRegisterWithOperand"/>
+						<xsd:enumeration value="TestExclusiveOrRegisterWithOperand"/>
+						<xsd:enumeration value="TestSubtractOperandFromRegister"/>
+						<xsd:enumeration value="TestAddRegisterAndOperand"/>
+						<xsd:enumeration value="OrRegisterWithOperand"/>
+						<xsd:enumeration value="CopyOperand"/>
+						<xsd:enumeration value="AndRegisterWithOperandComplement"/>
+						<xsd:enumeration value="CopyOperandComplement"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="Register" type="Int4"/>
 			<xsd:attribute name="Rotate">
 				<xsd:annotation>
 					<xsd:documentation>

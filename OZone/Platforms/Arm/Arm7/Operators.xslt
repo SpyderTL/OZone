@@ -140,7 +140,191 @@
 		</xsl:variable>
 
 		<xsl:variable name="destination">
-			<xsl:value-of select="@Destination * 4096"/>
+			<xsl:choose>
+				<xsl:when test="@Destination">
+					<xsl:value-of select="@Destination * 4096"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="0"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="shift">
+			<xsl:choose>
+				<xsl:when test="@Shift">
+					<xsl:value-of select="@Shift * 128"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="0"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="shiftType">
+			<xsl:choose>
+				<xsl:when test="@ShiftType='ShiftRight'">
+					<xsl:value-of select="32"/>
+				</xsl:when>
+				<xsl:when test="@ShiftType='SignedShiftRight'">
+					<xsl:value-of select="64"/>
+				</xsl:when>
+				<xsl:when test="@ShiftType='RotateRight'">
+					<xsl:value-of select="96"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="0"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="operand">
+			<xsl:value-of select="@Operand"/>
+		</xsl:variable>
+
+		<prg:uint>
+			<xsl:value-of select="$opcode + $condition + $operation + $setFlags + $register + $destination + $shift + $shiftType + $operand"/>
+		</prg:uint>
+	</xsl:template>
+
+	<xsl:template match="ns:RegisterData">
+		<xsl:variable name="opcode" select="0"/>
+
+		<xsl:variable name="condition">
+			<xsl:choose>
+				<xsl:when test="@Condition='Equal'">
+					<xsl:value-of select="0"/>
+				</xsl:when>
+				<xsl:when test="@Condition='NotEqual'">
+					<xsl:value-of select="268435456"/>
+				</xsl:when>
+				<xsl:when test="@Condition='HigherOrEqual'">
+					<xsl:value-of select="536870912"/>
+				</xsl:when>
+				<xsl:when test="@Condition='Lower'">
+					<xsl:value-of select="805306368"/>
+				</xsl:when>
+				<xsl:when test="@Condition='Negative'">
+					<xsl:value-of select="1073741824"/>
+				</xsl:when>
+				<xsl:when test="@Condition='NotNegative'">
+					<xsl:value-of select="1342177280"/>
+				</xsl:when>
+				<xsl:when test="@Condition='Overflow'">
+					<xsl:value-of select="1610612736"/>
+				</xsl:when>
+				<xsl:when test="@Condition='NotOverflow'">
+					<xsl:value-of select="1879048192"/>
+				</xsl:when>
+				<xsl:when test="@Condition='Higher'">
+					<xsl:value-of select="2147483648"/>
+				</xsl:when>
+				<xsl:when test="@Condition='LowerOrEqual'">
+					<xsl:value-of select="2415919104"/>
+				</xsl:when>
+				<xsl:when test="@Condition='GreaterThanOrEqual'">
+					<xsl:value-of select="2684354560"/>
+				</xsl:when>
+				<xsl:when test="@Condition='LessThan'">
+					<xsl:value-of select="2952790016"/>
+				</xsl:when>
+				<xsl:when test="@Condition='GreaterThan'">
+					<xsl:value-of select="3221225472"/>
+				</xsl:when>
+				<xsl:when test="@Condition='LessThanOrEqual'">
+					<xsl:value-of select="3489660928"/>
+				</xsl:when>
+				<xsl:when test="@Condition='Never'">
+					<xsl:value-of select="4026531840"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="3758096384"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="operation">
+			<xsl:choose>
+				<xsl:when test="@Operation='AndRegisterWithOperand'">
+					<xsl:value-of select="0"/>
+				</xsl:when>
+				<xsl:when test="@Operation='ExclusiveOrRegisterWithOperand'">
+					<xsl:value-of select="2097152"/>
+				</xsl:when>
+				<xsl:when test="@Operation='SubtractOperandFromRegister'">
+					<xsl:value-of select="4194304"/>
+				</xsl:when>
+				<xsl:when test="@Operation='SubtractRegisterFromOperand'">
+					<xsl:value-of select="6291456"/>
+				</xsl:when>
+				<xsl:when test="@Operation='AddRegisterAndOperand'">
+					<xsl:value-of select="8388608"/>
+				</xsl:when>
+				<xsl:when test="@Operation='AddRegisterAndOperandWithCarry'">
+					<xsl:value-of select="10485760"/>
+				</xsl:when>
+				<xsl:when test="@Operation='SubtractOperandFromRegisterWithCarry'">
+					<xsl:value-of select="12582912"/>
+				</xsl:when>
+				<xsl:when test="@Operation='SubtractRegisterFromOperandWithCarry'">
+					<xsl:value-of select="14680064"/>
+				</xsl:when>
+				<xsl:when test="@Operation='TestAndRegisterWithOperand'">
+					<xsl:value-of select="16777216"/>
+				</xsl:when>
+				<xsl:when test="@Operation='TestExclusiveOrRegisterWithOperand'">
+					<xsl:value-of select="18874368"/>
+				</xsl:when>
+				<xsl:when test="@Operation='TestSubtractOperandFromRegister'">
+					<xsl:value-of select="20971520"/>
+				</xsl:when>
+				<xsl:when test="@Operation='TestAddRegisterAndOperand'">
+					<xsl:value-of select="23068672"/>
+				</xsl:when>
+				<xsl:when test="@Operation='OrRegisterWithOperand'">
+					<xsl:value-of select="25165824"/>
+				</xsl:when>
+				<xsl:when test="@Operation='CopyOperand'">
+					<xsl:value-of select="27262976"/>
+				</xsl:when>
+				<xsl:when test="@Operation='AndRegisterWithOperandComplement'">
+					<xsl:value-of select="29360128"/>
+				</xsl:when>
+				<xsl:when test="@Operation='CopyOperandComplement'">
+					<xsl:value-of select="31457280"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:message terminate="yes">
+						Invalid Data Operation: <xsl:value-of select="@Operation"/>
+					</xsl:message>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="setFlags">
+			<xsl:choose>
+				<xsl:when test="@SetFlags='true'">
+					<xsl:value-of select="1048576"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="0"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="register">
+			<xsl:value-of select="@Register * 65536"/>
+		</xsl:variable>
+
+		<xsl:variable name="destination">
+			<xsl:choose>
+				<xsl:when test="@Destination">
+					<xsl:value-of select="@Destination * 4096"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="0"/>
+				</xsl:otherwise>
+			</xsl:choose>
 		</xsl:variable>
 
 		<xsl:variable name="shift">
@@ -501,6 +685,171 @@
 		<prg:uint>
 			<xsl:value-of select="$opcode + $condition + $operation + $setFlags + $register + $destination + $rotate + $operand"/>
 		</prg:uint>
+	</xsl:template>
+
+	<xsl:template match="ns:Immediate8">
+		<xsl:variable name="opcode" select="2"/>
+
+		<xsl:variable name="condition">
+			<xsl:choose>
+				<xsl:when test="@Condition='Equal'">
+					<xsl:value-of select="0"/>
+				</xsl:when>
+				<xsl:when test="@Condition='NotEqual'">
+					<xsl:value-of select="16"/>
+				</xsl:when>
+				<xsl:when test="@Condition='HigherOrEqual'">
+					<xsl:value-of select="32"/>
+				</xsl:when>
+				<xsl:when test="@Condition='Lower'">
+					<xsl:value-of select="48"/>
+				</xsl:when>
+				<xsl:when test="@Condition='Negative'">
+					<xsl:value-of select="64"/>
+				</xsl:when>
+				<xsl:when test="@Condition='NotNegative'">
+					<xsl:value-of select="80"/>
+				</xsl:when>
+				<xsl:when test="@Condition='Overflow'">
+					<xsl:value-of select="96"/>
+				</xsl:when>
+				<xsl:when test="@Condition='NotOverflow'">
+					<xsl:value-of select="112"/>
+				</xsl:when>
+				<xsl:when test="@Condition='Higher'">
+					<xsl:value-of select="128"/>
+				</xsl:when>
+				<xsl:when test="@Condition='LowerOrEqual'">
+					<xsl:value-of select="144"/>
+				</xsl:when>
+				<xsl:when test="@Condition='GreaterThanOrEqual'">
+					<xsl:value-of select="160"/>
+				</xsl:when>
+				<xsl:when test="@Condition='LessThan'">
+					<xsl:value-of select="176"/>
+				</xsl:when>
+				<xsl:when test="@Condition='GreaterThan'">
+					<xsl:value-of select="192"/>
+				</xsl:when>
+				<xsl:when test="@Condition='LessThanOrEqual'">
+					<xsl:value-of select="208"/>
+				</xsl:when>
+				<xsl:when test="@Condition='Never'">
+					<xsl:value-of select="240"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="224"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="operation">
+			<xsl:choose>
+				<xsl:when test="@Operation='AndRegisterWithOperand'">
+					<xsl:value-of select="0"/>
+				</xsl:when>
+				<xsl:when test="@Operation='ExclusiveOrRegisterWithOperand'">
+					<xsl:value-of select="1"/>
+				</xsl:when>
+				<xsl:when test="@Operation='SubtractOperandFromRegister'">
+					<xsl:value-of select="2"/>
+				</xsl:when>
+				<xsl:when test="@Operation='SubtractRegisterFromOperand'">
+					<xsl:value-of select="3"/>
+				</xsl:when>
+				<xsl:when test="@Operation='AddRegisterAndOperand'">
+					<xsl:value-of select="4"/>
+				</xsl:when>
+				<xsl:when test="@Operation='AddRegisterAndOperandWithCarry'">
+					<xsl:value-of select="5"/>
+				</xsl:when>
+				<xsl:when test="@Operation='SubtractOperandFromRegisterWithCarry'">
+					<xsl:value-of select="6"/>
+				</xsl:when>
+				<xsl:when test="@Operation='SubtractRegisterFromOperandWithCarry'">
+					<xsl:value-of select="7"/>
+				</xsl:when>
+				<xsl:when test="@Operation='TestAndRegisterWithOperand'">
+					<xsl:value-of select="8"/>
+				</xsl:when>
+				<xsl:when test="@Operation='TestExclusiveOrRegisterWithOperand'">
+					<xsl:value-of select="9"/>
+				</xsl:when>
+				<xsl:when test="@Operation='TestSubtractOperandFromRegister'">
+					<xsl:value-of select="10"/>
+				</xsl:when>
+				<xsl:when test="@Operation='TestAddRegisterAndOperand'">
+					<xsl:value-of select="11"/>
+				</xsl:when>
+				<xsl:when test="@Operation='OrRegisterWithOperand'">
+					<xsl:value-of select="12"/>
+				</xsl:when>
+				<xsl:when test="@Operation='CopyOperand'">
+					<xsl:value-of select="13"/>
+				</xsl:when>
+				<xsl:when test="@Operation='AndRegisterWithOperandComplement'">
+					<xsl:value-of select="14"/>
+				</xsl:when>
+				<xsl:when test="@Operation='CopyOperandComplement'">
+					<xsl:value-of select="15"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:message terminate="yes">
+						Invalid Data Operation: <xsl:value-of select="@Operation"/>
+					</xsl:message>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="setFlags">
+			<xsl:choose>
+				<xsl:when test="@SetFlags='true'">
+					<xsl:value-of select="1"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="0"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="register">
+			<xsl:choose>
+				<xsl:when test="@Register">
+					<xsl:value-of select="@Register"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="0"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="destination">
+			<xsl:value-of select="@Destination * 16"/>
+		</xsl:variable>
+
+		<xsl:variable name="rotate">
+			<xsl:choose>
+				<xsl:when test="@Rotate">
+					<xsl:value-of select="@Rotate"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="0"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!--<prg:uint>
+			<xsl:value-of select="$opcode + $condition + $operation + $setFlags + $register + $destination + $rotate"/>
+		</prg:uint>-->
+		<prg:byte>
+			<xsl:value-of select="$destination + $rotate"/>
+		</prg:byte>
+		<prg:byte>
+			<xsl:value-of select="(($operation mod 8) * 32) + ($setFlags * 16) + $register"/>
+		</prg:byte>
+		<prg:byte>
+			<xsl:value-of select="$condition + $opcode + floor($operation div 8)"/>
+		</prg:byte>
 	</xsl:template>
 
 	<xsl:template match="ns:CopyStatusToRegister">
