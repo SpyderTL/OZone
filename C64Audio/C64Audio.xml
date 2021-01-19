@@ -15,66 +15,69 @@
 
 	<!--Reset SID-->
 	<cpu:CallImmediate16Address/>
-	<addressOf ref="Sid.Reset" type="Absolute16"/>
-	
+	<addressOf ref="SoundGenerator.Reset" type="Absolute16"/>
+
+	<cpu:CallImmediate16Address/>
+	<addressOf ref="SidGenerator.Update" type="Absolute16"/>
+
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="Sid.Update" type="Absolute16"/>
 
 	<!--Show SID Screen-->
 	<cpu:CallImmediate16Address/>
-	<addressOf ref="SidScreen.Show" type="Absolute16"/>
+	<addressOf ref="GeneratorScreen.Show" type="Absolute16"/>
 	
 	<!--Volume Max-->
 	<cpu:CopyImmediate8ToAccumulator/>
 	<hex>0f</hex>
 	
 	<cpu:CopyAccumulatorToImmediate16Address/>
-	<addressOf ref="Sid.Registers" type="Absolute16" offset="24"/>
-	
-	<!--Channel 0 Frequency-->
+	<addressOf ref="SoundGenerator.Registers" type="Absolute16" offset="59"/>
+
+	<!--Channel 0 Pulse Wave-->
 	<cpu:CopyImmediate8ToAccumulator/>
-	<byte>52</byte>
-
-	<cpu:ShiftAccumulatorLeft/>
-	
-	<cpu:CopyAccumulatorToXIndex/>
-
-	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
-	<addressOf ref="Sid.Frequency" type="Absolute16" offset="0"/>
-	
-	<cpu:CopyAccumulatorToImmediate16Address/>
-	<addressOf ref="Sid.Registers" type="Absolute16" offset="0"/>
-	
-	<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
-	<addressOf ref="Sid.Frequency" type="Absolute16" offset="1"/>
+	<byte>1</byte>
 
 	<cpu:CopyAccumulatorToImmediate16Address/>
-	<addressOf ref="Sid.Registers" type="Absolute16" offset="1"/>
-	
-	<!--Channel 0 Saw Wave-->
+	<addressOf ref="SoundGenerator.Registers" type="Absolute16" offset="5"/>
+
+	<!--Channel 0 Pulse Duty (50%)-->
 	<cpu:CopyImmediate8ToAccumulator/>
-	<binary>00100000</binary>
-	
+	<hex>00</hex>
+
 	<cpu:CopyAccumulatorToImmediate16Address/>
-	<addressOf ref="Sid.Registers" type="Absolute16" offset="4"/>
-	
+	<addressOf ref="SoundGenerator.Registers" type="Absolute16" offset="2"/>
+
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>08</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="SoundGenerator.Registers" type="Absolute16" offset="3"/>
+
 	<!--Channel 0 Sustain Max-->
 	<cpu:CopyImmediate8ToAccumulator/>
-	<hex>fc</hex>
-	
-	<cpu:CopyAccumulatorToImmediate16Address/>
-	<addressOf ref="Sid.Registers" type="Absolute16" offset="6"/>
-	
-	<cpu:CallImmediate16Address/>
-	<addressOf ref="Sid.Update" type="Absolute16"/>
+	<hex>0f</hex>
 
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="SoundGenerator.Registers" type="Absolute16" offset="14"/>
+
+	<!--Channel 0 Release (0x0C)-->
+	<cpu:CopyImmediate8ToAccumulator/>
+	<hex>0c</hex>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="SoundGenerator.Registers" type="Absolute16" offset="15"/>
+	
 	<label id="loop"/>
 	
 	<cpu:CallImmediate16Address/>
+	<addressOf ref="SidGenerator.Update" type="Absolute16"/>
+	
+	<cpu:CallImmediate16Address/>
 	<addressOf ref="Sid.Update" type="Absolute16"/>
 	
 	<cpu:CallImmediate16Address/>
-	<addressOf ref="SidScreen.Update" type="Absolute16"/>
+	<addressOf ref="GeneratorScreen.Update" type="Absolute16"/>
 	
 	<cpu:JumpToImmediate16Address/>
 	<addressOf ref="loop" type="Absolute16"/>

@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:var="http://metalx.org/Variable">
+
+	<label id="Registers" export="SoundGenerator.Registers" offset="9E00"/>
+
+	<label id="Reset" export="SoundGenerator.Reset">
+		<scope>
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>60</byte>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
+
+			<label id="forEachRegister"/>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Registers" type="Absolute16"/>
+
+			<cpu:DecrementYIndex/>
+
+			<cpu:BranchToRelative8IfPositive/>
+			<addressOf ref="forEachRegister" type="Relative8"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+</scope>

@@ -29,13 +29,16 @@ namespace C64Audio
 			{
 				"../../C64Program.xml",
 				"../../C64Audio.xml",
+				"../../Modules/GeneratorScreen.xml",
 				"../../Modules/Hexadecimal.xml",
 				"../../Modules/MemoryReader.xml",
 				"../../Modules/MemoryWriter.xml",
 				"../../Modules/Screen.xml",
 				"../../Modules/Short.xml",
 				"../../Modules/Sid.xml",
+				"../../Modules/SidGenerator.xml",
 				"../../Modules/SidScreen.xml",
+				"../../Modules/SoundGenerator.xml",
 			};
 
 			var compiler = new BinaryCompiler();
