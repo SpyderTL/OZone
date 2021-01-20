@@ -354,16 +354,29 @@
 		<!--Draw Screen-->
 		<label id="draw"/>
 
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="drawScreen" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+	
+	<label id="drawScreen">
 		<cpu:CopyImmediate8ToAccumulator/>
-		<byte>1</byte>
+		<byte>18</byte>
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<hex>02</hex>
 
-		<cpu:CopyImmediate8ToXIndex/>
+		<cpu:CopyImmediate8ToAccumulator/>
 		<byte>0</byte>
 
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>03</hex>
+
 		<label id="forEachRegister"/>
+
+		<cpu:CopyImmediate8AddressToXIndex/>
+		<hex>03</hex>
 
 		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
 		<addressOf ref="screenCharacters" type="Absolute16" offset="0"/>
@@ -378,16 +391,28 @@
 		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="1"/>
 
 		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
-		<addressOf ref="registers" type="Absolute16" offset="0"/>
+		<addressOf ref="screenRegisters" type="Absolute16" offset="0"/>
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<hex>04</hex>
 		
 		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
-		<addressOf ref="registers" type="Absolute16" offset="1"/>
+		<addressOf ref="screenRegisters" type="Absolute16" offset="1"/>
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<hex>05</hex>
+
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>1</byte>
+
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Hexadecimal.Value" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
 
 		<cpu:CopyImmediate8ToYIndex/>
 		<byte>0</byte>
@@ -401,20 +426,11 @@
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
 
-		<cpu:DecrementImmediate8Address/>
-		<hex>04</hex>
-		
-		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
-		<hex>04</hex>
+		<cpu:IncrementImmediate8Address/>
+		<hex>03</hex>
 
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Hexadecimal.Value" type="Absolute16"/>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
-
-		<cpu:IncrementXIndex/>
-		<cpu:IncrementXIndex/>
+		<cpu:IncrementImmediate8Address/>
+		<hex>03</hex>
 
 		<cpu:DecrementImmediate8Address/>
 		<hex>02</hex>
@@ -432,7 +448,7 @@
 
 		<hex>0428</hex>
 		<hex>042D</hex>
-		<hex>043B</hex>
+		<hex>0432</hex>
 
 		<hex>0450</hex>
 		<hex>0455</hex>
@@ -440,7 +456,15 @@
 
 		<hex>0478</hex>
 		<hex>047D</hex>
-		<hex>047C</hex>
+		<hex>0482</hex>
+
+		<hex>04A0</hex>
+		<hex>04A5</hex>
+		<hex>04AA</hex>
+
+		<hex>04C8</hex>
+		<hex>04CD</hex>
+		<hex>04D2</hex>
 	</label>
 
 	<label id="screenColors">
@@ -471,36 +495,90 @@
 		<hex>D87F</hex>
 		<hex>D882</hex>
 		<hex>D884</hex>
+
+		<hex>D8A0</hex>
+		<hex>D8A2</hex>
+		<hex>D8A5</hex>
+		<hex>D8A7</hex>
+		<hex>D8AA</hex>
+		<hex>D8AC</hex>
+
+		<hex>D8C8</hex>
+		<hex>D8CA</hex>
+		<hex>D8CD</hex>
+		<hex>D8CF</hex>
+		<hex>D8D2</hex>
+		<hex>D8D4</hex>
+	</label>
+
+	<label id="screenRegisters">
+		<hex>9E00</hex>
+		<hex>9E10</hex>
+		<hex>9E20</hex>
+
+		<hex>9E02</hex>
+		<hex>9E12</hex>
+		<hex>9E22</hex>
+
+		<hex>9E04</hex>
+		<hex>9E14</hex>
+		<hex>9E24</hex>
+
+		<hex>9E0A</hex>
+		<hex>9E1A</hex>
+		<hex>9E2A</hex>
+
+		<hex>9E0C</hex>
+		<hex>9E1C</hex>
+		<hex>9E2C</hex>
+
+		<hex>9E0E</hex>
+		<hex>9E1E</hex>
+		<hex>9E2E</hex>
 	</label>
 
 	<label id="registers">
-		<hex>9e01</hex>
-		<hex>9e00</hex>
-		<hex>9e08</hex>
-		<hex>9e07</hex>
-		<hex>9e0f</hex>
-		<hex>9e0e</hex>
+		<hex>9E01</hex>
+		<hex>9E00</hex>
+		<hex>9E11</hex>
+		<hex>9E10</hex>
+		<hex>9E21</hex>
+		<hex>9E20</hex>
 
-		<hex>9e03</hex>
-		<hex>9e02</hex>
-		<hex>9e0a</hex>
-		<hex>9e09</hex>
-		<hex>9e11</hex>
-		<hex>9e10</hex>
+		<hex>9E03</hex>
+		<hex>9E02</hex>
+		<hex>9E13</hex>
+		<hex>9E12</hex>
+		<hex>9E23</hex>
+		<hex>9E22</hex>
 
-		<hex>9e04</hex>
-		<hex>9e04</hex>
-		<hex>9e0b</hex>
-		<hex>9e0b</hex>
-		<hex>9e12</hex>
-		<hex>9e12</hex>
-		
-		<hex>9e06</hex>
-		<hex>9e05</hex>
-		<hex>9e0d</hex>
-		<hex>9e0c</hex>
-		<hex>9e14</hex>
-		<hex>9e13</hex>
+		<hex>9E05</hex>
+		<hex>9E04</hex>
+		<hex>9E15</hex>
+		<hex>9E14</hex>
+		<hex>9E25</hex>
+		<hex>9E24</hex>
+
+		<hex>9E0B</hex>
+		<hex>9E0A</hex>
+		<hex>9E1B</hex>
+		<hex>9E1A</hex>
+		<hex>9E2B</hex>
+		<hex>9E2A</hex>
+
+		<hex>9E0D</hex>
+		<hex>9E0C</hex>
+		<hex>9E1D</hex>
+		<hex>9E1C</hex>
+		<hex>9E2D</hex>
+		<hex>9E2C</hex>
+
+		<hex>9E0F</hex>
+		<hex>9E0E</hex>
+		<hex>9E1F</hex>
+		<hex>9E1E</hex>
+		<hex>9E2F</hex>
+		<hex>9E2E</hex>
 	</label>
 
 	<label id="keyboardNotes">
