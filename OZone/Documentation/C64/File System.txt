@@ -5,7 +5,7 @@
 	Block Size				256
 
 Disk
-	Track21[17]	(357 blocks, 0 - 356)
+	Track21[17]		(357 blocks, 0 - 356)
 	Track19[7]		(133 blocks, 357 - 489)
 	Track18[6]		(108 blocks, 490 - 597)
 	Track17[5]		(85 blocks, 598 - 682)
@@ -21,7 +21,7 @@ File
 	Type
 	Length		Block Count
 
-Block Availability Map			(Track 18, Sector 0)
+Block Availability Map			(Track 17, Sector 0)
 	First Directory Track			1		18
 	First Directory Sector			1		1
 	Format								2		"A",0
@@ -39,28 +39,28 @@ Block Availability Map			(Track 18, Sector 0)
 
 Directory								256
 	Files[8]									32
-		Next Directory Track				1			(0 = Last Directory)
-		Next Directory Sector				1			(255 = Last Directory)
+		Next Directory Track				1			(0 = Last Directory)		// This field is only valid for the first file in the track.
+		Next Directory Sector				1
 		File Type								1
 			Closed									1 bit
 			Locked									1 bit
 			Replaced								1 bit
 			Reserved								2 bits
-			Type										3 bits	(0 = Deleted, 1 = Sequential, 2 = Program, 3 = User, 4 = Relative)
+			Type									3 bits	(0 = Deleted, 1 = Sequential, 2 = Program, 3 = User, 4 = Relative)
 		File Start Track						1
 		File Start Sector						1
-		File Name								16
+		File Name								16		// Padded with 0xA0
 		Relative Side Sectors				2
 		Relative Record Size				1
 		Reserved								6
 		File Block Count						2
 
-Track		First Block	First Byte
-0			0				0
-1			21				5376
-2			42				10752
-3			63				16128	
-4			84				21504
+Track		First Block
+0			0			
+1			21			
+2			42			
+3			63			
+4			84			
 5			105
 6			126
 7			147
@@ -72,10 +72,10 @@ Track		First Block	First Byte
 13			273
 14			294
 15			315
-16			336			86016
+16			336			
 
-17			357			91392
-18			376			91648
+17			357			
+18			376			
 19			395
 20			414
 21			433
@@ -94,3 +94,9 @@ Track		First Block	First Byte
 32			632
 33			649
 34			666
+
+35			683		// Extended Tracks
+36			700
+37			717
+38			734
+39			751
