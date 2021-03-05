@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:seg="http://metalx.org/Intel/80286/Segments"
+	xmlns:inc="http://metalx.org/Intel/80286/Increment"
+	xmlns:logic="http://metalx.org/Intel/80286/Logic"
+	xmlns:dsk="http://metalx.org/i286/Functions/Disk"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:flp="http://metalx.org/Pc/Bios/Disk"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:sys="http://metalx.org/Pc/Bios/System"
+	xmlns:cmd="http://metalx.org/Pc/Pic/Commands"
+	xmlns:pic="http://metalx.org/Pc/Pic/Ports">
+
+	<label id="empty" export="InterruptHandlers.Empty">
+		<!--<cpu:CallRelative16/>
+		<addressOf ref="test" type="Relative16"/>-->
+		
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="picMaster" export="InterruptHandlers.PicMaster">
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<!--<cpu:CallRelative16/>
+		<addressOf ref="test" type="Relative16"/>-->
+
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="timer" export="InterruptHandlers.Timer">
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<!--<cpu:CallRelative16/>
+		<addressOf ref="test" type="Relative16"/>-->
+
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="keyboard" export="InterruptHandlers.Keyboard">
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>01</hex>
+
+		<cpu:CallRelative16/>
+		<addressOf ref="Ps2.HandleKeyboardInterrupt" type="Relative16"/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<!--<cpu:CallRelative16/>
+		<addressOf ref="test" type="Relative16"/>-->
+	
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="picSlave" export="InterruptHandlers.PicSlave">
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:SlaveCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<!--<cpu:CallRelative16/>
+		<addressOf ref="test" type="Relative16"/>-->
+		
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="mouse" export="InterruptHandlers.Mouse">
+		<cpu:PushAXToStack/>
+
+		<cpu:ReadFromImmediate8PortToAL/>
+		<hex>60</hex>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:SlaveCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<!--<cpu:CallRelative16/>
+		<addressOf ref="test" type="Relative16"/>-->
+
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="test">
+		<cpu:PushDSToStack/>
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>b800</hex>
+
+		<cpu:CopyOperandToSegmentRegister16/>
+		<seg:DS-AXRegister/>
+		
+		<cpu:SegmentDS/>
+		<cpu:IncrementFunction8/>
+		<inc:IncrementImmediate16Address/>
+		<hex>0000</hex>
+
+		<cpu:PullAXFromStack/>
+		<cpu:PullDSFromStack/>
+		
+		<cpu:ReturnToNearCaller/>
+	</label>
+</scope>

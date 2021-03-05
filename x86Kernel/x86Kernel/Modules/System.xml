@@ -1,0 +1,379 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:seg="http://metalx.org/Intel/80286/Segments"
+	xmlns:inc="http://metalx.org/Intel/80286/Increment"
+	xmlns:imm="http://metalx.org/Intel/80286/Immediate"
+	xmlns:logic="http://metalx.org/Intel/80286/Logic"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:ari="http://metalx.org/Intel/80286/Arithmetic"
+	xmlns:shift="http://metalx.org/Intel/80286/Shift"
+	xmlns:dsk="http://metalx.org/i286/Functions/Disk"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:flp="http://metalx.org/Pc/Bios/Disk"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:sys="http://metalx.org/Pc/Bios/System"
+	xmlns:cmd="http://metalx.org/Pc/Pic/Commands"
+	xmlns:pic="http://metalx.org/Pc/Pic/Ports">
+
+	<label id="initialize" export="System.Initialize">
+		<!--Enable A20 Gate-->
+		<cpu:CopyImmediateToAX/>
+		<sys:EnableA20Gate/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<bios:SystemFunctions/>
+
+		<cpu:ClearInterruptFlag/>
+
+		<!--Clear Registers-->
+		<cpu:CopyImmediateToAX/>
+		<hex>0000</hex>
+
+		<cpu:CopyOperandToSegmentRegister16/>
+		<seg:DS-AXRegister/>
+
+		<cpu:CopyOperandToSegmentRegister16/>
+		<seg:ES-AXRegister/>
+
+		<!--Disable NMI-->
+		<!--<cpu:ReadFromImmediate8PortToAL/>
+		<hex>70</hex>
+
+		<cpu:OrALWithImmediate/>
+		<binary>10000000</binary>
+
+		<cpu:WriteALToImmediate8Port/>
+		<hex>70</hex>-->
+
+		<!--Reprogram Master Interrupt Controller-->
+		<cpu:CopyImmediateToAL/>
+		<cmd:InitializeForEnvironment/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>32</byte>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterData/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000100</binary>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterData/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Environment8086Mode/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterData/>
+
+		<!--Set Master PIC IRQ Mask-->
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterData/>
+
+		<!--Reprogram Slave Interrupt Controller-->
+		<cpu:CopyImmediateToAL/>
+		<cmd:InitializeForEnvironment/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:SlaveCommand/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>40</byte>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:SlaveData/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000010</binary>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:SlaveData/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Environment8086Mode/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:SlaveData/>
+
+		<!--Set Slave PIC IRQ Mask-->
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:SlaveData/>
+
+		<!--Install Cpu Interrupt Handlers-->
+		<cpu:CopyImmediateToDI/>
+		<hex>0000</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<addressOf ref="InterruptHandlers.Empty" type="Absolute16"/>
+
+		<cpu:CopyImmediateToBX/>
+		<addressOf ref="InterruptHandlers.Empty" type="Segment16"/>
+
+		<cpu:CopyImmediateToCX/>
+		<short>16</short>
+
+		<label id="forEachCpuInterrupt"/>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:BX-DIAddress/>
+
+		<cpu:IncrementDI/>
+		<cpu:IncrementDI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachCpuInterrupt" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<hex>0044</hex>
+
+		<cpu:CopyImmediateToAX/>
+		<addressOf ref="InterruptHandlers.Empty" type="Absolute16"/>
+
+		<cpu:CopyImmediateToBX/>
+		<addressOf ref="InterruptHandlers.Empty" type="Segment16"/>
+
+		<cpu:CopyImmediateToCX/>
+		<short>15</short>
+
+		<label id="forEachCpuInterrupt2"/>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:BX-DIAddress/>
+
+		<cpu:IncrementDI/>
+		<cpu:IncrementDI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachCpuInterrupt2" type="Relative8"/>
+
+		<!--Pic Master Interrupts-->
+		<cpu:CopyImmediateToAX/>
+		<addressOf ref="InterruptHandlers.PicMaster" type="Absolute16"/>
+
+		<cpu:CopyImmediateToBX/>
+		<addressOf ref="InterruptHandlers.PicMaster" type="Segment16"/>
+
+		<cpu:CopyImmediateToCX/>
+		<short>8</short>
+
+		<label id="forEachMasterInterrupt"/>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:BX-DIAddress/>
+
+		<cpu:IncrementDI/>
+		<cpu:IncrementDI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachMasterInterrupt" type="Relative8"/>
+
+		<!--Pic Slave Interrupts-->
+		<cpu:CopyImmediateToAX/>
+		<addressOf ref="InterruptHandlers.PicSlave" type="Absolute16"/>
+
+		<cpu:CopyImmediateToBX/>
+		<addressOf ref="InterruptHandlers.PicSlave" type="Segment16"/>
+
+		<cpu:CopyImmediateToCX/>
+		<short>8</short>
+
+		<label id="forEachSlaveInterrupt"/>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:BX-DIAddress/>
+
+		<cpu:IncrementDI/>
+		<cpu:IncrementDI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachSlaveInterrupt" type="Relative8"/>
+
+		<!--Other Interrupts-->
+		<cpu:CopyImmediateToAX/>
+		<addressOf ref="InterruptHandlers.Empty" type="Absolute16"/>
+
+		<cpu:CopyImmediateToBX/>
+		<addressOf ref="InterruptHandlers.Empty" type="Segment16"/>
+
+		<cpu:CopyImmediateToCX/>
+		<short>208</short>
+
+		<label id="forEachOtherInterrupt"/>
+
+		<cpu:CopyAXToDIAddressAndIncrementDI/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:BX-DIAddress/>
+
+		<cpu:IncrementDI/>
+		<cpu:IncrementDI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachOtherInterrupt" type="Relative8"/>
+
+		<!--Timer-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>0080</hex>
+		<addressOf ref="InterruptHandlers.Timer" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>0082</hex>
+		<addressOf ref="InterruptHandlers.Timer" type="Segment16"/>
+
+		<!--Keyboard-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>0084</hex>
+		<addressOf ref="InterruptHandlers.Keyboard" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>0086</hex>
+		<addressOf ref="InterruptHandlers.Keyboard" type="Segment16"/>
+
+		<!--Mouse-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>00B0</hex>
+		<addressOf ref="InterruptHandlers.Mouse" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>00B2</hex>
+		<addressOf ref="InterruptHandlers.Mouse" type="Segment16"/>
+
+		<!--Clear PS/2 Buffer-->
+		<!--<label id="whileNotEmpty"/>
+
+		<cpu:ReadFromImmediate8PortToAL/>
+		<hex>64</hex>
+
+		<cpu:AndALWithImmediate/>
+		<binary>00000001</binary>
+
+		<cpu:BranchToRelativeIfZero8/>
+		<addressOf ref="empty" type="Relative8"/>
+
+		<cpu:ReadFromImmediate8PortToAL/>
+		<hex>60</hex>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="whileNotEmpty" type="Relative8"/>
+
+		<label id="empty"/>-->
+
+		<!--Enable PS/2 Mouse-->
+		<!--<cpu:CopyImmediateToAL/>
+		<hex>20</hex>
+
+		<cpu:WriteALToImmediate8Port/>
+		<hex>64</hex>
+
+		<cpu:ReadFromImmediate8PortToAL/>
+		<hex>60</hex>
+
+		<cpu:OrALWithImmediate/>
+		<binary>00000010</binary>
+
+		<cpu:AndALWithImmediate/>
+		<binary>11011111</binary>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>60</hex>
+
+		<cpu:WriteALToImmediate8Port/>
+		<hex>64</hex>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<hex>60</hex>-->
+
+		<!--<cpu:CopyImmediateToAL/>
+		<hex>A8</hex>
+		
+		<cpu:WriteALToImmediate8Port/>
+		<hex>64</hex>-->
+
+		<!--<label id="waitForResponse"/>
+		
+		<cpu:ReadFromImmediate8PortToAL/>
+		<hex>64</hex>-->
+
+		<!--<cpu:AndALWithImmediate/>
+		<binary>00000001</binary>-->
+
+		<!--<cpu:BranchToRelativeIfZero8/>
+		<addressOf ref="waitForResponse" type="Relative8"/>-->
+
+		<!--<cpu:ReadFromImmediate8PortToAL/>
+		<hex>60</hex>-->
+
+		<!--<cpu:AndAXWithImmediate/>
+		<hex>00FF</hex>
+		
+		<con:WriteShortHex digits="2"/>-->
+
+		<!--<cpu:CopyImmediateToAL/>
+		<hex>D4</hex>
+
+		<cpu:WriteALToImmediate8Port/>
+		<hex>64</hex>
+
+		<label id="waitForReady"/>
+
+		<cpu:ReadFromImmediate8PortToAL/>
+		<hex>64</hex>
+
+		<cpu:AndALWithImmediate/>
+		<binary>00000001</binary>
+
+		<cpu:BranchToRelativeIfZero8/>
+		<addressOf ref="waitForReady" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>F4</hex>
+
+		<cpu:WriteALToImmediate8Port/>
+		<hex>60</hex>-->
+
+		<cpu:CallRelative16/>
+		<addressOf ref="Ps2Keyboard.Enable" type="Relative16"/>
+
+		<cpu:CallRelative16/>
+		<addressOf ref="ConsoleKeyboard.Enable" type="Relative16"/>
+
+		<cpu:CallRelative16/>
+		<addressOf ref="ConsoleScreen.Enable" type="Relative16"/>
+
+		<cpu:SetInterruptFlag/>
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+</scope>

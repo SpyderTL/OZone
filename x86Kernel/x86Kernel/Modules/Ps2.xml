@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:seg="http://metalx.org/Intel/80286/Segments"
+	xmlns:inc="http://metalx.org/Intel/80286/Increment"
+	xmlns:imm="http://metalx.org/Intel/80286/Immediate"
+	xmlns:logic="http://metalx.org/Intel/80286/Logic"
+	xmlns:dsk="http://metalx.org/i286/Functions/Disk"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:flp="http://metalx.org/Pc/Bios/Disk"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:sys="http://metalx.org/Pc/Bios/System"
+	xmlns:cmd="http://metalx.org/Pc/Pic/Commands"
+	xmlns:pic="http://metalx.org/Pc/Pic/Ports">
+
+	<label id="keyPressedHandler" export="Ps2.KeyPressedHandler"/>
+	<addressOf ref="handleKeyEvent" type="Absolute16"/>
+	<addressOf ref="handleKeyEvent" type="Segment16"/>
+
+	<label id="keyReleasedHandler" export="Ps2.KeyReleasedHandler"/>
+	<addressOf ref="handleKeyEvent" type="Absolute16"/>
+	<addressOf ref="handleKeyEvent" type="Segment16"/>
+
+	<label id="handleKeyboardInterrupt" export="Ps2.HandleKeyboardInterrupt">
+		<cpu:ReadFromImmediate8PortToAL/>
+		<hex>60</hex>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>00FF</hex>
+
+		<cpu:TestALWithImmediate/>
+		<binary>10000000</binary>
+
+		<cpu:BranchToRelativeIfNotZero8/>
+		<addressOf ref="notPressed" type="Relative8"/>
+
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="keyPressedHandler" type="Absolute16"/>
+		
+		<cpu:ReturnToNearCaller/>
+
+		<label id="notPressed"/>
+
+		<cpu:AndALWithImmediate/>
+		<binary>01111111</binary>
+
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="keyReleasedHandler" type="Absolute16"/>
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+
+	<label id="handleKeyEvent">
+		<cpu:ReturnToFarCaller/>
+	</label>
+</scope>

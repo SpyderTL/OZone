@@ -193,6 +193,14 @@
 		</scope>
 	</xsl:template>
 
+	<xsl:template match="con:WriteCharacter">
+		<cpu:CopyImmediateToAH/>
+		<vid:TeletypeOutput/>
+
+		<cpu:CallImmediate8Interrupt/>
+		<int:VideoFunctions/>
+	</xsl:template>
+
 	<xsl:template match="con:WriteCharacters">
 		<cpu:CopyImmediateToAH/>
 		<vid:TeletypeOutput/>

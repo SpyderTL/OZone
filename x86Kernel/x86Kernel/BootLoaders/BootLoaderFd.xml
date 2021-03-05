@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:seg="http://metalx.org/Intel/80286/Segments"
+	xmlns:imm="http://metalx.org/Intel/80286/Immediate"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:dsk="http://metalx.org/i286/Functions/Disk"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:flp="http://metalx.org/Pc/Bios/Disk"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:logic="http://metalx.org/Intel/80286/Logic"
+	xmlns:sys="http://metalx.org/Pc/Bios/System">
+
+	<!--Set Code Segment Register-->
+	<cpu:JumpToImmediatePointer16/>
+	<addressOf ref="start" type="Pointer16"/>
+
+	<label id="start"/>
+	
+	<!--Setup Stack-->
+	<cpu:CopyImmediateToAX/>
+	<hex>0000</hex>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:DS-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:ES-AXRegister/>
+
+	<cpu:CopyOperandToSegmentRegister16/>
+	<seg:SS-AXRegister/>
+
+	<cpu:CopyImmediateToSP/>
+	<hex>7C00</hex>
+	
+	<!--Load Kernel-->
+	<cpu:CopyImmediateToAH/>
+	<flp:ReadSectorsFromDrive/>
+	
+	<cpu:CopyImmediateToAL/>
+	<byte>2</byte>
+	
+	<cpu:CopyImmediateToCH/>
+	<byte>0</byte>
+	
+	<cpu:CopyImmediateToCL/>
+	<byte>2</byte>
+	
+	<cpu:CopyImmediateToDH/>
+	<byte>0</byte>
+	
+	<cpu:CopyImmediateToDL/>
+	<byte>0</byte>
+	
+	<cpu:CopyImmediateToBX/>
+	<hex>7E00</hex>
+	
+	<cpu:CallImmediate8Interrupt/>
+	<bios:DiskFunctions/>
+	
+	<cpu:BranchToRelativeIfCarry8/>
+	<addressOf ref="error" type="Relative8"/>
+	
+	<cpu:JumpToRelative16/>
+	<addressOf ref="Kernel.Start" type="Relative16"/>
+	
+	<label id="error"/>	
+	<con:WriteShortHex digits="4"/>
+	
+	<label id="halt"/>
+	
+	<cpu:JumpToRelative8/>
+	<addressOf ref="halt" type="Relative8"/>
+</scope>

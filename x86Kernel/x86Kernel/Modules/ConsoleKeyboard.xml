@@ -1,0 +1,480 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:seg="http://metalx.org/Intel/80286/Segments"
+	xmlns:inc="http://metalx.org/Intel/80286/Increment"
+	xmlns:imm="http://metalx.org/Intel/80286/Immediate"
+	xmlns:logic="http://metalx.org/Intel/80286/Logic"
+	xmlns:dsk="http://metalx.org/i286/Functions/Disk"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:flp="http://metalx.org/Pc/Bios/Disk"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:sys="http://metalx.org/Pc/Bios/System"
+	xmlns:cmd="http://metalx.org/Pc/Pic/Commands"
+	xmlns:pic="http://metalx.org/Pc/Pic/Ports">
+
+	<label id="enable" export="ConsoleKeyboard.Enable">
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<addressOf ref="Keyboard.KeyPressedHandler" type="Absolute16"/>
+		<addressOf ref="handleKeyPressed" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<addressOf ref="Keyboard.KeyPressedHandler" type="Absolute16" offset="2"/>
+		<addressOf ref="handleKeyPressed" type="Segment16"/>
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+
+	<label id="handleKeyPressed">
+		<!--Check for Enter-->
+		<cpu:CompareALToImmediate/>
+		<hex>1C</hex>
+
+		<cpu:BranchToRelativeIfNotEqual8/>
+		<addressOf ref="notEnter" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0D</hex>
+
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="Console.OutputHandler" type="Absolute16"/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>0A</hex>
+
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="Console.OutputHandler" type="Absolute16"/>
+
+		<cpu:ReturnToFarCaller/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="notEnter"/>
+
+		<!--Check for Backspace-->
+		<cpu:CompareALToImmediate/>
+		<hex>0E</hex>
+
+		<cpu:BranchToRelativeIfNotEqual8/>
+		<addressOf ref="notBackspace" type="Relative8"/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>08</hex>
+
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="Console.OutputHandler" type="Absolute16"/>
+
+		<cpu:CopyImmediateToAL/>
+		<string xml:space="preserve"> </string>
+
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="Console.OutputHandler" type="Absolute16"/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>08</hex>
+
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="Console.OutputHandler" type="Absolute16"/>
+
+		<cpu:ReturnToFarCaller/>
+
+		<cpu:ReturnToNearCaller/>
+
+		<label id="notBackspace"/>
+
+		<!--Check for Shift Pressed-->
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<addressOf ref="Keyboard.Keys" offset="42" type="Absolute16"/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelativeIfNotEqual8/>
+		<addressOf ref="shifted" type="Relative8"/>
+
+		<cpu:CopyAbsoluteMemoryToAL/>
+		<addressOf ref="Keyboard.Keys" offset="54" type="Absolute16"/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelativeIfNotEqual8/>
+		<addressOf ref="shifted" type="Relative8"/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="asciiTable" type="Absolute16"/>
+
+		<cpu:JumpToRelative8/>
+		<addressOf ref="continue" type="Relative8"/>
+
+		<label id="shifted"/>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="asciiTableShifted" type="Absolute16"/>
+
+		<label id="continue"/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:AddRegisterToOperand16/>
+		<op:AX-DIRegister/>
+
+		<cpu:CopyOperandToRegister8/>
+		<op:AL-DIAddress/>
+
+		<cpu:CompareALToImmediate/>
+		<byte>255</byte>
+
+		<cpu:BranchToRelativeIfEqual8/>
+		<addressOf ref="skip" type="Relative8"/>
+
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="Console.OutputHandler" type="Absolute16"/>
+
+		<label id="skip"/>
+		
+		<cpu:ReturnToFarCaller/>
+	</label>
+
+	<label id="test">
+		<cpu:PushDSToStack/>
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAX/>
+		<hex>b800</hex>
+
+		<cpu:CopyOperandToSegmentRegister16/>
+		<seg:DS-AXRegister/>
+
+		<cpu:SegmentDS/>
+		<cpu:IncrementFunction8/>
+		<inc:IncrementImmediate16Address/>
+		<hex>0000</hex>
+
+		<cpu:PullAXFromStack/>
+		<cpu:PullDSFromStack/>
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+
+	<label id="asciiTable">
+		<!--0x00-->
+		<byte>255</byte>
+		<byte>255</byte>
+		<string>1</string>
+		<string>2</string>
+		<string>3</string>
+		<string>4</string>
+		<string>5</string>
+		<string>6</string>
+
+		<string>7</string>
+		<string>8</string>
+		<string>9</string>
+		<string>0</string>
+		<string>-</string>
+		<string>=</string>
+		<byte>255</byte>
+		<byte>255</byte>
+
+		<!--0x10-->
+		<string>q</string>
+		<string>w</string>
+		<string>e</string>
+		<string>r</string>
+		<string>t</string>
+		<string>y</string>
+		<string>u</string>
+		<string>i</string>
+
+		<string>o</string>
+		<string>p</string>
+		<string>[</string>
+		<string>]</string>
+		<byte>255</byte>
+		<byte>255</byte>
+		<string>a</string>
+		<string>s</string>
+
+		<!--0x20-->
+		<string>d</string>
+		<string>f</string>
+		<string>g</string>
+		<string>h</string>
+		<string>j</string>
+		<string>k</string>
+		<string>l</string>
+		<string>;</string>
+
+		<string>'</string>
+		<string>`</string>
+		<byte>255</byte>
+		<string>\</string>
+		<string>z</string>
+		<string>x</string>
+		<string>c</string>
+		<string>v</string>
+
+		<!--0x30-->
+		<string>b</string>
+		<string>n</string>
+		<string>m</string>
+		<string>,</string>
+		<string>.</string>
+		<string>/</string>
+		<byte>255</byte>
+		<string>*</string>
+
+		<byte>255</byte>
+		<string xml:space="preserve"> </string>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+
+		<!--0x40-->
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<string>7</string>
+
+		<string>8</string>
+		<string>9</string>
+		<string>-</string>
+		<string>4</string>
+		<string>5</string>
+		<string>6</string>
+		<string>+</string>
+		<string>1</string>
+
+		<!--0x50-->
+		<string>2</string>
+		<string>3</string>
+		<string>0</string>
+		<string>.</string>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+
+		<!--0x60-->
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+
+		<!--0x70-->
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+	</label>
+
+	<label id="asciiTableShifted">
+		<!--0x00-->
+		<byte>255</byte>
+		<byte>255</byte>
+		<string>!</string>
+		<string>@</string>
+		<string>#</string>
+		<string>$</string>
+		<string>%</string>
+		<string>^</string>
+
+		<string>&amp;</string>
+		<string>*</string>
+		<string>(</string>
+		<string>)</string>
+		<string>_</string>
+		<string>+</string>
+		<byte>255</byte>
+		<byte>255</byte>
+
+		<!--0x10-->
+		<string>Q</string>
+		<string>W</string>
+		<string>E</string>
+		<string>R</string>
+		<string>T</string>
+		<string>Y</string>
+		<string>U</string>
+		<string>I</string>
+
+		<string>O</string>
+		<string>P</string>
+		<string>{</string>
+		<string>}</string>
+		<byte>255</byte>
+		<byte>255</byte>
+		<string>A</string>
+		<string>S</string>
+
+		<!--0x20-->
+		<string>D</string>
+		<string>F</string>
+		<string>G</string>
+		<string>H</string>
+		<string>J</string>
+		<string>K</string>
+		<string>L</string>
+		<string>:</string>
+
+		<string>"</string>
+		<string>~</string>
+		<byte>255</byte>
+		<string>|</string>
+		<string>Z</string>
+		<string>X</string>
+		<string>C</string>
+		<string>V</string>
+
+		<!--0x30-->
+		<string>B</string>
+		<string>N</string>
+		<string>M</string>
+		<string>&lt;</string>
+		<string>&gt;</string>
+		<string>?</string>
+		<byte>255</byte>
+		<string>*</string>
+
+		<byte>255</byte>
+		<string xml:space="preserve"> </string>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+
+		<!--0x40-->
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<string>7</string>
+
+		<string>8</string>
+		<string>9</string>
+		<string>-</string>
+		<string>4</string>
+		<string>5</string>
+		<string>6</string>
+		<string>+</string>
+		<string>1</string>
+
+		<!--0x50-->
+		<string>2</string>
+		<string>3</string>
+		<string>0</string>
+		<string>.</string>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+
+		<!--0x60-->
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+
+		<!--0x70-->
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+		<byte>255</byte>
+	</label>
+</scope>
