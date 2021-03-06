@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:seg="http://metalx.org/Intel/80286/Segments"
+	xmlns:inc="http://metalx.org/Intel/80286/Increment"
+	xmlns:imm="http://metalx.org/Intel/80286/Immediate"
+	xmlns:logic="http://metalx.org/Intel/80286/Logic"
+	xmlns:dsk="http://metalx.org/i286/Functions/Disk"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:flp="http://metalx.org/Pc/Bios/Disk"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:sys="http://metalx.org/Pc/Bios/System"
+	xmlns:cmd="http://metalx.org/Pc/Pic/Commands"
+	xmlns:pic="http://metalx.org/Pc/Pic/Ports">
+
+	<label id="enable" export="SerialPic.Enable">
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<addressOf ref="Pic.InterruptRequestHandlers" offset="16" type="Absolute16"/>
+		<addressOf ref="handleInterruptRequest" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<addressOf ref="Pic.InterruptRequestHandlers" offset="18" type="Absolute16"/>
+		<addressOf ref="handleInterruptRequest" type="Segment16"/>
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+
+	<label id="handleInterruptRequest">
+		<cpu:PushAllRegistersToStack/>
+		
+		<cpu:CallRelative16/>
+		<addressOf ref="Serial.ReadByte" type="Relative16"/>
+
+		<!--<cpu:CallRelative16/>
+		<addressOf ref="Screen.Test" type="Relative16"/>-->
+
+		<!--<cpu:CallRelative16/>
+		<addressOf ref="Screen.DrawCharacter" type="Relative16"/>
+
+		<cpu:CallRelative16/>
+		<addressOf ref="sendByte" type="Relative16"/>-->
+
+		<!--<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="Serial.ReceiveHandler" type="Absolute16"/>-->
+
+		<cpu:PullAllRegistersFromStack/>
+
+		<cpu:ReturnToFarCaller/>
+	</label>
+</scope>

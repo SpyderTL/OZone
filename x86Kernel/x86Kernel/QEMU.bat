@@ -1,0 +1,1 @@
+"C:\Program Files\qemu\qemu-system-x86_64.exe" -nic user,model=virtio-net-pci,hostfwd=tcp:127.0.0.1:23-:23 -fda "bin\Debug\netcoreapp3.1\x86Kernel.img"

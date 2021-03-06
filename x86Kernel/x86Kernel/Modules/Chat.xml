@@ -16,30 +16,31 @@
 	xmlns:cmd="http://metalx.org/Pc/Pic/Commands"
 	xmlns:pic="http://metalx.org/Pc/Pic/Ports">
 
-	<label id="drawCharacter" export="Screen.DrawCharacter">
-		<con:WriteCharacter/>
-		
+	<label id="start" export="Chat.Start">
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<addressOf ref="Console.OutputHandler" type="Absolute16"/>
+		<addressOf ref="outputHandler" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<addressOf ref="Console.OutputHandler" type="Absolute16" offset="2"/>
+		<addressOf ref="outputHandler" type="Segment16"/>
+
 		<cpu:ReturnToNearCaller/>
 	</label>
-	
-	<label id="test" export="Screen.Test">
-		<cpu:PushDSToStack/>
+
+	<label id="outputHandler">
 		<cpu:PushAXToStack/>
-
-		<cpu:CopyImmediateToAX/>
-		<hex>b800</hex>
-
-		<cpu:CopyOperandToSegmentRegister16/>
-		<seg:DS-AXRegister/>
-
-		<cpu:SegmentDS/>
-		<cpu:IncrementFunction8/>
-		<inc:IncrementImmediate16Address/>
-		<hex>0000</hex>
+		
+		<cpu:CallRelative16/>
+		<addressOf ref="Screen.DrawCharacter" type="Relative16"/>
 
 		<cpu:PullAXFromStack/>
-		<cpu:PullDSFromStack/>
-
-		<cpu:ReturnToNearCaller/>
+		
+		<cpu:CallRelative16/>
+		<addressOf ref="Serial.WriteByte" type="Relative16"/>
+		
+		<cpu:ReturnToFarCaller/>
 	</label>
 </scope>

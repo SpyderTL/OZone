@@ -23,8 +23,8 @@
 	<label id="keyReleasedHandler" export="Ps2.KeyReleasedHandler"/>
 	<addressOf ref="handleKeyEvent" type="Absolute16"/>
 	<addressOf ref="handleKeyEvent" type="Segment16"/>
-
-	<label id="handleKeyboardInterrupt" export="Ps2.HandleKeyboardInterrupt">
+	
+	<label id="handleKeyboardInterruptRequest" export="Ps2.HandleKeyboardInterruptRequest">
 		<cpu:ReadFromImmediate8PortToAL/>
 		<hex>60</hex>
 
@@ -40,8 +40,8 @@
 		<cpu:LogicFunction/>
 		<logic:CallPointerAtImmediate16Address/>
 		<addressOf ref="keyPressedHandler" type="Absolute16"/>
-		
-		<cpu:ReturnToNearCaller/>
+
+		<cpu:ReturnToFarCaller/>
 
 		<label id="notPressed"/>
 
@@ -52,7 +52,7 @@
 		<logic:CallPointerAtImmediate16Address/>
 		<addressOf ref="keyReleasedHandler" type="Absolute16"/>
 
-		<cpu:ReturnToNearCaller/>
+		<cpu:ReturnToFarCaller/>
 	</label>
 
 	<label id="handleKeyEvent">

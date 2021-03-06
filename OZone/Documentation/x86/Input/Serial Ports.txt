@@ -4,45 +4,50 @@ COM3		0x3E8
 COM4		0x2E8
 
 UART Registers
-	Data							0x00
-	Baud Rate Low			0x00		// If Set Baud Rate is set, 115200 / ((Baud Rate High << 8) OR Baud Rate Low)
-	Interrupt Enable			0x01
-		Reserved					4 bits
-		Status						1 bit
-		Error							1 bit
-		Empty						1 bit
-		Data							1 bit
-	Baud Rate High			0x01		// If Set Baud Rate is set
-	Fifo Control				0x02
-	Line Control				0x03
+	Data					0x00
+	Baud Rate Low			0x00			// If Set Baud Rate is set, 115200 / ((Baud Rate High << 8) | Baud Rate Low)
+	Interrupt Enable		0x01
+		Reserved				4 bits
+		Status					1 bit
+		Error					1 bit
+		Empty					1 bit
+		Data					1 bit
+	Baud Rate High			0x01			// If Set Baud Rate is set
+	Fifo Control			0x02
+		Trigger Level			2 bits
+		Reserved				3 bits
+		Send Fifo Reset			1 bit
+		Receive Fifo Reset		1 bit
+		Fifo Enable				1 bit
+	Line Control			0x03
 		Set Baud Rate			1 bit
-		Reserved					1 bit
-		Parity Mode				2 bits	// 0 = Odd, 1 = Even, 2 = Mark, 3 = Space
-		Parity Enable				1 bit
-		Stop Bits					1 bit		// 0 = 1, 1 = 2
-		Character Length		2 bits	// 0 = 5, 1 = 6, 2 = 7, 3 = 8
+		Reserved				1 bit
+		Parity Mode				2 bits		// 0 = Odd, 1 = Even, 2 = Mark, 3 = Space
+		Parity Enable			1 bit
+		Stop Bits				1 bit		// 0 = 1, 1 = 2
+		Character Length		2 bits		// 0 = 5, 1 = 6, 2 = 7, 3 = 8
 	Modem Control			0x04
-		Reserved					3 bits
-		Loopback					1 bit
-		Reserved					4 bits
-	Line Status					0x05
-		Reserved					2 bits
-		Ready						1 bit
-		Reserved					4 bits
-		Data							1 bit
+		Reserved				3 bits
+		Loopback				1 bit
+		Reserved				4 bits
+	Line Status				0x05
+		Reserved				2 bits
+		Ready					1 bit
+		Reserved				4 bits
+		Data					1 bit
 	Modem Status			0x06
-	Scratch Register			0x07
+	Scratch Register		0x07
 
 Baud Rates
-	115200						0x0001
-	57600						0x0002
-	38400						0x0003
-	19200						0x0006
-	9600							0x000c
-	4800							0x0018
-	2400							0x0030
-	1200							0x0060
-	300							0x0180
+	115200					0x0001
+	57600					0x0002
+	38400					0x0003
+	19200					0x0006
+	9600					0x000c
+	4800					0x0018
+	2400					0x0030
+	1200					0x0060
+	300						0x0180
 
 Initialization
 	Disable Interrupts

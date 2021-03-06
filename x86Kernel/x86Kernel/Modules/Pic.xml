@@ -1,0 +1,617 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:seg="http://metalx.org/Intel/80286/Segments"
+	xmlns:inc="http://metalx.org/Intel/80286/Increment"
+	xmlns:imm="http://metalx.org/Intel/80286/Immediate"
+	xmlns:logic="http://metalx.org/Intel/80286/Logic"
+	xmlns:dsk="http://metalx.org/i286/Functions/Disk"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:flp="http://metalx.org/Pc/Bios/Disk"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:sys="http://metalx.org/Pc/Bios/System"
+	xmlns:cmd="http://metalx.org/Pc/Pic/Commands"
+	xmlns:pic="http://metalx.org/Pc/Pic/Ports">
+
+	<label id="interruptRequestHandlers" offset="0600" export="Pic.InterruptRequestHandlers"/>
+
+	<label id="enable" export="Pic.Enable">
+		<!--Reprogram Master Interrupt Controller-->
+		<cpu:CopyImmediateToAL/>
+		<cmd:InitializeForEnvironment/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>32</byte>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterData/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000100</binary>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterData/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Environment8086Mode/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterData/>
+
+		<!--Set Master PIC IRQ Mask-->
+		<cpu:CopyImmediateToAL/>
+		<hex>01</hex>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterData/>
+
+		<!--Reprogram Slave Interrupt Controller-->
+		<cpu:CopyImmediateToAL/>
+		<cmd:InitializeForEnvironment/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:SlaveCommand/>
+
+		<cpu:CopyImmediateToAL/>
+		<byte>40</byte>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:SlaveData/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000010</binary>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:SlaveData/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:Environment8086Mode/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:SlaveData/>
+
+		<!--Set Slave PIC IRQ Mask-->
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:SlaveData/>
+
+		<!--Install Interrupt Request Handlers-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>0080</hex>
+		<addressOf ref="interruptRequest0Handler" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>0082</hex>
+		<addressOf ref="interruptRequest0Handler" type="Segment16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>0084</hex>
+		<addressOf ref="interruptRequest1Handler" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>0086</hex>
+		<addressOf ref="interruptRequest1Handler" type="Segment16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>0088</hex>
+		<addressOf ref="interruptRequest2Handler" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>008A</hex>
+		<addressOf ref="interruptRequest2Handler" type="Segment16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>008C</hex>
+		<addressOf ref="interruptRequest3Handler" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>008E</hex>
+		<addressOf ref="interruptRequest3Handler" type="Segment16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>0090</hex>
+		<addressOf ref="interruptRequest4Handler" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>0092</hex>
+		<addressOf ref="interruptRequest4Handler" type="Segment16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>0094</hex>
+		<addressOf ref="interruptRequest5Handler" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>0096</hex>
+		<addressOf ref="interruptRequest5Handler" type="Segment16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>0098</hex>
+		<addressOf ref="interruptRequest6Handler" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>009A</hex>
+		<addressOf ref="interruptRequest6Handler" type="Segment16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>009C</hex>
+		<addressOf ref="interruptRequest7Handler" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>009E</hex>
+		<addressOf ref="interruptRequest7Handler" type="Segment16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>00A0</hex>
+		<addressOf ref="interruptRequest8Handler" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>00A2</hex>
+		<addressOf ref="interruptRequest8Handler" type="Segment16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>00A4</hex>
+		<addressOf ref="interruptRequest9Handler" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>00A6</hex>
+		<addressOf ref="interruptRequest9Handler" type="Segment16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>00A8</hex>
+		<addressOf ref="interruptRequest10Handler" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>00AA</hex>
+		<addressOf ref="interruptRequest10Handler" type="Segment16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>00AC</hex>
+		<addressOf ref="interruptRequest11Handler" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>00AE</hex>
+		<addressOf ref="interruptRequest11Handler" type="Segment16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>00B0</hex>
+		<addressOf ref="interruptRequest12Handler" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>00B2</hex>
+		<addressOf ref="interruptRequest12Handler" type="Segment16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>00B4</hex>
+		<addressOf ref="interruptRequest13Handler" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>00B6</hex>
+		<addressOf ref="interruptRequest13Handler" type="Segment16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>00B8</hex>
+		<addressOf ref="interruptRequest14Handler" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>00BA</hex>
+		<addressOf ref="interruptRequest14Handler" type="Segment16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>00BC</hex>
+		<addressOf ref="interruptRequest15Handler" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<hex>00BE</hex>
+		<addressOf ref="interruptRequest15Handler" type="Segment16"/>
+
+		<cpu:CopyImmediateToCX/>
+		<short>16</short>
+
+		<cpu:CopyImmediateToDI/>
+		<addressOf ref="interruptRequestHandlers" type="Absolute16"/>
+
+		<label id="forEachInterruptRequest"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToDIAddress/>
+		<addressOf ref="defaultInterruptRequestHandler" type="Absolute16"/>
+
+		<cpu:IncrementDI/>
+		<cpu:IncrementDI/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToDIAddress/>
+		<addressOf ref="defaultInterruptRequestHandler" type="Segment16"/>
+
+		<cpu:IncrementDI/>
+		<cpu:IncrementDI/>
+
+		<cpu:LoopToRelative8/>
+		<addressOf ref="forEachInterruptRequest" type="Relative8"/>
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+
+	<label id="interruptRequest0Handler">
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="interruptRequestHandlers" type="Absolute16" offset="0"/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="interruptRequest1Handler">
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="interruptRequestHandlers" type="Absolute16" offset="4"/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="interruptRequest2Handler">
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="interruptRequestHandlers" type="Absolute16" offset="8"/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="interruptRequest3Handler">
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="interruptRequestHandlers" type="Absolute16" offset="12"/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="interruptRequest4Handler">
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="interruptRequestHandlers" type="Absolute16" offset="16"/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="interruptRequest5Handler">
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="interruptRequestHandlers" type="Absolute16" offset="20"/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="interruptRequest6Handler">
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="interruptRequestHandlers" type="Absolute16" offset="24"/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="interruptRequest7Handler">
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="interruptRequestHandlers" type="Absolute16" offset="28"/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="interruptRequest8Handler">
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="interruptRequestHandlers" type="Absolute16" offset="32"/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:SlaveCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="interruptRequest9Handler">
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="interruptRequestHandlers" type="Absolute16" offset="36"/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:SlaveCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="interruptRequest10Handler">
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="interruptRequestHandlers" type="Absolute16" offset="40"/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:SlaveCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="interruptRequest11Handler">
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="interruptRequestHandlers" type="Absolute16" offset="44"/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:SlaveCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="interruptRequest12Handler">
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="interruptRequestHandlers" type="Absolute16" offset="48"/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:SlaveCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="interruptRequest13Handler">
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="interruptRequestHandlers" type="Absolute16" offset="52"/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:SlaveCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="interruptRequest14Handler">
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="interruptRequestHandlers" type="Absolute16" offset="56"/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:SlaveCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="interruptRequest15Handler">
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="interruptRequestHandlers" type="Absolute16" offset="60"/>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:MasterCommand/>
+
+		<cpu:CopyImmediateToAL/>
+		<cmd:EndOfInterrupt/>
+
+		<cpu:WriteALToImmediate8Port/>
+		<pic:SlaveCommand/>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:ReturnFromInterrupt/>
+	</label>
+
+	<label id="defaultInterruptRequestHandler">
+		<!--<cpu:CallRelative16/>
+		<addressOf ref="Screen.Test" type="Relative16"/>-->
+
+		<cpu:ReturnToFarCaller/>
+	</label>
+</scope>

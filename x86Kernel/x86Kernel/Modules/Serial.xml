@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:seg="http://metalx.org/Intel/80286/Segments"
+	xmlns:inc="http://metalx.org/Intel/80286/Increment"
+	xmlns:imm="http://metalx.org/Intel/80286/Immediate"
+	xmlns:logic="http://metalx.org/Intel/80286/Logic"
+	xmlns:dsk="http://metalx.org/i286/Functions/Disk"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:flp="http://metalx.org/Pc/Bios/Disk"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:sys="http://metalx.org/Pc/Bios/System"
+	xmlns:cmd="http://metalx.org/Pc/Pic/Commands"
+	xmlns:pic="http://metalx.org/Pc/Pic/Ports">
+
+	<label id="receiveHandler" export="Serial.ReceiveHandler"/>
+	<addressOf ref="defaultReceiveHandler" type="Pointer16"/>
+
+	<label id="enable" export="Serial.Enable">
+		<!--Disable Interrupts-->
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>03F9</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<!--Set Baud Rate (0x0001)-->
+		<cpu:CopyImmediateToAL/>
+		<binary>10000000</binary>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>03FB</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>01</hex>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>03F8</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:CopyImmediateToAL/>
+		<hex>00</hex>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>03F9</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<!--Set Parameters (8 bits, no parity, 1 stop bit)-->
+		<cpu:CopyImmediateToAL/>
+		<binary>00000011</binary>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>03FB</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<!--Disable Fifo-->
+		<cpu:CopyImmediateToAL/>
+		<binary>00000000</binary>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>03FA</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<!--Enable Interrupts-->
+		<cpu:CopyImmediateToAL/>
+		<binary>00000001</binary>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>03F9</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<!--Enable Master Interrupt-->
+		<cpu:CopyImmediateToAL/>
+		<binary>00001000</binary>
+
+		<cpu:CopyImmediateToDX/>
+		<hex>03FC</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+
+	<label id="writeByte" export="Serial.WriteByte">
+		<cpu:CopyImmediateToDX/>
+		<hex>03F8</hex>
+
+		<cpu:WriteALToDXPort/>
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+
+	<label id="readByte" export="Serial.ReadByte">
+		<cpu:CopyImmediateToDX/>
+		<hex>03F8</hex>
+
+		<cpu:ReadFromDXPortToAL/>
+
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="receiveHandler" type="Absolute16"/>
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+
+	<label id="defaultReceiveHandler">
+		<cpu:ReturnToFarCaller/>
+	</label>
+</scope>

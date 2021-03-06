@@ -16,30 +16,25 @@
 	xmlns:cmd="http://metalx.org/Pc/Pic/Commands"
 	xmlns:pic="http://metalx.org/Pc/Pic/Ports">
 
-	<label id="drawCharacter" export="Screen.DrawCharacter">
-		<con:WriteCharacter/>
-		
+	<label id="enable" export="SerialConsole.Enable">
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<addressOf ref="Serial.ReceiveHandler" type="Absolute16"/>
+		<addressOf ref="handleReceivedByte" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<addressOf ref="Serial.ReceiveHandler" offset="2" type="Absolute16"/>
+		<addressOf ref="handleReceivedByte" type="Segment16"/>
+
 		<cpu:ReturnToNearCaller/>
 	</label>
-	
-	<label id="test" export="Screen.Test">
-		<cpu:PushDSToStack/>
-		<cpu:PushAXToStack/>
 
-		<cpu:CopyImmediateToAX/>
-		<hex>b800</hex>
-
-		<cpu:CopyOperandToSegmentRegister16/>
-		<seg:DS-AXRegister/>
-
-		<cpu:SegmentDS/>
-		<cpu:IncrementFunction8/>
-		<inc:IncrementImmediate16Address/>
-		<hex>0000</hex>
-
-		<cpu:PullAXFromStack/>
-		<cpu:PullDSFromStack/>
-
-		<cpu:ReturnToNearCaller/>
+	<label id="handleReceivedByte">
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="Console.OutputHandler" type="Absolute16"/>
+		
+		<cpu:ReturnToFarCaller/>
 	</label>
 </scope>

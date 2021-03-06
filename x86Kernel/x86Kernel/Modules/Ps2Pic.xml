@@ -16,29 +16,16 @@
 	xmlns:cmd="http://metalx.org/Pc/Pic/Commands"
 	xmlns:pic="http://metalx.org/Pc/Pic/Ports">
 
-	<label id="drawCharacter" export="Screen.DrawCharacter">
-		<con:WriteCharacter/>
-		
-		<cpu:ReturnToNearCaller/>
-	</label>
-	
-	<label id="test" export="Screen.Test">
-		<cpu:PushDSToStack/>
-		<cpu:PushAXToStack/>
+	<label id="enable" export="Ps2Pic.Enable">
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<addressOf ref="Pic.InterruptRequestHandlers" offset="4" type="Absolute16"/>
+		<addressOf ref="Ps2.HandleKeyboardInterruptRequest" type="Absolute16"/>
 
-		<cpu:CopyImmediateToAX/>
-		<hex>b800</hex>
-
-		<cpu:CopyOperandToSegmentRegister16/>
-		<seg:DS-AXRegister/>
-
-		<cpu:SegmentDS/>
-		<cpu:IncrementFunction8/>
-		<inc:IncrementImmediate16Address/>
-		<hex>0000</hex>
-
-		<cpu:PullAXFromStack/>
-		<cpu:PullDSFromStack/>
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<addressOf ref="Pic.InterruptRequestHandlers" offset="6" type="Absolute16"/>
+		<addressOf ref="Ps2.HandleKeyboardInterruptRequest" type="Segment16"/>
 
 		<cpu:ReturnToNearCaller/>
 	</label>

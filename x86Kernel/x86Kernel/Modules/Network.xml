@@ -1,0 +1,355 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:seg="http://metalx.org/Intel/80286/Segments"
+	xmlns:inc="http://metalx.org/Intel/80286/Increment"
+	xmlns:imm="http://metalx.org/Intel/80286/Immediate"
+	xmlns:logic="http://metalx.org/Intel/80286/Logic"
+	xmlns:math="http://metalx.org/Intel/80286/Math"
+	xmlns:shift="http://metalx.org/Intel/80286/Shift"
+	xmlns:dsk="http://metalx.org/i286/Functions/Disk"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:flp="http://metalx.org/Pc/Bios/Disk"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:sys="http://metalx.org/Pc/Bios/System"
+	xmlns:cmd="http://metalx.org/Pc/Pic/Commands"
+	xmlns:pic="http://metalx.org/Pc/Pic/Ports"
+	xmlns:pci="http://metalx.org/Pc/Pci/Ports">
+
+	<label id="receiveHandler" export="Network.ReceiveHandler"/>
+	<addressOf ref="defaultReceiveHandler" type="Pointer16"/>
+
+	<label id="deviceNumber"/>
+	<short>0</short>
+
+	<label id="enable" export="Network.Enable">
+		<cpu:Operand32/>
+		<cpu:CopyImmediateToCX/>
+		<hex>00020000</hex>
+
+		<cpu:CopyImmediateToSI/>
+		<hex>0000</hex>
+
+		<cpu:CallRelative16/>
+		<addressOf ref="Pci.FindDevice" type="Relative16"/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:BX-ImmediateAddress/>
+		<addressOf ref="deviceNumber" type="Absolute16"/>
+
+		<cpu:PushBXToStack/>
+		
+		<!--Get Interrupt Request Number-->
+		<cpu:CallRelative16/>
+		<addressOf ref="Pci.GetInterruptLine" type="Relative16"/>
+
+		<cpu:CopyRegisterToOperand8/>
+		<op:CL-ALRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>00FF</hex>
+
+		<!--Install PIC Interrupt Request Handler-->
+		<cpu:ShiftRegister16ByImmediate8Function/>
+		<shift:ShiftAXRegisterLeft/>
+		<byte>2</byte>
+
+		<cpu:AddImmediateToAX/>
+		<addressOf ref="Pic.InterruptRequestHandlers" type="Absolute16"/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:AX-DIRegister/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToDIAddress/>
+		<addressOf ref="interruptRequestHandler" type="Absolute16"/>
+
+		<cpu:IncrementDI/>
+		<cpu:IncrementDI/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToDIAddress/>
+		<addressOf ref="interruptRequestHandler" type="Segment16"/>
+
+		<cpu:PullBXFromStack/>
+
+		<!--Get I/O Port-->
+		<cpu:CallRelative16/>
+		<addressOf ref="Pci.GetBaseAddress0" type="Relative16"/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:CX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>FFFC</hex>
+
+		<!--Set Device Status (Acknowledge)-->
+		<cpu:AddImmediateToAX/>
+		<short>18</short>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:AX-DXRegister/>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000001</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<!--Set Device Status (Driver)-->
+		<cpu:CopyImmediateToAL/>
+		<binary>00000011</binary>
+
+		<cpu:WriteALToDXPort/>
+		
+		<!--Set Queue Select to 0 (Receive Queue)-->
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:SubtractFromDXRegister/>
+		<byte>4</byte>
+
+		<cpu:CopyImmediateToAX/>
+		<short>0</short>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Queue 0 Address (0x1000)-->
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:SubtractFromDXRegister/>
+		<byte>6</byte>
+
+		<cpu:Operand32/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00000001</hex>
+
+		<cpu:Operand32/>
+		<cpu:WriteAXToDXPort/>
+
+		<!--Setup Receive Queue-->
+		<cpu:CopyImmediateToSI/>
+		<hex>1000</hex>
+
+		<!--Buffer 0 Address-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddress/>
+		<hex>4000</hex>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>2</byte>
+		<hex>0000</hex>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>4</byte>
+		<hex>0000</hex>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>6</byte>
+		<hex>0000</hex>
+
+		<!--Buffer 0 Length-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>8</byte>
+		<short>10</short>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>10</byte>
+		<hex>0000</hex>
+
+		<!--Buffer 0 Flags (Next, Write Only)-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>12</byte>
+		<short>3</short>
+
+		<!--Buffer 0 Next-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>14</byte>
+		<short>1</short>
+		
+		<!--Buffer 1 Address-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>16</byte>
+		<hex>5000</hex>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>18</byte>
+		<hex>0000</hex>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>20</byte>
+		<hex>0000</hex>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>22</byte>
+		<hex>0000</hex>
+
+		<!--Buffer 1 Length-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>24</byte>
+		<short>1514</short>
+
+		<!--Buffer 1 Flags (Write)-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>28</byte>
+		<short>2</short>
+
+		<!--Buffer 1 Next (None)-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate8/>
+		<byte>30</byte>
+		<short>0</short>
+
+		<!--Set Available Flags (None)-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate16/>
+		<hex>1000</hex>
+		<short>0</short>
+
+		<!--Set Available Next Index (1)-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate16/>
+		<hex>1002</hex>
+		<short>1</short>
+
+		<!--Add Available Buffer (0)-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate16/>
+		<hex>1004</hex>
+		<short>0</short>
+
+		<!--Set Used Flags (None)-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate16/>
+		<hex>2000</hex>
+		<short>1</short>
+
+		<!--Set Used Index (0)-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate16/>
+		<hex>2002</hex>
+		<short>0</short>
+
+
+
+
+
+
+
+		<!--Set Queue Select To 1 (Transmit Queue)-->
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:AddToDXRegister/>
+		<byte>6</byte>
+
+		<cpu:CopyImmediateToAX/>
+		<short>1</short>
+
+		<cpu:WriteAXToDXPort/>
+
+		<!--Set Queue 1 Address (0x6000)-->
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:SubtractFromDXRegister/>
+		<byte>6</byte>
+
+		<cpu:Operand32/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00000006</hex>
+
+		<cpu:Operand32/>
+		<cpu:WriteAXToDXPort/>
+
+		<!--Setup Transmit Queue-->
+		<cpu:CopyImmediateToSI/>
+		<hex>6000</hex>
+
+		<!--Set Available Flags (None)-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate16/>
+		<hex>1000</hex>
+		<short>0</short>
+
+		<!--Set Available Next Index (0)-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate16/>
+		<hex>1002</hex>
+		<short>0</short>
+
+		<!--Set Next Available Buffer-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate16/>
+		<hex>1004</hex>
+		<short>0</short>
+
+		<!--Set Used Flags (None)-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate16/>
+		<hex>2000</hex>
+		<short>0</short>
+
+		<!--Set Used Next Index (0)-->
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddressPlusImmediate16/>
+		<hex>2002</hex>
+		<short>0</short>
+
+		<!--Set Guest Features (MAC Address, Status)-->
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:SubtractFromDXRegister/>
+		<byte>4</byte>
+
+		<cpu:Operand32/>
+		<cpu:CopyImmediateToAX/>
+		<hex>00010020</hex>
+
+		<cpu:Operand32/>
+		<cpu:WriteAXToDXPort/>
+		
+		<!--Set Device Status (Driver Ready)-->
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:AddToDXRegister/>
+		<byte>14</byte>
+
+		<cpu:CopyImmediateToAL/>
+		<binary>00000111</binary>
+
+		<cpu:WriteALToDXPort/>
+
+		<!--Notify Device-->
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:SubtractFromDXRegister/>
+		<byte>2</byte>
+
+		<cpu:CopyImmediateToAX/>
+		<short>0</short>
+
+		<cpu:WriteAXToDXPort/>
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+
+	<label id="defaultReceiveHandler">
+		<cpu:CallRelative16/>
+		<addressOf ref="Screen.Test" type="Relative16"/>
+
+		<cpu:ReturnToFarCaller/>
+	</label>
+
+	<label id="interruptRequestHandler">
+		<cpu:CallRelative16/>
+		<addressOf ref="Screen.Test" type="Relative16"/>
+
+		<cpu:ReturnToFarCaller/>
+	</label>
+</scope>
