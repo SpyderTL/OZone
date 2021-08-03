@@ -4,65 +4,26 @@
 	xmlns="http://metalx.org/Program"
 	xmlns:cpu="http://metalx.org/Arm/Arm7/Operators">
 
-	<!--Set Video Mode (1920x1080x32)-->
-	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="0"/>
-	<addressOf ref="setVideoMode" type="Absolute8"/>
-	<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="0" Rotate="0" Destination="0"/>
-	<addressOf ref="setVideoMode" type="Absolute16High8"/>
-	<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="0" Rotate="12" Destination="0"/>
-	<addressOf ref="setVideoMode" type="Absolute24High8"/>
-	<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="0" Rotate="8" Destination="0"/>
-	<addressOf ref="setVideoMode" type="Absolute32High8"/>
-	<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="0" Rotate="4" Destination="0"/>
-	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="0" Operand="1" Rotate="0" Destination="0"/>
+	<!--Enable Screen-->
+	<cpu:BranchToRelative ref="Screen.Enable" SetReturnAddress="true"/>
 
-	<cpu:BranchToRelative ref="System.Send" SetReturnAddress="true"/>
+	<!--Clear Screen-->
 	
-	<!--Wait For Response-->
-	<cpu:ImmediateData Operation="CopyOperand" Operand="1" Destination="0"/>
+	<!--R0 = Gray-->
+	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
+	
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="0" Operand="128" Rotate="0" Destination="0"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="0" Operand="128" Rotate="12" Destination="0"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="0" Operand="128" Rotate="8" Destination="0"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="0" Operand="128" Rotate="4" Destination="0"/>
 
-	<cpu:BranchToRelative ref="System.Receive" SetReturnAddress="true"/>
+	<!--Screen.Clear(Gray)-->
+	<cpu:BranchToRelative ref="Screen.Clear" SetReturnAddress="true"/>
 	
-	<!--Get Frame Buffer Address-->
-	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="0"/>
-	<addressOf ref="frameBuffer" type="Absolute8"/>
-	<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="0" Rotate="0" Destination="0"/>
-	<addressOf ref="frameBuffer" type="Absolute16High8"/>
-	<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="0" Rotate="12" Destination="0"/>
-	<addressOf ref="frameBuffer" type="Absolute24High8"/>
-	<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="0" Rotate="8" Destination="0"/>
-	<addressOf ref="frameBuffer" type="Absolute32High8"/>
-	<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="0" Rotate="4" Destination="0"/>
+	<!--Font.DrawCharacter(65)-->
+	<cpu:ImmediateData Operation="CopyOperand" Operand="65" Destination="0"/>
 	
-	<cpu:ImmediateOffsetMemory Register="0" AddressRegister="0" Offset="0" AddOffset="true" ApplyOffsetBeforeTransfer="true" ReadFromMemory="true"/>
-	
-	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
-	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="128" Rotate="0" Destination="1"/>
-	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="128" Rotate="12" Destination="1"/>
-	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="128" Rotate="8" Destination="1"/>
-	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="128" Rotate="4" Destination="1"/>
-	
-	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="2"/>
-	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="2" Operand="0" Rotate="0" Destination="2"/>
-	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="2" Operand="0" Rotate="12" Destination="2"/>
-	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="2" Operand="0" Rotate="8" Destination="2"/>
-	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="2" Operand="1" Rotate="4" Destination="2"/>
-	
-	<label id="loop2"/>
-	
-	<cpu:ImmediateOffsetMemory Register="1" AddressRegister="0" Offset="0" AddOffset="true" ApplyOffsetBeforeTransfer="true" ReadFromMemory="false"/>
-	
-	<cpu:ImmediateData Operation="AddRegisterAndOperand" Register="0" Operand="4" Destination="0"/>
-	
-	<cpu:ImmediateData Operation="SubtractOperandFromRegister" Register="2" Operand="1" Destination="2" SetFlags="true"/>
-	
-	<cpu:BranchToRelative Condition="NotEqual" ref="loop2"/>
-	
-	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
-	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
-	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
-	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
-	
+	<cpu:BranchToRelative ref="Font.DrawCharacter" SetReturnAddress="true"/>
 
 	<!--Blink ACT LED-->
 	<label id="loop"/>
@@ -71,6 +32,7 @@
 
 	<!--Wait-->
 	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
+	
 	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="0" Rotate="0" Destination="1"/>
 	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="0" Rotate="12" Destination="1"/>
 	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="0" Rotate="8" Destination="1"/>
@@ -87,6 +49,7 @@
 
 	<!--Wait-->
 	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
+	
 	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="0" Rotate="0" Destination="1"/>
 	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="0" Rotate="12" Destination="1"/>
 	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="0" Rotate="8" Destination="1"/>
@@ -99,29 +62,4 @@
 	<cpu:BranchToRelative Condition="NotEqual" ref="wait2"/>
 
 	<cpu:BranchToRelative ref="loop"/>
-
-	<align bytes="16"/>
-
-	<label id="setVideoMode"/>
-	<!--Physical Width-->
-	<int>1920</int>
-	<!--Physical Height-->
-	<int>1080</int>
-	<!--Virtual Width-->
-	<int>1920</int>
-	<!--Virtual Height-->
-	<int>1080</int>
-	<!--Stride (out)-->
-	<int>0</int>
-	<!--Depth-->
-	<int>32</int>
-	<!--X-->
-	<int>0</int>
-	<!--Y-->
-	<int>0</int>
-	<!--Address (out)-->
-	<label id="frameBuffer"/>
-	<int>0</int>
-	<!--Length (out)-->
-	<int>0</int>
 </scope>

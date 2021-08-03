@@ -25,6 +25,12 @@
 	<label id="deviceNumber"/>
 	<short>0</short>
 
+	<label id="lastAvailable"/>
+	<short>0</short>
+
+	<label id="lastUsed"/>
+	<short>0</short>
+
 	<label id="enable" export="Network.Enable">
 		<cpu:Operand32/>
 		<cpu:CopyImmediateToCX/>
@@ -103,6 +109,7 @@
 		<binary>00000011</binary>
 
 		<cpu:WriteALToDXPort/>
+		
 		
 		<!--Set Queue Select to 0 (Receive Queue)-->
 		<cpu:MathImmediate8ToOperand16Function/>
@@ -242,12 +249,7 @@
 		<hex>2002</hex>
 		<short>0</short>
 
-
-
-
-
-
-
+		
 		<!--Set Queue Select To 1 (Transmit Queue)-->
 		<cpu:MathImmediate8ToOperand16Function/>
 		<math:AddToDXRegister/>
@@ -339,17 +341,80 @@
 		<cpu:ReturnToNearCaller/>
 	</label>
 
-	<label id="defaultReceiveHandler">
+	<label id="interruptRequestHandler">
+		<cpu:CopyImmediateToSI/>
+		<hex>4000</hex>
+		
+		<cpu:LogicFunction/>
+		<logic:CallPointerAtImmediate16Address/>
+		<addressOf ref="receiveHandler" type="Absolute16"/>
+		
+		<!--Get Next Available Index-->
+		<cpu:CopyAbsoluteMemoryToAX/>
+		<hex>2002</hex>
+
+		<cpu:PushAXToStack/>
+
+		<cpu:ShiftRegisterByOneFunction16/>
+		<shift:ShiftAXRegisterLeft/>
+
+		<cpu:AddImmediateToAX/>
+		<hex>2004</hex>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:AX-SIRegister/>
+		
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToSIAddress/>
+		<short>0</short>
+
+		<cpu:PullAXFromStack/>
+
+		<cpu:IncrementAX/>
+
+		<cpu:CopyAXToAbsoluteMemory/>
+		<hex>2002</hex>
+
+		<!--Get I/O Port-->
+		<cpu:CopyOperandToRegister16/>
+		<op:BX-ImmediateAddress/>
+		<addressOf ref="deviceNumber" type="Absolute16"/>
+		
 		<cpu:CallRelative16/>
-		<addressOf ref="Screen.Test" type="Relative16"/>
+		<addressOf ref="Pci.GetBaseAddress0" type="Relative16"/>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:CX-AXRegister/>
+
+		<cpu:AndAXWithImmediate/>
+		<hex>FFFC</hex>
+
+		<!--Get Interrupt Status-->
+		<cpu:AddImmediateToAX/>
+		<short>19</short>
+
+		<cpu:CopyRegisterToOperand16/>
+		<op:AX-DXRegister/>
+
+		<cpu:ReadFromDXPortToAL/>
+		
+		<!--Notify Queue-->
+		<cpu:MathImmediate8ToOperand16Function/>
+		<math:SubtractFromDXRegister/>
+		<byte>3</byte>
+
+		<cpu:CopyImmediateToAX/>
+		<short>0</short>
+
+		<cpu:WriteAXToDXPort/>
 
 		<cpu:ReturnToFarCaller/>
 	</label>
-
-	<label id="interruptRequestHandler">
+	
+	<label id="defaultReceiveHandler">
 		<cpu:CallRelative16/>
 		<addressOf ref="Screen.Test" type="Relative16"/>
-
+		
 		<cpu:ReturnToFarCaller/>
 	</label>
 </scope>

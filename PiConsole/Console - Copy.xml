@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Arm/Arm7/Operators">
+
+	<cpu:BranchToRelative ref="Screen.Enable" SetReturnAddress="true"/>
+
+	<!--R0 = Screen Framebuffer Address-->
+	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="0"/>
+	
+	<addressOf ref="Screen.FrameBuffer" type="Absolute8"/>
+	<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="0" Rotate="0" Destination="0"/>
+
+	<addressOf ref="Screen.FrameBuffer" type="Absolute16High8"/>
+	<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="0" Rotate="12" Destination="0"/>
+
+	<addressOf ref="Screen.FrameBuffer" type="Absolute24High8"/>
+	<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="0" Rotate="8" Destination="0"/>
+
+	<addressOf ref="Screen.FrameBuffer" type="Absolute32High8"/>
+	<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="0" Rotate="4" Destination="0"/>
+
+	<cpu:ImmediateOffsetMemory Register="0" AddressRegister="0" Offset="0" AddOffset="true" ApplyOffsetBeforeTransfer="true" ReadFromMemory="true"/>
+
+	<!--R1 = Image Source Address-->
+	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
+
+	<addressOf ref="Resources.Images.beautiful-road-wallpaper-hd.jpg" type="Absolute8"/>
+	<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="1" Rotate="0" Destination="1"/>
+
+	<addressOf ref="Resources.Images.beautiful-road-wallpaper-hd.jpg" type="Absolute16High8"/>
+	<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="1" Rotate="12" Destination="1"/>
+
+	<addressOf ref="Resources.Images.beautiful-road-wallpaper-hd.jpg" type="Absolute24High8"/>
+	<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="1" Rotate="8" Destination="1"/>
+
+	<addressOf ref="Resources.Images.beautiful-road-wallpaper-hd.jpg" type="Absolute32High8"/>
+	<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="1" Rotate="4" Destination="1"/>
+
+	<!--R2 = Count-->
+	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="2"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="2" Operand="0" Rotate="0" Destination="2"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="2" Operand="164" Rotate="12" Destination="2"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="2" Operand="31" Rotate="8" Destination="2"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="2" Operand="0" Rotate="4" Destination="2"/>
+	
+	<label id="loop2"/>
+
+	<cpu:ImmediateOffsetMemory Register="3" AddressRegister="1" Offset="8" AddOffset="true" ApplyOffsetBeforeTransfer="true" ReadFromMemory="true"/>
+
+	<cpu:ImmediateOffsetMemory Register="3" AddressRegister="0" Offset="0" AddOffset="true" ApplyOffsetBeforeTransfer="true" ReadFromMemory="false"/>
+
+	<cpu:ImmediateData Operation="AddRegisterAndOperand" Register="0" Operand="4" Destination="0"/>
+	<cpu:ImmediateData Operation="AddRegisterAndOperand" Register="1" Operand="4" Destination="1"/>
+	
+	<cpu:ImmediateData Operation="SubtractOperandFromRegister" Register="2" Operand="1" Destination="2" SetFlags="true"/>
+	
+	<cpu:BranchToRelative Condition="NotEqual" ref="loop2"/>	
+
+	<!--Blink ACT LED-->
+	<label id="loop"/>
+
+	<cpu:BranchToRelative ref="System.TurnOnLed" SetReturnAddress="true"/>
+
+	<!--Wait-->
+	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="0" Rotate="0" Destination="1"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="0" Rotate="12" Destination="1"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="0" Rotate="8" Destination="1"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="1" Rotate="4" Destination="1"/>
+
+	<label id="wait"/>
+
+	<cpu:ImmediateData Operation="SubtractOperandFromRegister" Register="1" Operand="1" Rotate="0" Destination="1" SetFlags="true"/>
+
+	<cpu:BranchToRelative Condition="NotEqual" ref="wait"/>
+
+	<!--Turn Off LED-->
+	<cpu:BranchToRelative ref="System.TurnOffLed" SetReturnAddress="true"/>
+
+	<!--Wait-->
+	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="0" Rotate="0" Destination="1"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="0" Rotate="12" Destination="1"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="0" Rotate="8" Destination="1"/>
+	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="1" Operand="1" Rotate="4" Destination="1"/>
+
+	<label id="wait2"/>
+
+	<cpu:ImmediateData Operation="SubtractOperandFromRegister" Register="1" Operand="1" Rotate="0" Destination="1" SetFlags="true"/>
+
+	<cpu:BranchToRelative Condition="NotEqual" ref="wait2"/>
+
+	<cpu:BranchToRelative ref="loop"/>
+</scope>

@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Arm/Arm7/Operators">
+
+	<label id="Enable" export="Screen.Enable">
+		<!--Save Return Address-->
+		<cpu:BlockMemory Registers="0100000000000000" ReadFromMemory="false" AddressRegister="13" UpdateAddressRegister="true" AddOffset="false" ApplyOffsetBeforeTransfer="true"/>
+		
+		<!--Set Video Mode (1920x1080x32)-->
+		<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="0"/>
+
+		<addressOf ref="setVideoMode" type="Absolute8"/>
+		<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="0" Rotate="0" Destination="0"/>
+
+		<addressOf ref="setVideoMode" type="Absolute16High8"/>
+		<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="0" Rotate="12" Destination="0"/>
+
+		<addressOf ref="setVideoMode" type="Absolute24High8"/>
+		<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="0" Rotate="8" Destination="0"/>
+
+		<addressOf ref="setVideoMode" type="Absolute32High8"/>
+		<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="0" Rotate="4" Destination="0"/>
+
+		<!--Disable Cache-->
+		<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="0" Operand="64" Rotate="4" Destination="0"/>
+
+		<!--Set Mailbox Number (1)-->
+		<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="0" Operand="1" Rotate="0" Destination="0"/>
+
+		<cpu:BranchToRelative ref="System.Send" SetReturnAddress="true"/>
+
+		<!--Wait For Response-->
+		<cpu:ImmediateData Operation="CopyOperand" Operand="1" Destination="0"/>
+
+		<cpu:BranchToRelative ref="System.Receive" SetReturnAddress="true"/>
+
+		<!--Restore Return Address-->
+		<cpu:BlockMemory Registers="0100000000000000" ReadFromMemory="true" AddressRegister="13" UpdateAddressRegister="true" AddOffset="true" ApplyOffsetBeforeTransfer="false"/>
+		
+		<cpu:ImmediateData Operation="AddRegisterAndOperand" Register="14" Operand="0" Destination="15"/>
+	</label>
+
+	<!--Screen.Clear(Color)-->
+	<label id="Clear" export="Screen.Clear">
+		<!--R0 = Color-->
+		
+		<!--R1 = Screen Framebuffer Address-->
+		<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
+
+		<addressOf ref="Screen.FrameBuffer" type="Absolute8"/>
+		<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="1" Rotate="0" Destination="1"/>
+
+		<addressOf ref="Screen.FrameBuffer" type="Absolute16High8"/>
+		<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="1" Rotate="12" Destination="1"/>
+
+		<addressOf ref="Screen.FrameBuffer" type="Absolute24High8"/>
+		<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="1" Rotate="8" Destination="1"/>
+
+		<addressOf ref="Screen.FrameBuffer" type="Absolute32High8"/>
+		<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="1" Rotate="4" Destination="1"/>
+
+		<cpu:ImmediateOffsetMemory Register="1" AddressRegister="1" Offset="0" AddOffset="true" ApplyOffsetBeforeTransfer="true" ReadFromMemory="true"/>
+
+		<!--R2 = Count (1920x1080)-->
+		<!--<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="2"/>
+
+		<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="2" Operand="0" Rotate="0" Destination="2"/>
+		<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="2" Operand="164" Rotate="12" Destination="2"/>
+		<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="2" Operand="31" Rotate="8" Destination="2"/>
+		<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="2" Operand="0" Rotate="4" Destination="2"/>-->
+
+		<!--R2 = Count (1360x768)-->
+		<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="2"/>
+
+		<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="2" Operand="0" Rotate="0" Destination="2"/>
+		<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="2" Operand="240" Rotate="12" Destination="2"/>
+		<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="2" Operand="15" Rotate="8" Destination="2"/>
+		<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="2" Operand="0" Rotate="4" Destination="2"/>
+
+		<!--While(R2 != 0)-->
+		<label id="loop2"/>
+
+		<!--[R1] = R0-->
+		<cpu:ImmediateOffsetMemory Register="0" AddressRegister="1" Offset="0" AddOffset="true" ApplyOffsetBeforeTransfer="true" ReadFromMemory="false"/>
+
+		<!--R1 = R1 + 4-->
+		<cpu:ImmediateData Operation="AddRegisterAndOperand" Register="1" Operand="4" Destination="1"/>
+
+		<!--R2 = R2 - 1-->
+		<cpu:ImmediateData Operation="SubtractOperandFromRegister" Register="2" Operand="1" Destination="2" SetFlags="true"/>
+
+		<cpu:BranchToRelative Condition="NotEqual" ref="loop2"/>
+
+		<!--Return-->
+		<cpu:ImmediateData Operation="AddRegisterAndOperand" Register="14" Operand="0" Destination="15"/>
+	</label>
+
+	<align bytes="16"/>
+
+	<label id="setVideoMode"/>
+	<!--Physical Width-->
+	<int>1360</int>
+	<!--<int>1920</int>-->
+	<!--Physical Height-->
+	<int>768</int>
+	<!--<int>1080</int>-->
+	<!--Virtual Width-->
+	<int>1360</int>
+	<!--<int>1920</int>-->
+	<!--Virtual Height-->
+	<int>768</int>
+	<!--<int>1080</int>-->
+	<!--Stride (out)-->
+	<label id="stride" export="Screen.Stride"/>
+	<int>0</int>
+	<!--Depth-->
+	<int>32</int>
+	<!--X-->
+	<int>0</int>
+	<!--Y-->
+	<int>0</int>
+	<!--Address (out)-->
+	<label id="frameBuffer" export="Screen.FrameBuffer"/>
+	<int>0</int>
+	<!--Length (out)-->
+	<int>0</int>
+</scope>

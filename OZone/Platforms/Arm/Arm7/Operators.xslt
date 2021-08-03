@@ -1899,7 +1899,7 @@
 	</xsl:template>
 
 	<xsl:template match="ns:BlockMemory">
-		<xsl:variable name="opcode" select="0"/>
+		<xsl:variable name="opcode" select="8"/>
 
 		<xsl:variable name="condition">
 			<xsl:choose>
@@ -1907,56 +1907,117 @@
 					<xsl:value-of select="0"/>
 				</xsl:when>
 				<xsl:when test="@Condition='NotEqual'">
-					<xsl:value-of select="268435456"/>
+					<xsl:value-of select="16"/>
 				</xsl:when>
 				<xsl:when test="@Condition='HigherOrEqual'">
-					<xsl:value-of select="536870912"/>
+					<xsl:value-of select="32"/>
 				</xsl:when>
 				<xsl:when test="@Condition='Lower'">
-					<xsl:value-of select="805306368"/>
+					<xsl:value-of select="48"/>
 				</xsl:when>
 				<xsl:when test="@Condition='Negative'">
-					<xsl:value-of select="1073741824"/>
+					<xsl:value-of select="64"/>
 				</xsl:when>
 				<xsl:when test="@Condition='NotNegative'">
-					<xsl:value-of select="1342177280"/>
+					<xsl:value-of select="80"/>
 				</xsl:when>
 				<xsl:when test="@Condition='Overflow'">
-					<xsl:value-of select="1610612736"/>
+					<xsl:value-of select="96"/>
 				</xsl:when>
 				<xsl:when test="@Condition='NotOverflow'">
-					<xsl:value-of select="1879048192"/>
+					<xsl:value-of select="112"/>
 				</xsl:when>
 				<xsl:when test="@Condition='Higher'">
-					<xsl:value-of select="2147483648"/>
+					<xsl:value-of select="128"/>
 				</xsl:when>
 				<xsl:when test="@Condition='LowerOrEqual'">
-					<xsl:value-of select="2415919104"/>
+					<xsl:value-of select="144"/>
 				</xsl:when>
 				<xsl:when test="@Condition='GreaterThanOrEqual'">
-					<xsl:value-of select="2684354560"/>
+					<xsl:value-of select="160"/>
 				</xsl:when>
 				<xsl:when test="@Condition='LessThan'">
-					<xsl:value-of select="2952790016"/>
+					<xsl:value-of select="176"/>
 				</xsl:when>
 				<xsl:when test="@Condition='GreaterThan'">
-					<xsl:value-of select="3221225472"/>
+					<xsl:value-of select="192"/>
 				</xsl:when>
 				<xsl:when test="@Condition='LessThanOrEqual'">
-					<xsl:value-of select="3489660928"/>
+					<xsl:value-of select="208"/>
 				</xsl:when>
 				<xsl:when test="@Condition='Never'">
-					<xsl:value-of select="4026531840"/>
+					<xsl:value-of select="240"/>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:value-of select="3758096384"/>
+					<xsl:value-of select="224"/>
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
 
-		<prg:uint>
-			<xsl:value-of select="$opcode + $condition"/>
-		</prg:uint>
+		<xsl:variable name="readFromMemory">
+			<xsl:choose>
+				<xsl:when test="@ReadFromMemory='true'">
+					<xsl:value-of select="16"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="0"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="updateAddressRegister">
+			<xsl:choose>
+				<xsl:when test="@UpdateAddressRegister='true'">
+					<xsl:value-of select="32"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="0"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="includeStatusRegister">
+			<xsl:choose>
+				<xsl:when test="@IncludeStatusRegister='true'">
+					<xsl:value-of select="64"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="0"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="incrementAddressRegister">
+			<xsl:choose>
+				<xsl:when test="@IncludeStatusRegister='true'">
+					<xsl:value-of select="128"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="0"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="applyOffsetBeforeTransfer">
+			<xsl:choose>
+				<xsl:when test="@ApplyOffsetBeforeTransfer='true'">
+					<xsl:value-of select="1"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="0"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<prg:binary>
+			<xsl:value-of select="@Registers"/>
+		</prg:binary>
+		<prg:byte>
+			<xsl:value-of select="@AddressRegister + $readFromMemory + $updateAddressRegister + $includeStatusRegister + $incrementAddressRegister"/>
+		</prg:byte>
+		<prg:byte>
+			<xsl:value-of select="$applyOffsetBeforeTransfer + $opcode + $condition"/>
+		</prg:byte>
 	</xsl:template>
 
 	<xsl:template match="ns:SwapMemory">
@@ -2093,6 +2154,7 @@
 			</xsl:attribute>
 			<xsl:attribute name="type">Relative24</xsl:attribute>
 			<xsl:attribute name="stride">4</xsl:attribute>
+			<xsl:attribute name="offset">-8</xsl:attribute>
 		</xsl:element>
 
 		<prg:byte>

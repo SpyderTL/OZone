@@ -9,6 +9,10 @@
 	</xsl:template>
 
 	<xsl:template match="img:image">
+		<xsl:element name="label" namespace="http://metalx.org/Program">
+			<xsl:attribute name="id">Resources.Images.<xsl:value-of select="@name"/></xsl:attribute>
+			<xsl:attribute name="export">Resources.Images.<xsl:value-of select="@name"/></xsl:attribute>
+		</xsl:element>
 		<scope>
 			<int>
 				<xsl:value-of select="@width"/>

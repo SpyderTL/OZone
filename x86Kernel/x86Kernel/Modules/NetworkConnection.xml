@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Intel/80286/Operators"
+	xmlns:op="http://metalx.org/Intel/80286/Operands"
+	xmlns:seg="http://metalx.org/Intel/80286/Segments"
+	xmlns:inc="http://metalx.org/Intel/80286/Increment"
+	xmlns:imm="http://metalx.org/Intel/80286/Immediate"
+	xmlns:logic="http://metalx.org/Intel/80286/Logic"
+	xmlns:dsk="http://metalx.org/i286/Functions/Disk"
+	xmlns:con="http://metalx.org/i286/Functions/Console"
+	xmlns:flp="http://metalx.org/Pc/Bios/Disk"
+	xmlns:bios="http://metalx.org/Pc/Bios/Functions"
+	xmlns:sys="http://metalx.org/Pc/Bios/System"
+	xmlns:cmd="http://metalx.org/Pc/Pic/Commands"
+	xmlns:pic="http://metalx.org/Pc/Pic/Ports">
+
+	<label id="connectHandler" export="NetworkConnection.ConnectHandler"/>
+	<addressOf ref="handleEvent" type="Pointer16"/>
+	
+	<label id="enable" export="NetworkConnection.Enable">
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<addressOf ref="Network.ReceiveHandler" type="Absolute16"/>
+		<addressOf ref="handleReceivePacket" type="Absolute16"/>
+
+		<cpu:CopyImmediateToOperandFunction16/>
+		<imm:CopyImmediateToImmediate16Address/>
+		<addressOf ref="Network.ReceiveHandler" type="Absolute16" offset="2"/>
+		<addressOf ref="handleReceivePacket" type="Segment16"/>
+		
+		<!--Send DHCP Packet-->
+
+		<cpu:ReturnToNearCaller/>
+	</label>
+
+	<label id="sendPacket" export="NetworkConnection.SendPacket">
+		<cpu:ReturnToNearCaller/>
+	</label>
+
+	<label id="handleReceivePacket">
+		<cpu:ReturnToFarCaller/>
+	</label>
+
+	<label id="handleEvent">
+		<cpu:ReturnToFarCaller/>
+	</label>
+</scope>

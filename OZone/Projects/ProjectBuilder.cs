@@ -128,6 +128,7 @@ namespace OZone.Projects
 							using(var writer = XmlWriter.Create(memory))
 							{
 								writer.WriteStartElement("image", "http://metalx.org/Image");
+								writer.WriteAttributeString("name", Path.GetFileName(file.Path));
 								writer.WriteAttributeString("width", bitmap.Width.ToString());
 								writer.WriteAttributeString("height", bitmap.Height.ToString());
 
