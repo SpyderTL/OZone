@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Arm/Arm7/Operators">
+
+	<label id="Position" export="ScreenRenderer.Position"/>
+	<int>0</int>
+	
+	<!--ScreenRenderer.DrawImage(R0 = Image)-->
+	<label id="DrawImage" export="ScreenRenderer.DrawImage">
+		<!--Save Return Address-->
+		<cpu:BlockMemory Registers="0100000000000000" ReadFromMemory="false" AddressRegister="13" UpdateAddressRegister="true" AddOffset="false" ApplyOffsetBeforeTransfer="true"/>
+
+		<!--R1 = Screen.FrameBuffer-->
+		<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
+
+		<addressOf ref="Screen.FrameBuffer" type="Absolute8"/>
+		<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="1" Rotate="0" Destination="1"/>
+
+		<addressOf ref="Screen.FrameBuffer" type="Absolute16High8"/>
+		<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="1" Rotate="12" Destination="1"/>
+
+		<addressOf ref="Screen.FrameBuffer" type="Absolute24High8"/>
+		<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="1" Rotate="8" Destination="1"/>
+
+		<addressOf ref="Screen.FrameBuffer" type="Absolute32High8"/>
+		<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="1" Rotate="4" Destination="1"/>
+
+		<cpu:ImmediateOffsetMemory AddressRegister="1" Register="1" ReadFromMemory="true"/>
+
+		<!--R2 = [R0] (Width)-->
+		<cpu:ImmediateOffsetMemory AddressRegister="0" Register="2" ReadFromMemory="true"/>
+
+		<!--R0 = R0 + 4-->
+		<cpu:ImmediateData Operation="AddRegisterAndOperand" Register="0" Operand="4" Destination="0"/>
+		
+		<!--R3 = [R0] (Height)-->
+		<cpu:ImmediateOffsetMemory AddressRegister="0" Register="3" ReadFromMemory="true"/>
+
+		<!--R0 = R0 + 4-->
+		<cpu:ImmediateData Operation="AddRegisterAndOperand" Register="0" Operand="4" Destination="0"/>
+
+		<!--R4 = Position-->
+		<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="4"/>
+
+		<addressOf ref="Position" type="Absolute8"/>
+		<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="4" Rotate="0" Destination="4"/>
+
+		<addressOf ref="Position" type="Absolute16High8"/>
+		<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="4" Rotate="12" Destination="4"/>
+
+		<addressOf ref="Position" type="Absolute24High8"/>
+		<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="4" Rotate="8" Destination="4"/>
+
+		<addressOf ref="Position" type="Absolute32High8"/>
+		<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="4" Rotate="4" Destination="4"/>
+
+		<cpu:ImmediateOffsetMemory AddressRegister="4" Register="4" ReadFromMemory="true"/>
+
+		<!--R1 = R1 + (R4 * 4)-->
+		<cpu:RegisterData Operation="AddRegisterAndOperand" Register="1" Operand="4" Destination="1"/>
+		<cpu:RegisterData Operation="AddRegisterAndOperand" Register="1" Operand="4" Destination="1"/>
+		<cpu:RegisterData Operation="AddRegisterAndOperand" Register="1" Operand="4" Destination="1"/>
+		<cpu:RegisterData Operation="AddRegisterAndOperand" Register="1" Operand="4" Destination="1"/>
+
+		<!--R5 = Screen.Stride-->
+		<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="5"/>
+
+		<addressOf ref="Screen.Stride" type="Absolute8"/>
+		<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="5" Rotate="0" Destination="5"/>
+
+		<addressOf ref="Screen.Stride" type="Absolute16High8"/>
+		<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="5" Rotate="12" Destination="5"/>
+
+		<addressOf ref="Screen.Stride" type="Absolute24High8"/>
+		<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="5" Rotate="8" Destination="5"/>
+
+		<addressOf ref="Screen.Stride" type="Absolute32High8"/>
+		<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="5" Rotate="4" Destination="5"/>
+
+		<cpu:ImmediateOffsetMemory AddressRegister="5" Register="5" ReadFromMemory="true"/>
+
+		<!--While(R3 != 0)-->
+		<label id="loopY"/>
+
+		<!--R6 = R2 (Width)-->
+		<cpu:ImmediateData Operation="AddRegisterAndOperand" Register="2" Operand="0" Destination="6"/>
+		
+		<!--R7 = R1 (Address)-->
+		<cpu:ImmediateData Operation="AddRegisterAndOperand" Register="1" Operand="0" Destination="7"/>
+		
+		<!--While(R6 != 0)-->
+		<label id="loopX"/>
+		
+		<!--R8 = [R0]-->
+		<cpu:ImmediateOffsetMemory AddressRegister="0" Register="8" ReadFromMemory="true"/>
+		
+		<!--[R1] = R8-->
+		<cpu:ImmediateOffsetMemory AddressRegister="1" Register="8" ReadFromMemory="false"/>
+
+		<!--R0 = R0 + 4-->
+		<cpu:ImmediateData Operation="AddRegisterAndOperand" Register="0" Operand="4" Destination="0"/>
+		
+		<!--R1 = R1 + 4-->
+		<cpu:ImmediateData Operation="AddRegisterAndOperand" Register="1" Operand="4" Destination="1"/>
+
+		<!--R6 = R6 - 1-->
+		<cpu:ImmediateData Operation="SubtractOperandFromRegister" Register="6" Operand="1" Destination="6" SetFlags="true"/>
+
+		<cpu:BranchToRelative ref="loopX" Condition="NotEqual"/>
+
+		<!--R1 = R7 + R5-->
+		<cpu:RegisterData Operation="AddRegisterAndOperand" Register="7" Operand="5" Destination="1"/>
+		
+		<!--R3 = R3 - 1-->
+		<cpu:ImmediateData Operation="SubtractOperandFromRegister" Register="3" Operand="1" Destination="3" SetFlags="true"/>
+
+		<cpu:BranchToRelative ref="loopY" Condition="NotEqual"/>
+
+		<!--Restore Return Address-->
+		<cpu:BlockMemory Registers="0100000000000000" ReadFromMemory="true" AddressRegister="13" UpdateAddressRegister="true" AddOffset="true" ApplyOffsetBeforeTransfer="false"/>
+		
+		<cpu:ImmediateData Operation="AddRegisterAndOperand" Register="14" Operand="0" Destination="15"/>
+	</label>
+</scope>

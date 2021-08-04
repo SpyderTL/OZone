@@ -10,20 +10,37 @@
 	<!--Clear Screen-->
 	
 	<!--R0 = Gray-->
-	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
+	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="0"/>
 	
 	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="0" Operand="128" Rotate="0" Destination="0"/>
 	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="0" Operand="128" Rotate="12" Destination="0"/>
 	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="0" Operand="128" Rotate="8" Destination="0"/>
 	<cpu:ImmediateData Operation="OrRegisterWithOperand" Register="0" Operand="128" Rotate="4" Destination="0"/>
 
-	<!--Screen.Clear(Gray)-->
+	<!--Screen.Clear(R0 = Gray)-->
 	<cpu:BranchToRelative ref="Screen.Clear" SetReturnAddress="true"/>
 	
-	<!--Font.DrawCharacter(65)-->
-	<cpu:ImmediateData Operation="CopyOperand" Operand="65" Destination="0"/>
+	<!--Font.DrawCharacter(R0 = 'A', R1 = Black)-->
+	<!--<cpu:ImmediateData Operation="CopyOperand" Operand="65" Destination="0"/>
+	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
 	
-	<cpu:BranchToRelative ref="Font.DrawCharacter" SetReturnAddress="true"/>
+	<cpu:BranchToRelative ref="Font.DrawCharacter" SetReturnAddress="true"/>-->
+
+	<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="0"/>
+
+	<addressOf ref="Resources.Images.Input_66.bmp" type="Absolute8"/>
+	<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="0" Rotate="0" Destination="0"/>
+
+	<addressOf ref="Resources.Images.Input_66.bmp" type="Absolute16High8"/>
+	<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="0" Rotate="12" Destination="0"/>
+
+	<addressOf ref="Resources.Images.Input_66.bmp" type="Absolute24High8"/>
+	<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="0" Rotate="8" Destination="0"/>
+
+	<addressOf ref="Resources.Images.Input_66.bmp" type="Absolute32High8"/>
+	<cpu:Immediate8 Operation="OrRegisterWithOperand" Register="0" Rotate="4" Destination="0"/>
+
+	<cpu:BranchToRelative ref="ScreenRenderer.DrawImage" SetReturnAddress="true"/>
 
 	<!--Blink ACT LED-->
 	<label id="loop"/>

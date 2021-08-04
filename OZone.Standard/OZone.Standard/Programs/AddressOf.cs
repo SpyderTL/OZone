@@ -82,27 +82,27 @@ namespace OZone.Programs
 					break;
 
 				case ReferenceType.Absolute24High8:
-					writer.Write((byte)(((Segment.Address.Offset + Offset) & 0xff0000) >> 8));
+					writer.Write((byte)(((Segment.Address.Offset + Offset) & 0xff0000) >> 16));
 					break;
 
 				case ReferenceType.Absolute32High8:
-					writer.Write((byte)(((Segment.Address.Offset + Offset) & 0xff000000) >> 8));
+					writer.Write((byte)(((Segment.Address.Offset + Offset) & 0xff000000) >> 24));
 					break;
 
 				case ReferenceType.Absolute40High8:
-					writer.Write((byte)(((Segment.Address.Offset + Offset) & 0xff00000000) >> 8));
+					writer.Write((byte)(((Segment.Address.Offset + Offset) & 0xff00000000) >> 32));
 					break;
 
 				case ReferenceType.Absolute48High8:
-					writer.Write((byte)(((Segment.Address.Offset + Offset) & 0xff0000000000) >> 8));
+					writer.Write((byte)(((Segment.Address.Offset + Offset) & 0xff0000000000) >> 40));
 					break;
 
 				case ReferenceType.Absolute56High8:
-					writer.Write((byte)(((Segment.Address.Offset + Offset) & 0xff000000000000) >> 8));
+					writer.Write((byte)(((Segment.Address.Offset + Offset) & 0xff000000000000) >> 48));
 					break;
 
 				case ReferenceType.Absolute64High8:
-					writer.Write((byte)(((ulong)(Segment.Address.Offset + Offset) & 0xff00000000000000) >> 8));
+					writer.Write((byte)(((ulong)(Segment.Address.Offset + Offset) & 0xff00000000000000) >> 56));
 					break;
 
 				case ReferenceType.Relative8:
