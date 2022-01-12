@@ -4,12 +4,12 @@
 	xmlns="http://metalx.org/Program"
 	xmlns:cpu="http://metalx.org/Arm/Arm7/Operators">
 
-	<!--Font.DrawColor(R0 = Character)-->
+	<!--Font.DrawColor(R0 = Character, R1 = Color)-->
 	<label id="DrawCharacter" export="Font.DrawCharacter">
 		<!--Save Return Address-->
 		<cpu:BlockMemory Registers="0100000000000000" ReadFromMemory="false" AddressRegister="13" UpdateAddressRegister="true" AddOffset="false" ApplyOffsetBeforeTransfer="true"/>
 
-		<!--Get Character Address-->
+		<!--R1 = Character Address-->
 		<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
 
 		<addressOf ref="characterAddresses" type="Absolute8"/>
@@ -29,8 +29,20 @@
 		<cpu:RegisterData Operation="AddRegisterAndOperand" Register="0" Operand="1" Destination="1"/>
 		<cpu:RegisterData Operation="AddRegisterAndOperand" Register="0" Operand="1" Destination="1"/>
 
-		<cpu:ImmediateOffsetMemory AddressRegister="1" Register="1" ReadFromMemory="true"/>
+		<cpu:ImmediateOffsetMemory AddressRegister="1" Register="0" ReadFromMemory="true"/>
 
+		<cpu:BranchToRelative ref="ScreenRenderer.DrawImage" SetReturnAddress="true"/>
+
+		<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
+		<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
+		<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
+		<cpu:ImmediateData Operation="CopyOperand" Operand="0" Destination="1"/>
+
+		<!--Restore Return Address-->
+		<cpu:BlockMemory Registers="0100000000000000" ReadFromMemory="true" AddressRegister="13" UpdateAddressRegister="true" AddOffset="true" ApplyOffsetBeforeTransfer="false"/>
+
+		<cpu:ImmediateData Operation="AddRegisterAndOperand" Register="14" Operand="0" Destination="15"/>
+		
 		<!--R2 = [R1] (Width)-->
 		<cpu:ImmediateOffsetMemory AddressRegister="1" Register="2" ReadFromMemory="true"/>
 		
