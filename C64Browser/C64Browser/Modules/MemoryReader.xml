@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<label id="Position" export="MemoryReader.Position" offset="FB"/>
+
+	<label id="ReadByte" export="MemoryReader.ReadByte">
+		<scope>
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>0</byte>
+
+			<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+			<addressOf ref="Position" type="Absolute8"/>
+
+			<cpu:IncrementImmediate8Address/>
+			<addressOf ref="Position" type="Absolute8"/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="skip" type="Relative8"/>
+
+			<cpu:IncrementImmediate8Address/>
+			<addressOf ref="Position" type="Absolute8" offset="1"/>
+
+			<label id="skip"/>
+			
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+</scope>

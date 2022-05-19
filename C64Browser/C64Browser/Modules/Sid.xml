@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:var="http://metalx.org/Variable">
+
+	<label id="Registers" export="Sid.Registers" offset="9F00"/>
+
+	<label id="Reset" export="Sid.Reset">
+		<scope>
+			<cpu:CopyImmediate8ToYIndex/>
+			<hex>18</hex>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
+
+			<label id="forEachRegister"/>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<addressOf ref="Registers" type="Absolute16"/>
+
+			<cpu:DecrementYIndex/>
+
+			<cpu:BranchToRelative8IfPositive/>
+			<addressOf ref="forEachRegister" type="Relative8"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
+	<label id="Update" export="Sid.Update">
+		<scope>
+			<cpu:CopyImmediate8ToYIndex/>
+			<hex>18</hex>
+
+			<label id="forEachRegister"/>
+
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="Registers" type="Absolute16"/>
+
+			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+			<hex>D400</hex>
+
+			<cpu:DecrementYIndex/>
+
+			<cpu:BranchToRelative8IfPositive/>
+			<addressOf ref="forEachRegister" type="Relative8"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
+	<label id="Frequency" export="Sid.Frequency"/>
+	<hex>010C</hex>
+	<hex>011C</hex>
+	<hex>012D</hex>
+	<hex>013F</hex>
+	<hex>0152</hex>
+	<hex>0166</hex>
+	<hex>017B</hex>
+	<hex>0192</hex>
+	<hex>01AA</hex>
+	<hex>01C3</hex>
+	<hex>01DE</hex>
+	<hex>01FA</hex>
+	<hex>0218</hex>
+	<hex>0238</hex>
+	<hex>025A</hex>
+	<hex>027E</hex>
+	<hex>02A4</hex>
+	<hex>02CC</hex>
+	<hex>02F7</hex>
+	<hex>0324</hex>
+	<hex>0354</hex>
+	<hex>0386</hex>
+	<hex>03BC</hex>
+	<hex>03F5</hex>
+	<hex>0431</hex>
+	<hex>0471</hex>
+	<hex>04B4</hex>
+	<hex>04FC</hex>
+	<hex>0548</hex>
+	<hex>0598</hex>
+	<hex>05ED</hex>
+	<hex>0648</hex>
+	<hex>06A7</hex>
+	<hex>070C</hex>
+	<hex>0778</hex>
+	<hex>07E9</hex>
+	<hex>0862</hex>
+	<hex>08E2</hex>
+	<hex>0969</hex>
+	<hex>09F8</hex>
+	<hex>0A90</hex>
+	<hex>0B30</hex>
+	<hex>0BDB</hex>
+	<hex>0C8F</hex>
+	<hex>0D4E</hex>
+	<hex>0E19</hex>
+	<hex>0EF0</hex>
+	<hex>0FD3</hex>
+	<hex>10C4</hex>
+	<hex>11C3</hex>
+	<hex>12D1</hex>
+	<hex>13F0</hex>
+	<hex>151F</hex>
+	<hex>1661</hex>
+	<hex>17B6</hex>
+	<hex>191E</hex>
+	<hex>1A9D</hex>
+	<hex>1C32</hex>
+	<hex>1DDF</hex>
+	<hex>1FA6</hex>
+	<hex>2188</hex>
+	<hex>2386</hex>
+	<hex>25A3</hex>
+	<hex>27E0</hex>
+	<hex>2A3F</hex>
+	<hex>2CC2</hex>
+	<hex>2F6B</hex>
+	<hex>323D</hex>
+	<hex>353A</hex>
+	<hex>3864</hex>
+	<hex>3BBE</hex>
+	<hex>3F4C</hex>
+	<hex>430F</hex>
+	<hex>470C</hex>
+	<hex>4B46</hex>
+	<hex>4FBF</hex>
+	<hex>547D</hex>
+	<hex>5984</hex>
+	<hex>5ED6</hex>
+	<hex>647A</hex>
+	<hex>6A73</hex>
+	<hex>70C8</hex>
+	<hex>777D</hex>
+	<hex>7E97</hex>
+	<hex>861E</hex>
+	<hex>8E18</hex>
+	<hex>968B</hex>
+	<hex>9F7F</hex>
+	<hex>A8FB</hex>
+	<hex>B307</hex>
+	<hex>BDAC</hex>
+	<hex>C8F4</hex>
+	<hex>D4E7</hex>
+	<hex>E18F</hex>
+	<hex>EEF9</hex>
+	<hex>FD2F</hex>
+</scope>
