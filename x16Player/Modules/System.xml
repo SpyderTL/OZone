@@ -12,16 +12,25 @@
 	xmlns:ascii="http://metalx.org/Ansi/Ascii"
 	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
 	xmlns:var="http://metalx.org/Variable">
- 
-	<!--WriteCharacter(character)-->
+
 	<!--GetDateTime()-->
 	<label id="Kernal.GetDateTime" offset="FF50"/>
-	
-	<label id="RamBank" offset="9F61"/>
+
+	<!--GetTimeOfDay()-->
+	<label id="Kernal.GetTimeOfDay" offset="FFDE"/>
+
+	<label id="RamBank" offset="00"/>
 
 	<label id="GetDateTime" export="System.GetDateTime">
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Kernal.GetDateTime" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="GetTimeOfDay" export="System.GetTimeOfDay">
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Kernal.GetTimeOfDay" type="Absolute16"/>
 
 		<cpu:ReturnFromSubroutine/>
 	</label>

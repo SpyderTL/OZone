@@ -390,10 +390,12 @@
 
 	<label id="getTime">
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="System.GetDateTime" type="Absolute16"/>
+		<addressOf ref="System.GetTimeOfDay" type="Absolute16"/>
 
-		<cpu:CopyImmediate8AddressToAccumulator/>
-		<hex>08</hex>
+		<!--<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>08</hex>-->
+
+		<!--<cpu:CopyXIndexToAccumulator/>-->
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<addressOf ref="Time" type="Absolute8"/>
@@ -403,25 +405,32 @@
 
 	<label id="getElapsed">
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="System.GetDateTime" type="Absolute16"/>
+		<addressOf ref="System.GetTimeOfDay" type="Absolute16"/>
+
+		<cpu:PushAccumulatorToStack/>
 
 		<cpu:SetCarryFlag/>
 
-		<cpu:CopyImmediate8AddressToAccumulator/>
-		<hex>08</hex>
+		<!--<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>08</hex>-->
+
+		<!--<cpu:CopyXIndexToAccumulator/>-->
 
 		<cpu:SubtractImmediate8AddressFromAccumulator/>
 		<addressOf ref="Time" type="Absolute8"/>
 
-		<cpu:BranchToRelative8IfPositive/>
-		<addressOf ref="notNegative" type="Relative8"/>
+		<!--<cpu:BranchToRelative8IfPositive/>
+		<addressOf ref="notNegative" type="Relative8"/>-->
 
-		<cpu:ClearCarryFlag/>
+		<!--<cpu:ClearCarryFlag/>-->
 
-		<cpu:AddImmediate8ToAccumulator/>
-		<byte>60</byte>
+		<!--<cpu:AddImmediate8ToAccumulator/>
+		<byte>60</byte>-->
 
-		<label id="notNegative"/>
+		<!--<cpu:AddImmediate8ToAccumulator/>
+		<byte>128</byte>-->
+
+		<!--<label id="notNegative"/>-->
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<addressOf ref="Elapsed" type="Absolute8"/>
@@ -432,8 +441,10 @@
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<addressOf ref="Elapsed" type="Absolute8" offset="1"/>
 
-		<cpu:CopyImmediate8AddressToAccumulator/>
-		<hex>08</hex>
+		<!--<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>08</hex>-->
+
+		<cpu:PullAccumulatorFromStack/>
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<addressOf ref="Time" type="Absolute8"/>
