@@ -63,9 +63,12 @@
 
 	<cpu:CopyImmediate8ToAccumulator/>
 	<byte>0</byte>
-	
+
 	<cpu:CopyAccumulatorToImmediate16Address/>
 	<addressOf ref="screen" type="Absolute16"/>
+
+	<cpu:CopyAccumulatorToImmediate16Address/>
+	<addressOf ref="channel" type="Absolute16"/>
 
 	<cpu:CallImmediate16Address/>
 	<addressOf ref="VolumeScreen.Reset" type="Absolute16"/>
@@ -259,6 +262,34 @@
 		<label id="notThree"/>
 
 		<cpu:CompareAccumulatorToImmediate8/>
+		<petscii:Four/>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFour" type="Relative8"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>3</byte>
+
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="setScreen" type="Absolute16"/>
+
+		<label id="notFour"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<petscii:Five/>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notFive" type="Relative8"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>4</byte>
+
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="setScreen" type="Absolute16"/>
+
+		<label id="notFive"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
 		<petscii:Plus/>
 
 		<cpu:BranchToRelative8IfNotEqual/>
@@ -415,17 +446,23 @@
 		<addressOf ref="VolumeScreen.Reset" type="Absolute16"/>
 		<addressOf ref="MidiScreen.Reset" type="Absolute16"/>
 		<addressOf ref="GuitarScreen.Reset" type="Absolute16"/>
+		<addressOf ref="BassGuitarScreen.Reset" type="Absolute16"/>
+		<addressOf ref="FiveStringBassGuitarScreen.Reset" type="Absolute16"/>
 	</label>
 
 	<label id="screenProcessEvent">
 		<addressOf ref="VolumeScreen.ProcessEvent" type="Absolute16"/>
 		<addressOf ref="MidiScreen.ProcessEvent" type="Absolute16"/>
 		<addressOf ref="GuitarScreen.ProcessEvent" type="Absolute16"/>
+		<addressOf ref="BassGuitarScreen.ProcessEvent" type="Absolute16"/>
+		<addressOf ref="FiveStringBassGuitarScreen.ProcessEvent" type="Absolute16"/>
 	</label>
 
 	<label id="screenUpdate">
 		<addressOf ref="VolumeScreen.Update" type="Absolute16"/>
 		<addressOf ref="MidiScreen.Update" type="Absolute16"/>
 		<addressOf ref="GuitarScreen.Update" type="Absolute16"/>
+		<addressOf ref="BassGuitarScreen.Update" type="Absolute16"/>
+		<addressOf ref="FiveStringBassGuitarScreen.Update" type="Absolute16"/>
 	</label>
 </scope>

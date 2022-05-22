@@ -1,0 +1,412 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:mem="http://metalx.org/6502/Functions/Memory"
+	xmlns:str="http://metalx.org/6502/Functions/String"
+	xmlns:mm="http://metalx.org/6502/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<label id="Position" export="ScreenRenderer.Position"/>
+	<short>0</short>
+
+	<label id="Color" export="ScreenRenderer.Color"/>
+	<hex>00</hex>
+
+	<label id="DrawString" export="ScreenRenderer.DrawString">
+		<!--Get Length-->
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>02</hex>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>03</hex>
+
+		<!--Calculate Position-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Position" type="Absolute16"/>
+
+		<cpu:ShiftAccumulatorLeft/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>04</hex>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Position" type="Absolute16" offset="1"/>
+
+		<cpu:RollAccumulatorLeft/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>05</hex>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>11</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Video.AddressHigh" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>b0</hex>
+
+		<cpu:ClearCarryFlag/>
+
+		<cpu:AddImmediate8AddressToAccumulator/>
+		<hex>05</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Video.AddressMid" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:AddImmediate8AddressToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Video.AddressLow" type="Absolute16"/>
+
+		<label id="forEachCharacter"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToXIndex/>
+
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="screenCodes" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Video.Data0" type="Absolute16"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Color" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Video.Data0" type="Absolute16"/>
+
+		<cpu:DecrementImmediate8Address/>
+		<hex>02</hex>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="forEachCharacter" type="Relative8"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="screenCodes">
+		<!--00-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--10-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--20-->
+		<hex>20</hex>
+		<hex>21</hex>
+		<hex>22</hex>
+		<hex>23</hex>
+		<hex>24</hex>
+		<hex>25</hex>
+		<hex>26</hex>
+		<hex>27</hex>
+
+		<hex>28</hex>
+		<hex>29</hex>
+		<hex>2A</hex>
+		<hex>2B</hex>
+		<hex>2C</hex>
+		<hex>2D</hex>
+		<hex>2E</hex>
+		<hex>2F</hex>
+
+		<!--30-->
+		<hex>30</hex>
+		<hex>31</hex>
+		<hex>32</hex>
+		<hex>33</hex>
+		<hex>34</hex>
+		<hex>35</hex>
+		<hex>36</hex>
+		<hex>37</hex>
+
+		<hex>38</hex>
+		<hex>39</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--40-->
+		<hex>00</hex>
+		<hex>01</hex>
+		<hex>02</hex>
+		<hex>03</hex>
+		<hex>04</hex>
+		<hex>05</hex>
+		<hex>06</hex>
+		<hex>07</hex>
+
+		<hex>08</hex>
+		<hex>09</hex>
+		<hex>0A</hex>
+		<hex>0B</hex>
+		<hex>0C</hex>
+		<hex>0D</hex>
+		<hex>0E</hex>
+		<hex>0F</hex>
+
+		<!--50-->
+		<hex>10</hex>
+		<hex>11</hex>
+		<hex>12</hex>
+		<hex>13</hex>
+		<hex>14</hex>
+		<hex>15</hex>
+		<hex>16</hex>
+		<hex>17</hex>
+
+		<hex>18</hex>
+		<hex>19</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--60-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--70-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--80-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--90-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--A0-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--B0-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--C0-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--D0-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--E0-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<!--F0-->
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+		<hex>00</hex>
+	</label>
+</scope>
