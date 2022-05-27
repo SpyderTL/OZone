@@ -113,18 +113,18 @@
 
 			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
 			<addressOf ref="SoundGenerator.Volume" type="Absolute16"/>
-			
+
 			<cpu:JumpToImmediate16Address/>
 			<addressOf ref="nextVoice" type="Absolute16"/>
-			
+
 			<label id="voiceOff"/>
-			
+
 			<cpu:CopyImmediate8ToAccumulator/>
 			<byte>0</byte>
-			
+
 			<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
 			<addressOf ref="SoundGenerator.Volume" type="Absolute16"/>
-			
+
 			<cpu:CopyImmediate8AddressToYIndex/>
 			<hex>23</hex>
 
@@ -358,51 +358,126 @@
 		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
 		<addressOf ref="VoiceNotes" type="Absolute16"/>
 
-		<cpu:ShiftAccumulatorLeft/>
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>02</hex>
 
-		<cpu:CopyAccumulatorToYIndex/>
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
 
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>03</hex>
+
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>02</hex>
+
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>03</hex>
+
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>02</hex>
+
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>03</hex>
+
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>02</hex>
+
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>03</hex>
+
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>02</hex>
+
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>03</hex>
+
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>02</hex>
+
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>03</hex>
+
+		<!--Add Pitch Shift-->
 		<cpu:ClearCarryFlag/>
 
-		<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
-		<addressOf ref="noteFrequencies" type="Absolute16"/>
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>02</hex>
 
 		<cpu:AddImmediate8AddressToAccumulator/>
 		<hex>45</hex>
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
-		<hex>46</hex>
+		<hex>02</hex>
 
-		<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
-		<addressOf ref="noteFrequencies" type="Absolute16" offset="1"/>
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>03</hex>
 
 		<cpu:AddImmediate8ToAccumulator/>
 		<hex>00</hex>
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
-		<hex>47</hex>
-
-		<cpu:CopyImmediate8ToYIndex/>
-		<byte>0</byte>
+		<hex>03</hex>
 
 		<cpu:SetCarryFlag/>
 
 		<cpu:CopyImmediate8AddressToAccumulator/>
-		<hex>46</hex>
+		<hex>02</hex>
 
 		<cpu:SubtractImmediate8FromAccumulator/>
 		<hex>40</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>02</hex>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>03</hex>
+
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>03</hex>
+
+		<!--Find Pitch-->
+		<cpu:ShiftImmediate8AddressLeft/>
+		<hex>02</hex>
+
+		<cpu:RollImmediate8AddressLeft/>
+		<hex>03</hex>
+
+		<cpu:ClearCarryFlag/>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>02</hex>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<addressOf ref="pitchFrequencies" type="Absolute8"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>02</hex>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<hex>03</hex>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<addressOf ref="pitchFrequencies" type="Absolute16High8"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<hex>03</hex>
+
+		<cpu:CopyImmediate8ToYIndex/>
+		<byte>0</byte>
+
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>02</hex>
 
 		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 		<hex>2e</hex>
 
 		<cpu:IncrementYIndex/>
 
-		<cpu:CopyImmediate8AddressToAccumulator/>
-		<hex>47</hex>
-
-		<cpu:SubtractImmediate8FromAccumulator/>
-		<hex>00</hex>
+		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+		<hex>02</hex>
 
 		<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 		<hex>2e</hex>
@@ -423,7 +498,7 @@
 		<cpu:ReturnFromSubroutine/>
 	</label>
 
-	<label id="handleNoteOn">		
+	<label id="handleNoteOn">
 		<scope>
 			<!--Check Instrument-->
 			<cpu:CopyImmediate16AddressToAccumulator/>
@@ -520,51 +595,126 @@
 			<cpu:CopyImmediate16AddressToAccumulator/>
 			<addressOf ref="Midi.Value" type="Absolute16"/>
 
-			<cpu:ShiftAccumulatorLeft/>
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>02</hex>
 
-			<cpu:CopyAccumulatorToYIndex/>
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>00</hex>
 
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>03</hex>
+
+			<cpu:ShiftImmediate8AddressLeft/>
+			<hex>02</hex>
+
+			<cpu:RollImmediate8AddressLeft/>
+			<hex>03</hex>
+
+			<cpu:ShiftImmediate8AddressLeft/>
+			<hex>02</hex>
+
+			<cpu:RollImmediate8AddressLeft/>
+			<hex>03</hex>
+
+			<cpu:ShiftImmediate8AddressLeft/>
+			<hex>02</hex>
+
+			<cpu:RollImmediate8AddressLeft/>
+			<hex>03</hex>
+
+			<cpu:ShiftImmediate8AddressLeft/>
+			<hex>02</hex>
+
+			<cpu:RollImmediate8AddressLeft/>
+			<hex>03</hex>
+
+			<cpu:ShiftImmediate8AddressLeft/>
+			<hex>02</hex>
+
+			<cpu:RollImmediate8AddressLeft/>
+			<hex>03</hex>
+
+			<!--Add Pitch Shift-->
 			<cpu:ClearCarryFlag/>
 
-			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
-			<addressOf ref="noteFrequencies" type="Absolute16"/>
+			<cpu:CopyImmediate8AddressToAccumulator/>
+			<hex>02</hex>
 
 			<cpu:AddImmediate16PlusXIndexAddressToAccumulator/>
 			<addressOf ref="ChannelPitches" type="Absolute16"/>
 
 			<cpu:CopyAccumulatorToImmediate8Address/>
-			<hex>40</hex>
+			<hex>02</hex>
 
-			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
-			<addressOf ref="noteFrequencies" type="Absolute16" offset="1"/>
+			<cpu:CopyImmediate8AddressToAccumulator/>
+			<hex>03</hex>
 
 			<cpu:AddImmediate8ToAccumulator/>
 			<hex>00</hex>
 
 			<cpu:CopyAccumulatorToImmediate8Address/>
-			<hex>41</hex>
-
-			<cpu:CopyImmediate8ToYIndex/>
-			<byte>0</byte>
+			<hex>03</hex>
 
 			<cpu:SetCarryFlag/>
 
 			<cpu:CopyImmediate8AddressToAccumulator/>
-			<hex>40</hex>
+			<hex>02</hex>
 
 			<cpu:SubtractImmediate8FromAccumulator/>
 			<hex>40</hex>
 
-			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
-			<hex>2e</hex>
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>02</hex>
 
 			<cpu:CopyImmediate8AddressToAccumulator/>
-			<hex>41</hex>
+			<hex>03</hex>
 
 			<cpu:SubtractImmediate8FromAccumulator/>
 			<hex>00</hex>
 
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>03</hex>
+
+			<!--Find Pitch-->
+			<cpu:ShiftImmediate8AddressLeft/>
+			<hex>02</hex>
+
+			<cpu:RollImmediate8AddressLeft/>
+			<hex>03</hex>
+
+			<cpu:ClearCarryFlag/>
+
+			<cpu:CopyImmediate8AddressToAccumulator/>
+			<hex>02</hex>
+
+			<cpu:AddImmediate8ToAccumulator/>
+			<addressOf ref="pitchFrequencies" type="Absolute8"/>
+
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>02</hex>
+
+			<cpu:CopyImmediate8AddressToAccumulator/>
+			<hex>03</hex>
+
+			<cpu:AddImmediate8ToAccumulator/>
+			<addressOf ref="pitchFrequencies" type="Absolute16High8"/>
+
+			<cpu:CopyAccumulatorToImmediate8Address/>
+			<hex>03</hex>
+
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>0</byte>
+
+			<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+			<hex>02</hex>
+
+			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
+			<hex>2e</hex>
+
 			<cpu:IncrementYIndex/>
+
+			<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
+			<hex>02</hex>
 
 			<cpu:CopyAccumulatorToImmediate8PointerPlusYIndexAddress/>
 			<hex>2e</hex>
@@ -855,7 +1005,7 @@
 
 	<label id="handleDrumOff">
 		<cpu:ReturnFromSubroutine/>
-		
+
 		<scope>
 			<cpu:CopyImmediate16AddressToAccumulator/>
 			<addressOf ref="Midi.Status" type="Absolute16"/>
@@ -962,8 +1112,23 @@
 	</label>
 
 	<label id="noteFrequencies">
-		<hex>002C</hex>
-		<hex>002F</hex>
+		<!--Note 0-->
+		<hex>0015</hex>
+		<hex>0017</hex>
+		<hex>0018</hex>
+		<hex>001A</hex>
+		<hex>001B</hex>
+		<hex>001D</hex>
+		<hex>001F</hex>
+		<hex>0020</hex>
+		<hex>0022</hex>
+		<hex>0024</hex>
+		<hex>0027</hex>
+		<hex>0029</hex>
+
+		<!--Note 12-->
+		<hex>002B</hex>
+		<hex>002E</hex>
 		<hex>0031</hex>
 		<hex>0034</hex>
 		<hex>0037</hex>
@@ -974,18 +1139,8 @@
 		<hex>004A</hex>
 		<hex>004E</hex>
 		<hex>0053</hex>
-		<hex>002C</hex>
-		<hex>002F</hex>
-		<hex>0031</hex>
-		<hex>0034</hex>
-		<hex>0037</hex>
-		<hex>003B</hex>
-		<hex>003E</hex>
-		<hex>0042</hex>
-		<hex>0046</hex>
-		<hex>004A</hex>
-		<hex>004E</hex>
-		<hex>0053</hex>
+
+		<!--Note 24-->
 		<hex>0058</hex>
 		<hex>005D</hex>
 		<hex>0063</hex>
@@ -998,6 +1153,8 @@
 		<hex>0094</hex>
 		<hex>009C</hex>
 		<hex>00A6</hex>
+
+		<!--Note 36-->
 		<hex>00B0</hex>
 		<hex>00BA</hex>
 		<hex>00C5</hex>
@@ -1010,6 +1167,8 @@
 		<hex>0127</hex>
 		<hex>0139</hex>
 		<hex>014B</hex>
+
+		<!--Note 48-->
 		<hex>015F</hex>
 		<hex>0174</hex>
 		<hex>018A</hex>
@@ -1022,6 +1181,8 @@
 		<hex>024F</hex>
 		<hex>0272</hex>
 		<hex>0297</hex>
+
+		<!--Note 60-->
 		<hex>02BE</hex>
 		<hex>02E8</hex>
 		<hex>0314</hex>
@@ -1034,6 +1195,8 @@
 		<hex>049D</hex>
 		<hex>04E3</hex>
 		<hex>052E</hex>
+
+		<!--Note 72-->
 		<hex>057D</hex>
 		<hex>05D0</hex>
 		<hex>0629</hex>
@@ -1046,6 +1209,8 @@
 		<hex>093A</hex>
 		<hex>09C7</hex>
 		<hex>0A5C</hex>
+
+		<!--Note 84-->
 		<hex>0AF9</hex>
 		<hex>0BA0</hex>
 		<hex>0C51</hex>
@@ -1058,6 +1223,8 @@
 		<hex>1274</hex>
 		<hex>138D</hex>
 		<hex>14B7</hex>
+
+		<!--Note 96-->
 		<hex>15F2</hex>
 		<hex>1740</hex>
 		<hex>18A2</hex>
@@ -1070,6 +1237,8 @@
 		<hex>24E9</hex>
 		<hex>271B</hex>
 		<hex>296E</hex>
+
+		<!--Note 108-->
 		<hex>2BE5</hex>
 		<hex>2E81</hex>
 		<hex>3145</hex>
@@ -1081,6 +1250,16 @@
 		<hex>45AD</hex>
 		<hex>49D2</hex>
 		<hex>4E36</hex>
+		<hex>52DC</hex>
+
+		<!--Note 120-->
+		<hex>52DC</hex>
+		<hex>52DC</hex>
+		<hex>52DC</hex>
+		<hex>52DC</hex>
+		<hex>52DC</hex>
+		<hex>52DC</hex>
+		<hex>52DC</hex>
 		<hex>52DC</hex>
 	</label>
 
@@ -1094,7 +1273,7 @@
 		<hex>2000</hex>
 		<hex>2000</hex>
 		<hex>2000</hex>
-	
+
 		<!--08-->
 		<hex>2000</hex>
 		<hex>2000</hex>
@@ -1104,7 +1283,7 @@
 		<hex>2000</hex>
 		<hex>2000</hex>
 		<hex>2000</hex>
-	
+
 		<!--10-->
 		<hex>2000</hex>
 		<hex>2000</hex>
@@ -1114,7 +1293,7 @@
 		<hex>2000</hex>
 		<hex>2000</hex>
 		<hex>2000</hex>
-	
+
 		<!--18-->
 		<hex>2000</hex>
 		<hex>2000</hex>
@@ -1124,7 +1303,7 @@
 		<hex>2000</hex>
 		<hex>2000</hex>
 		<hex>2000</hex>
-	
+
 		<!--20-->
 		<hex>2000</hex>
 		<hex>2000</hex>
@@ -1139,7 +1318,7 @@
 		<hex>8000</hex>
 		<!--Hand Clap-->
 		<hex>5000</hex>
-	
+
 		<!--28-->
 		<!--Electric Snare-->
 		<hex>2000</hex>
@@ -1157,7 +1336,7 @@
 		<hex>f000</hex>
 		<!--Low-Mid Tom-->
 		<hex>0600</hex>
-	
+
 		<!--30-->
 		<!--Hi-Mid Tom-->
 		<hex>0700</hex>
@@ -1175,7 +1354,7 @@
 		<hex>f000</hex>
 		<!--Splash Cymbal-->
 		<hex>e000</hex>
-	
+
 		<!--38-->
 		<hex>2000</hex>
 		<hex>2000</hex>
@@ -1185,7 +1364,7 @@
 		<hex>2000</hex>
 		<hex>2000</hex>
 		<hex>2000</hex>
-	
+
 		<!--40-->
 		<hex>2000</hex>
 		<hex>2000</hex>
@@ -1195,7 +1374,7 @@
 		<hex>2000</hex>
 		<hex>2000</hex>
 		<hex>2000</hex>
-	
+
 		<!--48-->
 		<hex>2000</hex>
 		<hex>2000</hex>
@@ -1205,7 +1384,7 @@
 		<hex>2000</hex>
 		<hex>2000</hex>
 		<hex>2000</hex>
-	
+
 		<!--50-->
 		<hex>2000</hex>
 		<hex>2000</hex>
@@ -1215,7 +1394,7 @@
 		<hex>2000</hex>
 		<hex>2000</hex>
 		<hex>2000</hex>
-	
+
 		<!--00-->
 		<hex>2000</hex>
 		<hex>2000</hex>
@@ -1225,7 +1404,7 @@
 		<hex>2000</hex>
 		<hex>2000</hex>
 		<hex>2000</hex>
-	
+
 		<!--00-->
 		<hex>2000</hex>
 		<hex>2000</hex>
@@ -1235,7 +1414,7 @@
 		<hex>2000</hex>
 		<hex>2000</hex>
 		<hex>2000</hex>
-	
+
 		<!--00-->
 		<hex>2000</hex>
 		<hex>2000</hex>
@@ -1245,7 +1424,7 @@
 		<hex>2000</hex>
 		<hex>2000</hex>
 		<hex>2000</hex>
-	
+
 		<!--00-->
 		<hex>2000</hex>
 		<hex>2000</hex>
@@ -1255,7 +1434,7 @@
 		<hex>2000</hex>
 		<hex>2000</hex>
 		<hex>2000</hex>
-	
+
 		<!--00-->
 		<hex>2000</hex>
 		<hex>2000</hex>
@@ -1265,5 +1444,4359 @@
 		<hex>2000</hex>
 		<hex>2000</hex>
 		<hex>2000</hex>
+	</label>
+
+	<label id="pitchFrequencies">
+		<!--Note 0-->
+		<hex>0015</hex>
+		<hex>0015</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0016</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+
+		<!--Note 1-->
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0017</hex>
+		<hex>0018</hex>
+		<hex>0018</hex>
+		<hex>0018</hex>
+		<hex>0018</hex>
+		<hex>0018</hex>
+		<hex>0018</hex>
+		<hex>0018</hex>
+		<hex>0018</hex>
+		<hex>0018</hex>
+		<hex>0018</hex>
+		<hex>0018</hex>
+		<hex>0018</hex>
+		<hex>0018</hex>
+		<hex>0018</hex>
+
+		<!--Note 2-->
+		<hex>0018</hex>
+		<hex>0018</hex>
+		<hex>0018</hex>
+		<hex>0018</hex>
+		<hex>0018</hex>
+		<hex>0018</hex>
+		<hex>0018</hex>
+		<hex>0018</hex>
+		<hex>0018</hex>
+		<hex>0019</hex>
+		<hex>0019</hex>
+		<hex>0019</hex>
+		<hex>0019</hex>
+		<hex>0019</hex>
+		<hex>0019</hex>
+		<hex>0019</hex>
+		<hex>0019</hex>
+		<hex>0019</hex>
+		<hex>0019</hex>
+		<hex>0019</hex>
+		<hex>0019</hex>
+		<hex>0019</hex>
+		<hex>0019</hex>
+		<hex>0019</hex>
+		<hex>0019</hex>
+		<hex>0019</hex>
+		<hex>0019</hex>
+		<hex>0019</hex>
+		<hex>0019</hex>
+		<hex>0019</hex>
+		<hex>001A</hex>
+		<hex>001A</hex>
+
+		<!--Note 3-->
+		<hex>001A</hex>
+		<hex>001A</hex>
+		<hex>001A</hex>
+		<hex>001A</hex>
+		<hex>001A</hex>
+		<hex>001A</hex>
+		<hex>001A</hex>
+		<hex>001A</hex>
+		<hex>001A</hex>
+		<hex>001A</hex>
+		<hex>001A</hex>
+		<hex>001A</hex>
+		<hex>001A</hex>
+		<hex>001A</hex>
+		<hex>001A</hex>
+		<hex>001A</hex>
+		<hex>001A</hex>
+		<hex>001A</hex>
+		<hex>001A</hex>
+		<hex>001B</hex>
+		<hex>001B</hex>
+		<hex>001B</hex>
+		<hex>001B</hex>
+		<hex>001B</hex>
+		<hex>001B</hex>
+		<hex>001B</hex>
+		<hex>001B</hex>
+		<hex>001B</hex>
+		<hex>001B</hex>
+		<hex>001B</hex>
+		<hex>001B</hex>
+		<hex>001B</hex>
+
+		<!--Note 4-->
+		<hex>001B</hex>
+		<hex>001B</hex>
+		<hex>001B</hex>
+		<hex>001B</hex>
+		<hex>001B</hex>
+		<hex>001B</hex>
+		<hex>001B</hex>
+		<hex>001C</hex>
+		<hex>001C</hex>
+		<hex>001C</hex>
+		<hex>001C</hex>
+		<hex>001C</hex>
+		<hex>001C</hex>
+		<hex>001C</hex>
+		<hex>001C</hex>
+		<hex>001C</hex>
+		<hex>001C</hex>
+		<hex>001C</hex>
+		<hex>001C</hex>
+		<hex>001C</hex>
+		<hex>001C</hex>
+		<hex>001C</hex>
+		<hex>001C</hex>
+		<hex>001C</hex>
+		<hex>001C</hex>
+		<hex>001C</hex>
+		<hex>001C</hex>
+		<hex>001D</hex>
+		<hex>001D</hex>
+		<hex>001D</hex>
+		<hex>001D</hex>
+		<hex>001D</hex>
+
+		<!--Note 5-->
+		<hex>001D</hex>
+		<hex>001D</hex>
+		<hex>001D</hex>
+		<hex>001D</hex>
+		<hex>001D</hex>
+		<hex>001D</hex>
+		<hex>001D</hex>
+		<hex>001D</hex>
+		<hex>001D</hex>
+		<hex>001D</hex>
+		<hex>001D</hex>
+		<hex>001D</hex>
+		<hex>001D</hex>
+		<hex>001D</hex>
+		<hex>001E</hex>
+		<hex>001E</hex>
+		<hex>001E</hex>
+		<hex>001E</hex>
+		<hex>001E</hex>
+		<hex>001E</hex>
+		<hex>001E</hex>
+		<hex>001E</hex>
+		<hex>001E</hex>
+		<hex>001E</hex>
+		<hex>001E</hex>
+		<hex>001E</hex>
+		<hex>001E</hex>
+		<hex>001E</hex>
+		<hex>001E</hex>
+		<hex>001E</hex>
+		<hex>001E</hex>
+		<hex>001E</hex>
+
+		<!--Note 6-->
+		<hex>001F</hex>
+		<hex>001F</hex>
+		<hex>001F</hex>
+		<hex>001F</hex>
+		<hex>001F</hex>
+		<hex>001F</hex>
+		<hex>001F</hex>
+		<hex>001F</hex>
+		<hex>001F</hex>
+		<hex>001F</hex>
+		<hex>001F</hex>
+		<hex>001F</hex>
+		<hex>001F</hex>
+		<hex>001F</hex>
+		<hex>001F</hex>
+		<hex>001F</hex>
+		<hex>001F</hex>
+		<hex>0020</hex>
+		<hex>0020</hex>
+		<hex>0020</hex>
+		<hex>0020</hex>
+		<hex>0020</hex>
+		<hex>0020</hex>
+		<hex>0020</hex>
+		<hex>0020</hex>
+		<hex>0020</hex>
+		<hex>0020</hex>
+		<hex>0020</hex>
+		<hex>0020</hex>
+		<hex>0020</hex>
+		<hex>0020</hex>
+		<hex>0020</hex>
+
+		<!--Note 7-->
+		<hex>0020</hex>
+		<hex>0020</hex>
+		<hex>0021</hex>
+		<hex>0021</hex>
+		<hex>0021</hex>
+		<hex>0021</hex>
+		<hex>0021</hex>
+		<hex>0021</hex>
+		<hex>0021</hex>
+		<hex>0021</hex>
+		<hex>0021</hex>
+		<hex>0021</hex>
+		<hex>0021</hex>
+		<hex>0021</hex>
+		<hex>0021</hex>
+		<hex>0021</hex>
+		<hex>0021</hex>
+		<hex>0021</hex>
+		<hex>0021</hex>
+		<hex>0022</hex>
+		<hex>0022</hex>
+		<hex>0022</hex>
+		<hex>0022</hex>
+		<hex>0022</hex>
+		<hex>0022</hex>
+		<hex>0022</hex>
+		<hex>0022</hex>
+		<hex>0022</hex>
+		<hex>0022</hex>
+		<hex>0022</hex>
+		<hex>0022</hex>
+		<hex>0022</hex>
+
+		<!--Note 8-->
+		<hex>0022</hex>
+		<hex>0022</hex>
+		<hex>0022</hex>
+		<hex>0023</hex>
+		<hex>0023</hex>
+		<hex>0023</hex>
+		<hex>0023</hex>
+		<hex>0023</hex>
+		<hex>0023</hex>
+		<hex>0023</hex>
+		<hex>0023</hex>
+		<hex>0023</hex>
+		<hex>0023</hex>
+		<hex>0023</hex>
+		<hex>0023</hex>
+		<hex>0023</hex>
+		<hex>0023</hex>
+		<hex>0023</hex>
+		<hex>0023</hex>
+		<hex>0024</hex>
+		<hex>0024</hex>
+		<hex>0024</hex>
+		<hex>0024</hex>
+		<hex>0024</hex>
+		<hex>0024</hex>
+		<hex>0024</hex>
+		<hex>0024</hex>
+		<hex>0024</hex>
+		<hex>0024</hex>
+		<hex>0024</hex>
+		<hex>0024</hex>
+		<hex>0024</hex>
+
+		<!--Note 9-->
+		<hex>0024</hex>
+		<hex>0024</hex>
+		<hex>0025</hex>
+		<hex>0025</hex>
+		<hex>0025</hex>
+		<hex>0025</hex>
+		<hex>0025</hex>
+		<hex>0025</hex>
+		<hex>0025</hex>
+		<hex>0025</hex>
+		<hex>0025</hex>
+		<hex>0025</hex>
+		<hex>0025</hex>
+		<hex>0025</hex>
+		<hex>0025</hex>
+		<hex>0025</hex>
+		<hex>0025</hex>
+		<hex>0026</hex>
+		<hex>0026</hex>
+		<hex>0026</hex>
+		<hex>0026</hex>
+		<hex>0026</hex>
+		<hex>0026</hex>
+		<hex>0026</hex>
+		<hex>0026</hex>
+		<hex>0026</hex>
+		<hex>0026</hex>
+		<hex>0026</hex>
+		<hex>0026</hex>
+		<hex>0026</hex>
+		<hex>0026</hex>
+		<hex>0027</hex>
+
+		<!--Note 10-->
+		<hex>0027</hex>
+		<hex>0027</hex>
+		<hex>0027</hex>
+		<hex>0027</hex>
+		<hex>0027</hex>
+		<hex>0027</hex>
+		<hex>0027</hex>
+		<hex>0027</hex>
+		<hex>0027</hex>
+		<hex>0027</hex>
+		<hex>0027</hex>
+		<hex>0027</hex>
+		<hex>0027</hex>
+		<hex>0028</hex>
+		<hex>0028</hex>
+		<hex>0028</hex>
+		<hex>0028</hex>
+		<hex>0028</hex>
+		<hex>0028</hex>
+		<hex>0028</hex>
+		<hex>0028</hex>
+		<hex>0028</hex>
+		<hex>0028</hex>
+		<hex>0028</hex>
+		<hex>0028</hex>
+		<hex>0028</hex>
+		<hex>0028</hex>
+		<hex>0029</hex>
+		<hex>0029</hex>
+		<hex>0029</hex>
+		<hex>0029</hex>
+		<hex>0029</hex>
+
+		<!--Note 11-->
+		<hex>0029</hex>
+		<hex>0029</hex>
+		<hex>0029</hex>
+		<hex>0029</hex>
+		<hex>0029</hex>
+		<hex>0029</hex>
+		<hex>0029</hex>
+		<hex>0029</hex>
+		<hex>002A</hex>
+		<hex>002A</hex>
+		<hex>002A</hex>
+		<hex>002A</hex>
+		<hex>002A</hex>
+		<hex>002A</hex>
+		<hex>002A</hex>
+		<hex>002A</hex>
+		<hex>002A</hex>
+		<hex>002A</hex>
+		<hex>002A</hex>
+		<hex>002A</hex>
+		<hex>002A</hex>
+		<hex>002B</hex>
+		<hex>002B</hex>
+		<hex>002B</hex>
+		<hex>002B</hex>
+		<hex>002B</hex>
+		<hex>002B</hex>
+		<hex>002B</hex>
+		<hex>002B</hex>
+		<hex>002B</hex>
+		<hex>002B</hex>
+		<hex>002B</hex>
+
+		<!--Note 12-->
+		<hex>002B</hex>
+		<hex>002B</hex>
+		<hex>002C</hex>
+		<hex>002C</hex>
+		<hex>002C</hex>
+		<hex>002C</hex>
+		<hex>002C</hex>
+		<hex>002C</hex>
+		<hex>002C</hex>
+		<hex>002C</hex>
+		<hex>002C</hex>
+		<hex>002C</hex>
+		<hex>002C</hex>
+		<hex>002C</hex>
+		<hex>002D</hex>
+		<hex>002D</hex>
+		<hex>002D</hex>
+		<hex>002D</hex>
+		<hex>002D</hex>
+		<hex>002D</hex>
+		<hex>002D</hex>
+		<hex>002D</hex>
+		<hex>002D</hex>
+		<hex>002D</hex>
+		<hex>002D</hex>
+		<hex>002D</hex>
+		<hex>002E</hex>
+		<hex>002E</hex>
+		<hex>002E</hex>
+		<hex>002E</hex>
+		<hex>002E</hex>
+		<hex>002E</hex>
+
+		<!--Note 13-->
+		<hex>002E</hex>
+		<hex>002E</hex>
+		<hex>002E</hex>
+		<hex>002E</hex>
+		<hex>002E</hex>
+		<hex>002E</hex>
+		<hex>002F</hex>
+		<hex>002F</hex>
+		<hex>002F</hex>
+		<hex>002F</hex>
+		<hex>002F</hex>
+		<hex>002F</hex>
+		<hex>002F</hex>
+		<hex>002F</hex>
+		<hex>002F</hex>
+		<hex>002F</hex>
+		<hex>002F</hex>
+		<hex>002F</hex>
+		<hex>0030</hex>
+		<hex>0030</hex>
+		<hex>0030</hex>
+		<hex>0030</hex>
+		<hex>0030</hex>
+		<hex>0030</hex>
+		<hex>0030</hex>
+		<hex>0030</hex>
+		<hex>0030</hex>
+		<hex>0030</hex>
+		<hex>0030</hex>
+		<hex>0031</hex>
+		<hex>0031</hex>
+		<hex>0031</hex>
+
+		<!--Note 14-->
+		<hex>0031</hex>
+		<hex>0031</hex>
+		<hex>0031</hex>
+		<hex>0031</hex>
+		<hex>0031</hex>
+		<hex>0031</hex>
+		<hex>0031</hex>
+		<hex>0031</hex>
+		<hex>0031</hex>
+		<hex>0032</hex>
+		<hex>0032</hex>
+		<hex>0032</hex>
+		<hex>0032</hex>
+		<hex>0032</hex>
+		<hex>0032</hex>
+		<hex>0032</hex>
+		<hex>0032</hex>
+		<hex>0032</hex>
+		<hex>0032</hex>
+		<hex>0032</hex>
+		<hex>0033</hex>
+		<hex>0033</hex>
+		<hex>0033</hex>
+		<hex>0033</hex>
+		<hex>0033</hex>
+		<hex>0033</hex>
+		<hex>0033</hex>
+		<hex>0033</hex>
+		<hex>0033</hex>
+		<hex>0033</hex>
+		<hex>0034</hex>
+		<hex>0034</hex>
+
+		<!--Note 15-->
+		<hex>0034</hex>
+		<hex>0034</hex>
+		<hex>0034</hex>
+		<hex>0034</hex>
+		<hex>0034</hex>
+		<hex>0034</hex>
+		<hex>0034</hex>
+		<hex>0034</hex>
+		<hex>0034</hex>
+		<hex>0035</hex>
+		<hex>0035</hex>
+		<hex>0035</hex>
+		<hex>0035</hex>
+		<hex>0035</hex>
+		<hex>0035</hex>
+		<hex>0035</hex>
+		<hex>0035</hex>
+		<hex>0035</hex>
+		<hex>0035</hex>
+		<hex>0036</hex>
+		<hex>0036</hex>
+		<hex>0036</hex>
+		<hex>0036</hex>
+		<hex>0036</hex>
+		<hex>0036</hex>
+		<hex>0036</hex>
+		<hex>0036</hex>
+		<hex>0036</hex>
+		<hex>0036</hex>
+		<hex>0037</hex>
+		<hex>0037</hex>
+		<hex>0037</hex>
+
+		<!--Note 16-->
+		<hex>0037</hex>
+		<hex>0037</hex>
+		<hex>0037</hex>
+		<hex>0037</hex>
+		<hex>0037</hex>
+		<hex>0037</hex>
+		<hex>0037</hex>
+		<hex>0038</hex>
+		<hex>0038</hex>
+		<hex>0038</hex>
+		<hex>0038</hex>
+		<hex>0038</hex>
+		<hex>0038</hex>
+		<hex>0038</hex>
+		<hex>0038</hex>
+		<hex>0038</hex>
+		<hex>0038</hex>
+		<hex>0039</hex>
+		<hex>0039</hex>
+		<hex>0039</hex>
+		<hex>0039</hex>
+		<hex>0039</hex>
+		<hex>0039</hex>
+		<hex>0039</hex>
+		<hex>0039</hex>
+		<hex>0039</hex>
+		<hex>0039</hex>
+		<hex>003A</hex>
+		<hex>003A</hex>
+		<hex>003A</hex>
+		<hex>003A</hex>
+		<hex>003A</hex>
+
+		<!--Note 17-->
+		<hex>003A</hex>
+		<hex>003A</hex>
+		<hex>003A</hex>
+		<hex>003A</hex>
+		<hex>003B</hex>
+		<hex>003B</hex>
+		<hex>003B</hex>
+		<hex>003B</hex>
+		<hex>003B</hex>
+		<hex>003B</hex>
+		<hex>003B</hex>
+		<hex>003B</hex>
+		<hex>003B</hex>
+		<hex>003B</hex>
+		<hex>003C</hex>
+		<hex>003C</hex>
+		<hex>003C</hex>
+		<hex>003C</hex>
+		<hex>003C</hex>
+		<hex>003C</hex>
+		<hex>003C</hex>
+		<hex>003C</hex>
+		<hex>003C</hex>
+		<hex>003D</hex>
+		<hex>003D</hex>
+		<hex>003D</hex>
+		<hex>003D</hex>
+		<hex>003D</hex>
+		<hex>003D</hex>
+		<hex>003D</hex>
+		<hex>003D</hex>
+		<hex>003D</hex>
+
+		<!--Note 18-->
+		<hex>003E</hex>
+		<hex>003E</hex>
+		<hex>003E</hex>
+		<hex>003E</hex>
+		<hex>003E</hex>
+		<hex>003E</hex>
+		<hex>003E</hex>
+		<hex>003E</hex>
+		<hex>003E</hex>
+		<hex>003F</hex>
+		<hex>003F</hex>
+		<hex>003F</hex>
+		<hex>003F</hex>
+		<hex>003F</hex>
+		<hex>003F</hex>
+		<hex>003F</hex>
+		<hex>003F</hex>
+		<hex>0040</hex>
+		<hex>0040</hex>
+		<hex>0040</hex>
+		<hex>0040</hex>
+		<hex>0040</hex>
+		<hex>0040</hex>
+		<hex>0040</hex>
+		<hex>0040</hex>
+		<hex>0040</hex>
+		<hex>0041</hex>
+		<hex>0041</hex>
+		<hex>0041</hex>
+		<hex>0041</hex>
+		<hex>0041</hex>
+		<hex>0041</hex>
+
+		<!--Note 19-->
+		<hex>0041</hex>
+		<hex>0041</hex>
+		<hex>0042</hex>
+		<hex>0042</hex>
+		<hex>0042</hex>
+		<hex>0042</hex>
+		<hex>0042</hex>
+		<hex>0042</hex>
+		<hex>0042</hex>
+		<hex>0042</hex>
+		<hex>0042</hex>
+		<hex>0043</hex>
+		<hex>0043</hex>
+		<hex>0043</hex>
+		<hex>0043</hex>
+		<hex>0043</hex>
+		<hex>0043</hex>
+		<hex>0043</hex>
+		<hex>0043</hex>
+		<hex>0044</hex>
+		<hex>0044</hex>
+		<hex>0044</hex>
+		<hex>0044</hex>
+		<hex>0044</hex>
+		<hex>0044</hex>
+		<hex>0044</hex>
+		<hex>0044</hex>
+		<hex>0045</hex>
+		<hex>0045</hex>
+		<hex>0045</hex>
+		<hex>0045</hex>
+		<hex>0045</hex>
+
+		<!--Note 20-->
+		<hex>0045</hex>
+		<hex>0045</hex>
+		<hex>0045</hex>
+		<hex>0046</hex>
+		<hex>0046</hex>
+		<hex>0046</hex>
+		<hex>0046</hex>
+		<hex>0046</hex>
+		<hex>0046</hex>
+		<hex>0046</hex>
+		<hex>0046</hex>
+		<hex>0047</hex>
+		<hex>0047</hex>
+		<hex>0047</hex>
+		<hex>0047</hex>
+		<hex>0047</hex>
+		<hex>0047</hex>
+		<hex>0047</hex>
+		<hex>0047</hex>
+		<hex>0048</hex>
+		<hex>0048</hex>
+		<hex>0048</hex>
+		<hex>0048</hex>
+		<hex>0048</hex>
+		<hex>0048</hex>
+		<hex>0048</hex>
+		<hex>0049</hex>
+		<hex>0049</hex>
+		<hex>0049</hex>
+		<hex>0049</hex>
+		<hex>0049</hex>
+		<hex>0049</hex>
+
+		<!--Note 21-->
+		<hex>0049</hex>
+		<hex>0049</hex>
+		<hex>004A</hex>
+		<hex>004A</hex>
+		<hex>004A</hex>
+		<hex>004A</hex>
+		<hex>004A</hex>
+		<hex>004A</hex>
+		<hex>004A</hex>
+		<hex>004B</hex>
+		<hex>004B</hex>
+		<hex>004B</hex>
+		<hex>004B</hex>
+		<hex>004B</hex>
+		<hex>004B</hex>
+		<hex>004B</hex>
+		<hex>004B</hex>
+		<hex>004C</hex>
+		<hex>004C</hex>
+		<hex>004C</hex>
+		<hex>004C</hex>
+		<hex>004C</hex>
+		<hex>004C</hex>
+		<hex>004C</hex>
+		<hex>004D</hex>
+		<hex>004D</hex>
+		<hex>004D</hex>
+		<hex>004D</hex>
+		<hex>004D</hex>
+		<hex>004D</hex>
+		<hex>004D</hex>
+		<hex>004E</hex>
+
+		<!--Note 22-->
+		<hex>004E</hex>
+		<hex>004E</hex>
+		<hex>004E</hex>
+		<hex>004E</hex>
+		<hex>004E</hex>
+		<hex>004E</hex>
+		<hex>004F</hex>
+		<hex>004F</hex>
+		<hex>004F</hex>
+		<hex>004F</hex>
+		<hex>004F</hex>
+		<hex>004F</hex>
+		<hex>004F</hex>
+		<hex>0050</hex>
+		<hex>0050</hex>
+		<hex>0050</hex>
+		<hex>0050</hex>
+		<hex>0050</hex>
+		<hex>0050</hex>
+		<hex>0050</hex>
+		<hex>0051</hex>
+		<hex>0051</hex>
+		<hex>0051</hex>
+		<hex>0051</hex>
+		<hex>0051</hex>
+		<hex>0051</hex>
+		<hex>0051</hex>
+		<hex>0052</hex>
+		<hex>0052</hex>
+		<hex>0052</hex>
+		<hex>0052</hex>
+		<hex>0052</hex>
+
+		<!--Note 23-->
+		<hex>0052</hex>
+		<hex>0053</hex>
+		<hex>0053</hex>
+		<hex>0053</hex>
+		<hex>0053</hex>
+		<hex>0053</hex>
+		<hex>0053</hex>
+		<hex>0053</hex>
+		<hex>0054</hex>
+		<hex>0054</hex>
+		<hex>0054</hex>
+		<hex>0054</hex>
+		<hex>0054</hex>
+		<hex>0054</hex>
+		<hex>0054</hex>
+		<hex>0055</hex>
+		<hex>0055</hex>
+		<hex>0055</hex>
+		<hex>0055</hex>
+		<hex>0055</hex>
+		<hex>0055</hex>
+		<hex>0056</hex>
+		<hex>0056</hex>
+		<hex>0056</hex>
+		<hex>0056</hex>
+		<hex>0056</hex>
+		<hex>0056</hex>
+		<hex>0056</hex>
+		<hex>0057</hex>
+		<hex>0057</hex>
+		<hex>0057</hex>
+		<hex>0057</hex>
+
+		<!--Note 24-->
+		<hex>0057</hex>
+		<hex>0057</hex>
+		<hex>0058</hex>
+		<hex>0058</hex>
+		<hex>0058</hex>
+		<hex>0058</hex>
+		<hex>0058</hex>
+		<hex>0058</hex>
+		<hex>0059</hex>
+		<hex>0059</hex>
+		<hex>0059</hex>
+		<hex>0059</hex>
+		<hex>0059</hex>
+		<hex>0059</hex>
+		<hex>005A</hex>
+		<hex>005A</hex>
+		<hex>005A</hex>
+		<hex>005A</hex>
+		<hex>005A</hex>
+		<hex>005A</hex>
+		<hex>005B</hex>
+		<hex>005B</hex>
+		<hex>005B</hex>
+		<hex>005B</hex>
+		<hex>005B</hex>
+		<hex>005B</hex>
+		<hex>005C</hex>
+		<hex>005C</hex>
+		<hex>005C</hex>
+		<hex>005C</hex>
+		<hex>005C</hex>
+		<hex>005C</hex>
+
+		<!--Note 25-->
+		<hex>005D</hex>
+		<hex>005D</hex>
+		<hex>005D</hex>
+		<hex>005D</hex>
+		<hex>005D</hex>
+		<hex>005D</hex>
+		<hex>005E</hex>
+		<hex>005E</hex>
+		<hex>005E</hex>
+		<hex>005E</hex>
+		<hex>005E</hex>
+		<hex>005E</hex>
+		<hex>005F</hex>
+		<hex>005F</hex>
+		<hex>005F</hex>
+		<hex>005F</hex>
+		<hex>005F</hex>
+		<hex>005F</hex>
+		<hex>0060</hex>
+		<hex>0060</hex>
+		<hex>0060</hex>
+		<hex>0060</hex>
+		<hex>0060</hex>
+		<hex>0060</hex>
+		<hex>0061</hex>
+		<hex>0061</hex>
+		<hex>0061</hex>
+		<hex>0061</hex>
+		<hex>0061</hex>
+		<hex>0062</hex>
+		<hex>0062</hex>
+		<hex>0062</hex>
+
+		<!--Note 26-->
+		<hex>0062</hex>
+		<hex>0062</hex>
+		<hex>0062</hex>
+		<hex>0063</hex>
+		<hex>0063</hex>
+		<hex>0063</hex>
+		<hex>0063</hex>
+		<hex>0063</hex>
+		<hex>0063</hex>
+		<hex>0064</hex>
+		<hex>0064</hex>
+		<hex>0064</hex>
+		<hex>0064</hex>
+		<hex>0064</hex>
+		<hex>0065</hex>
+		<hex>0065</hex>
+		<hex>0065</hex>
+		<hex>0065</hex>
+		<hex>0065</hex>
+		<hex>0065</hex>
+		<hex>0066</hex>
+		<hex>0066</hex>
+		<hex>0066</hex>
+		<hex>0066</hex>
+		<hex>0066</hex>
+		<hex>0067</hex>
+		<hex>0067</hex>
+		<hex>0067</hex>
+		<hex>0067</hex>
+		<hex>0067</hex>
+		<hex>0068</hex>
+		<hex>0068</hex>
+
+		<!--Note 27-->
+		<hex>0068</hex>
+		<hex>0068</hex>
+		<hex>0068</hex>
+		<hex>0068</hex>
+		<hex>0069</hex>
+		<hex>0069</hex>
+		<hex>0069</hex>
+		<hex>0069</hex>
+		<hex>0069</hex>
+		<hex>006A</hex>
+		<hex>006A</hex>
+		<hex>006A</hex>
+		<hex>006A</hex>
+		<hex>006A</hex>
+		<hex>006B</hex>
+		<hex>006B</hex>
+		<hex>006B</hex>
+		<hex>006B</hex>
+		<hex>006B</hex>
+		<hex>006C</hex>
+		<hex>006C</hex>
+		<hex>006C</hex>
+		<hex>006C</hex>
+		<hex>006C</hex>
+		<hex>006D</hex>
+		<hex>006D</hex>
+		<hex>006D</hex>
+		<hex>006D</hex>
+		<hex>006D</hex>
+		<hex>006E</hex>
+		<hex>006E</hex>
+		<hex>006E</hex>
+
+		<!--Note 28-->
+		<hex>006E</hex>
+		<hex>006E</hex>
+		<hex>006F</hex>
+		<hex>006F</hex>
+		<hex>006F</hex>
+		<hex>006F</hex>
+		<hex>006F</hex>
+		<hex>0070</hex>
+		<hex>0070</hex>
+		<hex>0070</hex>
+		<hex>0070</hex>
+		<hex>0070</hex>
+		<hex>0071</hex>
+		<hex>0071</hex>
+		<hex>0071</hex>
+		<hex>0071</hex>
+		<hex>0071</hex>
+		<hex>0072</hex>
+		<hex>0072</hex>
+		<hex>0072</hex>
+		<hex>0072</hex>
+		<hex>0072</hex>
+		<hex>0073</hex>
+		<hex>0073</hex>
+		<hex>0073</hex>
+		<hex>0073</hex>
+		<hex>0073</hex>
+		<hex>0074</hex>
+		<hex>0074</hex>
+		<hex>0074</hex>
+		<hex>0074</hex>
+		<hex>0074</hex>
+
+		<!--Note 29-->
+		<hex>0075</hex>
+		<hex>0075</hex>
+		<hex>0075</hex>
+		<hex>0075</hex>
+		<hex>0076</hex>
+		<hex>0076</hex>
+		<hex>0076</hex>
+		<hex>0076</hex>
+		<hex>0076</hex>
+		<hex>0077</hex>
+		<hex>0077</hex>
+		<hex>0077</hex>
+		<hex>0077</hex>
+		<hex>0077</hex>
+		<hex>0078</hex>
+		<hex>0078</hex>
+		<hex>0078</hex>
+		<hex>0078</hex>
+		<hex>0079</hex>
+		<hex>0079</hex>
+		<hex>0079</hex>
+		<hex>0079</hex>
+		<hex>0079</hex>
+		<hex>007A</hex>
+		<hex>007A</hex>
+		<hex>007A</hex>
+		<hex>007A</hex>
+		<hex>007B</hex>
+		<hex>007B</hex>
+		<hex>007B</hex>
+		<hex>007B</hex>
+		<hex>007B</hex>
+
+		<!--Note 30-->
+		<hex>007C</hex>
+		<hex>007C</hex>
+		<hex>007C</hex>
+		<hex>007C</hex>
+		<hex>007D</hex>
+		<hex>007D</hex>
+		<hex>007D</hex>
+		<hex>007D</hex>
+		<hex>007D</hex>
+		<hex>007E</hex>
+		<hex>007E</hex>
+		<hex>007E</hex>
+		<hex>007E</hex>
+		<hex>007F</hex>
+		<hex>007F</hex>
+		<hex>007F</hex>
+		<hex>007F</hex>
+		<hex>0080</hex>
+		<hex>0080</hex>
+		<hex>0080</hex>
+		<hex>0080</hex>
+		<hex>0080</hex>
+		<hex>0081</hex>
+		<hex>0081</hex>
+		<hex>0081</hex>
+		<hex>0081</hex>
+		<hex>0082</hex>
+		<hex>0082</hex>
+		<hex>0082</hex>
+		<hex>0082</hex>
+		<hex>0083</hex>
+		<hex>0083</hex>
+
+		<!--Note 31-->
+		<hex>0083</hex>
+		<hex>0083</hex>
+		<hex>0084</hex>
+		<hex>0084</hex>
+		<hex>0084</hex>
+		<hex>0084</hex>
+		<hex>0084</hex>
+		<hex>0085</hex>
+		<hex>0085</hex>
+		<hex>0085</hex>
+		<hex>0085</hex>
+		<hex>0086</hex>
+		<hex>0086</hex>
+		<hex>0086</hex>
+		<hex>0086</hex>
+		<hex>0087</hex>
+		<hex>0087</hex>
+		<hex>0087</hex>
+		<hex>0087</hex>
+		<hex>0088</hex>
+		<hex>0088</hex>
+		<hex>0088</hex>
+		<hex>0088</hex>
+		<hex>0089</hex>
+		<hex>0089</hex>
+		<hex>0089</hex>
+		<hex>0089</hex>
+		<hex>008A</hex>
+		<hex>008A</hex>
+		<hex>008A</hex>
+		<hex>008A</hex>
+		<hex>008B</hex>
+
+		<!--Note 32-->
+		<hex>008B</hex>
+		<hex>008B</hex>
+		<hex>008B</hex>
+		<hex>008C</hex>
+		<hex>008C</hex>
+		<hex>008C</hex>
+		<hex>008C</hex>
+		<hex>008D</hex>
+		<hex>008D</hex>
+		<hex>008D</hex>
+		<hex>008D</hex>
+		<hex>008E</hex>
+		<hex>008E</hex>
+		<hex>008E</hex>
+		<hex>008E</hex>
+		<hex>008F</hex>
+		<hex>008F</hex>
+		<hex>008F</hex>
+		<hex>008F</hex>
+		<hex>0090</hex>
+		<hex>0090</hex>
+		<hex>0090</hex>
+		<hex>0090</hex>
+		<hex>0091</hex>
+		<hex>0091</hex>
+		<hex>0091</hex>
+		<hex>0092</hex>
+		<hex>0092</hex>
+		<hex>0092</hex>
+		<hex>0092</hex>
+		<hex>0093</hex>
+		<hex>0093</hex>
+
+		<!--Note 33-->
+		<hex>0093</hex>
+		<hex>0093</hex>
+		<hex>0094</hex>
+		<hex>0094</hex>
+		<hex>0094</hex>
+		<hex>0094</hex>
+		<hex>0095</hex>
+		<hex>0095</hex>
+		<hex>0095</hex>
+		<hex>0096</hex>
+		<hex>0096</hex>
+		<hex>0096</hex>
+		<hex>0096</hex>
+		<hex>0097</hex>
+		<hex>0097</hex>
+		<hex>0097</hex>
+		<hex>0097</hex>
+		<hex>0098</hex>
+		<hex>0098</hex>
+		<hex>0098</hex>
+		<hex>0099</hex>
+		<hex>0099</hex>
+		<hex>0099</hex>
+		<hex>0099</hex>
+		<hex>009A</hex>
+		<hex>009A</hex>
+		<hex>009A</hex>
+		<hex>009B</hex>
+		<hex>009B</hex>
+		<hex>009B</hex>
+		<hex>009B</hex>
+		<hex>009C</hex>
+
+		<!--Note 34-->
+		<hex>009C</hex>
+		<hex>009C</hex>
+		<hex>009C</hex>
+		<hex>009D</hex>
+		<hex>009D</hex>
+		<hex>009D</hex>
+		<hex>009E</hex>
+		<hex>009E</hex>
+		<hex>009E</hex>
+		<hex>009E</hex>
+		<hex>009F</hex>
+		<hex>009F</hex>
+		<hex>009F</hex>
+		<hex>00A0</hex>
+		<hex>00A0</hex>
+		<hex>00A0</hex>
+		<hex>00A1</hex>
+		<hex>00A1</hex>
+		<hex>00A1</hex>
+		<hex>00A1</hex>
+		<hex>00A2</hex>
+		<hex>00A2</hex>
+		<hex>00A2</hex>
+		<hex>00A3</hex>
+		<hex>00A3</hex>
+		<hex>00A3</hex>
+		<hex>00A3</hex>
+		<hex>00A4</hex>
+		<hex>00A4</hex>
+		<hex>00A4</hex>
+		<hex>00A5</hex>
+		<hex>00A5</hex>
+
+		<!--Note 35-->
+		<hex>00A5</hex>
+		<hex>00A6</hex>
+		<hex>00A6</hex>
+		<hex>00A6</hex>
+		<hex>00A6</hex>
+		<hex>00A7</hex>
+		<hex>00A7</hex>
+		<hex>00A7</hex>
+		<hex>00A8</hex>
+		<hex>00A8</hex>
+		<hex>00A8</hex>
+		<hex>00A9</hex>
+		<hex>00A9</hex>
+		<hex>00A9</hex>
+		<hex>00A9</hex>
+		<hex>00AA</hex>
+		<hex>00AA</hex>
+		<hex>00AA</hex>
+		<hex>00AB</hex>
+		<hex>00AB</hex>
+		<hex>00AB</hex>
+		<hex>00AC</hex>
+		<hex>00AC</hex>
+		<hex>00AC</hex>
+		<hex>00AD</hex>
+		<hex>00AD</hex>
+		<hex>00AD</hex>
+		<hex>00AD</hex>
+		<hex>00AE</hex>
+		<hex>00AE</hex>
+		<hex>00AE</hex>
+		<hex>00AF</hex>
+
+		<!--Note 36-->
+		<hex>00AF</hex>
+		<hex>00AF</hex>
+		<hex>00B0</hex>
+		<hex>00B0</hex>
+		<hex>00B0</hex>
+		<hex>00B1</hex>
+		<hex>00B1</hex>
+		<hex>00B1</hex>
+		<hex>00B2</hex>
+		<hex>00B2</hex>
+		<hex>00B2</hex>
+		<hex>00B3</hex>
+		<hex>00B3</hex>
+		<hex>00B3</hex>
+		<hex>00B4</hex>
+		<hex>00B4</hex>
+		<hex>00B4</hex>
+		<hex>00B5</hex>
+		<hex>00B5</hex>
+		<hex>00B5</hex>
+		<hex>00B6</hex>
+		<hex>00B6</hex>
+		<hex>00B6</hex>
+		<hex>00B7</hex>
+		<hex>00B7</hex>
+		<hex>00B7</hex>
+		<hex>00B8</hex>
+		<hex>00B8</hex>
+		<hex>00B8</hex>
+		<hex>00B9</hex>
+		<hex>00B9</hex>
+		<hex>00B9</hex>
+
+		<!--Note 37-->
+		<hex>00BA</hex>
+		<hex>00BA</hex>
+		<hex>00BA</hex>
+		<hex>00BB</hex>
+		<hex>00BB</hex>
+		<hex>00BB</hex>
+		<hex>00BC</hex>
+		<hex>00BC</hex>
+		<hex>00BC</hex>
+		<hex>00BD</hex>
+		<hex>00BD</hex>
+		<hex>00BD</hex>
+		<hex>00BE</hex>
+		<hex>00BE</hex>
+		<hex>00BE</hex>
+		<hex>00BF</hex>
+		<hex>00BF</hex>
+		<hex>00BF</hex>
+		<hex>00C0</hex>
+		<hex>00C0</hex>
+		<hex>00C0</hex>
+		<hex>00C1</hex>
+		<hex>00C1</hex>
+		<hex>00C1</hex>
+		<hex>00C2</hex>
+		<hex>00C2</hex>
+		<hex>00C2</hex>
+		<hex>00C3</hex>
+		<hex>00C3</hex>
+		<hex>00C4</hex>
+		<hex>00C4</hex>
+		<hex>00C4</hex>
+
+		<!--Note 38-->
+		<hex>00C5</hex>
+		<hex>00C5</hex>
+		<hex>00C5</hex>
+		<hex>00C6</hex>
+		<hex>00C6</hex>
+		<hex>00C6</hex>
+		<hex>00C7</hex>
+		<hex>00C7</hex>
+		<hex>00C7</hex>
+		<hex>00C8</hex>
+		<hex>00C8</hex>
+		<hex>00C9</hex>
+		<hex>00C9</hex>
+		<hex>00C9</hex>
+		<hex>00CA</hex>
+		<hex>00CA</hex>
+		<hex>00CA</hex>
+		<hex>00CB</hex>
+		<hex>00CB</hex>
+		<hex>00CB</hex>
+		<hex>00CC</hex>
+		<hex>00CC</hex>
+		<hex>00CD</hex>
+		<hex>00CD</hex>
+		<hex>00CD</hex>
+		<hex>00CE</hex>
+		<hex>00CE</hex>
+		<hex>00CE</hex>
+		<hex>00CF</hex>
+		<hex>00CF</hex>
+		<hex>00D0</hex>
+		<hex>00D0</hex>
+
+		<!--Note 39-->
+		<hex>00D0</hex>
+		<hex>00D1</hex>
+		<hex>00D1</hex>
+		<hex>00D1</hex>
+		<hex>00D2</hex>
+		<hex>00D2</hex>
+		<hex>00D3</hex>
+		<hex>00D3</hex>
+		<hex>00D3</hex>
+		<hex>00D4</hex>
+		<hex>00D4</hex>
+		<hex>00D4</hex>
+		<hex>00D5</hex>
+		<hex>00D5</hex>
+		<hex>00D6</hex>
+		<hex>00D6</hex>
+		<hex>00D6</hex>
+		<hex>00D7</hex>
+		<hex>00D7</hex>
+		<hex>00D8</hex>
+		<hex>00D8</hex>
+		<hex>00D8</hex>
+		<hex>00D9</hex>
+		<hex>00D9</hex>
+		<hex>00DA</hex>
+		<hex>00DA</hex>
+		<hex>00DA</hex>
+		<hex>00DB</hex>
+		<hex>00DB</hex>
+		<hex>00DC</hex>
+		<hex>00DC</hex>
+		<hex>00DC</hex>
+
+		<!--Note 40-->
+		<hex>00DD</hex>
+		<hex>00DD</hex>
+		<hex>00DE</hex>
+		<hex>00DE</hex>
+		<hex>00DE</hex>
+		<hex>00DF</hex>
+		<hex>00DF</hex>
+		<hex>00E0</hex>
+		<hex>00E0</hex>
+		<hex>00E0</hex>
+		<hex>00E1</hex>
+		<hex>00E1</hex>
+		<hex>00E2</hex>
+		<hex>00E2</hex>
+		<hex>00E2</hex>
+		<hex>00E3</hex>
+		<hex>00E3</hex>
+		<hex>00E4</hex>
+		<hex>00E4</hex>
+		<hex>00E4</hex>
+		<hex>00E5</hex>
+		<hex>00E5</hex>
+		<hex>00E6</hex>
+		<hex>00E6</hex>
+		<hex>00E7</hex>
+		<hex>00E7</hex>
+		<hex>00E7</hex>
+		<hex>00E8</hex>
+		<hex>00E8</hex>
+		<hex>00E9</hex>
+		<hex>00E9</hex>
+		<hex>00E9</hex>
+
+		<!--Note 41-->
+		<hex>00EA</hex>
+		<hex>00EA</hex>
+		<hex>00EB</hex>
+		<hex>00EB</hex>
+		<hex>00EC</hex>
+		<hex>00EC</hex>
+		<hex>00EC</hex>
+		<hex>00ED</hex>
+		<hex>00ED</hex>
+		<hex>00EE</hex>
+		<hex>00EE</hex>
+		<hex>00EF</hex>
+		<hex>00EF</hex>
+		<hex>00EF</hex>
+		<hex>00F0</hex>
+		<hex>00F0</hex>
+		<hex>00F1</hex>
+		<hex>00F1</hex>
+		<hex>00F2</hex>
+		<hex>00F2</hex>
+		<hex>00F2</hex>
+		<hex>00F3</hex>
+		<hex>00F3</hex>
+		<hex>00F4</hex>
+		<hex>00F4</hex>
+		<hex>00F5</hex>
+		<hex>00F5</hex>
+		<hex>00F6</hex>
+		<hex>00F6</hex>
+		<hex>00F6</hex>
+		<hex>00F7</hex>
+		<hex>00F7</hex>
+
+		<!--Note 42-->
+		<hex>00F8</hex>
+		<hex>00F8</hex>
+		<hex>00F9</hex>
+		<hex>00F9</hex>
+		<hex>00FA</hex>
+		<hex>00FA</hex>
+		<hex>00FB</hex>
+		<hex>00FB</hex>
+		<hex>00FB</hex>
+		<hex>00FC</hex>
+		<hex>00FC</hex>
+		<hex>00FD</hex>
+		<hex>00FD</hex>
+		<hex>00FE</hex>
+		<hex>00FE</hex>
+		<hex>00FF</hex>
+		<hex>00FF</hex>
+		<hex>0100</hex>
+		<hex>0100</hex>
+		<hex>0100</hex>
+		<hex>0101</hex>
+		<hex>0101</hex>
+		<hex>0102</hex>
+		<hex>0102</hex>
+		<hex>0103</hex>
+		<hex>0103</hex>
+		<hex>0104</hex>
+		<hex>0104</hex>
+		<hex>0105</hex>
+		<hex>0105</hex>
+		<hex>0106</hex>
+		<hex>0106</hex>
+
+		<!--Note 43-->
+		<hex>0107</hex>
+		<hex>0107</hex>
+		<hex>0108</hex>
+		<hex>0108</hex>
+		<hex>0108</hex>
+		<hex>0109</hex>
+		<hex>0109</hex>
+		<hex>010A</hex>
+		<hex>010A</hex>
+		<hex>010B</hex>
+		<hex>010B</hex>
+		<hex>010C</hex>
+		<hex>010C</hex>
+		<hex>010D</hex>
+		<hex>010D</hex>
+		<hex>010E</hex>
+		<hex>010E</hex>
+		<hex>010F</hex>
+		<hex>010F</hex>
+		<hex>0110</hex>
+		<hex>0110</hex>
+		<hex>0111</hex>
+		<hex>0111</hex>
+		<hex>0112</hex>
+		<hex>0112</hex>
+		<hex>0113</hex>
+		<hex>0113</hex>
+		<hex>0114</hex>
+		<hex>0114</hex>
+		<hex>0115</hex>
+		<hex>0115</hex>
+		<hex>0116</hex>
+
+		<!--Note 44-->
+		<hex>0116</hex>
+		<hex>0117</hex>
+		<hex>0117</hex>
+		<hex>0118</hex>
+		<hex>0118</hex>
+		<hex>0119</hex>
+		<hex>0119</hex>
+		<hex>011A</hex>
+		<hex>011A</hex>
+		<hex>011B</hex>
+		<hex>011B</hex>
+		<hex>011C</hex>
+		<hex>011C</hex>
+		<hex>011D</hex>
+		<hex>011D</hex>
+		<hex>011E</hex>
+		<hex>011E</hex>
+		<hex>011F</hex>
+		<hex>011F</hex>
+		<hex>0120</hex>
+		<hex>0120</hex>
+		<hex>0121</hex>
+		<hex>0121</hex>
+		<hex>0122</hex>
+		<hex>0123</hex>
+		<hex>0123</hex>
+		<hex>0124</hex>
+		<hex>0124</hex>
+		<hex>0125</hex>
+		<hex>0125</hex>
+		<hex>0126</hex>
+		<hex>0126</hex>
+
+		<!--Note 45-->
+		<hex>0127</hex>
+		<hex>0127</hex>
+		<hex>0128</hex>
+		<hex>0128</hex>
+		<hex>0129</hex>
+		<hex>0129</hex>
+		<hex>012A</hex>
+		<hex>012B</hex>
+		<hex>012B</hex>
+		<hex>012C</hex>
+		<hex>012C</hex>
+		<hex>012D</hex>
+		<hex>012D</hex>
+		<hex>012E</hex>
+		<hex>012E</hex>
+		<hex>012F</hex>
+		<hex>012F</hex>
+		<hex>0130</hex>
+		<hex>0131</hex>
+		<hex>0131</hex>
+		<hex>0132</hex>
+		<hex>0132</hex>
+		<hex>0133</hex>
+		<hex>0133</hex>
+		<hex>0134</hex>
+		<hex>0134</hex>
+		<hex>0135</hex>
+		<hex>0136</hex>
+		<hex>0136</hex>
+		<hex>0137</hex>
+		<hex>0137</hex>
+		<hex>0138</hex>
+
+		<!--Note 46-->
+		<hex>0138</hex>
+		<hex>0139</hex>
+		<hex>0139</hex>
+		<hex>013A</hex>
+		<hex>013B</hex>
+		<hex>013B</hex>
+		<hex>013C</hex>
+		<hex>013C</hex>
+		<hex>013D</hex>
+		<hex>013D</hex>
+		<hex>013E</hex>
+		<hex>013F</hex>
+		<hex>013F</hex>
+		<hex>0140</hex>
+		<hex>0140</hex>
+		<hex>0141</hex>
+		<hex>0142</hex>
+		<hex>0142</hex>
+		<hex>0143</hex>
+		<hex>0143</hex>
+		<hex>0144</hex>
+		<hex>0144</hex>
+		<hex>0145</hex>
+		<hex>0146</hex>
+		<hex>0146</hex>
+		<hex>0147</hex>
+		<hex>0147</hex>
+		<hex>0148</hex>
+		<hex>0149</hex>
+		<hex>0149</hex>
+		<hex>014A</hex>
+		<hex>014A</hex>
+
+		<!--Note 47-->
+		<hex>014B</hex>
+		<hex>014C</hex>
+		<hex>014C</hex>
+		<hex>014D</hex>
+		<hex>014D</hex>
+		<hex>014E</hex>
+		<hex>014F</hex>
+		<hex>014F</hex>
+		<hex>0150</hex>
+		<hex>0150</hex>
+		<hex>0151</hex>
+		<hex>0152</hex>
+		<hex>0152</hex>
+		<hex>0153</hex>
+		<hex>0153</hex>
+		<hex>0154</hex>
+		<hex>0155</hex>
+		<hex>0155</hex>
+		<hex>0156</hex>
+		<hex>0157</hex>
+		<hex>0157</hex>
+		<hex>0158</hex>
+		<hex>0158</hex>
+		<hex>0159</hex>
+		<hex>015A</hex>
+		<hex>015A</hex>
+		<hex>015B</hex>
+		<hex>015B</hex>
+		<hex>015C</hex>
+		<hex>015D</hex>
+		<hex>015D</hex>
+		<hex>015E</hex>
+
+		<!--Note 48-->
+		<hex>015F</hex>
+		<hex>015F</hex>
+		<hex>0160</hex>
+		<hex>0161</hex>
+		<hex>0161</hex>
+		<hex>0162</hex>
+		<hex>0162</hex>
+		<hex>0163</hex>
+		<hex>0164</hex>
+		<hex>0164</hex>
+		<hex>0165</hex>
+		<hex>0166</hex>
+		<hex>0166</hex>
+		<hex>0167</hex>
+		<hex>0168</hex>
+		<hex>0168</hex>
+		<hex>0169</hex>
+		<hex>016A</hex>
+		<hex>016A</hex>
+		<hex>016B</hex>
+		<hex>016C</hex>
+		<hex>016C</hex>
+		<hex>016D</hex>
+		<hex>016E</hex>
+		<hex>016E</hex>
+		<hex>016F</hex>
+		<hex>0170</hex>
+		<hex>0170</hex>
+		<hex>0171</hex>
+		<hex>0172</hex>
+		<hex>0172</hex>
+		<hex>0173</hex>
+
+		<!--Note 49-->
+		<hex>0174</hex>
+		<hex>0174</hex>
+		<hex>0175</hex>
+		<hex>0176</hex>
+		<hex>0176</hex>
+		<hex>0177</hex>
+		<hex>0178</hex>
+		<hex>0178</hex>
+		<hex>0179</hex>
+		<hex>017A</hex>
+		<hex>017A</hex>
+		<hex>017B</hex>
+		<hex>017C</hex>
+		<hex>017C</hex>
+		<hex>017D</hex>
+		<hex>017E</hex>
+		<hex>017E</hex>
+		<hex>017F</hex>
+		<hex>0180</hex>
+		<hex>0181</hex>
+		<hex>0181</hex>
+		<hex>0182</hex>
+		<hex>0183</hex>
+		<hex>0183</hex>
+		<hex>0184</hex>
+		<hex>0185</hex>
+		<hex>0185</hex>
+		<hex>0186</hex>
+		<hex>0187</hex>
+		<hex>0188</hex>
+		<hex>0188</hex>
+		<hex>0189</hex>
+
+		<!--Note 50-->
+		<hex>018A</hex>
+		<hex>018A</hex>
+		<hex>018B</hex>
+		<hex>018C</hex>
+		<hex>018D</hex>
+		<hex>018D</hex>
+		<hex>018E</hex>
+		<hex>018F</hex>
+		<hex>018F</hex>
+		<hex>0190</hex>
+		<hex>0191</hex>
+		<hex>0192</hex>
+		<hex>0192</hex>
+		<hex>0193</hex>
+		<hex>0194</hex>
+		<hex>0194</hex>
+		<hex>0195</hex>
+		<hex>0196</hex>
+		<hex>0197</hex>
+		<hex>0197</hex>
+		<hex>0198</hex>
+		<hex>0199</hex>
+		<hex>019A</hex>
+		<hex>019A</hex>
+		<hex>019B</hex>
+		<hex>019C</hex>
+		<hex>019D</hex>
+		<hex>019D</hex>
+		<hex>019E</hex>
+		<hex>019F</hex>
+		<hex>01A0</hex>
+		<hex>01A0</hex>
+
+		<!--Note 51-->
+		<hex>01A1</hex>
+		<hex>01A2</hex>
+		<hex>01A3</hex>
+		<hex>01A3</hex>
+		<hex>01A4</hex>
+		<hex>01A5</hex>
+		<hex>01A6</hex>
+		<hex>01A6</hex>
+		<hex>01A7</hex>
+		<hex>01A8</hex>
+		<hex>01A9</hex>
+		<hex>01A9</hex>
+		<hex>01AA</hex>
+		<hex>01AB</hex>
+		<hex>01AC</hex>
+		<hex>01AD</hex>
+		<hex>01AD</hex>
+		<hex>01AE</hex>
+		<hex>01AF</hex>
+		<hex>01B0</hex>
+		<hex>01B0</hex>
+		<hex>01B1</hex>
+		<hex>01B2</hex>
+		<hex>01B3</hex>
+		<hex>01B4</hex>
+		<hex>01B4</hex>
+		<hex>01B5</hex>
+		<hex>01B6</hex>
+		<hex>01B7</hex>
+		<hex>01B8</hex>
+		<hex>01B8</hex>
+		<hex>01B9</hex>
+
+		<!--Note 52-->
+		<hex>01BA</hex>
+		<hex>01BB</hex>
+		<hex>01BC</hex>
+		<hex>01BC</hex>
+		<hex>01BD</hex>
+		<hex>01BE</hex>
+		<hex>01BF</hex>
+		<hex>01C0</hex>
+		<hex>01C0</hex>
+		<hex>01C1</hex>
+		<hex>01C2</hex>
+		<hex>01C3</hex>
+		<hex>01C4</hex>
+		<hex>01C4</hex>
+		<hex>01C5</hex>
+		<hex>01C6</hex>
+		<hex>01C7</hex>
+		<hex>01C8</hex>
+		<hex>01C9</hex>
+		<hex>01C9</hex>
+		<hex>01CA</hex>
+		<hex>01CB</hex>
+		<hex>01CC</hex>
+		<hex>01CD</hex>
+		<hex>01CE</hex>
+		<hex>01CE</hex>
+		<hex>01CF</hex>
+		<hex>01D0</hex>
+		<hex>01D1</hex>
+		<hex>01D2</hex>
+		<hex>01D3</hex>
+		<hex>01D3</hex>
+
+		<!--Note 53-->
+		<hex>01D4</hex>
+		<hex>01D5</hex>
+		<hex>01D6</hex>
+		<hex>01D7</hex>
+		<hex>01D8</hex>
+		<hex>01D8</hex>
+		<hex>01D9</hex>
+		<hex>01DA</hex>
+		<hex>01DB</hex>
+		<hex>01DC</hex>
+		<hex>01DD</hex>
+		<hex>01DE</hex>
+		<hex>01DE</hex>
+		<hex>01DF</hex>
+		<hex>01E0</hex>
+		<hex>01E1</hex>
+		<hex>01E2</hex>
+		<hex>01E3</hex>
+		<hex>01E4</hex>
+		<hex>01E5</hex>
+		<hex>01E5</hex>
+		<hex>01E6</hex>
+		<hex>01E7</hex>
+		<hex>01E8</hex>
+		<hex>01E9</hex>
+		<hex>01EA</hex>
+		<hex>01EB</hex>
+		<hex>01EC</hex>
+		<hex>01ED</hex>
+		<hex>01ED</hex>
+		<hex>01EE</hex>
+		<hex>01EF</hex>
+
+		<!--Note 54-->
+		<hex>01F0</hex>
+		<hex>01F1</hex>
+		<hex>01F2</hex>
+		<hex>01F3</hex>
+		<hex>01F4</hex>
+		<hex>01F5</hex>
+		<hex>01F6</hex>
+		<hex>01F6</hex>
+		<hex>01F7</hex>
+		<hex>01F8</hex>
+		<hex>01F9</hex>
+		<hex>01FA</hex>
+		<hex>01FB</hex>
+		<hex>01FC</hex>
+		<hex>01FD</hex>
+		<hex>01FE</hex>
+		<hex>01FF</hex>
+		<hex>0200</hex>
+		<hex>0200</hex>
+		<hex>0201</hex>
+		<hex>0202</hex>
+		<hex>0203</hex>
+		<hex>0204</hex>
+		<hex>0205</hex>
+		<hex>0206</hex>
+		<hex>0207</hex>
+		<hex>0208</hex>
+		<hex>0209</hex>
+		<hex>020A</hex>
+		<hex>020B</hex>
+		<hex>020C</hex>
+		<hex>020D</hex>
+
+		<!--Note 55-->
+		<hex>020E</hex>
+		<hex>020F</hex>
+		<hex>0210</hex>
+		<hex>0210</hex>
+		<hex>0211</hex>
+		<hex>0212</hex>
+		<hex>0213</hex>
+		<hex>0214</hex>
+		<hex>0215</hex>
+		<hex>0216</hex>
+		<hex>0217</hex>
+		<hex>0218</hex>
+		<hex>0219</hex>
+		<hex>021A</hex>
+		<hex>021B</hex>
+		<hex>021C</hex>
+		<hex>021D</hex>
+		<hex>021E</hex>
+		<hex>021F</hex>
+		<hex>0220</hex>
+		<hex>0221</hex>
+		<hex>0222</hex>
+		<hex>0223</hex>
+		<hex>0224</hex>
+		<hex>0225</hex>
+		<hex>0226</hex>
+		<hex>0227</hex>
+		<hex>0228</hex>
+		<hex>0229</hex>
+		<hex>022A</hex>
+		<hex>022B</hex>
+		<hex>022C</hex>
+
+		<!--Note 56-->
+		<hex>022D</hex>
+		<hex>022E</hex>
+		<hex>022F</hex>
+		<hex>0230</hex>
+		<hex>0231</hex>
+		<hex>0232</hex>
+		<hex>0233</hex>
+		<hex>0234</hex>
+		<hex>0235</hex>
+		<hex>0236</hex>
+		<hex>0237</hex>
+		<hex>0238</hex>
+		<hex>0239</hex>
+		<hex>023A</hex>
+		<hex>023B</hex>
+		<hex>023C</hex>
+		<hex>023D</hex>
+		<hex>023E</hex>
+		<hex>023F</hex>
+		<hex>0240</hex>
+		<hex>0241</hex>
+		<hex>0242</hex>
+		<hex>0243</hex>
+		<hex>0245</hex>
+		<hex>0246</hex>
+		<hex>0247</hex>
+		<hex>0248</hex>
+		<hex>0249</hex>
+		<hex>024A</hex>
+		<hex>024B</hex>
+		<hex>024C</hex>
+		<hex>024D</hex>
+
+		<!--Note 57-->
+		<hex>024E</hex>
+		<hex>024F</hex>
+		<hex>0250</hex>
+		<hex>0251</hex>
+		<hex>0252</hex>
+		<hex>0253</hex>
+		<hex>0254</hex>
+		<hex>0256</hex>
+		<hex>0257</hex>
+		<hex>0258</hex>
+		<hex>0259</hex>
+		<hex>025A</hex>
+		<hex>025B</hex>
+		<hex>025C</hex>
+		<hex>025D</hex>
+		<hex>025E</hex>
+		<hex>025F</hex>
+		<hex>0260</hex>
+		<hex>0262</hex>
+		<hex>0263</hex>
+		<hex>0264</hex>
+		<hex>0265</hex>
+		<hex>0266</hex>
+		<hex>0267</hex>
+		<hex>0268</hex>
+		<hex>0269</hex>
+		<hex>026A</hex>
+		<hex>026C</hex>
+		<hex>026D</hex>
+		<hex>026E</hex>
+		<hex>026F</hex>
+		<hex>0270</hex>
+
+		<!--Note 58-->
+		<hex>0271</hex>
+		<hex>0272</hex>
+		<hex>0273</hex>
+		<hex>0275</hex>
+		<hex>0276</hex>
+		<hex>0277</hex>
+		<hex>0278</hex>
+		<hex>0279</hex>
+		<hex>027A</hex>
+		<hex>027B</hex>
+		<hex>027D</hex>
+		<hex>027E</hex>
+		<hex>027F</hex>
+		<hex>0280</hex>
+		<hex>0281</hex>
+		<hex>0282</hex>
+		<hex>0284</hex>
+		<hex>0285</hex>
+		<hex>0286</hex>
+		<hex>0287</hex>
+		<hex>0288</hex>
+		<hex>0289</hex>
+		<hex>028B</hex>
+		<hex>028C</hex>
+		<hex>028D</hex>
+		<hex>028E</hex>
+		<hex>028F</hex>
+		<hex>0290</hex>
+		<hex>0292</hex>
+		<hex>0293</hex>
+		<hex>0294</hex>
+		<hex>0295</hex>
+
+		<!--Note 59-->
+		<hex>0296</hex>
+		<hex>0298</hex>
+		<hex>0299</hex>
+		<hex>029A</hex>
+		<hex>029B</hex>
+		<hex>029C</hex>
+		<hex>029E</hex>
+		<hex>029F</hex>
+		<hex>02A0</hex>
+		<hex>02A1</hex>
+		<hex>02A2</hex>
+		<hex>02A4</hex>
+		<hex>02A5</hex>
+		<hex>02A6</hex>
+		<hex>02A7</hex>
+		<hex>02A9</hex>
+		<hex>02AA</hex>
+		<hex>02AB</hex>
+		<hex>02AC</hex>
+		<hex>02AE</hex>
+		<hex>02AF</hex>
+		<hex>02B0</hex>
+		<hex>02B1</hex>
+		<hex>02B2</hex>
+		<hex>02B4</hex>
+		<hex>02B5</hex>
+		<hex>02B6</hex>
+		<hex>02B7</hex>
+		<hex>02B9</hex>
+		<hex>02BA</hex>
+		<hex>02BB</hex>
+		<hex>02BD</hex>
+
+		<!--Note 60-->
+		<hex>02BE</hex>
+		<hex>02BF</hex>
+		<hex>02C0</hex>
+		<hex>02C2</hex>
+		<hex>02C3</hex>
+		<hex>02C4</hex>
+		<hex>02C5</hex>
+		<hex>02C7</hex>
+		<hex>02C8</hex>
+		<hex>02C9</hex>
+		<hex>02CB</hex>
+		<hex>02CC</hex>
+		<hex>02CD</hex>
+		<hex>02CE</hex>
+		<hex>02D0</hex>
+		<hex>02D1</hex>
+		<hex>02D2</hex>
+		<hex>02D4</hex>
+		<hex>02D5</hex>
+		<hex>02D6</hex>
+		<hex>02D8</hex>
+		<hex>02D9</hex>
+		<hex>02DA</hex>
+		<hex>02DC</hex>
+		<hex>02DD</hex>
+		<hex>02DE</hex>
+		<hex>02E0</hex>
+		<hex>02E1</hex>
+		<hex>02E2</hex>
+		<hex>02E4</hex>
+		<hex>02E5</hex>
+		<hex>02E6</hex>
+
+		<!--Note 61-->
+		<hex>02E8</hex>
+		<hex>02E9</hex>
+		<hex>02EA</hex>
+		<hex>02EC</hex>
+		<hex>02ED</hex>
+		<hex>02EE</hex>
+		<hex>02F0</hex>
+		<hex>02F1</hex>
+		<hex>02F2</hex>
+		<hex>02F4</hex>
+		<hex>02F5</hex>
+		<hex>02F6</hex>
+		<hex>02F8</hex>
+		<hex>02F9</hex>
+		<hex>02FB</hex>
+		<hex>02FC</hex>
+		<hex>02FD</hex>
+		<hex>02FF</hex>
+		<hex>0300</hex>
+		<hex>0302</hex>
+		<hex>0303</hex>
+		<hex>0304</hex>
+		<hex>0306</hex>
+		<hex>0307</hex>
+		<hex>0308</hex>
+		<hex>030A</hex>
+		<hex>030B</hex>
+		<hex>030D</hex>
+		<hex>030E</hex>
+		<hex>0310</hex>
+		<hex>0311</hex>
+		<hex>0312</hex>
+
+		<!--Note 62-->
+		<hex>0314</hex>
+		<hex>0315</hex>
+		<hex>0317</hex>
+		<hex>0318</hex>
+		<hex>031A</hex>
+		<hex>031B</hex>
+		<hex>031C</hex>
+		<hex>031E</hex>
+		<hex>031F</hex>
+		<hex>0321</hex>
+		<hex>0322</hex>
+		<hex>0324</hex>
+		<hex>0325</hex>
+		<hex>0327</hex>
+		<hex>0328</hex>
+		<hex>0329</hex>
+		<hex>032B</hex>
+		<hex>032C</hex>
+		<hex>032E</hex>
+		<hex>032F</hex>
+		<hex>0331</hex>
+		<hex>0332</hex>
+		<hex>0334</hex>
+		<hex>0335</hex>
+		<hex>0337</hex>
+		<hex>0338</hex>
+		<hex>033A</hex>
+		<hex>033B</hex>
+		<hex>033D</hex>
+		<hex>033E</hex>
+		<hex>0340</hex>
+		<hex>0341</hex>
+
+		<!--Note 63-->
+		<hex>0343</hex>
+		<hex>0344</hex>
+		<hex>0346</hex>
+		<hex>0347</hex>
+		<hex>0349</hex>
+		<hex>034A</hex>
+		<hex>034C</hex>
+		<hex>034D</hex>
+		<hex>034F</hex>
+		<hex>0350</hex>
+		<hex>0352</hex>
+		<hex>0353</hex>
+		<hex>0355</hex>
+		<hex>0357</hex>
+		<hex>0358</hex>
+		<hex>035A</hex>
+		<hex>035B</hex>
+		<hex>035D</hex>
+		<hex>035E</hex>
+		<hex>0360</hex>
+		<hex>0361</hex>
+		<hex>0363</hex>
+		<hex>0365</hex>
+		<hex>0366</hex>
+		<hex>0368</hex>
+		<hex>0369</hex>
+		<hex>036B</hex>
+		<hex>036C</hex>
+		<hex>036E</hex>
+		<hex>0370</hex>
+		<hex>0371</hex>
+		<hex>0373</hex>
+
+		<!--Note 64-->
+		<hex>0374</hex>
+		<hex>0376</hex>
+		<hex>0378</hex>
+		<hex>0379</hex>
+		<hex>037B</hex>
+		<hex>037C</hex>
+		<hex>037E</hex>
+		<hex>0380</hex>
+		<hex>0381</hex>
+		<hex>0383</hex>
+		<hex>0384</hex>
+		<hex>0386</hex>
+		<hex>0388</hex>
+		<hex>0389</hex>
+		<hex>038B</hex>
+		<hex>038D</hex>
+		<hex>038E</hex>
+		<hex>0390</hex>
+		<hex>0392</hex>
+		<hex>0393</hex>
+		<hex>0395</hex>
+		<hex>0397</hex>
+		<hex>0398</hex>
+		<hex>039A</hex>
+		<hex>039C</hex>
+		<hex>039D</hex>
+		<hex>039F</hex>
+		<hex>03A1</hex>
+		<hex>03A2</hex>
+		<hex>03A4</hex>
+		<hex>03A6</hex>
+		<hex>03A7</hex>
+
+		<!--Note 65-->
+		<hex>03A9</hex>
+		<hex>03AB</hex>
+		<hex>03AC</hex>
+		<hex>03AE</hex>
+		<hex>03B0</hex>
+		<hex>03B1</hex>
+		<hex>03B3</hex>
+		<hex>03B5</hex>
+		<hex>03B7</hex>
+		<hex>03B8</hex>
+		<hex>03BA</hex>
+		<hex>03BC</hex>
+		<hex>03BD</hex>
+		<hex>03BF</hex>
+		<hex>03C1</hex>
+		<hex>03C3</hex>
+		<hex>03C4</hex>
+		<hex>03C6</hex>
+		<hex>03C8</hex>
+		<hex>03CA</hex>
+		<hex>03CB</hex>
+		<hex>03CD</hex>
+		<hex>03CF</hex>
+		<hex>03D1</hex>
+		<hex>03D2</hex>
+		<hex>03D4</hex>
+		<hex>03D6</hex>
+		<hex>03D8</hex>
+		<hex>03DA</hex>
+		<hex>03DB</hex>
+		<hex>03DD</hex>
+		<hex>03DF</hex>
+
+		<!--Note 66-->
+		<hex>03E1</hex>
+		<hex>03E2</hex>
+		<hex>03E4</hex>
+		<hex>03E6</hex>
+		<hex>03E8</hex>
+		<hex>03EA</hex>
+		<hex>03EC</hex>
+		<hex>03ED</hex>
+		<hex>03EF</hex>
+		<hex>03F1</hex>
+		<hex>03F3</hex>
+		<hex>03F5</hex>
+		<hex>03F6</hex>
+		<hex>03F8</hex>
+		<hex>03FA</hex>
+		<hex>03FC</hex>
+		<hex>03FE</hex>
+		<hex>0400</hex>
+		<hex>0401</hex>
+		<hex>0403</hex>
+		<hex>0405</hex>
+		<hex>0407</hex>
+		<hex>0409</hex>
+		<hex>040B</hex>
+		<hex>040D</hex>
+		<hex>040F</hex>
+		<hex>0410</hex>
+		<hex>0412</hex>
+		<hex>0414</hex>
+		<hex>0416</hex>
+		<hex>0418</hex>
+		<hex>041A</hex>
+
+		<!--Note 67-->
+		<hex>041C</hex>
+		<hex>041E</hex>
+		<hex>0420</hex>
+		<hex>0421</hex>
+		<hex>0423</hex>
+		<hex>0425</hex>
+		<hex>0427</hex>
+		<hex>0429</hex>
+		<hex>042B</hex>
+		<hex>042D</hex>
+		<hex>042F</hex>
+		<hex>0431</hex>
+		<hex>0433</hex>
+		<hex>0435</hex>
+		<hex>0437</hex>
+		<hex>0439</hex>
+		<hex>043B</hex>
+		<hex>043D</hex>
+		<hex>043F</hex>
+		<hex>0440</hex>
+		<hex>0442</hex>
+		<hex>0444</hex>
+		<hex>0446</hex>
+		<hex>0448</hex>
+		<hex>044A</hex>
+		<hex>044C</hex>
+		<hex>044E</hex>
+		<hex>0450</hex>
+		<hex>0452</hex>
+		<hex>0454</hex>
+		<hex>0456</hex>
+		<hex>0458</hex>
+
+		<!--Note 68-->
+		<hex>045A</hex>
+		<hex>045C</hex>
+		<hex>045E</hex>
+		<hex>0460</hex>
+		<hex>0462</hex>
+		<hex>0464</hex>
+		<hex>0466</hex>
+		<hex>0469</hex>
+		<hex>046B</hex>
+		<hex>046D</hex>
+		<hex>046F</hex>
+		<hex>0471</hex>
+		<hex>0473</hex>
+		<hex>0475</hex>
+		<hex>0477</hex>
+		<hex>0479</hex>
+		<hex>047B</hex>
+		<hex>047D</hex>
+		<hex>047F</hex>
+		<hex>0481</hex>
+		<hex>0483</hex>
+		<hex>0485</hex>
+		<hex>0487</hex>
+		<hex>048A</hex>
+		<hex>048C</hex>
+		<hex>048E</hex>
+		<hex>0490</hex>
+		<hex>0492</hex>
+		<hex>0494</hex>
+		<hex>0496</hex>
+		<hex>0498</hex>
+		<hex>049A</hex>
+
+		<!--Note 69-->
+		<hex>049D</hex>
+		<hex>049F</hex>
+		<hex>04A1</hex>
+		<hex>04A3</hex>
+		<hex>04A5</hex>
+		<hex>04A7</hex>
+		<hex>04A9</hex>
+		<hex>04AC</hex>
+		<hex>04AE</hex>
+		<hex>04B0</hex>
+		<hex>04B2</hex>
+		<hex>04B4</hex>
+		<hex>04B6</hex>
+		<hex>04B9</hex>
+		<hex>04BB</hex>
+		<hex>04BD</hex>
+		<hex>04BF</hex>
+		<hex>04C1</hex>
+		<hex>04C4</hex>
+		<hex>04C6</hex>
+		<hex>04C8</hex>
+		<hex>04CA</hex>
+		<hex>04CC</hex>
+		<hex>04CF</hex>
+		<hex>04D1</hex>
+		<hex>04D3</hex>
+		<hex>04D5</hex>
+		<hex>04D8</hex>
+		<hex>04DA</hex>
+		<hex>04DC</hex>
+		<hex>04DE</hex>
+		<hex>04E1</hex>
+
+		<!--Note 70-->
+		<hex>04E3</hex>
+		<hex>04E5</hex>
+		<hex>04E7</hex>
+		<hex>04EA</hex>
+		<hex>04EC</hex>
+		<hex>04EE</hex>
+		<hex>04F0</hex>
+		<hex>04F3</hex>
+		<hex>04F5</hex>
+		<hex>04F7</hex>
+		<hex>04FA</hex>
+		<hex>04FC</hex>
+		<hex>04FE</hex>
+		<hex>0501</hex>
+		<hex>0503</hex>
+		<hex>0505</hex>
+		<hex>0508</hex>
+		<hex>050A</hex>
+		<hex>050C</hex>
+		<hex>050F</hex>
+		<hex>0511</hex>
+		<hex>0513</hex>
+		<hex>0516</hex>
+		<hex>0518</hex>
+		<hex>051A</hex>
+		<hex>051D</hex>
+		<hex>051F</hex>
+		<hex>0521</hex>
+		<hex>0524</hex>
+		<hex>0526</hex>
+		<hex>0528</hex>
+		<hex>052B</hex>
+
+		<!--Note 71-->
+		<hex>052D</hex>
+		<hex>0530</hex>
+		<hex>0532</hex>
+		<hex>0534</hex>
+		<hex>0537</hex>
+		<hex>0539</hex>
+		<hex>053C</hex>
+		<hex>053E</hex>
+		<hex>0541</hex>
+		<hex>0543</hex>
+		<hex>0545</hex>
+		<hex>0548</hex>
+		<hex>054A</hex>
+		<hex>054D</hex>
+		<hex>054F</hex>
+		<hex>0552</hex>
+		<hex>0554</hex>
+		<hex>0557</hex>
+		<hex>0559</hex>
+		<hex>055C</hex>
+		<hex>055E</hex>
+		<hex>0560</hex>
+		<hex>0563</hex>
+		<hex>0565</hex>
+		<hex>0568</hex>
+		<hex>056A</hex>
+		<hex>056D</hex>
+		<hex>056F</hex>
+		<hex>0572</hex>
+		<hex>0575</hex>
+		<hex>0577</hex>
+		<hex>057A</hex>
+
+		<!--Note 72-->
+		<hex>057C</hex>
+		<hex>057F</hex>
+		<hex>0581</hex>
+		<hex>0584</hex>
+		<hex>0586</hex>
+		<hex>0589</hex>
+		<hex>058B</hex>
+		<hex>058E</hex>
+		<hex>0591</hex>
+		<hex>0593</hex>
+		<hex>0596</hex>
+		<hex>0598</hex>
+		<hex>059B</hex>
+		<hex>059D</hex>
+		<hex>05A0</hex>
+		<hex>05A3</hex>
+		<hex>05A5</hex>
+		<hex>05A8</hex>
+		<hex>05AA</hex>
+		<hex>05AD</hex>
+		<hex>05B0</hex>
+		<hex>05B2</hex>
+		<hex>05B5</hex>
+		<hex>05B8</hex>
+		<hex>05BA</hex>
+		<hex>05BD</hex>
+		<hex>05C0</hex>
+		<hex>05C2</hex>
+		<hex>05C5</hex>
+		<hex>05C8</hex>
+		<hex>05CA</hex>
+		<hex>05CD</hex>
+
+		<!--Note 73-->
+		<hex>05D0</hex>
+		<hex>05D2</hex>
+		<hex>05D5</hex>
+		<hex>05D8</hex>
+		<hex>05DA</hex>
+		<hex>05DD</hex>
+		<hex>05E0</hex>
+		<hex>05E3</hex>
+		<hex>05E5</hex>
+		<hex>05E8</hex>
+		<hex>05EB</hex>
+		<hex>05ED</hex>
+		<hex>05F0</hex>
+		<hex>05F3</hex>
+		<hex>05F6</hex>
+		<hex>05F8</hex>
+		<hex>05FB</hex>
+		<hex>05FE</hex>
+		<hex>0601</hex>
+		<hex>0604</hex>
+		<hex>0606</hex>
+		<hex>0609</hex>
+		<hex>060C</hex>
+		<hex>060F</hex>
+		<hex>0611</hex>
+		<hex>0614</hex>
+		<hex>0617</hex>
+		<hex>061A</hex>
+		<hex>061D</hex>
+		<hex>0620</hex>
+		<hex>0622</hex>
+		<hex>0625</hex>
+
+		<!--Note 74-->
+		<hex>0628</hex>
+		<hex>062B</hex>
+		<hex>062E</hex>
+		<hex>0631</hex>
+		<hex>0634</hex>
+		<hex>0636</hex>
+		<hex>0639</hex>
+		<hex>063C</hex>
+		<hex>063F</hex>
+		<hex>0642</hex>
+		<hex>0645</hex>
+		<hex>0648</hex>
+		<hex>064B</hex>
+		<hex>064E</hex>
+		<hex>0650</hex>
+		<hex>0653</hex>
+		<hex>0656</hex>
+		<hex>0659</hex>
+		<hex>065C</hex>
+		<hex>065F</hex>
+		<hex>0662</hex>
+		<hex>0665</hex>
+		<hex>0668</hex>
+		<hex>066B</hex>
+		<hex>066E</hex>
+		<hex>0671</hex>
+		<hex>0674</hex>
+		<hex>0677</hex>
+		<hex>067A</hex>
+		<hex>067D</hex>
+		<hex>0680</hex>
+		<hex>0683</hex>
+
+		<!--Note 75-->
+		<hex>0686</hex>
+		<hex>0689</hex>
+		<hex>068C</hex>
+		<hex>068F</hex>
+		<hex>0692</hex>
+		<hex>0695</hex>
+		<hex>0698</hex>
+		<hex>069B</hex>
+		<hex>069E</hex>
+		<hex>06A1</hex>
+		<hex>06A4</hex>
+		<hex>06A7</hex>
+		<hex>06AA</hex>
+		<hex>06AE</hex>
+		<hex>06B1</hex>
+		<hex>06B4</hex>
+		<hex>06B7</hex>
+		<hex>06BA</hex>
+		<hex>06BD</hex>
+		<hex>06C0</hex>
+		<hex>06C3</hex>
+		<hex>06C6</hex>
+		<hex>06CA</hex>
+		<hex>06CD</hex>
+		<hex>06D0</hex>
+		<hex>06D3</hex>
+		<hex>06D6</hex>
+		<hex>06D9</hex>
+		<hex>06DC</hex>
+		<hex>06E0</hex>
+		<hex>06E3</hex>
+		<hex>06E6</hex>
+
+		<!--Note 76-->
+		<hex>06E9</hex>
+		<hex>06EC</hex>
+		<hex>06F0</hex>
+		<hex>06F3</hex>
+		<hex>06F6</hex>
+		<hex>06F9</hex>
+		<hex>06FC</hex>
+		<hex>0700</hex>
+		<hex>0703</hex>
+		<hex>0706</hex>
+		<hex>0709</hex>
+		<hex>070D</hex>
+		<hex>0710</hex>
+		<hex>0713</hex>
+		<hex>0716</hex>
+		<hex>071A</hex>
+		<hex>071D</hex>
+		<hex>0720</hex>
+		<hex>0724</hex>
+		<hex>0727</hex>
+		<hex>072A</hex>
+		<hex>072E</hex>
+		<hex>0731</hex>
+		<hex>0734</hex>
+		<hex>0738</hex>
+		<hex>073B</hex>
+		<hex>073E</hex>
+		<hex>0742</hex>
+		<hex>0745</hex>
+		<hex>0748</hex>
+		<hex>074C</hex>
+		<hex>074F</hex>
+
+		<!--Note 77-->
+		<hex>0752</hex>
+		<hex>0756</hex>
+		<hex>0759</hex>
+		<hex>075D</hex>
+		<hex>0760</hex>
+		<hex>0763</hex>
+		<hex>0767</hex>
+		<hex>076A</hex>
+		<hex>076E</hex>
+		<hex>0771</hex>
+		<hex>0775</hex>
+		<hex>0778</hex>
+		<hex>077B</hex>
+		<hex>077F</hex>
+		<hex>0782</hex>
+		<hex>0786</hex>
+		<hex>0789</hex>
+		<hex>078D</hex>
+		<hex>0790</hex>
+		<hex>0794</hex>
+		<hex>0797</hex>
+		<hex>079B</hex>
+		<hex>079E</hex>
+		<hex>07A2</hex>
+		<hex>07A5</hex>
+		<hex>07A9</hex>
+		<hex>07AC</hex>
+		<hex>07B0</hex>
+		<hex>07B4</hex>
+		<hex>07B7</hex>
+		<hex>07BB</hex>
+		<hex>07BE</hex>
+
+		<!--Note 78-->
+		<hex>07C2</hex>
+		<hex>07C5</hex>
+		<hex>07C9</hex>
+		<hex>07CD</hex>
+		<hex>07D0</hex>
+		<hex>07D4</hex>
+		<hex>07D8</hex>
+		<hex>07DB</hex>
+		<hex>07DF</hex>
+		<hex>07E2</hex>
+		<hex>07E6</hex>
+		<hex>07EA</hex>
+		<hex>07ED</hex>
+		<hex>07F1</hex>
+		<hex>07F5</hex>
+		<hex>07F8</hex>
+		<hex>07FC</hex>
+		<hex>0800</hex>
+		<hex>0803</hex>
+		<hex>0807</hex>
+		<hex>080B</hex>
+		<hex>080F</hex>
+		<hex>0812</hex>
+		<hex>0816</hex>
+		<hex>081A</hex>
+		<hex>081E</hex>
+		<hex>0821</hex>
+		<hex>0825</hex>
+		<hex>0829</hex>
+		<hex>082D</hex>
+		<hex>0830</hex>
+		<hex>0834</hex>
+
+		<!--Note 79-->
+		<hex>0838</hex>
+		<hex>083C</hex>
+		<hex>0840</hex>
+		<hex>0843</hex>
+		<hex>0847</hex>
+		<hex>084B</hex>
+		<hex>084F</hex>
+		<hex>0853</hex>
+		<hex>0857</hex>
+		<hex>085A</hex>
+		<hex>085E</hex>
+		<hex>0862</hex>
+		<hex>0866</hex>
+		<hex>086A</hex>
+		<hex>086E</hex>
+		<hex>0872</hex>
+		<hex>0876</hex>
+		<hex>087A</hex>
+		<hex>087E</hex>
+		<hex>0881</hex>
+		<hex>0885</hex>
+		<hex>0889</hex>
+		<hex>088D</hex>
+		<hex>0891</hex>
+		<hex>0895</hex>
+		<hex>0899</hex>
+		<hex>089D</hex>
+		<hex>08A1</hex>
+		<hex>08A5</hex>
+		<hex>08A9</hex>
+		<hex>08AD</hex>
+		<hex>08B1</hex>
+
+		<!--Note 80-->
+		<hex>08B5</hex>
+		<hex>08B9</hex>
+		<hex>08BD</hex>
+		<hex>08C1</hex>
+		<hex>08C5</hex>
+		<hex>08C9</hex>
+		<hex>08CD</hex>
+		<hex>08D2</hex>
+		<hex>08D6</hex>
+		<hex>08DA</hex>
+		<hex>08DE</hex>
+		<hex>08E2</hex>
+		<hex>08E6</hex>
+		<hex>08EA</hex>
+		<hex>08EE</hex>
+		<hex>08F2</hex>
+		<hex>08F6</hex>
+		<hex>08FB</hex>
+		<hex>08FF</hex>
+		<hex>0903</hex>
+		<hex>0907</hex>
+		<hex>090B</hex>
+		<hex>090F</hex>
+		<hex>0914</hex>
+		<hex>0918</hex>
+		<hex>091C</hex>
+		<hex>0920</hex>
+		<hex>0925</hex>
+		<hex>0929</hex>
+		<hex>092D</hex>
+		<hex>0931</hex>
+		<hex>0935</hex>
+
+		<!--Note 81-->
+		<hex>093A</hex>
+		<hex>093E</hex>
+		<hex>0942</hex>
+		<hex>0947</hex>
+		<hex>094B</hex>
+		<hex>094F</hex>
+		<hex>0953</hex>
+		<hex>0958</hex>
+		<hex>095C</hex>
+		<hex>0960</hex>
+		<hex>0965</hex>
+		<hex>0969</hex>
+		<hex>096D</hex>
+		<hex>0972</hex>
+		<hex>0976</hex>
+		<hex>097B</hex>
+		<hex>097F</hex>
+		<hex>0983</hex>
+		<hex>0988</hex>
+		<hex>098C</hex>
+		<hex>0991</hex>
+		<hex>0995</hex>
+		<hex>0999</hex>
+		<hex>099E</hex>
+		<hex>09A2</hex>
+		<hex>09A7</hex>
+		<hex>09AB</hex>
+		<hex>09B0</hex>
+		<hex>09B4</hex>
+		<hex>09B9</hex>
+		<hex>09BD</hex>
+		<hex>09C2</hex>
+
+		<!--Note 82-->
+		<hex>09C6</hex>
+		<hex>09CB</hex>
+		<hex>09CF</hex>
+		<hex>09D4</hex>
+		<hex>09D8</hex>
+		<hex>09DD</hex>
+		<hex>09E1</hex>
+		<hex>09E6</hex>
+		<hex>09EB</hex>
+		<hex>09EF</hex>
+		<hex>09F4</hex>
+		<hex>09F8</hex>
+		<hex>09FD</hex>
+		<hex>0A02</hex>
+		<hex>0A06</hex>
+		<hex>0A0B</hex>
+		<hex>0A10</hex>
+		<hex>0A14</hex>
+		<hex>0A19</hex>
+		<hex>0A1E</hex>
+		<hex>0A22</hex>
+		<hex>0A27</hex>
+		<hex>0A2C</hex>
+		<hex>0A30</hex>
+		<hex>0A35</hex>
+		<hex>0A3A</hex>
+		<hex>0A3E</hex>
+		<hex>0A43</hex>
+		<hex>0A48</hex>
+		<hex>0A4D</hex>
+		<hex>0A51</hex>
+		<hex>0A56</hex>
+
+		<!--Note 83-->
+		<hex>0A5B</hex>
+		<hex>0A60</hex>
+		<hex>0A65</hex>
+		<hex>0A69</hex>
+		<hex>0A6E</hex>
+		<hex>0A73</hex>
+		<hex>0A78</hex>
+		<hex>0A7D</hex>
+		<hex>0A82</hex>
+		<hex>0A86</hex>
+		<hex>0A8B</hex>
+		<hex>0A90</hex>
+		<hex>0A95</hex>
+		<hex>0A9A</hex>
+		<hex>0A9F</hex>
+		<hex>0AA4</hex>
+		<hex>0AA9</hex>
+		<hex>0AAE</hex>
+		<hex>0AB3</hex>
+		<hex>0AB8</hex>
+		<hex>0ABC</hex>
+		<hex>0AC1</hex>
+		<hex>0AC6</hex>
+		<hex>0ACB</hex>
+		<hex>0AD0</hex>
+		<hex>0AD5</hex>
+		<hex>0ADA</hex>
+		<hex>0ADF</hex>
+		<hex>0AE4</hex>
+		<hex>0AEA</hex>
+		<hex>0AEF</hex>
+		<hex>0AF4</hex>
+
+		<!--Note 84-->
+		<hex>0AF9</hex>
+		<hex>0AFE</hex>
+		<hex>0B03</hex>
+		<hex>0B08</hex>
+		<hex>0B0D</hex>
+		<hex>0B12</hex>
+		<hex>0B17</hex>
+		<hex>0B1C</hex>
+		<hex>0B22</hex>
+		<hex>0B27</hex>
+		<hex>0B2C</hex>
+		<hex>0B31</hex>
+		<hex>0B36</hex>
+		<hex>0B3B</hex>
+		<hex>0B41</hex>
+		<hex>0B46</hex>
+		<hex>0B4B</hex>
+		<hex>0B50</hex>
+		<hex>0B55</hex>
+		<hex>0B5B</hex>
+		<hex>0B60</hex>
+		<hex>0B65</hex>
+		<hex>0B6A</hex>
+		<hex>0B70</hex>
+		<hex>0B75</hex>
+		<hex>0B7A</hex>
+		<hex>0B80</hex>
+		<hex>0B85</hex>
+		<hex>0B8A</hex>
+		<hex>0B90</hex>
+		<hex>0B95</hex>
+		<hex>0B9A</hex>
+
+		<!--Note 85-->
+		<hex>0BA0</hex>
+		<hex>0BA5</hex>
+		<hex>0BAA</hex>
+		<hex>0BB0</hex>
+		<hex>0BB5</hex>
+		<hex>0BBB</hex>
+		<hex>0BC0</hex>
+		<hex>0BC6</hex>
+		<hex>0BCB</hex>
+		<hex>0BD0</hex>
+		<hex>0BD6</hex>
+		<hex>0BDB</hex>
+		<hex>0BE1</hex>
+		<hex>0BE6</hex>
+		<hex>0BEC</hex>
+		<hex>0BF1</hex>
+		<hex>0BF7</hex>
+		<hex>0BFC</hex>
+		<hex>0C02</hex>
+		<hex>0C08</hex>
+		<hex>0C0D</hex>
+		<hex>0C13</hex>
+		<hex>0C18</hex>
+		<hex>0C1E</hex>
+		<hex>0C23</hex>
+		<hex>0C29</hex>
+		<hex>0C2F</hex>
+		<hex>0C34</hex>
+		<hex>0C3A</hex>
+		<hex>0C40</hex>
+		<hex>0C45</hex>
+		<hex>0C4B</hex>
+
+		<!--Note 86-->
+		<hex>0C51</hex>
+		<hex>0C56</hex>
+		<hex>0C5C</hex>
+		<hex>0C62</hex>
+		<hex>0C68</hex>
+		<hex>0C6D</hex>
+		<hex>0C73</hex>
+		<hex>0C79</hex>
+		<hex>0C7F</hex>
+		<hex>0C84</hex>
+		<hex>0C8A</hex>
+		<hex>0C90</hex>
+		<hex>0C96</hex>
+		<hex>0C9C</hex>
+		<hex>0CA1</hex>
+		<hex>0CA7</hex>
+		<hex>0CAD</hex>
+		<hex>0CB3</hex>
+		<hex>0CB9</hex>
+		<hex>0CBF</hex>
+		<hex>0CC5</hex>
+		<hex>0CCB</hex>
+		<hex>0CD0</hex>
+		<hex>0CD6</hex>
+		<hex>0CDC</hex>
+		<hex>0CE2</hex>
+		<hex>0CE8</hex>
+		<hex>0CEE</hex>
+		<hex>0CF4</hex>
+		<hex>0CFA</hex>
+		<hex>0D00</hex>
+		<hex>0D06</hex>
+
+		<!--Note 87-->
+		<hex>0D0C</hex>
+		<hex>0D12</hex>
+		<hex>0D18</hex>
+		<hex>0D1E</hex>
+		<hex>0D24</hex>
+		<hex>0D2A</hex>
+		<hex>0D31</hex>
+		<hex>0D37</hex>
+		<hex>0D3D</hex>
+		<hex>0D43</hex>
+		<hex>0D49</hex>
+		<hex>0D4F</hex>
+		<hex>0D55</hex>
+		<hex>0D5C</hex>
+		<hex>0D62</hex>
+		<hex>0D68</hex>
+		<hex>0D6E</hex>
+		<hex>0D74</hex>
+		<hex>0D7B</hex>
+		<hex>0D81</hex>
+		<hex>0D87</hex>
+		<hex>0D8D</hex>
+		<hex>0D94</hex>
+		<hex>0D9A</hex>
+		<hex>0DA0</hex>
+		<hex>0DA6</hex>
+		<hex>0DAD</hex>
+		<hex>0DB3</hex>
+		<hex>0DB9</hex>
+		<hex>0DC0</hex>
+		<hex>0DC6</hex>
+		<hex>0DCC</hex>
+
+		<!--Note 88-->
+		<hex>0DD3</hex>
+		<hex>0DD9</hex>
+		<hex>0DE0</hex>
+		<hex>0DE6</hex>
+		<hex>0DEC</hex>
+		<hex>0DF3</hex>
+		<hex>0DF9</hex>
+		<hex>0E00</hex>
+		<hex>0E06</hex>
+		<hex>0E0D</hex>
+		<hex>0E13</hex>
+		<hex>0E1A</hex>
+		<hex>0E20</hex>
+		<hex>0E27</hex>
+		<hex>0E2D</hex>
+		<hex>0E34</hex>
+		<hex>0E3B</hex>
+		<hex>0E41</hex>
+		<hex>0E48</hex>
+		<hex>0E4E</hex>
+		<hex>0E55</hex>
+		<hex>0E5C</hex>
+		<hex>0E62</hex>
+		<hex>0E69</hex>
+		<hex>0E70</hex>
+		<hex>0E76</hex>
+		<hex>0E7D</hex>
+		<hex>0E84</hex>
+		<hex>0E8A</hex>
+		<hex>0E91</hex>
+		<hex>0E98</hex>
+		<hex>0E9F</hex>
+
+		<!--Note 89-->
+		<hex>0EA5</hex>
+		<hex>0EAC</hex>
+		<hex>0EB3</hex>
+		<hex>0EBA</hex>
+		<hex>0EC0</hex>
+		<hex>0EC7</hex>
+		<hex>0ECE</hex>
+		<hex>0ED5</hex>
+		<hex>0EDC</hex>
+		<hex>0EE3</hex>
+		<hex>0EEA</hex>
+		<hex>0EF1</hex>
+		<hex>0EF7</hex>
+		<hex>0EFE</hex>
+		<hex>0F05</hex>
+		<hex>0F0C</hex>
+		<hex>0F13</hex>
+		<hex>0F1A</hex>
+		<hex>0F21</hex>
+		<hex>0F28</hex>
+		<hex>0F2F</hex>
+		<hex>0F36</hex>
+		<hex>0F3D</hex>
+		<hex>0F44</hex>
+		<hex>0F4B</hex>
+		<hex>0F52</hex>
+		<hex>0F59</hex>
+		<hex>0F61</hex>
+		<hex>0F68</hex>
+		<hex>0F6F</hex>
+		<hex>0F76</hex>
+		<hex>0F7D</hex>
+
+		<!--Note 90-->
+		<hex>0F84</hex>
+		<hex>0F8B</hex>
+		<hex>0F93</hex>
+		<hex>0F9A</hex>
+		<hex>0FA1</hex>
+		<hex>0FA8</hex>
+		<hex>0FB0</hex>
+		<hex>0FB7</hex>
+		<hex>0FBE</hex>
+		<hex>0FC5</hex>
+		<hex>0FCD</hex>
+		<hex>0FD4</hex>
+		<hex>0FDB</hex>
+		<hex>0FE3</hex>
+		<hex>0FEA</hex>
+		<hex>0FF1</hex>
+		<hex>0FF9</hex>
+		<hex>1000</hex>
+		<hex>1007</hex>
+		<hex>100F</hex>
+		<hex>1016</hex>
+		<hex>101E</hex>
+		<hex>1025</hex>
+		<hex>102D</hex>
+		<hex>1034</hex>
+		<hex>103C</hex>
+		<hex>1043</hex>
+		<hex>104B</hex>
+		<hex>1052</hex>
+		<hex>105A</hex>
+		<hex>1061</hex>
+		<hex>1069</hex>
+
+		<!--Note 91-->
+		<hex>1071</hex>
+		<hex>1078</hex>
+		<hex>1080</hex>
+		<hex>1087</hex>
+		<hex>108F</hex>
+		<hex>1097</hex>
+		<hex>109E</hex>
+		<hex>10A6</hex>
+		<hex>10AE</hex>
+		<hex>10B5</hex>
+		<hex>10BD</hex>
+		<hex>10C5</hex>
+		<hex>10CD</hex>
+		<hex>10D4</hex>
+		<hex>10DC</hex>
+		<hex>10E4</hex>
+		<hex>10EC</hex>
+		<hex>10F4</hex>
+		<hex>10FC</hex>
+		<hex>1103</hex>
+		<hex>110B</hex>
+		<hex>1113</hex>
+		<hex>111B</hex>
+		<hex>1123</hex>
+		<hex>112B</hex>
+		<hex>1133</hex>
+		<hex>113B</hex>
+		<hex>1143</hex>
+		<hex>114B</hex>
+		<hex>1153</hex>
+		<hex>115B</hex>
+		<hex>1163</hex>
+
+		<!--Note 92-->
+		<hex>116B</hex>
+		<hex>1173</hex>
+		<hex>117B</hex>
+		<hex>1183</hex>
+		<hex>118B</hex>
+		<hex>1193</hex>
+		<hex>119B</hex>
+		<hex>11A4</hex>
+		<hex>11AC</hex>
+		<hex>11B4</hex>
+		<hex>11BC</hex>
+		<hex>11C4</hex>
+		<hex>11CC</hex>
+		<hex>11D5</hex>
+		<hex>11DD</hex>
+		<hex>11E5</hex>
+		<hex>11ED</hex>
+		<hex>11F6</hex>
+		<hex>11FE</hex>
+		<hex>1206</hex>
+		<hex>120F</hex>
+		<hex>1217</hex>
+		<hex>121F</hex>
+		<hex>1228</hex>
+		<hex>1230</hex>
+		<hex>1239</hex>
+		<hex>1241</hex>
+		<hex>124A</hex>
+		<hex>1252</hex>
+		<hex>125A</hex>
+		<hex>1263</hex>
+		<hex>126B</hex>
+
+		<!--Note 93-->
+		<hex>1274</hex>
+		<hex>127D</hex>
+		<hex>1285</hex>
+		<hex>128E</hex>
+		<hex>1296</hex>
+		<hex>129F</hex>
+		<hex>12A7</hex>
+		<hex>12B0</hex>
+		<hex>12B9</hex>
+		<hex>12C1</hex>
+		<hex>12CA</hex>
+		<hex>12D3</hex>
+		<hex>12DB</hex>
+		<hex>12E4</hex>
+		<hex>12ED</hex>
+		<hex>12F6</hex>
+		<hex>12FE</hex>
+		<hex>1307</hex>
+		<hex>1310</hex>
+		<hex>1319</hex>
+		<hex>1322</hex>
+		<hex>132A</hex>
+		<hex>1333</hex>
+		<hex>133C</hex>
+		<hex>1345</hex>
+		<hex>134E</hex>
+		<hex>1357</hex>
+		<hex>1360</hex>
+		<hex>1369</hex>
+		<hex>1372</hex>
+		<hex>137B</hex>
+		<hex>1384</hex>
+
+		<!--Note 94-->
+		<hex>138D</hex>
+		<hex>1396</hex>
+		<hex>139F</hex>
+		<hex>13A8</hex>
+		<hex>13B1</hex>
+		<hex>13BA</hex>
+		<hex>13C3</hex>
+		<hex>13CD</hex>
+		<hex>13D6</hex>
+		<hex>13DF</hex>
+		<hex>13E8</hex>
+		<hex>13F1</hex>
+		<hex>13FA</hex>
+		<hex>1404</hex>
+		<hex>140D</hex>
+		<hex>1416</hex>
+		<hex>1420</hex>
+		<hex>1429</hex>
+		<hex>1432</hex>
+		<hex>143C</hex>
+		<hex>1445</hex>
+		<hex>144E</hex>
+		<hex>1458</hex>
+		<hex>1461</hex>
+		<hex>146B</hex>
+		<hex>1474</hex>
+		<hex>147D</hex>
+		<hex>1487</hex>
+		<hex>1490</hex>
+		<hex>149A</hex>
+		<hex>14A3</hex>
+		<hex>14AD</hex>
+
+		<!--Note 95-->
+		<hex>14B7</hex>
+		<hex>14C0</hex>
+		<hex>14CA</hex>
+		<hex>14D3</hex>
+		<hex>14DD</hex>
+		<hex>14E7</hex>
+		<hex>14F0</hex>
+		<hex>14FA</hex>
+		<hex>1504</hex>
+		<hex>150D</hex>
+		<hex>1517</hex>
+		<hex>1521</hex>
+		<hex>152B</hex>
+		<hex>1534</hex>
+		<hex>153E</hex>
+		<hex>1548</hex>
+		<hex>1552</hex>
+		<hex>155C</hex>
+		<hex>1566</hex>
+		<hex>1570</hex>
+		<hex>1579</hex>
+		<hex>1583</hex>
+		<hex>158D</hex>
+		<hex>1597</hex>
+		<hex>15A1</hex>
+		<hex>15AB</hex>
+		<hex>15B5</hex>
+		<hex>15BF</hex>
+		<hex>15C9</hex>
+		<hex>15D4</hex>
+		<hex>15DE</hex>
+		<hex>15E8</hex>
+
+		<!--Note 96-->
+		<hex>15F2</hex>
+		<hex>15FC</hex>
+		<hex>1606</hex>
+		<hex>1610</hex>
+		<hex>161B</hex>
+		<hex>1625</hex>
+		<hex>162F</hex>
+		<hex>1639</hex>
+		<hex>1644</hex>
+		<hex>164E</hex>
+		<hex>1658</hex>
+		<hex>1663</hex>
+		<hex>166D</hex>
+		<hex>1677</hex>
+		<hex>1682</hex>
+		<hex>168C</hex>
+		<hex>1696</hex>
+		<hex>16A1</hex>
+		<hex>16AB</hex>
+		<hex>16B6</hex>
+		<hex>16C0</hex>
+		<hex>16CB</hex>
+		<hex>16D5</hex>
+		<hex>16E0</hex>
+		<hex>16EB</hex>
+		<hex>16F5</hex>
+		<hex>1700</hex>
+		<hex>170A</hex>
+		<hex>1715</hex>
+		<hex>1720</hex>
+		<hex>172B</hex>
+		<hex>1735</hex>
+
+		<!--Note 97-->
+		<hex>1740</hex>
+		<hex>174B</hex>
+		<hex>1755</hex>
+		<hex>1760</hex>
+		<hex>176B</hex>
+		<hex>1776</hex>
+		<hex>1781</hex>
+		<hex>178C</hex>
+		<hex>1797</hex>
+		<hex>17A1</hex>
+		<hex>17AC</hex>
+		<hex>17B7</hex>
+		<hex>17C2</hex>
+		<hex>17CD</hex>
+		<hex>17D8</hex>
+		<hex>17E3</hex>
+		<hex>17EE</hex>
+		<hex>17F9</hex>
+		<hex>1805</hex>
+		<hex>1810</hex>
+		<hex>181B</hex>
+		<hex>1826</hex>
+		<hex>1831</hex>
+		<hex>183C</hex>
+		<hex>1847</hex>
+		<hex>1853</hex>
+		<hex>185E</hex>
+		<hex>1869</hex>
+		<hex>1875</hex>
+		<hex>1880</hex>
+		<hex>188B</hex>
+		<hex>1897</hex>
+
+		<!--Note 98-->
+		<hex>18A2</hex>
+		<hex>18AD</hex>
+		<hex>18B9</hex>
+		<hex>18C4</hex>
+		<hex>18D0</hex>
+		<hex>18DB</hex>
+		<hex>18E7</hex>
+		<hex>18F2</hex>
+		<hex>18FE</hex>
+		<hex>1909</hex>
+		<hex>1915</hex>
+		<hex>1920</hex>
+		<hex>192C</hex>
+		<hex>1938</hex>
+		<hex>1943</hex>
+		<hex>194F</hex>
+		<hex>195B</hex>
+		<hex>1966</hex>
+		<hex>1972</hex>
+		<hex>197E</hex>
+		<hex>198A</hex>
+		<hex>1996</hex>
+		<hex>19A1</hex>
+		<hex>19AD</hex>
+		<hex>19B9</hex>
+		<hex>19C5</hex>
+		<hex>19D1</hex>
+		<hex>19DD</hex>
+		<hex>19E9</hex>
+		<hex>19F5</hex>
+		<hex>1A01</hex>
+		<hex>1A0D</hex>
+
+		<!--Note 99-->
+		<hex>1A19</hex>
+		<hex>1A25</hex>
+		<hex>1A31</hex>
+		<hex>1A3D</hex>
+		<hex>1A49</hex>
+		<hex>1A55</hex>
+		<hex>1A62</hex>
+		<hex>1A6E</hex>
+		<hex>1A7A</hex>
+		<hex>1A86</hex>
+		<hex>1A93</hex>
+		<hex>1A9F</hex>
+		<hex>1AAB</hex>
+		<hex>1AB8</hex>
+		<hex>1AC4</hex>
+		<hex>1AD0</hex>
+		<hex>1ADD</hex>
+		<hex>1AE9</hex>
+		<hex>1AF6</hex>
+		<hex>1B02</hex>
+		<hex>1B0F</hex>
+		<hex>1B1B</hex>
+		<hex>1B28</hex>
+		<hex>1B34</hex>
+		<hex>1B41</hex>
+		<hex>1B4D</hex>
+		<hex>1B5A</hex>
+		<hex>1B67</hex>
+		<hex>1B73</hex>
+		<hex>1B80</hex>
+		<hex>1B8D</hex>
+		<hex>1B99</hex>
+
+		<!--Note 100-->
+		<hex>1BA6</hex>
+		<hex>1BB3</hex>
+		<hex>1BC0</hex>
+		<hex>1BCD</hex>
+		<hex>1BD9</hex>
+		<hex>1BE6</hex>
+		<hex>1BF3</hex>
+		<hex>1C00</hex>
+		<hex>1C0D</hex>
+		<hex>1C1A</hex>
+		<hex>1C27</hex>
+		<hex>1C34</hex>
+		<hex>1C41</hex>
+		<hex>1C4E</hex>
+		<hex>1C5B</hex>
+		<hex>1C68</hex>
+		<hex>1C76</hex>
+		<hex>1C83</hex>
+		<hex>1C90</hex>
+		<hex>1C9D</hex>
+		<hex>1CAA</hex>
+		<hex>1CB8</hex>
+		<hex>1CC5</hex>
+		<hex>1CD2</hex>
+		<hex>1CE0</hex>
+		<hex>1CED</hex>
+		<hex>1CFA</hex>
+		<hex>1D08</hex>
+		<hex>1D15</hex>
+		<hex>1D23</hex>
+		<hex>1D30</hex>
+		<hex>1D3E</hex>
+
+		<!--Note 101-->
+		<hex>1D4B</hex>
+		<hex>1D59</hex>
+		<hex>1D66</hex>
+		<hex>1D74</hex>
+		<hex>1D81</hex>
+		<hex>1D8F</hex>
+		<hex>1D9D</hex>
+		<hex>1DAA</hex>
+		<hex>1DB8</hex>
+		<hex>1DC6</hex>
+		<hex>1DD4</hex>
+		<hex>1DE2</hex>
+		<hex>1DEF</hex>
+		<hex>1DFD</hex>
+		<hex>1E0B</hex>
+		<hex>1E19</hex>
+		<hex>1E27</hex>
+		<hex>1E35</hex>
+		<hex>1E43</hex>
+		<hex>1E51</hex>
+		<hex>1E5F</hex>
+		<hex>1E6D</hex>
+		<hex>1E7B</hex>
+		<hex>1E89</hex>
+		<hex>1E97</hex>
+		<hex>1EA5</hex>
+		<hex>1EB3</hex>
+		<hex>1EC2</hex>
+		<hex>1ED0</hex>
+		<hex>1EDE</hex>
+		<hex>1EEC</hex>
+		<hex>1EFB</hex>
+
+		<!--Note 102-->
+		<hex>1F09</hex>
+		<hex>1F17</hex>
+		<hex>1F26</hex>
+		<hex>1F34</hex>
+		<hex>1F43</hex>
+		<hex>1F51</hex>
+		<hex>1F60</hex>
+		<hex>1F6E</hex>
+		<hex>1F7D</hex>
+		<hex>1F8B</hex>
+		<hex>1F9A</hex>
+		<hex>1FA8</hex>
+		<hex>1FB7</hex>
+		<hex>1FC6</hex>
+		<hex>1FD4</hex>
+		<hex>1FE3</hex>
+		<hex>1FF2</hex>
+		<hex>2001</hex>
+		<hex>200F</hex>
+		<hex>201E</hex>
+		<hex>202D</hex>
+		<hex>203C</hex>
+		<hex>204B</hex>
+		<hex>205A</hex>
+		<hex>2069</hex>
+		<hex>2078</hex>
+		<hex>2087</hex>
+		<hex>2096</hex>
+		<hex>20A5</hex>
+		<hex>20B4</hex>
+		<hex>20C3</hex>
+		<hex>20D2</hex>
+
+		<!--Note 103-->
+		<hex>20E2</hex>
+		<hex>20F1</hex>
+		<hex>2100</hex>
+		<hex>210F</hex>
+		<hex>211F</hex>
+		<hex>212E</hex>
+		<hex>213D</hex>
+		<hex>214D</hex>
+		<hex>215C</hex>
+		<hex>216B</hex>
+		<hex>217B</hex>
+		<hex>218A</hex>
+		<hex>219A</hex>
+		<hex>21A9</hex>
+		<hex>21B9</hex>
+		<hex>21C9</hex>
+		<hex>21D8</hex>
+		<hex>21E8</hex>
+		<hex>21F8</hex>
+		<hex>2207</hex>
+		<hex>2217</hex>
+		<hex>2227</hex>
+		<hex>2237</hex>
+		<hex>2246</hex>
+		<hex>2256</hex>
+		<hex>2266</hex>
+		<hex>2276</hex>
+		<hex>2286</hex>
+		<hex>2296</hex>
+		<hex>22A6</hex>
+		<hex>22B6</hex>
+		<hex>22C6</hex>
+
+		<!--Note 104-->
+		<hex>22D6</hex>
+		<hex>22E6</hex>
+		<hex>22F6</hex>
+		<hex>2307</hex>
+		<hex>2317</hex>
+		<hex>2327</hex>
+		<hex>2337</hex>
+		<hex>2348</hex>
+		<hex>2358</hex>
+		<hex>2368</hex>
+		<hex>2379</hex>
+		<hex>2389</hex>
+		<hex>2399</hex>
+		<hex>23AA</hex>
+		<hex>23BA</hex>
+		<hex>23CB</hex>
+		<hex>23DB</hex>
+		<hex>23EC</hex>
+		<hex>23FD</hex>
+		<hex>240D</hex>
+		<hex>241E</hex>
+		<hex>242F</hex>
+		<hex>243F</hex>
+		<hex>2450</hex>
+		<hex>2461</hex>
+		<hex>2472</hex>
+		<hex>2483</hex>
+		<hex>2494</hex>
+		<hex>24A4</hex>
+		<hex>24B5</hex>
+		<hex>24C6</hex>
+		<hex>24D7</hex>
+
+		<!--Note 105-->
+		<hex>24E8</hex>
+		<hex>24FA</hex>
+		<hex>250B</hex>
+		<hex>251C</hex>
+		<hex>252D</hex>
+		<hex>253E</hex>
+		<hex>254F</hex>
+		<hex>2561</hex>
+		<hex>2572</hex>
+		<hex>2583</hex>
+		<hex>2595</hex>
+		<hex>25A6</hex>
+		<hex>25B7</hex>
+		<hex>25C9</hex>
+		<hex>25DA</hex>
+		<hex>25EC</hex>
+		<hex>25FD</hex>
+		<hex>260F</hex>
+		<hex>2620</hex>
+		<hex>2632</hex>
+		<hex>2644</hex>
+		<hex>2655</hex>
+		<hex>2667</hex>
+		<hex>2679</hex>
+		<hex>268B</hex>
+		<hex>269D</hex>
+		<hex>26AE</hex>
+		<hex>26C0</hex>
+		<hex>26D2</hex>
+		<hex>26E4</hex>
+		<hex>26F6</hex>
+		<hex>2708</hex>
+
+		<!--Note 106-->
+		<hex>271A</hex>
+		<hex>272C</hex>
+		<hex>273E</hex>
+		<hex>2751</hex>
+		<hex>2763</hex>
+		<hex>2775</hex>
+		<hex>2787</hex>
+		<hex>279A</hex>
+		<hex>27AC</hex>
+		<hex>27BE</hex>
+		<hex>27D1</hex>
+		<hex>27E3</hex>
+		<hex>27F5</hex>
+		<hex>2808</hex>
+		<hex>281A</hex>
+		<hex>282D</hex>
+		<hex>2840</hex>
+		<hex>2852</hex>
+		<hex>2865</hex>
+		<hex>2878</hex>
+		<hex>288A</hex>
+		<hex>289D</hex>
+		<hex>28B0</hex>
+		<hex>28C3</hex>
+		<hex>28D6</hex>
+		<hex>28E8</hex>
+		<hex>28FB</hex>
+		<hex>290E</hex>
+		<hex>2921</hex>
+		<hex>2934</hex>
+		<hex>2947</hex>
+		<hex>295A</hex>
+
+		<!--Note 107-->
+		<hex>296E</hex>
+		<hex>2981</hex>
+		<hex>2994</hex>
+		<hex>29A7</hex>
+		<hex>29BA</hex>
+		<hex>29CE</hex>
+		<hex>29E1</hex>
+		<hex>29F4</hex>
+		<hex>2A08</hex>
+		<hex>2A1B</hex>
+		<hex>2A2F</hex>
+		<hex>2A42</hex>
+		<hex>2A56</hex>
+		<hex>2A69</hex>
+		<hex>2A7D</hex>
+		<hex>2A91</hex>
+		<hex>2AA4</hex>
+		<hex>2AB8</hex>
+		<hex>2ACC</hex>
+		<hex>2AE0</hex>
+		<hex>2AF3</hex>
+		<hex>2B07</hex>
+		<hex>2B1B</hex>
+		<hex>2B2F</hex>
+		<hex>2B43</hex>
+		<hex>2B57</hex>
+		<hex>2B6B</hex>
+		<hex>2B7F</hex>
+		<hex>2B93</hex>
+		<hex>2BA8</hex>
+		<hex>2BBC</hex>
+		<hex>2BD0</hex>
+
+		<!--Note 108-->
+		<hex>2BE4</hex>
+		<hex>2BF9</hex>
+		<hex>2C0D</hex>
+		<hex>2C21</hex>
+		<hex>2C36</hex>
+		<hex>2C4A</hex>
+		<hex>2C5F</hex>
+		<hex>2C73</hex>
+		<hex>2C88</hex>
+		<hex>2C9C</hex>
+		<hex>2CB1</hex>
+		<hex>2CC6</hex>
+		<hex>2CDA</hex>
+		<hex>2CEF</hex>
+		<hex>2D04</hex>
+		<hex>2D19</hex>
+		<hex>2D2D</hex>
+		<hex>2D42</hex>
+		<hex>2D57</hex>
+		<hex>2D6C</hex>
+		<hex>2D81</hex>
+		<hex>2D96</hex>
+		<hex>2DAB</hex>
+		<hex>2DC1</hex>
+		<hex>2DD6</hex>
+		<hex>2DEB</hex>
+		<hex>2E00</hex>
+		<hex>2E15</hex>
+		<hex>2E2B</hex>
+		<hex>2E40</hex>
+		<hex>2E56</hex>
+		<hex>2E6B</hex>
+
+		<!--Note 109-->
+		<hex>2E80</hex>
+		<hex>2E96</hex>
+		<hex>2EAB</hex>
+		<hex>2EC1</hex>
+		<hex>2ED7</hex>
+		<hex>2EEC</hex>
+		<hex>2F02</hex>
+		<hex>2F18</hex>
+		<hex>2F2E</hex>
+		<hex>2F43</hex>
+		<hex>2F59</hex>
+		<hex>2F6F</hex>
+		<hex>2F85</hex>
+		<hex>2F9B</hex>
+		<hex>2FB1</hex>
+		<hex>2FC7</hex>
+		<hex>2FDD</hex>
+		<hex>2FF3</hex>
+		<hex>300A</hex>
+		<hex>3020</hex>
+		<hex>3036</hex>
+		<hex>304C</hex>
+		<hex>3063</hex>
+		<hex>3079</hex>
+		<hex>308F</hex>
+		<hex>30A6</hex>
+		<hex>30BC</hex>
+		<hex>30D3</hex>
+		<hex>30EA</hex>
+		<hex>3100</hex>
+		<hex>3117</hex>
+		<hex>312E</hex>
+
+		<!--Note 110-->
+		<hex>3144</hex>
+		<hex>315B</hex>
+		<hex>3172</hex>
+		<hex>3189</hex>
+		<hex>31A0</hex>
+		<hex>31B7</hex>
+		<hex>31CE</hex>
+		<hex>31E5</hex>
+		<hex>31FC</hex>
+		<hex>3213</hex>
+		<hex>322A</hex>
+		<hex>3241</hex>
+		<hex>3258</hex>
+		<hex>3270</hex>
+		<hex>3287</hex>
+		<hex>329E</hex>
+		<hex>32B6</hex>
+		<hex>32CD</hex>
+		<hex>32E5</hex>
+		<hex>32FC</hex>
+		<hex>3314</hex>
+		<hex>332C</hex>
+		<hex>3343</hex>
+		<hex>335B</hex>
+		<hex>3373</hex>
+		<hex>338B</hex>
+		<hex>33A2</hex>
+		<hex>33BA</hex>
+		<hex>33D2</hex>
+		<hex>33EA</hex>
+		<hex>3402</hex>
+		<hex>341A</hex>
+
+		<!--Note 111-->
+		<hex>3432</hex>
+		<hex>344A</hex>
+		<hex>3463</hex>
+		<hex>347B</hex>
+		<hex>3493</hex>
+		<hex>34AB</hex>
+		<hex>34C4</hex>
+		<hex>34DC</hex>
+		<hex>34F5</hex>
+		<hex>350D</hex>
+		<hex>3526</hex>
+		<hex>353E</hex>
+		<hex>3557</hex>
+		<hex>3570</hex>
+		<hex>3588</hex>
+		<hex>35A1</hex>
+		<hex>35BA</hex>
+		<hex>35D3</hex>
+		<hex>35EC</hex>
+		<hex>3605</hex>
+		<hex>361E</hex>
+		<hex>3637</hex>
+		<hex>3650</hex>
+		<hex>3669</hex>
+		<hex>3682</hex>
+		<hex>369B</hex>
+		<hex>36B4</hex>
+		<hex>36CE</hex>
+		<hex>36E7</hex>
+		<hex>3700</hex>
+		<hex>371A</hex>
+		<hex>3733</hex>
+
+		<!--Note 112-->
+		<hex>374D</hex>
+		<hex>3766</hex>
+		<hex>3780</hex>
+		<hex>379A</hex>
+		<hex>37B3</hex>
+		<hex>37CD</hex>
+		<hex>37E7</hex>
+		<hex>3801</hex>
+		<hex>381B</hex>
+		<hex>3835</hex>
+		<hex>384F</hex>
+		<hex>3869</hex>
+		<hex>3883</hex>
+		<hex>389D</hex>
+		<hex>38B7</hex>
+		<hex>38D1</hex>
+		<hex>38EC</hex>
+		<hex>3906</hex>
+		<hex>3920</hex>
+		<hex>393B</hex>
+		<hex>3955</hex>
+		<hex>3970</hex>
+		<hex>398A</hex>
+		<hex>39A5</hex>
+		<hex>39C0</hex>
+		<hex>39DA</hex>
+		<hex>39F5</hex>
+		<hex>3A10</hex>
+		<hex>3A2B</hex>
+		<hex>3A46</hex>
+		<hex>3A61</hex>
+		<hex>3A7C</hex>
+
+		<!--Note 113-->
+		<hex>3A97</hex>
+		<hex>3AB2</hex>
+		<hex>3ACD</hex>
+		<hex>3AE8</hex>
+		<hex>3B03</hex>
+		<hex>3B1F</hex>
+		<hex>3B3A</hex>
+		<hex>3B55</hex>
+		<hex>3B71</hex>
+		<hex>3B8C</hex>
+		<hex>3BA8</hex>
+		<hex>3BC4</hex>
+		<hex>3BDF</hex>
+		<hex>3BFB</hex>
+		<hex>3C17</hex>
+		<hex>3C32</hex>
+		<hex>3C4E</hex>
+		<hex>3C6A</hex>
+		<hex>3C86</hex>
+		<hex>3CA2</hex>
+		<hex>3CBE</hex>
+		<hex>3CDA</hex>
+		<hex>3CF6</hex>
+		<hex>3D13</hex>
+		<hex>3D2F</hex>
+		<hex>3D4B</hex>
+		<hex>3D67</hex>
+		<hex>3D84</hex>
+		<hex>3DA0</hex>
+		<hex>3DBD</hex>
+		<hex>3DD9</hex>
+		<hex>3DF6</hex>
+
+		<!--Note 114-->
+		<hex>3E13</hex>
+		<hex>3E2F</hex>
+		<hex>3E4C</hex>
+		<hex>3E69</hex>
+		<hex>3E86</hex>
+		<hex>3EA3</hex>
+		<hex>3EC0</hex>
+		<hex>3EDD</hex>
+		<hex>3EFA</hex>
+		<hex>3F17</hex>
+		<hex>3F34</hex>
+		<hex>3F51</hex>
+		<hex>3F6F</hex>
+		<hex>3F8C</hex>
+		<hex>3FA9</hex>
+		<hex>3FC7</hex>
+		<hex>3FE4</hex>
+		<hex>4002</hex>
+		<hex>401F</hex>
+		<hex>403D</hex>
+		<hex>405B</hex>
+		<hex>4079</hex>
+		<hex>4096</hex>
+		<hex>40B4</hex>
+		<hex>40D2</hex>
+		<hex>40F0</hex>
+		<hex>410E</hex>
+		<hex>412C</hex>
+		<hex>414A</hex>
+		<hex>4169</hex>
+		<hex>4187</hex>
+		<hex>41A5</hex>
+
+		<!--Note 115-->
+		<hex>41C4</hex>
+		<hex>41E2</hex>
+		<hex>4200</hex>
+		<hex>421F</hex>
+		<hex>423E</hex>
+		<hex>425C</hex>
+		<hex>427B</hex>
+		<hex>429A</hex>
+		<hex>42B8</hex>
+		<hex>42D7</hex>
+		<hex>42F6</hex>
+		<hex>4315</hex>
+		<hex>4334</hex>
+		<hex>4353</hex>
+		<hex>4372</hex>
+		<hex>4392</hex>
+		<hex>43B1</hex>
+		<hex>43D0</hex>
+		<hex>43F0</hex>
+		<hex>440F</hex>
+		<hex>442E</hex>
+		<hex>444E</hex>
+		<hex>446E</hex>
+		<hex>448D</hex>
+		<hex>44AD</hex>
+		<hex>44CD</hex>
+		<hex>44ED</hex>
+		<hex>450C</hex>
+		<hex>452C</hex>
+		<hex>454C</hex>
+		<hex>456C</hex>
+		<hex>458D</hex>
+
+		<!--Note 116-->
+		<hex>45AD</hex>
+		<hex>45CD</hex>
+		<hex>45ED</hex>
+		<hex>460E</hex>
+		<hex>462E</hex>
+		<hex>464E</hex>
+		<hex>466F</hex>
+		<hex>4690</hex>
+		<hex>46B0</hex>
+		<hex>46D1</hex>
+		<hex>46F2</hex>
+		<hex>4712</hex>
+		<hex>4733</hex>
+		<hex>4754</hex>
+		<hex>4775</hex>
+		<hex>4796</hex>
+		<hex>47B7</hex>
+		<hex>47D9</hex>
+		<hex>47FA</hex>
+		<hex>481B</hex>
+		<hex>483C</hex>
+		<hex>485E</hex>
+		<hex>487F</hex>
+		<hex>48A1</hex>
+		<hex>48C2</hex>
+		<hex>48E4</hex>
+		<hex>4906</hex>
+		<hex>4928</hex>
+		<hex>4949</hex>
+		<hex>496B</hex>
+		<hex>498D</hex>
+		<hex>49AF</hex>
+
+		<!--Note 117-->
+		<hex>49D1</hex>
+		<hex>49F4</hex>
+		<hex>4A16</hex>
+		<hex>4A38</hex>
+		<hex>4A5A</hex>
+		<hex>4A7D</hex>
+		<hex>4A9F</hex>
+		<hex>4AC2</hex>
+		<hex>4AE4</hex>
+		<hex>4B07</hex>
+		<hex>4B2A</hex>
+		<hex>4B4C</hex>
+		<hex>4B6F</hex>
+		<hex>4B92</hex>
+		<hex>4BB5</hex>
+		<hex>4BD8</hex>
+		<hex>4BFB</hex>
+		<hex>4C1E</hex>
+		<hex>4C41</hex>
+		<hex>4C65</hex>
+		<hex>4C88</hex>
+		<hex>4CAB</hex>
+		<hex>4CCF</hex>
+		<hex>4CF2</hex>
+		<hex>4D16</hex>
+		<hex>4D3A</hex>
+		<hex>4D5D</hex>
+		<hex>4D81</hex>
+		<hex>4DA5</hex>
+		<hex>4DC9</hex>
+		<hex>4DED</hex>
+		<hex>4E11</hex>
+
+		<!--Note 118-->
+		<hex>4E35</hex>
+		<hex>4E59</hex>
+		<hex>4E7D</hex>
+		<hex>4EA2</hex>
+		<hex>4EC6</hex>
+		<hex>4EEB</hex>
+		<hex>4F0F</hex>
+		<hex>4F34</hex>
+		<hex>4F58</hex>
+		<hex>4F7D</hex>
+		<hex>4FA2</hex>
+		<hex>4FC7</hex>
+		<hex>4FEB</hex>
+		<hex>5010</hex>
+		<hex>5035</hex>
+		<hex>505B</hex>
+		<hex>5080</hex>
+		<hex>50A5</hex>
+		<hex>50CA</hex>
+		<hex>50F0</hex>
+		<hex>5115</hex>
+		<hex>513B</hex>
+		<hex>5160</hex>
+		<hex>5186</hex>
+		<hex>51AC</hex>
+		<hex>51D1</hex>
+		<hex>51F7</hex>
+		<hex>521D</hex>
+		<hex>5243</hex>
+		<hex>5269</hex>
+		<hex>528F</hex>
+		<hex>52B5</hex>
+
+		<!--Note 119-->
+		<hex>52DC</hex>
+		<hex>5302</hex>
+		<hex>5328</hex>
+		<hex>534F</hex>
+		<hex>5375</hex>
+		<hex>539C</hex>
+		<hex>53C3</hex>
+		<hex>53E9</hex>
+		<hex>5410</hex>
+		<hex>5437</hex>
+		<hex>545E</hex>
+		<hex>5485</hex>
+		<hex>54AC</hex>
+		<hex>54D3</hex>
+		<hex>54FB</hex>
+		<hex>5522</hex>
+		<hex>5549</hex>
+		<hex>5571</hex>
+		<hex>5598</hex>
+		<hex>55C0</hex>
+		<hex>55E7</hex>
+		<hex>560F</hex>
+		<hex>5637</hex>
+		<hex>565F</hex>
+		<hex>5687</hex>
+		<hex>56AF</hex>
+		<hex>56D7</hex>
+		<hex>56FF</hex>
+		<hex>5727</hex>
+		<hex>5750</hex>
+		<hex>5778</hex>
+		<hex>57A0</hex>
+
+		<!--Note 120-->
+		<hex>57C9</hex>
+		<hex>57F2</hex>
+		<hex>581A</hex>
+		<hex>5843</hex>
+		<hex>586C</hex>
+		<hex>5895</hex>
+		<hex>58BE</hex>
+		<hex>58E7</hex>
+		<hex>5910</hex>
+		<hex>5939</hex>
+		<hex>5962</hex>
+		<hex>598C</hex>
+		<hex>59B5</hex>
+		<hex>59DF</hex>
+		<hex>5A08</hex>
+		<hex>5A32</hex>
+		<hex>5A5B</hex>
+		<hex>5A85</hex>
+		<hex>5AAF</hex>
+		<hex>5AD9</hex>
+		<hex>5B03</hex>
+		<hex>5B2D</hex>
+		<hex>5B57</hex>
+		<hex>5B82</hex>
+		<hex>5BAC</hex>
+		<hex>5BD6</hex>
+		<hex>5C01</hex>
+		<hex>5C2B</hex>
+		<hex>5C56</hex>
+		<hex>5C81</hex>
+		<hex>5CAC</hex>
+		<hex>5CD6</hex>
+
+		<!--Note 121-->
+		<hex>5D01</hex>
+		<hex>5D2C</hex>
+		<hex>5D57</hex>
+		<hex>5D83</hex>
+		<hex>5DAE</hex>
+		<hex>5DD9</hex>
+		<hex>5E05</hex>
+		<hex>5E30</hex>
+		<hex>5E5C</hex>
+		<hex>5E87</hex>
+		<hex>5EB3</hex>
+		<hex>5EDF</hex>
+		<hex>5F0B</hex>
+		<hex>5F37</hex>
+		<hex>5F63</hex>
+		<hex>5F8F</hex>
+		<hex>5FBB</hex>
+		<hex>5FE7</hex>
+		<hex>6014</hex>
+		<hex>6040</hex>
+		<hex>606D</hex>
+		<hex>6099</hex>
+		<hex>60C6</hex>
+		<hex>60F3</hex>
+		<hex>611F</hex>
+		<hex>614C</hex>
+		<hex>6179</hex>
+		<hex>61A6</hex>
+		<hex>61D4</hex>
+		<hex>6201</hex>
+		<hex>622E</hex>
+		<hex>625C</hex>
+
+		<!--Note 122-->
+		<hex>6289</hex>
+		<hex>62B7</hex>
+		<hex>62E4</hex>
+		<hex>6312</hex>
+		<hex>6340</hex>
+		<hex>636E</hex>
+		<hex>639C</hex>
+		<hex>63CA</hex>
+		<hex>63F8</hex>
+		<hex>6426</hex>
+		<hex>6455</hex>
+		<hex>6483</hex>
+		<hex>64B1</hex>
+		<hex>64E0</hex>
+		<hex>650F</hex>
+		<hex>653D</hex>
+		<hex>656C</hex>
+		<hex>659B</hex>
+		<hex>65CA</hex>
+		<hex>65F9</hex>
+		<hex>6628</hex>
+		<hex>6658</hex>
+		<hex>6687</hex>
+		<hex>66B6</hex>
+		<hex>66E6</hex>
+		<hex>6716</hex>
+		<hex>6745</hex>
+		<hex>6775</hex>
+		<hex>67A5</hex>
+		<hex>67D5</hex>
+		<hex>6805</hex>
+		<hex>6835</hex>
+
+		<!--Note 123-->
+		<hex>6865</hex>
+		<hex>6895</hex>
+		<hex>68C6</hex>
+		<hex>68F6</hex>
+		<hex>6927</hex>
+		<hex>6957</hex>
+		<hex>6988</hex>
+		<hex>69B9</hex>
+		<hex>69EA</hex>
+		<hex>6A1B</hex>
+		<hex>6A4C</hex>
+		<hex>6A7D</hex>
+		<hex>6AAE</hex>
+		<hex>6AE0</hex>
+		<hex>6B11</hex>
+		<hex>6B43</hex>
+		<hex>6B74</hex>
+		<hex>6BA6</hex>
+		<hex>6BD8</hex>
+		<hex>6C0A</hex>
+		<hex>6C3C</hex>
+		<hex>6C6E</hex>
+		<hex>6CA0</hex>
+		<hex>6CD2</hex>
+		<hex>6D04</hex>
+		<hex>6D37</hex>
+		<hex>6D69</hex>
+		<hex>6D9C</hex>
+		<hex>6DCF</hex>
+		<hex>6E01</hex>
+		<hex>6E34</hex>
+		<hex>6E67</hex>
+
+		<!--Note 124-->
+		<hex>6E9A</hex>
+		<hex>6ECD</hex>
+		<hex>6F01</hex>
+		<hex>6F34</hex>
+		<hex>6F67</hex>
+		<hex>6F9B</hex>
+		<hex>6FCF</hex>
+		<hex>7002</hex>
+		<hex>7036</hex>
+		<hex>706A</hex>
+		<hex>709E</hex>
+		<hex>70D2</hex>
+		<hex>7106</hex>
+		<hex>713B</hex>
+		<hex>716F</hex>
+		<hex>71A3</hex>
+		<hex>71D8</hex>
+		<hex>720D</hex>
+		<hex>7241</hex>
+		<hex>7276</hex>
+		<hex>72AB</hex>
+		<hex>72E0</hex>
+		<hex>7315</hex>
+		<hex>734B</hex>
+		<hex>7380</hex>
+		<hex>73B5</hex>
+		<hex>73EB</hex>
+		<hex>7420</hex>
+		<hex>7456</hex>
+		<hex>748C</hex>
+		<hex>74C2</hex>
+		<hex>74F8</hex>
+
+		<!--Note 125-->
+		<hex>752E</hex>
+		<hex>7564</hex>
+		<hex>759A</hex>
+		<hex>75D1</hex>
+		<hex>7607</hex>
+		<hex>763E</hex>
+		<hex>7675</hex>
+		<hex>76AB</hex>
+		<hex>76E2</hex>
+		<hex>7719</hex>
+		<hex>7750</hex>
+		<hex>7788</hex>
+		<hex>77BF</hex>
+		<hex>77F6</hex>
+		<hex>782E</hex>
+		<hex>7865</hex>
+		<hex>789D</hex>
+		<hex>78D5</hex>
+		<hex>790D</hex>
+		<hex>7945</hex>
+		<hex>797D</hex>
+		<hex>79B5</hex>
+		<hex>79ED</hex>
+		<hex>7A26</hex>
+		<hex>7A5E</hex>
+		<hex>7A97</hex>
+		<hex>7ACF</hex>
+		<hex>7B08</hex>
+		<hex>7B41</hex>
+		<hex>7B7A</hex>
+		<hex>7BB3</hex>
+		<hex>7BEC</hex>
+
+		<!--Note 126-->
+		<hex>7C26</hex>
+		<hex>7C5F</hex>
+		<hex>7C99</hex>
+		<hex>7CD2</hex>
+		<hex>7D0C</hex>
+		<hex>7D46</hex>
+		<hex>7D80</hex>
+		<hex>7DBA</hex>
+		<hex>7DF4</hex>
+		<hex>7E2E</hex>
+		<hex>7E69</hex>
+		<hex>7EA3</hex>
+		<hex>7EDE</hex>
+		<hex>7F18</hex>
+		<hex>7F53</hex>
+		<hex>7F8E</hex>
+		<hex>7FC9</hex>
+		<hex>8004</hex>
+		<hex>803F</hex>
+		<hex>807B</hex>
+		<hex>80B6</hex>
+		<hex>80F2</hex>
+		<hex>812D</hex>
+		<hex>8169</hex>
+		<hex>81A5</hex>
+		<hex>81E1</hex>
+		<hex>821D</hex>
+		<hex>8259</hex>
+		<hex>8295</hex>
+		<hex>82D2</hex>
+		<hex>830E</hex>
+		<hex>834B</hex>
+
+		<!--Note 127-->
+		<hex>8388</hex>
+		<hex>83C4</hex>
+		<hex>8401</hex>
+		<hex>843E</hex>
+		<hex>847C</hex>
+		<hex>84B9</hex>
+		<hex>84F6</hex>
+		<hex>8534</hex>
+		<hex>8571</hex>
+		<hex>85AF</hex>
+		<hex>85ED</hex>
+		<hex>862B</hex>
+		<hex>8669</hex>
+		<hex>86A7</hex>
+		<hex>86E5</hex>
+		<hex>8724</hex>
+		<hex>8762</hex>
+		<hex>87A1</hex>
+		<hex>87E0</hex>
+		<hex>881F</hex>
+		<hex>885D</hex>
+		<hex>889D</hex>
+		<hex>88DC</hex>
+		<hex>891B</hex>
+		<hex>895A</hex>
+		<hex>899A</hex>
+		<hex>89DA</hex>
+		<hex>8A19</hex>
+		<hex>8A59</hex>
+		<hex>8A99</hex>
+		<hex>8AD9</hex>
+		<hex>8B1A</hex>
 	</label>
 </scope>
