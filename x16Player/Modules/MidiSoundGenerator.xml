@@ -188,7 +188,7 @@
 		<hex>e0</hex>
 
 		<cpu:BranchToRelative8IfEqual/>
-		<addressOf ref="pitchBendChange" type="Relative8"/>
+		<addressOf ref="pitchBend" type="Relative8"/>
 
 		<cpu:ReturnFromSubroutine/>
 
@@ -274,8 +274,9 @@
 		<!--Ignore Other Events-->
 		<cpu:ReturnFromSubroutine/>
 
-		<label id="pitchBendChange"/>
+		<label id="pitchBend"/>
 
+		<!--Get Channel-->
 		<cpu:CopyImmediate16AddressToAccumulator/>
 		<addressOf ref="Midi.Status" type="Absolute16"/>
 
@@ -287,6 +288,7 @@
 
 		<cpu:CopyAccumulatorToXIndex/>
 
+		<!--Get Pitch Bend (MSB)-->
 		<cpu:CopyImmediate16AddressToAccumulator/>
 		<addressOf ref="Midi.Value2" type="Absolute16"/>
 
@@ -326,9 +328,6 @@
 		<!--Update Active Channel Frequency-->
 		<cpu:CopyImmediate8AddressToAccumulator/>
 		<hex>44</hex>
-
-		<cpu:CopyAccumulatorToImmediate8Address/>
-		<hex>2d</hex>
 
 		<!--Get Voice Address-->
 		<cpu:ShiftAccumulatorLeft/>
@@ -490,7 +489,7 @@
 		<cpu:DecrementImmediate8Address/>
 		<hex>43</hex>
 
-		<cpu:BranchToRelative8IfZero/>
+		<cpu:BranchToRelative8IfNotZero/>
 		<addressOf ref="forEachVoiceChannel" type="Relative8"/>
 
 		<label id="notActive"/>
