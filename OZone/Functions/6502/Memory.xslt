@@ -36,7 +36,7 @@
 					</hex>
 
 					<cpu:CopyAccumulatorToImmediate8Address/>
-					<addressOf ref="address" type="Absolute16Low8"/>
+					<addressOf ref="address" type="Absolute8"/>
 
 					<cpu:CopyImmediate8ToAccumulator/>
 					<hex>
@@ -44,7 +44,7 @@
 					</hex>
 
 					<cpu:CopyAccumulatorToImmediate8Address/>
-					<addressOf ref="address" type="Absolute16Low8" offset="1"/>
+					<addressOf ref="address" type="Absolute8" offset="1"/>
 				</scope>
 			</xsl:if>
 		</xsl:if>

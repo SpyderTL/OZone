@@ -7,7 +7,7 @@
 	<xsl:template match="map">
 		<scope>
 			<xsl:for-each select="row">
-				<addressOf ref="row_{@index}" type="Absolute16Low8"/>
+				<addressOf ref="row_{@index}" type="Absolute8"/>
 			</xsl:for-each>
 			<xsl:for-each select="row">
 				<addressOf ref="row_{@index}" type="Absolute16High8"/>
