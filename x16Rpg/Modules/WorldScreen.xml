@@ -18,20 +18,95 @@
 	<byte>0</byte>
 	
 	<label id="drawRow" export="WorldScreen.DrawRow">
+		<label id="columnCount" offset="22"/>
+		<label id="screenColumn" offset="23"/>
+		<label id="screenRow" offset="24"/>
+		<label id="screenTiles" offset="9000"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="World.Row" type="Absolute16"/>
+
+		<cpu:AndAccumulatorWithImmediate8/>
+		<byte>31</byte>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="screenRow" type="Absolute8"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>10</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressHigh" type="Absolute16"/>
+
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<addressOf ref="screenRow" type="Absolute8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressMid" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Vera.AddressLow" type="Absolute16"/>
+
+		<!--Calculate Screen Tiles-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="column" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="screenColumn" type="Absolute8"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>32</byte>
+
+		<cpu:CopyAccumulatorToImmediate8Address/>
+		<addressOf ref="columnCount" type="Absolute8"/>
+
+		<label id="forEachColumn"/>
+
+		<!--Get Screen Column-->
+		<cpu:CopyImmediate8AddressToAccumulator/>
+		<addressOf ref="screenColumn" type="Absolute8"/>
+
+		<cpu:AndAccumulatorWithImmediate8/>
+		<byte>31</byte>
+
+		<cpu:CopyAccumulatorToYIndex/>
+
+		<!--Get Tile-->
+		<cpu:CopyImmediate8AddressToXIndex/>
+		<addressOf ref="screenColumn" type="Absolute8"/>
+
+		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
+		<addressOf ref="World.RowTiles" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16PlusYIndexAddress/>
+		<addressOf ref="screenTiles" type="Absolute16"/>
+
+		<cpu:IncrementImmediate8Address/>
+		<addressOf ref="screenColumn" type="Absolute8"/>
+
+		<cpu:DecrementImmediate8Address/>
+		<addressOf ref="columnCount" type="Absolute8"/>
+
+		<cpu:BranchToRelative8IfNotZero/>
+		<addressOf ref="forEachColumn" type="Relative8"/>
+
 		<!--Top Row-->
 		<cpu:CopyImmediate8ToAccumulator/>
 		<byte>32</byte>
 		
 		<cpu:CopyAccumulatorToImmediate8Address/>
-		<hex>22</hex>
-		
-		<cpu:CopyImmediate16AddressToXIndex/>
-		<addressOf ref="column" type="Absolute16"/>
+		<addressOf ref="columnCount" type="Absolute8"/>
+
+		<cpu:CopyImmediate8ToXIndex/>
+		<byte>0</byte>
 	
 		<label id="forEachTopTile"/>
 		
 		<cpu:CopyImmediate16PlusXIndexAddressToYIndex/>
-		<addressOf ref="World.RowTiles" type="Absolute16"/>
+		<addressOf ref="screenTiles" type="Absolute16"/>
 		
 		<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
 		<addressOf ref="topLeftCharacters" type="Absolute16"/>
@@ -74,8 +149,8 @@
 		<cpu:IncrementXIndex/>
 		
 		<cpu:DecrementImmediate8Address/>
-		<hex>22</hex>
-		
+		<addressOf ref="columnCount" type="Absolute8"/>
+
 		<cpu:BranchToRelative8IfNotZero/>
 		<addressOf ref="forEachTopTile" type="Relative8"/>
 	
@@ -84,15 +159,15 @@
 		<byte>32</byte>
 		
 		<cpu:CopyAccumulatorToImmediate8Address/>
-		<hex>22</hex>
-		
-		<cpu:CopyImmediate16AddressToXIndex/>
-		<addressOf ref="column" type="Absolute16"/>
+		<addressOf ref="columnCount" type="Absolute8"/>
+
+		<cpu:CopyImmediate8ToXIndex/>
+		<byte>0</byte>
 		
 		<label id="forEachBottomTile"/>
 		
 		<cpu:CopyImmediate16PlusXIndexAddressToYIndex/>
-		<addressOf ref="World.RowTiles" type="Absolute16"/>
+		<addressOf ref="screenTiles" type="Absolute16"/>
 		
 		<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
 		<addressOf ref="bottomLeftCharacters" type="Absolute16"/>
@@ -135,8 +210,8 @@
 		<cpu:IncrementXIndex/>
 		
 		<cpu:DecrementImmediate8Address/>
-		<hex>22</hex>
-		
+		<addressOf ref="columnCount" type="Absolute8"/>
+
 		<cpu:BranchToRelative8IfNotZero/>
 		<addressOf ref="forEachBottomTile" type="Relative8"/>
 	

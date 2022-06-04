@@ -402,31 +402,7 @@
 		<addressOf ref="Sprite.Index" type="Absolute16"/>
 
 		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>80</hex>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Sprite.Address" type="Absolute16"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>80</hex>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Sprite.Address" type="Absolute16" offset="1"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>01</hex>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Sprite.Address" type="Absolute16" offset="2"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>00</hex>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Sprite.Address" type="Absolute16" offset="3"/>
-
-		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>98</hex>
+		<hex>90</hex>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Sprite.X" type="Absolute16"/>
@@ -438,7 +414,7 @@
 		<addressOf ref="Sprite.X" type="Absolute16" offset="1"/>
 
 		<cpu:CopyImmediate8ToAccumulator/>
-		<hex>70</hex>
+		<hex>6d</hex>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="Sprite.Y" type="Absolute16"/>
@@ -475,6 +451,21 @@
 
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Sprite.Update" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>1</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="WorldSprite.Direction" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>0</byte>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="WorldSprite.Animation" type="Absolute16"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="WorldSprite.Update" type="Absolute16"/>
 
 		<cpu:ReturnFromSubroutine/>
 	</label>
@@ -773,36 +764,18 @@
 
 			<!--Set Camera-->
 			<cpu:CopyImmediate8ToAccumulator/>
-			<byte>142</byte>
+			<byte>144</byte>
 
 			<cpu:CopyAccumulatorToImmediate16Address/>
 			<addressOf ref="Camera.X" type="Absolute16"/>
 
 			<cpu:CopyImmediate8ToAccumulator/>
-			<byte>157</byte>
+			<byte>158</byte>
 
 			<cpu:CopyAccumulatorToImmediate16Address/>
 			<addressOf ref="Camera.Y" type="Absolute16"/>
 
 			<!--Draw Tiles-->
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>10</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Vera.AddressHigh" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>00</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Vera.AddressMid" type="Absolute16"/>
-
-			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>00</hex>
-
-			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Vera.AddressLow" type="Absolute16"/>
-
 			<cpu:CopyImmediate16AddressToAccumulator/>
 			<addressOf ref="Camera.Y" type="Absolute16"/>
 
@@ -838,17 +811,83 @@
 			<cpu:BranchToRelative8IfNotZero/>
 			<addressOf ref="drawRow" type="Relative8"/>
 
-			<cpu:CopyImmediate8ToAccumulator/>
-			<byte>24</byte>
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="Camera.X" type="Absolute16"/>
+
+			<cpu:AndAccumulatorWithImmediate8/>
+			<byte>31</byte>
 
 			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Screen.ScrollX" type="Absolute16"/>
+			<addressOf ref="Screen.ScrollX" type="Absolute16" offset="0"/>
 
 			<cpu:CopyImmediate8ToAccumulator/>
-			<byte>16</byte>
-			
+			<byte>0</byte>
+
 			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Screen.ScrollY" type="Absolute16"/>
+			<addressOf ref="Screen.ScrollX" type="Absolute16" offset="1"/>
+
+			<cpu:ShiftImmediate16AddressLeft/>
+			<addressOf ref="Screen.ScrollX" type="Absolute16" offset="0"/>
+
+			<cpu:RollImmediate16AddressLeft/>
+			<addressOf ref="Screen.ScrollX" type="Absolute16" offset="1"/>
+
+			<cpu:ShiftImmediate16AddressLeft/>
+			<addressOf ref="Screen.ScrollX" type="Absolute16" offset="0"/>
+
+			<cpu:RollImmediate16AddressLeft/>
+			<addressOf ref="Screen.ScrollX" type="Absolute16" offset="1"/>
+
+			<cpu:ShiftImmediate16AddressLeft/>
+			<addressOf ref="Screen.ScrollX" type="Absolute16" offset="0"/>
+
+			<cpu:RollImmediate16AddressLeft/>
+			<addressOf ref="Screen.ScrollX" type="Absolute16" offset="1"/>
+
+			<cpu:ShiftImmediate16AddressLeft/>
+			<addressOf ref="Screen.ScrollX" type="Absolute16" offset="0"/>
+
+			<cpu:RollImmediate16AddressLeft/>
+			<addressOf ref="Screen.ScrollX" type="Absolute16" offset="1"/>
+
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="Camera.Y" type="Absolute16"/>
+
+			<cpu:AndAccumulatorWithImmediate8/>
+			<byte>31</byte>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="Screen.ScrollY" type="Absolute16" offset="0"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="Screen.ScrollY" type="Absolute16" offset="1"/>
+
+			<cpu:ShiftImmediate16AddressLeft/>
+			<addressOf ref="Screen.ScrollY" type="Absolute16" offset="0"/>
+
+			<cpu:RollImmediate16AddressLeft/>
+			<addressOf ref="Screen.ScrollY" type="Absolute16" offset="1"/>
+
+			<cpu:ShiftImmediate16AddressLeft/>
+			<addressOf ref="Screen.ScrollY" type="Absolute16" offset="0"/>
+
+			<cpu:RollImmediate16AddressLeft/>
+			<addressOf ref="Screen.ScrollY" type="Absolute16" offset="1"/>
+
+			<cpu:ShiftImmediate16AddressLeft/>
+			<addressOf ref="Screen.ScrollY" type="Absolute16" offset="0"/>
+
+			<cpu:RollImmediate16AddressLeft/>
+			<addressOf ref="Screen.ScrollY" type="Absolute16" offset="1"/>
+
+			<cpu:ShiftImmediate16AddressLeft/>
+			<addressOf ref="Screen.ScrollY" type="Absolute16" offset="0"/>
+
+			<cpu:RollImmediate16AddressLeft/>
+			<addressOf ref="Screen.ScrollY" type="Absolute16" offset="1"/>
 
 			<cpu:CallImmediate16Address/>
 			<addressOf ref="Screen.UpdateScroll" type="Absolute16"/>
