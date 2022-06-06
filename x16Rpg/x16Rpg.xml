@@ -624,10 +624,7 @@
 
 	<label id="wait">
 		<cpu:CallImmediate16Address/>
-		<addressOf ref="Kernal.GetDateTime" type="Absolute16"/>
-
-		<cpu:CopyImmediate8AddressToAccumulator/>
-		<hex>08</hex>
+		<addressOf ref="System.GetTimeOfDay" type="Absolute16"/>
 
 		<cpu:CompareAccumulatorToImmediate16Address/>
 		<addressOf ref="time" type="Absolute16"/>
@@ -641,8 +638,6 @@
 		<cpu:ReturnFromSubroutine/>
 
 		<var:byte id="time">0</var:byte>
-
-		<label id="Kernal.GetDateTime" offset="FF50"/>
 	</label>
 
 	<label id="updateMenuInput">
@@ -736,7 +731,7 @@
 	<label id="newGame">
 		<scope>
 			<cpu:CallImmediate16Address/>
-			<addressOf ref="Screen.Clear" type="Absolute16"/>
+			<addressOf ref="Screen.Disable" type="Absolute16"/>
 
 			<cpu:CallImmediate16Address/>
 			<addressOf ref="hidePointer" type="Absolute16"/>
@@ -891,6 +886,9 @@
 
 			<cpu:CallImmediate16Address/>
 			<addressOf ref="Screen.UpdateScroll" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="Screen.Enable" type="Absolute16"/>
 
 			<label id="loop"/>
 
