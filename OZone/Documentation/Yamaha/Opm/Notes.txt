@@ -1,0 +1,113 @@
+﻿Write Address
+	0x00			Reserved
+	0x01			Test
+		Test			6 bits
+		LFO Reset		1 bit
+		Test			1 bit
+	0x08			KON						// Key On/Off
+		Reserved		1 bit
+		Slots			4 bits
+			Carrier 1		1 bit			// 0 = Off, 1 = On
+			Modulator 1		1 bit
+			Carrier 0		1 bit
+			Modulator 0		1 bit
+		Channel			3 bits				// 0-7
+	0x0F			NE/NFRQ
+		Noise Enable	1 bit
+		Reserved		2 bits
+		Noise Frequency	5 bits
+	0x10			CLKA1
+		Clock A High	8 bits
+	0x11			CLKA2
+		Reserved		6 bits
+		Clock A Low		2 bits
+	0x12			CLKB
+		Clock B			8 bits
+	0x14			CSM/RST/IRQ/LOAD
+		Key On Enable				1 bit
+		Reserved					1 bit
+		Reset Timer B Flag			1 bit
+		Reset Timer A Flag			1 bit
+		Timer B IRQ Enable			1 bit
+		Timer A IRQ Enable			1 bit
+		Timer B Start				1 bit
+		Timer A Start				1 bit
+	0x18			LFRQ
+		Low Frequency	8 bits
+	0x19			PMD/AMD
+		Modulation Mode				1 bit		// 0 - Amplitude, 1 - Frequency
+		Modulation Depth			7 bits
+	0x1B			CT/W
+		Output Terminal 0 Enable	1 bit
+		Output Terminal 1 Enable	1 bit
+		Reserved					4 bits
+		Low Frequency Waveform		2 bits		// 0 - Sawtooth, 1 - Square, 2 - Triangle, 3 - Noise
+	0x20			Channel[8]
+		LR/FB/CONECT	1
+			Right Channel Enable	1 bit
+			Left Channel Enable		1 bit
+			Feedback Level			3 bits
+			Connect					3 bits
+	0x28			Channel[8]
+		KC				1
+			Reserved				1 bit
+			Octave					3 bits		// 0-7
+			Note					4 bits		// 0 = C#, 14 = C
+	0x30			Channel[8]
+		KF				1
+			Divider					6 bits
+			Reserved				2 bits
+	0x38			Channel[8]
+		PMS/AMS			1
+			Reserved				6 bits
+			Modulation Sensitivity	2 bits
+	0x40			Channel[8]
+		Slots[4]
+			DTI/MUL			1
+				Reserved				1 bit
+				Detune					3 bits
+				Multiply				4 bits		// 0 = 0.5, 1 = 1
+	0x60			Channel[8]
+		Slots[4]
+			TL				1
+				Reserved				1 bit
+				Total Level				7 bits
+	0x80			Channel[8]
+		Slots[4]
+			KS/AR			1
+				Key Scaling				2 bits
+				Reserved				1 bit
+				Attack Rate				5 bits
+	0xA0			Channel[8]
+		Slots[4]
+			AMS-EN/D1R		1
+				Modulation Sensitivity Enable	1 bit
+				Reserved						2 bits
+				Decay Rate 0					5 bits
+	0xC0			Channel[8]
+		Slots[4]
+			DT2/D2R			1
+				Gross Detune			2 bits
+				Reserved				1 bit
+				Decay Rate 1			5 bits
+	0xE0			Channel[8]
+		Slots[4]
+			D1L/RR			1
+				Decay Level 0			4 bits
+				Release Rate			4 bits
+
+Read Address
+	0x00-0xFF		Status
+		Busy			1 bit
+		Reserved		6 bits
+		Interrupt		1 bit
+
+Slot Numbers
+	Modulator 0
+		Channel[8]
+	Modulator 1
+		Channel[8]
+	Carrier 0
+		Channel[8]
+	Carrier 1
+		Channel[8]

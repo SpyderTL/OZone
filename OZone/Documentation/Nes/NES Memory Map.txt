@@ -2,6 +2,34 @@ NES Memory Map
 	0x0000 - 0x07ff		0x0800		RAM
 	0x0800 - 0x1fff		0x1800		RAM Mirror
 	0x2000 - 0x2007		0x0007		PPU
+		Control					1
+			VSyncNmiEnable			1 bit
+			MasterSlaveSelect		1 bit		// Do not use
+			SpriteSize				1 bit		// 0 = 8x8, 1 = 8x16
+			BackgroundSelect		1 bit		// 0 = 0x0000, 1 = 0x1000
+			SpriteSelect			1 bit		// 0 = 0x0000, 1 = 0x1000
+			AddressIncrementMode	1 bit		// 0 = 1, 1 = 32
+			NameTableSelect			2 bits		// 0 = 0x2000, 1 = 0x2400, 2 = 0x2600, 3 = 0x2800
+		Control 2				1
+			Blue					1 bit
+			Green					1 bit
+			Red						1 bit
+			SpriteEnable			1 bit
+			BackgroundEnable		1 bit
+			SpriteBorderEnable		1 bit
+			BackgroundBorderEnable	1 bit
+			GrayscaleMode			1 bit
+		Status
+			VBlank					1 bit
+			Sprite0					1 bit
+			SpriteOverflow			1 bit
+			Reserved				5 bits
+		OAM Address				1
+		OAM Data				1
+		Scroll					1				// 1st write updates horizontal scroll, 2nd write updates vertical scroll.  Read status to reset.
+		PPU Address				1
+		PPU Data				1
+		OAM DMA					1
 	0x2008 - 0x3fff		0x1ff8		PPU Mirror
 	0x4000 - 0x4017		0x0017		APU
 		0x4000 - 0x4003		0x0004		Pulse Channel 1
@@ -89,3 +117,25 @@ NES Memory Map
 		0xfffa - 0xfffb			0x0002		NMI Vector
 		0xfffc - 0xfffd			0x0002		Reset Vector
 		0xfffe - 0xffff			0x0002		IRQ/BRK Vector
+
+PPU
+	VRAM
+		0x0000 - 0x3FFF						// 16K bytes
+			0x0000 - 0x0FFF			Pattern Table 0
+			0x1000 - 0x1FFF			Pattern Table 1
+			0x2000 - 0x23FF			Nametable 0
+			0x2400 - 0x27FF			Nametable 1
+			0x2800 - 0x2BFF			Nametable 2
+			0x2C00 - 0x2FFF			Nametable 3
+			0x3000 - 0x3EFF			Nametable (Mirror)
+			0x3F00 - 0x3F1F			Palette
+			0x3F20 - 0x3FFF			Palette (Mirror)
+	OAM
+		0x0000 - 0x0100						// 256 bytes
+			Sprites[64]
+				Y						1
+				Character				1
+				Color					1
+				X						1
+	Palette
+		0x0000 - 0x001c						// 28 bytes
