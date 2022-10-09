@@ -179,8 +179,15 @@
 			<cpu:CopyImmediate8ToXIndex/>
 			<byte>79</byte>
 
+			<!--Address 1 = 0x1b000, Decrement by 2-->
 			<cpu:CopyImmediate8ToAccumulator/>
-			<hex>21</hex>
+			<byte>1</byte>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="Video.Control" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>29</hex>
 
 			<cpu:CopyAccumulatorToImmediate16Address/>
 			<addressOf ref="Video.AddressHigh" type="Absolute16"/>
@@ -193,8 +200,34 @@
 			<cpu:CopyAccumulatorToImmediate16Address/>
 			<addressOf ref="Video.AddressMid" type="Absolute16"/>
 
-			<label id="forEachColumn"/>
-			
+			<cpu:CopyXIndexToAccumulator/>
+
+			<cpu:ShiftAccumulatorLeft/>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="Video.AddressLow" type="Absolute16"/>
+
+			<!--Address 0 = 0x1b000, Decrement by 2-->
+			<cpu:CopyImmediate8ToAccumulator/>
+			<byte>0</byte>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="Video.Control" type="Absolute16"/>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>29</hex>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="Video.AddressHigh" type="Absolute16"/>
+
+			<cpu:CopyYIndexToAccumulator/>
+
+			<cpu:AddImmediate8ToAccumulator/>
+			<hex>b0</hex>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="Video.AddressMid" type="Absolute16"/>
+
 			<cpu:CopyXIndexToAccumulator/>
 
 			<cpu:SetCarryFlag/>
@@ -207,11 +240,13 @@
 			<cpu:CopyAccumulatorToImmediate16Address/>
 			<addressOf ref="Video.AddressLow" type="Absolute16"/>
 
+			<label id="forEachColumn"/>
+
 			<cpu:CopyImmediate16AddressToAccumulator/>
 			<addressOf ref="Video.Data0" type="Absolute16"/>
 
 			<cpu:CopyAccumulatorToImmediate16Address/>
-			<addressOf ref="Video.Data0" type="Absolute16"/>
+			<addressOf ref="Video.Data1" type="Absolute16"/>
 
 			<cpu:DecrementXIndex/>
 
