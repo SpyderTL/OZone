@@ -33,6 +33,7 @@ namespace x16Player
 				"../../Modules/BassGuitarScreen.xml",
 				"../../Modules/Browser.xml",
 				"../../Modules/Console.xml",
+				"../../Modules/DrumsScreen.xml",
 				"../../Modules/File.xml",
 				"../../Modules/FiveStringBassGuitarScreen.xml",
 				"../../Modules/GuitarScreen.xml",
@@ -47,6 +48,7 @@ namespace x16Player
 				"../../Modules/SoundGenerator.xml",
 				"../../Modules/System.xml",
 				"../../Modules/Video.xml",
+				"../../Modules/VocalsScreen.xml",
 				"../../Modules/VolumeScreen.xml",
 			};
 

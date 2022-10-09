@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<scope
+	xmlns="http://metalx.org/Program"
+	xmlns:cpu="http://metalx.org/Mos/6502/Operators"
+	xmlns:mem="http://metalx.org/6502/Functions/Memory"
+	xmlns:str="http://metalx.org/6502/Functions/String"
+	xmlns:mm="http://metalx.org/6502/Functions/MemoryManager"
+	xmlns:clsf="http://metalx.org/C64/Functions/Class"
+	xmlns:cls="http://metalx.org/Class"
+	xmlns:scr="http://metalx.org/x16Console/Functions/Screen"
+	xmlns:ascii="http://metalx.org/Ansi/Ascii"
+	xmlns:petscii="http://metalx.org/Commodore64/Petscii"
+	xmlns:var="http://metalx.org/Variable">
+
+	<label id="Channel" export="VocalsScreen.Channel"/>
+	<byte>0</byte>
+
+	<label id="Reset" export="VocalsScreen.Reset">
+		<scope>
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="Channel" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="Screen.Clear" type="Absolute16"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+
+	<label id="ProcessEvent" export="VocalsScreen.ProcessEvent">
+		<!--Get Channel-->
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Midi.Status" type="Absolute16"/>
+
+		<cpu:AndAccumulatorWithImmediate8/>
+		<hex>0f</hex>
+
+		<cpu:CompareAccumulatorToImmediate16Address/>
+		<addressOf ref="Channel" type="Absolute16"/>
+
+		<cpu:BranchToRelative8IfEqual/>
+		<addressOf ref="match" type="Relative8"/>
+
+		<cpu:ReturnFromSubroutine/>
+
+		<label id="match"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Midi.Status" type="Absolute16"/>
+
+		<cpu:AndAccumulatorWithImmediate8/>
+		<hex>f0</hex>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<hex>80</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notNoteOff" type="Relative8"/>
+
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="noteOff" type="Absolute16"/>
+
+		<label id="notNoteOff"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<hex>90</hex>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notNoteOn" type="Relative8"/>
+
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="noteOn" type="Absolute16"/>
+
+		<label id="notNoteOn"/>
+
+		<cpu:ReturnFromSubroutine/>
+
+		<label id="noteOn"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Midi.Value2" type="Absolute16"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<byte>0</byte>
+
+		<cpu:BranchToRelative8IfNotEqual/>
+		<addressOf ref="notSilent" type="Relative8"/>
+
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="noteOff" type="Absolute16"/>
+
+		<label id="notSilent"/>
+
+		<cpu:CopyImmediate8ToYIndex/>
+		<hex>40</hex>
+
+		<cpu:JumpToImmediate16Address/>
+		<addressOf ref="draw" type="Absolute16"/>
+
+		<label id="noteOff"/>
+
+		<cpu:CopyImmediate8ToYIndex/>
+		<hex>20</hex>
+
+		<!--Draw Note-->
+		<label id="draw"/>
+
+		<cpu:CopyImmediate16AddressToAccumulator/>
+		<addressOf ref="Midi.Value" type="Absolute16"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<byte>24</byte>
+
+		<cpu:BranchToRelative8IfGreaterOrEqual/>
+		<addressOf ref="notTooLow" type="Relative8"/>
+
+		<cpu:ReturnFromSubroutine/>
+
+		<label id="notTooLow"/>
+
+		<cpu:CompareAccumulatorToImmediate8/>
+		<byte>84</byte>
+
+		<cpu:BranchToRelative8IfLess/>
+		<addressOf ref="notTooHigh" type="Relative8"/>
+
+		<cpu:ReturnFromSubroutine/>
+
+		<label id="notTooHigh"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>11</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Video.AddressHigh" type="Absolute16"/>
+
+		<!--Get Note-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<byte>127</byte>
+
+		<cpu:SetCarryFlag/>
+
+		<cpu:SubtractImmediate16AddressFromAccumulator/>
+		<addressOf ref="Midi.Value" type="Absolute16"/>
+
+		<cpu:SetCarryFlag/>
+
+		<cpu:SubtractImmediate8FromAccumulator/>
+		<byte>44</byte>
+
+		<cpu:ClearCarryFlag/>
+
+		<cpu:AddImmediate8ToAccumulator/>
+		<hex>b0</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Video.AddressMid" type="Absolute16"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="Video.AddressLow" type="Absolute16"/>
+
+		<cpu:CopyYIndexToImmediate16Address/>
+		<addressOf ref="Video.Data0" type="Absolute16"/>
+
+		<cpu:ReturnFromSubroutine/>
+	</label>
+
+	<label id="Update" export="VocalsScreen.Update">
+		<scope>
+			<cpu:CopyImmediate8ToYIndex/>
+			<byte>59</byte>
+
+			<label id="forEachRow"/>
+
+			<cpu:CopyImmediate8ToXIndex/>
+			<byte>79</byte>
+
+			<cpu:CopyImmediate8ToAccumulator/>
+			<hex>21</hex>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="Video.AddressHigh" type="Absolute16"/>
+
+			<cpu:CopyYIndexToAccumulator/>
+
+			<cpu:AddImmediate8ToAccumulator/>
+			<hex>b0</hex>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="Video.AddressMid" type="Absolute16"/>
+
+			<label id="forEachColumn"/>
+			
+			<cpu:CopyXIndexToAccumulator/>
+
+			<cpu:SetCarryFlag/>
+
+			<cpu:SubtractImmediate8FromAccumulator/>
+			<byte>1</byte>
+
+			<cpu:ShiftAccumulatorLeft/>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="Video.AddressLow" type="Absolute16"/>
+
+			<cpu:CopyImmediate16AddressToAccumulator/>
+			<addressOf ref="Video.Data0" type="Absolute16"/>
+
+			<cpu:CopyAccumulatorToImmediate16Address/>
+			<addressOf ref="Video.Data0" type="Absolute16"/>
+
+			<cpu:DecrementXIndex/>
+
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="forEachColumn" type="Relative8"/>
+
+			<cpu:DecrementYIndex/>
+
+			<cpu:BranchToRelative8IfPositive/>
+			<addressOf ref="forEachRow" type="Relative8"/>
+
+			<cpu:ReturnFromSubroutine/>
+		</scope>
+	</label>
+</scope>
