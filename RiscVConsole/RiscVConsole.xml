@@ -4,6 +4,52 @@
 	xmlns="http://metalx.org/Program"
 	xmlns:cpu="http://metalx.org/Berkeley/RiscV/Operators"
 	xmlns:var="http://metalx.org/Variable">
+	
+	<label id="loop"/>
 
-	<!--<cpu:CallRegisterAddress baseRegister="0" offset="4096" linkRegister="0"/>-->
+	<cpu:SetRegisterToAddressOf register="10" ref="message"/>
+
+	<cpu:JumpToAddress ref="Serial.WriteString" returnAddressRegister="31"/>
+
+	<cpu:JumpToAddress ref="loop"/>
+
+	<!--UART Read/Write 0x10000000-->
+	<label id="uart" offset="10000000"/>
+
+	<label id="Serial.WriteCharacter">
+		<cpu:SetRegisterToAddressOf register="20" ref="uart"/>
+
+		<cpu:CopyRegisterToAddress8 register="10" addressRegister="20"/>
+
+		<cpu:JumpToRegister addressRegister="31"/>
+	</label>
+
+	<label id="Serial.WriteString">
+		<scope>
+			<cpu:SetRegisterToAddressOf register="20" ref="uart"/>
+			<cpu:AddValueToRegister value="0" register="10" destination="21"/>
+			<cpu:CopyAddressToRegister32 addressRegister="21" register="22"/>
+			<cpu:AddValueToRegister value="4" register="21" destination="21"/>
+			
+			<label id="forEachCharacter"/>
+
+			<cpu:IfEqual register="22" register2="0" ref="done"/>
+
+			<cpu:CopyAddressToRegister8 addressRegister="21" register="23"/>
+			
+			<cpu:CopyRegisterToAddress8 register="23" addressRegister="20"/>
+
+			<cpu:AddValueToRegister value="1" register="21" destination="21"/>
+
+			<cpu:AddValueToRegister value="-1" register="22" destination="22"/>
+
+			<cpu:JumpToAddress ref="forEachCharacter"/>
+			
+			<label id="done"/>
+			
+			<cpu:JumpToRegister addressRegister="31"/>
+		</scope>
+	</label>
+
+	<var:string id="message">Hello, World!</var:string>
 </scope>

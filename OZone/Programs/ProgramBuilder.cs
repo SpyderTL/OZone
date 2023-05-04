@@ -73,14 +73,14 @@ namespace OZone.Programs
 
 			var destination = source;
 
-			var namespaces = FindNamespaces(source);
+			var namespaces = FindNamespaces(source, false);
 
 			var pass = 0;
 
 			while (namespaces.Length != 0)
 			{
 				if (pass++ == 255)
-					throw new Exception("Unhandled element (<" + FindUnhandledTags(source)[0] + ">)");
+					throw new Exception("Unhandled element (<" + FindUnhandledTags(source, false)[0] + ">)");
 
 				foreach (var name in namespaces)
 				{
@@ -102,16 +102,56 @@ namespace OZone.Programs
 					}
 				}
 
-				namespaces = FindNamespaces(source);
+				namespaces = FindNamespaces(source, false);
 			}
-
-			//source.Save(writer);
-
-			//XDocument document = XDocument.Load(reader);
 
 			var document = XDocument.Load(source.CreateNavigator().ReadSubtree());
 
 			return ProgramReader.Read(document);
+		}
+
+		public static void Build(string programFile, string outputFile, IEnumerable<KeyValuePair<string, string>> transformFiles)
+		{
+			var source = new XmlDocument();
+			source.Load(programFile);
+
+			var transformNamespaces = transformFiles.Select(t => new KeyValuePair<string, XslCompiledTransform>(t.Key, LoadTransform(t.Value))).ToArray();
+
+			var destination = source;
+
+			var namespaces = FindNamespaces(source, true);
+
+			var pass = 0;
+
+			while (namespaces.Length != 0)
+			{
+				if (pass++ == 255)
+					throw new Exception("Unhandled element (<" + FindUnhandledTags(source, true)[0] + ">)");
+
+				foreach (var name in namespaces)
+				{
+					if (!transformNamespaces.Any(n => string.Equals(n.Key, name)))
+						throw new Exception("Unrecognized namespace (" + name + ")");
+
+					foreach (var transform in transformNamespaces.Where(n => string.Equals(n.Key, name)))
+					{
+						destination = new XmlDocument();
+
+						using (var writer2 = destination.CreateNavigator().AppendChild())
+						{
+							transform.Value.Transform(source.CreateNavigator(), writer2);
+
+							writer2.Flush();
+						}
+
+						source = destination;
+					}
+				}
+
+				namespaces = FindNamespaces(source, true);
+			}
+
+			source.Save(outputFile);
 		}
 
 		//[DebuggerHidden]
@@ -199,14 +239,14 @@ namespace OZone.Programs
 
 			var destination = source;
 
-			var namespaces = FindNamespaces(source);
+			var namespaces = FindNamespaces(source, false);
 
 			var pass = 0;
 
 			while(namespaces.Length != 0)
 			{
 				if(pass++ == 255)
-					throw new Exception("Unhandled element (<" + FindUnhandledTags(source)[0] + ">)");
+					throw new Exception("Unhandled elements: " + string.Join(", ", FindUnhandledTags(source, false)));
 
 				foreach(var name in namespaces)
 				{
@@ -228,13 +268,13 @@ namespace OZone.Programs
 					}
 				}
 
-				namespaces = FindNamespaces(source);
+				namespaces = FindNamespaces(source, false);
 			}
 
 			source.Save(writer);
 		}
 
-		private static string[] FindNamespaces(XmlDocument document)
+		private static string[] FindNamespaces(XmlDocument document, bool allowCustomSegments)
 		{
 			//var nodes = document.SelectNodes("//*/namespace::*");
 
@@ -250,16 +290,17 @@ namespace OZone.Programs
 
 			while(reader.Read())
 				if(!string.IsNullOrWhiteSpace(reader.NamespaceURI) &&
-					!string.Equals(reader.NamespaceURI, "http://metalx.org/Program") &&
-					!string.Equals(reader.NamespaceURI, "http://www.w3.org/2000/xmlns/") &&
-					!string.Equals(reader.NamespaceURI, "http://www.w3.org/XML/1998/namespace"))
+					!string.Equals(reader.NamespaceURI, "http://metalx.org/Program", StringComparison.OrdinalIgnoreCase) &&
+					!string.Equals(reader.NamespaceURI, "http://www.w3.org/2000/xmlns/", StringComparison.OrdinalIgnoreCase) &&
+					!string.Equals(reader.NamespaceURI, "http://www.w3.org/XML/1998/namespace", StringComparison.OrdinalIgnoreCase) &&
+					(!allowCustomSegments || !string.Equals(reader.GetAttribute("compile", "http://metalx.org/Program"), "false", StringComparison.OrdinalIgnoreCase)))
 					if(!names.Contains(reader.NamespaceURI))
 						names.Add(reader.NamespaceURI);
 
 			return names.ToArray();
 		}
 
-		private static string[] FindUnhandledTags(XmlDocument document)
+		private static string[] FindUnhandledTags(XmlDocument document, bool allowCustomSegments)
 		{
 			//var nodes = document.SelectNodes("//*/namespace::*");
 
@@ -277,8 +318,9 @@ namespace OZone.Programs
 				if(!string.IsNullOrWhiteSpace(reader.NamespaceURI) &&
 					!string.Equals(reader.NamespaceURI, "http://metalx.org/Program") &&
 					!string.Equals(reader.NamespaceURI, "http://www.w3.org/2000/xmlns/") &&
-					!string.Equals(reader.NamespaceURI, "http://www.w3.org/XML/1998/namespace"))
-					if(!tags.Contains(reader.NamespaceURI))
+					!string.Equals(reader.NamespaceURI, "http://www.w3.org/XML/1998/namespace") &&
+					(!allowCustomSegments || !string.Equals(reader.GetAttribute("compile", "http://metalx.org/Program"), "false", StringComparison.OrdinalIgnoreCase)))
+					if (!tags.Contains(reader.NamespaceURI))
 						tags.Add(reader.Name);
 
 			return tags.ToArray();

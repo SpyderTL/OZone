@@ -1,1 +1,1 @@
-"c:\program files\qemu\qemu-system-riscv32.exe" -m 256 -option-rom c:\users\joshu\source\repos\OZone\RiscVConsole\bin\Debug\RiscVConsole.bin -S -monitor stdio
+"c:\program files\qemu\qemu-system-riscv32.exe" -M virt -m 8G -bios "C:\Users\Joshua\source\repos\OZone\RiscVConsole\bin\x86\Debug\RiscVConsole.bin" -S -s

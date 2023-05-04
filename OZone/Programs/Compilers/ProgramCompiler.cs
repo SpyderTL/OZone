@@ -32,6 +32,17 @@ namespace OZone.Programs.Compilers
 					throw new Exception("Label not found: " + addressOf.Reference);
 			}
 
+			foreach (var custom in segments.OfType<CustomProgramSegment>())
+			{
+				if (custom.Reference != null)
+				{
+					if (labels.TryGetValue(custom.Reference, out Label label))
+						custom.Segment = label;
+					else
+						throw new Exception("Label not found: " + custom.Reference);
+				}
+			}
+
 			foreach (var length in segments.OfType<Length>())
 			{
 				if (labels.TryGetValue(length.From, out Label label))

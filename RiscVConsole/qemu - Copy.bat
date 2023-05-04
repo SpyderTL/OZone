@@ -1,0 +1,1 @@
+"c:\program files\qemu\qemu-system-riscv64.exe" -M virt -m 8G -device loader,file="C:\Users\Joshua\source\repos\OZone\RiscVConsole\bin\x86\Debug\RiscVConsole.bin",addr=0x100000000 -S

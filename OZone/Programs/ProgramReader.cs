@@ -29,19 +29,19 @@ namespace OZone.Programs
 						switch (element.Value.Length)
 						{
 							case 8:
-								yield return new ByteValue(element.Value.ToBinaryByte());
+								yield return new ByteValue(element.Value.ToBinaryByte()) { Element = element };
 								break;
 
 							case 16:
-								yield return new UnsignedShortValue(element.Value.ToBinaryShort());
+								yield return new UnsignedShortValue(element.Value.ToBinaryShort()) { Element = element };
 								break;
 
 							case 32:
-								yield return new UnsignedIntValue(element.Value.ToBinaryInt());
+								yield return new UnsignedIntValue(element.Value.ToBinaryInt()) { Element = element };
 								break;
 
 							case 64:
-								yield return new UnsignedLongValue(element.Value.ToBinaryLong());
+								yield return new UnsignedLongValue(element.Value.ToBinaryLong()) { Element = element };
 								break;
 
 							default:
@@ -53,19 +53,19 @@ namespace OZone.Programs
 						switch (element.Value.Length)
 						{
 							case 2:
-								yield return new ByteValue(element.Value.ToHexByte());
+								yield return new ByteValue(element.Value.ToHexByte()) { Element = element };
 								break;
 
 							case 4:
-								yield return new UnsignedShortValue(element.Value.ToHexShort());
+								yield return new UnsignedShortValue(element.Value.ToHexShort()) { Element = element };
 								break;
 
 							case 8:
-								yield return new UnsignedIntValue(element.Value.ToHexInt());
+								yield return new UnsignedIntValue(element.Value.ToHexInt()) { Element = element };
 								break;
 
 							case 16:
-								yield return new UnsignedLongValue(element.Value.ToHexLong());
+								yield return new UnsignedLongValue(element.Value.ToHexLong()) { Element = element };
 								break;
 
 							default:
@@ -74,31 +74,31 @@ namespace OZone.Programs
 						break;
 
 					case "byte":
-						yield return new ByteValue(element.Value.ToByte());
+						yield return new ByteValue(element.Value.ToByte()) { Element = element };
 						break;
 
 					case "sbyte":
-						yield return new SignedByteValue(element.Value.ToSignedByte());
+						yield return new SignedByteValue(element.Value.ToSignedByte()) { Element = element };
 						break;
 
 					case "short":
-						yield return new ShortValue(element.Value.ToShort());
+						yield return new ShortValue(element.Value.ToShort()) { Element = element };
 						break;
 
 					case "ushort":
-						yield return new UnsignedShortValue(element.Value.ToUnsignedShort());
+						yield return new UnsignedShortValue(element.Value.ToUnsignedShort()) { Element = element };
 						break;
 
 					case "int":
-						yield return new IntValue(element.Value.ToInt());
+						yield return new IntValue(element.Value.ToInt()) { Element = element };
 						break;
 
 					case "uint":
-						yield return new UnsignedIntValue(element.Value.ToUnsignedInt());
+						yield return new UnsignedIntValue(element.Value.ToUnsignedInt()) { Element = element };
 						break;
 
 					case "long":
-						yield return new LongValue(element.Value.ToLong());
+						yield return new LongValue(element.Value.ToLong()) { Element = element };
 						break;
 
 					case "ulong":
@@ -106,35 +106,35 @@ namespace OZone.Programs
 						break;
 
 					case "float":
-						yield return new FloatValue(element.Value.ToFloat());
+						yield return new FloatValue(element.Value.ToFloat()) { Element = element };
 						break;
 
 					case "double":
-						yield return new DoubleValue(element.Value.ToDouble());
+						yield return new DoubleValue(element.Value.ToDouble()) { Element = element };
 						break;
 
 					case "real":
-						yield return new RealValue(element.Value.ToReal());
+						yield return new RealValue(element.Value.ToReal()) { Element = element };
 						break;
 
 					case "decimal":
-						yield return new DecimalValue(element.Value.ToDecimal());
+						yield return new DecimalValue(element.Value.ToDecimal()) { Element = element };
 						break;
 
 					case "string":
-						yield return new StringValue(element.Value.Replace("\n", "\r\n"));
+						yield return new StringValue(element.Value.Replace("\n", "\r\n")) { Element = element };
 						break;
 
 					case "empty":
-						yield return new EmptyValue(uint.Parse(element.Attribute("length").Value));
+						yield return new EmptyValue(uint.Parse(element.Attribute("length").Value)) { Element = element };
 						break;
 
 					case "align":
-						yield return new Align(uint.Parse(element.Attribute("bytes").Value));
+						yield return new Align(uint.Parse(element.Attribute("bytes").Value)) { Element = element };
 						break;
 
 					case "label":
-						Label label = new Label { Id = element.Attribute("id").Value };
+						Label label = new Label { Id = element.Attribute("id").Value, Element = element };
 
 						if (element.Attributes("page").Any() ||
 							element.Attributes("offset").Any())
@@ -159,7 +159,7 @@ namespace OZone.Programs
 						break;
 
 					case "length":
-						var length = new Length { From = element.Attribute("from").Value, To = element.Attribute("to").Value, Type = (LengthType)Enum.Parse(typeof(LengthType), element.Attribute("type").Value) };
+						var length = new Length { From = element.Attribute("from").Value, To = element.Attribute("to").Value, Type = (LengthType)Enum.Parse(typeof(LengthType), element.Attribute("type").Value), Element = element };
 
 						length.Source = element.ToString();
 
@@ -168,7 +168,7 @@ namespace OZone.Programs
 						break;
 
 					case "addressOf":
-						var addressOf = new AddressOf { Reference = element.Attribute("ref").Value, Type = (ReferenceType)Enum.Parse(typeof(ReferenceType), element.Attribute("type").Value) };
+						var addressOf = new AddressOf { Reference = element.Attribute("ref").Value, Type = (ReferenceType)Enum.Parse(typeof(ReferenceType), element.Attribute("type").Value), Element = element };
 
 						var offset = element.Attribute("offset");
 
@@ -214,14 +214,22 @@ namespace OZone.Programs
 						break;
 
 					case "scope":
-						yield return new Scope { Segments = ReadSegments(element).ToArray() };
+						yield return new Scope { Segments = ReadSegments(element).ToArray(), Element = element };
 						break;
 
 					default:
-						if (((IXmlLineInfo)element).HasLineInfo())
-							throw new Exception("Unknown Tag on Line " + ((IXmlLineInfo)element).LineNumber + ": " + element.ToString());
+						if (string.Equals(element.Attribute("{http://metalx.org/Program}compile")?.Value, "false", StringComparison.OrdinalIgnoreCase))
+						{
+							yield return new CustomProgramSegment { Length = Convert.ToUInt32(element.Attribute("{http://metalx.org/Program}length").Value), Reference = element.Attribute("{http://metalx.org/Program}ref")?.Value, Element = element };
+						}
+						else
+						{
+							if (((IXmlLineInfo)element).HasLineInfo())
+								throw new Exception("Unknown Tag on Line " + ((IXmlLineInfo)element).LineNumber + ": " + element.ToString());
 
-						throw new Exception("Unknown Tag: " + element.ToString());
+							throw new Exception("Unknown Tag: " + element.ToString());
+						}
+						break;
 				}
 			}
 		}

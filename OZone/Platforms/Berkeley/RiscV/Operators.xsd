@@ -5,63 +5,87 @@
     elementFormDefault="qualified"
     xmlns="http://metalx.org/Berkeley/RiscV/Operators"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-
-	<xsd:element name="CallAddress">
+	<xsd:element name="JumpToAddress">
+		<xsd:complexType>
+			<xsd:attribute name="ref" type="xsd:IDREF" use="required"/>
+			<xsd:attribute name="returnAddressRegister" type="uint5"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="JumpToRegister">
+		<xsd:complexType>
+			<xsd:attribute name="addressRegister" type="uint5" use="required"/>
+			<xsd:attribute name="returnAddressRegister" type="uint5"/>
+			<xsd:attribute name="offset" type="int12"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="IfEqual">
+		<xsd:complexType>
+			<xsd:attribute name="register" type="uint5" use="required"/>
+			<xsd:attribute name="register2" type="uint5" use="required"/>
+			<xsd:attribute name="ref" type="xsd:IDREF" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="SetRegisterToAddressOf">
 		<xsd:complexType>
 			<xsd:attribute name="ref" type="xsd:IDREF"/>
-			<xsd:attribute name="linkRegister" type="uint5"/>
+			<xsd:attribute name="register" type="uint5"/>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="CallRegisterAddress">
+	<xsd:element name="AddValueToRegister">
 		<xsd:complexType>
-			<xsd:attribute name="linkRegister" type="uint5"/>
-			<xsd:attribute name="baseRegister" type="uint5"/>
+			<xsd:attribute name="value" type="int12"/>
+			<xsd:attribute name="register" type="uint5"/>
+			<xsd:attribute name="destination" type="uint5"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="SetRegisterToValue">
+		<xsd:complexType>
+			<xsd:attribute name="value" type="xsd:unsignedInt"/>
+			<xsd:attribute name="register" type="uint5"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="CopyRegisterToAddress8">
+		<xsd:complexType>
+			<xsd:attribute name="register" type="uint5"/>
+			<xsd:attribute name="addressRegister" type="uint5"/>
 			<xsd:attribute name="offset" type="int12"/>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="CopyAddressToRegister">
+	<xsd:element name="CopyRegisterToAddress16">
 		<xsd:complexType>
-			<xsd:attribute name="destinationRegister" type="uint5"/>
-			<xsd:attribute name="baseRegister" type="uint5"/>
+			<xsd:attribute name="register" type="uint5"/>
+			<xsd:attribute name="addressRegister" type="uint5"/>
 			<xsd:attribute name="offset" type="int12"/>
-			<xsd:attribute name="type" type="CopyAddressToRegisterType"/>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:simpleType name="CopyAddressToRegisterType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="Byte"/>
-			<xsd:enumeration value="SignedByte"/>
-			<xsd:enumeration value="Short"/>
-			<xsd:enumeration value="UnsignedShort"/>
-			<xsd:enumeration value="Integer"/>
-		</xsd:restriction>
-	</xsd:simpleType>
-	<xsd:element name="CopyRegisterToAddress">
+	<xsd:element name="CopyRegisterToAddress32">
 		<xsd:complexType>
-			<xsd:attribute name="destinationRegister" type="uint5"/>
-			<xsd:attribute name="baseRegister" type="uint5"/>
+			<xsd:attribute name="register" type="uint5"/>
+			<xsd:attribute name="addressRegister" type="uint5"/>
 			<xsd:attribute name="offset" type="int12"/>
-			<xsd:attribute name="type" type="CopyRegisterToAddressType"/>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:simpleType name="CopyRegisterToAddressType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="Byte"/>
-			<xsd:enumeration value="Short"/>
-			<xsd:enumeration value="Integer"/>
-		</xsd:restriction>
-	</xsd:simpleType>
-	<xsd:element name="RegisterHigh20Function">
+	<xsd:element name="CopyAddressToRegister8">
 		<xsd:complexType>
-			<xsd:attribute name="operation" type="RegisterHigh20Operation"/>
+			<xsd:attribute name="addressRegister" type="uint5"/>
+			<xsd:attribute name="register" type="uint5"/>
+			<xsd:attribute name="offset" type="int12"/>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:simpleType name="RegisterHigh20Operation">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="SetRegister"/>
-			<xsd:enumeration value="AddToProgram"/>
-		</xsd:restriction>
-	</xsd:simpleType>
+	<xsd:element name="CopyAddressToRegister16">
+		<xsd:complexType>
+			<xsd:attribute name="addressRegister" type="uint5"/>
+			<xsd:attribute name="register" type="uint5"/>
+			<xsd:attribute name="offset" type="int12"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="CopyAddressToRegister32">
+		<xsd:complexType>
+			<xsd:attribute name="addressRegister" type="uint5"/>
+			<xsd:attribute name="register" type="uint5"/>
+			<xsd:attribute name="offset" type="int12"/>
+		</xsd:complexType>
+	</xsd:element>
 	<xsd:simpleType name="uint5">
 		<xsd:restriction base="xsd:unsignedByte">
 			<xsd:minInclusive value="0"/>
