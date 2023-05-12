@@ -48,3 +48,48 @@ Registers
 		15			a5
 		16			a6
 		17			a7
+
+Device Tree Block
+	Header						40
+		Signature					4
+		Total Size					4
+		Structure Block Offset		4
+		String Block Offset			4
+		Memory Block Offset			4
+		Version						4			(17)
+		Last Compatible Version		4			(16)
+		Boot CPU ID					4
+		String Block Length			4
+		Structure Block Length		4
+	Alignment					*
+	Memory Reservation Block	*
+		Reserved Blocks[]			*
+			Address						8
+			Length						8			(0 = End Of Table)
+	Alignment					*
+	Structure Block				*
+		Tokens[]					*
+			Type						4
+			Data						*
+	Alignment					*
+	Strings Block
+	Alignment					*
+
+Structure Block Types
+	Begin Node
+		Type							4			(1)
+		Name							*
+		Terminator						1			(0)
+		Padding							*			(0)
+	End Node
+		Type							4			(2)
+	Property
+		Type							4			(3)
+		Length							4
+		Name String Block Offset		4
+		Data							*
+		Padding							*			(0)
+	No Operation
+		Type							4			(4)
+	End Of Block
+		Type							4			(9)

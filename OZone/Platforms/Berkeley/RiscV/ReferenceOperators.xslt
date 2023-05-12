@@ -15,7 +15,7 @@
 		<xsl:variable name="signed">
 			<xsl:choose>
 				<xsl:when test="$offset &lt; 0">
-					<xsl:value-of select="$offset + 4096"/>
+					<xsl:value-of select="$offset + 8192"/>
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:value-of select="$offset"/>
@@ -23,6 +23,131 @@
 			</xsl:choose>
 		</xsl:variable>
 		<xsl:variable name="opcode" select="99"/>
+		<xsl:variable name="register" select="@register * 32768"/>
+		<xsl:variable name="register2" select="@register2 * 1048576"/>
+		<xsl:variable name="address1" select="floor(($signed mod 32) div 2) * 256"/>
+		<xsl:variable name="address2" select="floor(($signed mod 2048) div 32) * 33554432"/>
+		<xsl:variable name="address3" select="floor(($signed mod 4096) div 2048) * 128"/>
+		<xsl:variable name="address4" select="floor(($signed mod 8192) div 4096) * 2147483648"/>
+
+		<prg:uint>
+			<xsl:value-of select="$opcode + $register + $register2 + $address1 + $address2 + $address3 + $address4"/>
+		</prg:uint>
+	</xsl:template>
+
+	<xsl:template match="ns:IfNotEqual">
+		<xsl:variable name="offset" select="@prg:refAddress - @prg:address"/>
+		<xsl:variable name="signed">
+			<xsl:choose>
+				<xsl:when test="$offset &lt; 0">
+					<xsl:value-of select="$offset + 8192"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$offset"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		<xsl:variable name="opcode" select="4195"/>
+		<xsl:variable name="register" select="@register * 32768"/>
+		<xsl:variable name="register2" select="@register2 * 1048576"/>
+		<xsl:variable name="address1" select="floor(($signed mod 32) div 2) * 256"/>
+		<xsl:variable name="address2" select="floor(($signed mod 2048) div 32) * 33554432"/>
+		<xsl:variable name="address3" select="floor(($signed mod 4096) div 2048) * 128"/>
+		<xsl:variable name="address4" select="floor(($signed mod 8192) div 4096) * 2147483648"/>
+
+		<prg:uint>
+			<xsl:value-of select="$opcode + $register + $register2 + $address1 + $address2 + $address3 + $address4"/>
+		</prg:uint>
+	</xsl:template>
+
+	<xsl:template match="ns:IfLess">
+		<xsl:variable name="offset" select="@prg:refAddress - @prg:address"/>
+		<xsl:variable name="signed">
+			<xsl:choose>
+				<xsl:when test="$offset &lt; 0">
+					<xsl:value-of select="$offset + 8192"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$offset"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		<xsl:variable name="opcode" select="16483"/>
+		<xsl:variable name="register" select="@register * 32768"/>
+		<xsl:variable name="register2" select="@register2 * 1048576"/>
+		<xsl:variable name="address1" select="floor(($signed mod 32) div 2) * 256"/>
+		<xsl:variable name="address2" select="floor(($signed mod 2048) div 32) * 33554432"/>
+		<xsl:variable name="address3" select="floor(($signed mod 4096) div 2048) * 128"/>
+		<xsl:variable name="address4" select="floor(($signed mod 8192) div 4096) * 2147483648"/>
+
+		<prg:uint>
+			<xsl:value-of select="$opcode + $register + $register2 + $address1 + $address2 + $address3 + $address4"/>
+		</prg:uint>
+	</xsl:template>
+
+	<xsl:template match="ns:IfGreaterOrEqual">
+		<xsl:variable name="offset" select="@prg:refAddress - @prg:address"/>
+		<xsl:variable name="signed">
+			<xsl:choose>
+				<xsl:when test="$offset &lt; 0">
+					<xsl:value-of select="$offset + 8192"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$offset"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		<xsl:variable name="opcode" select="20579"/>
+		<xsl:variable name="register" select="@register * 32768"/>
+		<xsl:variable name="register2" select="@register2 * 1048576"/>
+		<xsl:variable name="address1" select="floor(($signed mod 32) div 2) * 256"/>
+		<xsl:variable name="address2" select="floor(($signed mod 2048) div 32) * 33554432"/>
+		<xsl:variable name="address3" select="floor(($signed mod 4096) div 2048) * 128"/>
+		<xsl:variable name="address4" select="floor(($signed mod 8192) div 4096) * 2147483648"/>
+
+		<prg:uint>
+			<xsl:value-of select="$opcode + $register + $register2 + $address1 + $address2 + $address3 + $address4"/>
+		</prg:uint>
+	</xsl:template>
+
+	<xsl:template match="ns:IfLessUnsigned">
+		<xsl:variable name="offset" select="@prg:refAddress - @prg:address"/>
+		<xsl:variable name="signed">
+			<xsl:choose>
+				<xsl:when test="$offset &lt; 0">
+					<xsl:value-of select="$offset + 8192"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$offset"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		<xsl:variable name="opcode" select="24675"/>
+		<xsl:variable name="register" select="@register * 32768"/>
+		<xsl:variable name="register2" select="@register2 * 1048576"/>
+		<xsl:variable name="address1" select="floor(($signed mod 32) div 2) * 256"/>
+		<xsl:variable name="address2" select="floor(($signed mod 2048) div 32) * 33554432"/>
+		<xsl:variable name="address3" select="floor(($signed mod 4096) div 2048) * 128"/>
+		<xsl:variable name="address4" select="floor(($signed mod 8192) div 4096) * 2147483648"/>
+
+		<prg:uint>
+			<xsl:value-of select="$opcode + $register + $register2 + $address1 + $address2 + $address3 + $address4"/>
+		</prg:uint>
+	</xsl:template>
+
+	<xsl:template match="ns:IfGreaterOrEqualUnsigned">
+		<xsl:variable name="offset" select="@prg:refAddress - @prg:address"/>
+		<xsl:variable name="signed">
+			<xsl:choose>
+				<xsl:when test="$offset &lt; 0">
+					<xsl:value-of select="$offset + 8192"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$offset"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		<xsl:variable name="opcode" select="28771"/>
 		<xsl:variable name="register" select="@register * 32768"/>
 		<xsl:variable name="register2" select="@register2 * 1048576"/>
 		<xsl:variable name="address1" select="floor(($signed mod 32) div 2) * 256"/>

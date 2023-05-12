@@ -25,6 +25,26 @@
 		<ref:IfEqual prg:ref="{@ref}" register="{@register}" register2="{@register2}" prg:compile="false" prg:length="4"/>
 	</xsl:template>
 
+	<xsl:template match="ns:IfNotEqual">
+		<ref:IfEqual prg:ref="{@ref}" register="{@register}" register2="{@register2}" prg:compile="false" prg:length="4"/>
+	</xsl:template>
+
+	<xsl:template match="ns:IfLess">
+		<ref:IfEqual prg:ref="{@ref}" register="{@register}" register2="{@register2}" prg:compile="false" prg:length="4"/>
+	</xsl:template>
+
+	<xsl:template match="ns:IfGreaterOrEqual">
+		<ref:IfEqual prg:ref="{@ref}" register="{@register}" register2="{@register2}" prg:compile="false" prg:length="4"/>
+	</xsl:template>
+
+	<xsl:template match="ns:IfLessUnsigned">
+		<ref:IfEqual prg:ref="{@ref}" register="{@register}" register2="{@register2}" prg:compile="false" prg:length="4"/>
+	</xsl:template>
+
+	<xsl:template match="ns:IfGreaterOrEqualUnsigned">
+		<ref:IfEqual prg:ref="{@ref}" register="{@register}" register2="{@register2}" prg:compile="false" prg:length="4"/>
+	</xsl:template>
+
 	<xsl:template match="ns:JumpToRegister">
 		<xsl:variable name="opcode" select="103"/>
 		<xsl:variable name="addressRegister" select="@addressRegister * 32768"/>
@@ -77,12 +97,33 @@
 		</prg:uint>
 	</xsl:template>
 
+	<xsl:template match="ns:AndRegisterWithValue">
+		<xsl:variable name="opcode" select="28691"/>
+		<xsl:variable name="register" select="@register * 32768"/>
+		<xsl:variable name="destination" select="@destination * 128"/>
+
+		<xsl:variable name="value">
+			<xsl:choose>
+				<xsl:when test="@value &lt; 0">
+					<xsl:value-of select="(@value + 4096) * 1048576"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="@value * 1048576"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<prg:uint>
+			<xsl:value-of select="$opcode + $value + $register + $destination"/>
+		</prg:uint>
+	</xsl:template>
+
 	<xsl:template match="ns:CopyRegisterToAddress8">
 		<xsl:variable name="opcode" select="35"/>
 		<xsl:variable name="offset">
 			<xsl:choose>
 				<xsl:when test="@offset">
-					<xsl:value-of select="@offset * 128"/>
+					<xsl:value-of select="@offset * 128"/><!--TODO: Add high bits-->
 				</xsl:when>
 				<xsl:otherwise>0</xsl:otherwise>
 			</xsl:choose>
@@ -96,7 +137,7 @@
 	</xsl:template>
 
 	<xsl:template match="ns:CopyRegisterToAddress16">
-		<xsl:variable name="opcode" select="35"/>
+		<xsl:variable name="opcode" select="4131"/>
 		<xsl:variable name="offset">
 			<xsl:choose>
 				<xsl:when test="@offset">
@@ -114,7 +155,7 @@
 	</xsl:template>
 
 	<xsl:template match="ns:CopyRegisterToAddress32">
-		<xsl:variable name="opcode" select="35"/>
+		<xsl:variable name="opcode" select="8227"/>
 		<xsl:variable name="offset">
 			<xsl:choose>
 				<xsl:when test="@offset">
