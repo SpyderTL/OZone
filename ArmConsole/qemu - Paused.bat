@@ -1,0 +1,1 @@
+"C:\Program Files\qemu\qemu-system-arm.exe" -M raspi1ap -S -s -bios "bin/debug/ArmConsole.bin"

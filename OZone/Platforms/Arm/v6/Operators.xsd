@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema id="Operators"
+    targetNamespace="http://metalx.org/Arm/v6/Operators"
+    elementFormDefault="qualified"
+    xmlns="http://metalx.org/Arm/v6/Operators"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:element name="Jump">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="ref" type="xsd:IDREF" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="Call">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="ref" type="xsd:IDREF" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="SetRegisterToValue">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="register" type="UInt4" use="required"/>
+			<xsd:attribute name="value" type="xsd:byte"/>
+			<xsd:attribute name="rollRight" type="UInt5"/>
+			<xsd:attribute name="setFlags" type="xsd:boolean"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="SetRegisterToAddressOf">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="register" type="UInt4" use="required"/>
+			<xsd:attribute name="ref" type="xsd:IDREF"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="CopyRegisterToAddress8">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="register" type="UInt4" use="required"/>
+			<xsd:attribute name="addressRegister" type="UInt4" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="AddValueToRegister">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="register" type="UInt4" use="required"/>
+			<xsd:attribute name="destination" type="UInt4"/>
+			<xsd:attribute name="value" type="xsd:byte"/>
+			<xsd:attribute name="rollRight" type="UInt5"/>
+			<xsd:attribute name="setFlags" type="xsd:boolean"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="SubtractValueFromRegister">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="register" type="UInt4" use="required"/>
+			<xsd:attribute name="destination" type="UInt4"/>
+			<xsd:attribute name="value" type="xsd:byte"/>
+			<xsd:attribute name="rollRight" type="UInt5"/>
+			<xsd:attribute name="setFlags" type="xsd:boolean"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:simpleType name="Condition">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Equal"/>
+			<xsd:enumeration value="NotEqual"/>
+			<xsd:enumeration value="HigherOrEqual"/>
+			<xsd:enumeration value="Lower"/>
+			<xsd:enumeration value="Negative"/>
+			<xsd:enumeration value="NotNegative"/>
+			<xsd:enumeration value="Overflow"/>
+			<xsd:enumeration value="NotOverflow"/>
+			<xsd:enumeration value="Higher"/>
+			<xsd:enumeration value="LowerOrEqual"/>
+			<xsd:enumeration value="GreaterThanOrEqual"/>
+			<xsd:enumeration value="LessThan"/>
+			<xsd:enumeration value="GreaterThan"/>
+			<xsd:enumeration value="LessThanOrEqual"/>
+			<xsd:enumeration value="Always"/>
+			<xsd:enumeration value="Never"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="UInt5">
+		<xsd:restriction base="xsd:unsignedByte">
+			<xsd:minInclusive value="0"/>
+			<xsd:maxInclusive value="31"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="UInt4">
+		<xsd:restriction base="xsd:unsignedByte">
+			<xsd:minInclusive value="0"/>
+			<xsd:maxInclusive value="15"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="UInt3">
+		<xsd:restriction base="xsd:unsignedByte">
+			<xsd:minInclusive value="0"/>
+			<xsd:maxInclusive value="7"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+</xsd:schema>
