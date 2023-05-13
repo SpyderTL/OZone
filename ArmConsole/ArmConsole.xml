@@ -7,14 +7,19 @@
 
 	<label id="uart" offset="20201000"/>
 	
-	<cpu:SetRegisterToValue register="1" value="100"/>
 	<cpu:SetRegisterToAddressOf register="2" ref="uart"/>
 
-	<label id="loop"/>
+	<label id="waitForSerial"/>
 	
-	<cpu:SubtractValueFromRegister value="1" register="1"/>
+	<cpu:CopyAddressToRegister8 register="1" addressRegister="2" offset="24"/>
+	
+	<cpu:TestAndRegisterWithValue register="1" value="16"/>
+
+	<cpu:Jump condition="NotEqual" ref="waitForSerial"/>
+	
+	<cpu:CopyAddressToRegister8 register="1" addressRegister="2"/>
 	
 	<cpu:CopyRegisterToAddress8 register="1" addressRegister="2"/>
 
-	<cpu:Jump ref="loop"/>
+	<cpu:Jump ref="waitForSerial"/>
 </scope>

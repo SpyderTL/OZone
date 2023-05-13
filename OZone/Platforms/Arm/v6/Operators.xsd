@@ -38,6 +38,15 @@
 			<xsd:attribute name="condition" type="Condition"/>
 			<xsd:attribute name="register" type="UInt4" use="required"/>
 			<xsd:attribute name="addressRegister" type="UInt4" use="required"/>
+			<xsd:attribute name="offset" type="UInt12"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="CopyAddressToRegister8">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="register" type="UInt4" use="required"/>
+			<xsd:attribute name="addressRegister" type="UInt4" use="required"/>
+			<xsd:attribute name="offset" type="UInt12"/>
 		</xsd:complexType>
 	</xsd:element>
 	<xsd:element name="AddValueToRegister">
@@ -60,6 +69,14 @@
 			<xsd:attribute name="setFlags" type="xsd:boolean"/>
 		</xsd:complexType>
 	</xsd:element>
+	<xsd:element name="TestAndRegisterWithValue">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="register" type="UInt4" use="required"/>
+			<xsd:attribute name="value" type="xsd:byte"/>
+			<xsd:attribute name="rollRight" type="UInt5"/>
+		</xsd:complexType>
+	</xsd:element>
 	<xsd:simpleType name="Condition">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="Equal"/>
@@ -78,6 +95,12 @@
 			<xsd:enumeration value="LessThanOrEqual"/>
 			<xsd:enumeration value="Always"/>
 			<xsd:enumeration value="Never"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="UInt12">
+		<xsd:restriction base="xsd:unsignedShort">
+			<xsd:minInclusive value="0"/>
+			<xsd:maxInclusive value="8191"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 	<xsd:simpleType name="UInt5">
