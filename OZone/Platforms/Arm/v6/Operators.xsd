@@ -17,6 +17,20 @@
 			<xsd:attribute name="ref" type="xsd:IDREF" use="required"/>
 		</xsd:complexType>
 	</xsd:element>
+	<xsd:element name="Return">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="setFlags" type="xsd:boolean"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="CopyRegister">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="register" type="UInt4" use="required"/>
+			<xsd:attribute name="destination" type="UInt4" use="required"/>
+			<xsd:attribute name="setFlags" type="xsd:boolean"/>
+		</xsd:complexType>
+	</xsd:element>
 	<xsd:element name="SetRegisterToValue">
 		<xsd:complexType>
 			<xsd:attribute name="condition" type="Condition"/>
@@ -49,6 +63,22 @@
 			<xsd:attribute name="offset" type="UInt12"/>
 		</xsd:complexType>
 	</xsd:element>
+	<xsd:element name="CopyRegisterToAddress32">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="register" type="UInt4" use="required"/>
+			<xsd:attribute name="addressRegister" type="UInt4" use="required"/>
+			<xsd:attribute name="offset" type="UInt12"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="CopyAddressToRegister32">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="register" type="UInt4" use="required"/>
+			<xsd:attribute name="addressRegister" type="UInt4" use="required"/>
+			<xsd:attribute name="offset" type="UInt12"/>
+		</xsd:complexType>
+	</xsd:element>
 	<xsd:element name="AddValueToRegister">
 		<xsd:complexType>
 			<xsd:attribute name="condition" type="Condition"/>
@@ -69,7 +99,41 @@
 			<xsd:attribute name="setFlags" type="xsd:boolean"/>
 		</xsd:complexType>
 	</xsd:element>
+	<xsd:element name="AndRegisterWithValue">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="register" type="UInt4" use="required"/>
+			<xsd:attribute name="destination" type="UInt4"/>
+			<xsd:attribute name="value" type="xsd:byte"/>
+			<xsd:attribute name="rollRight" type="UInt5"/>
+			<xsd:attribute name="setFlags" type="xsd:boolean"/>
+		</xsd:complexType>
+	</xsd:element>
 	<xsd:element name="TestAndRegisterWithValue">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="register" type="UInt4" use="required"/>
+			<xsd:attribute name="value" type="xsd:byte"/>
+			<xsd:attribute name="rollRight" type="UInt5"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="TestExclusiveOrRegisterWithValue">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="register" type="UInt4" use="required"/>
+			<xsd:attribute name="value" type="xsd:byte"/>
+			<xsd:attribute name="rollRight" type="UInt5"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="TestSubtractValueFromRegister">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="register" type="UInt4" use="required"/>
+			<xsd:attribute name="value" type="xsd:byte"/>
+			<xsd:attribute name="rollRight" type="UInt5"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="TestAddValueToRegister">
 		<xsd:complexType>
 			<xsd:attribute name="condition" type="Condition"/>
 			<xsd:attribute name="register" type="UInt4" use="required"/>

@@ -5,21 +5,156 @@
 	xmlns:cpu="http://metalx.org/Arm/v6/Operators"
 	xmlns:var="http://metalx.org/Variable">
 
+	<cpu:SetRegisterToAddressOf ref="message" register="5"/>
+	
+	<cpu:Call ref="Serial.WriteLine"/>
+
+	<label id="showPrompt"/>
+	
+	<cpu:SetRegisterToValue value="62" register="5"/>
+	
+	<cpu:Call ref="Serial.WriteCharacter"/>
+
+	<label id="waitForCharacter"/>
+	
+	<cpu:Call ref="Serial.ReadCharacter"/>
+
+	<!--Empty-->
+	<cpu:TestExclusiveOrRegisterWithValue register="5" value="0"/>
+
+	<cpu:Jump ref="waitForCharacter" condition="Equal"/>
+
+	<!--Return-->
+	<cpu:TestExclusiveOrRegisterWithValue register="5" value="13"/>
+	
+	<cpu:Jump ref="handleEnter" condition="Equal"/>
+
+	<!--Backspace-->
+	<cpu:TestExclusiveOrRegisterWithValue register="5" value="8"/>
+	
+	<cpu:Jump ref="handleBackspace" condition="Equal"/>
+	
+	<!--Other-->
+	<cpu:Call ref="Serial.WriteCharacter"/>
+
+	<cpu:Jump ref="waitForCharacter"/>
+
+	<label id="handleEnter"/>
+	
+	<cpu:Call ref="Serial.WriteCharacter"/>
+	
+	<cpu:SetRegisterToValue register="5" value="10"/>
+	
+	<cpu:Call ref="Serial.WriteCharacter"/>
+	
+	<cpu:Jump ref="showPrompt"/>
+	
+	<label id="handleBackspace"/>
+	
+	<cpu:Call ref="Serial.WriteCharacter"/>
+	
+	<cpu:SetRegisterToValue register="5" value="32"/>
+	
+	<cpu:Call ref="Serial.WriteCharacter"/>
+	
+	<cpu:SetRegisterToValue register="5" value="8"/>
+	
+	<cpu:Call ref="Serial.WriteCharacter"/>
+	
+	<cpu:Jump ref="waitForCharacter"/>
+
+	<!--UART 0x20201000-->
 	<label id="uart" offset="20201000"/>
-	
-	<cpu:SetRegisterToAddressOf register="2" ref="uart"/>
 
-	<label id="waitForSerial"/>
-	
-	<cpu:CopyAddressToRegister8 register="1" addressRegister="2" offset="24"/>
-	
-	<cpu:TestAndRegisterWithValue register="1" value="16"/>
+	<label id="Serial.ReadCharacter">
+		<cpu:SetRegisterToAddressOf register="9" ref="uart"/>
 
-	<cpu:Jump condition="NotEqual" ref="waitForSerial"/>
-	
-	<cpu:CopyAddressToRegister8 register="1" addressRegister="2"/>
-	
-	<cpu:CopyRegisterToAddress8 register="1" addressRegister="2"/>
+		<cpu:CopyAddressToRegister8 register="5" addressRegister="9" offset="24"/>
 
-	<cpu:Jump ref="waitForSerial"/>
+		<cpu:AndRegisterWithValue register="5" value="16" setFlags="true"/>
+
+		<cpu:SetRegisterToValue register="5" value="0" condition="NotEqual"/>
+
+		<cpu:Return condition="NotEqual"/>
+
+		<cpu:CopyAddressToRegister8 register="5" addressRegister="9"/>
+
+		<cpu:Return/>
+	</label>
+
+	<label id="Serial.WriteCharacter">
+		<cpu:SetRegisterToAddressOf register="9" ref="uart"/>
+
+		<cpu:CopyRegisterToAddress8 register="5" addressRegister="9"/>
+
+		<cpu:Return/>
+	</label>
+
+	<label id="Serial.WriteString">
+		<scope>
+			<cpu:SetRegisterToAddressOf register="9" ref="uart"/>
+			<cpu:CopyRegister register="5" destination="10"/>
+			<cpu:CopyAddressToRegister32 addressRegister="10" register="11"/>
+			<cpu:AddValueToRegister value="4" register="10"/>
+
+			<label id="forEachCharacter"/>
+
+			<cpu:TestExclusiveOrRegisterWithValue register="11" value="0"/>
+			
+			<cpu:Jump ref="done" condition="Equal"/>
+			
+			<cpu:CopyAddressToRegister8 addressRegister="10" register="12"/>
+
+			<cpu:CopyRegisterToAddress8 register="12" addressRegister="9"/>
+
+			<cpu:AddValueToRegister value="1" register="10" destination="10"/>
+
+			<cpu:SubtractValueFromRegister value="1" register="11"/>
+
+			<cpu:Jump ref="forEachCharacter"/>
+
+			<label id="done"/>
+
+			<cpu:Return/>
+		</scope>
+	</label>
+
+	<label id="Serial.WriteLine">
+		<scope>
+			<cpu:SetRegisterToAddressOf register="9" ref="uart"/>
+			<cpu:CopyRegister register="5" destination="10"/>
+			<cpu:CopyAddressToRegister32 addressRegister="10" register="11"/>
+			<cpu:AddValueToRegister value="4" register="10"/>
+
+			<label id="forEachCharacter2"/>
+
+			<cpu:TestExclusiveOrRegisterWithValue register="11" value="0"/>
+			
+			<cpu:Jump ref="done2" condition="Equal"/>
+			
+			<cpu:CopyAddressToRegister8 addressRegister="10" register="12"/>
+
+			<cpu:CopyRegisterToAddress8 register="12" addressRegister="9"/>
+
+			<cpu:AddValueToRegister value="1" register="10" destination="10"/>
+
+			<cpu:SubtractValueFromRegister value="1" register="11"/>
+
+			<cpu:Jump ref="forEachCharacter2"/>
+
+			<label id="done2"/>
+
+			<cpu:SetRegisterToValue register="12" value="13"/>
+
+			<cpu:CopyRegisterToAddress8 register="12" addressRegister="9"/>
+
+			<cpu:SetRegisterToValue register="12" value="10"/>
+
+			<cpu:CopyRegisterToAddress8 register="12" addressRegister="9"/>
+
+			<cpu:Return/>
+		</scope>
+	</label>
+
+	<var:string id="message">OZone v1.0 (ARM v6)</var:string>
 </scope>
