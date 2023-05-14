@@ -5,6 +5,10 @@
 	xmlns:cpu="http://metalx.org/Arm/v6/Operators"
 	xmlns:var="http://metalx.org/Variable">
 
+	<cpu:Call ref="Screen.Enable"/>
+	
+	<cpu:Call ref="Screen.Clear"/>
+	
 	<cpu:SetRegisterToAddressOf ref="message" register="5"/>
 	
 	<cpu:Call ref="Serial.WriteLine"/>
@@ -156,5 +160,97 @@
 		</scope>
 	</label>
 
+	<label id="Mailbox" offset="2000b880"/>
+	
+	<label id="Screen.Enable">
+		<cpu:SetRegisterToAddressOf ref="setVideoMode" register="9"/>
+		
+		<cpu:OrRegisterWithValue register="9" value="1"/>
+		
+		<cpu:OrRegisterWithValue register="9" value="64" rotateRight="8"/>
+		
+		<cpu:SetRegisterToAddressOf ref="Mailbox" register="10"/>
+		
+		<cpu:CopyRegisterToAddress32 register="9" addressRegister="10" offset="32"/>
+		
+		<!--Wait For Response-->
+		<label id="Screen.Enable.WaitForResponse"/>
+			   
+		<cpu:CopyAddressToRegister32 addressRegister="10" register="9" offset="24"/>
+		
+		<cpu:TestAndRegisterWithValue register="9" value="64" rotateRight="8"/>
+		
+		<cpu:Jump ref="Screen.Enable.WaitForResponse" condition="NotEqual"/>
+		
+		<!--Verify Channel-->
+		<cpu:CopyAddressToRegister32 addressRegister="10" register="9"/>
+		
+		<cpu:AndRegisterWithValue register="9" value="15"/>
+		
+		<cpu:TestExclusiveOrRegisterWithValue register="9" value="1"/>
+		
+		<cpu:Jump ref="Screen.Enable.WaitForResponse" condition="NotEqual"/>
+		
+		<cpu:Return/>
+	</label>
+
+	<label id="Screen.Clear">
+		<cpu:SetRegisterToValue register="9" value="255"/>
+		<cpu:OrRegisterWithValue register="9" value="255" rotateRight="8"/>
+		<cpu:OrRegisterWithValue register="9" value="255" rotateRight="16"/>
+		<cpu:OrRegisterWithValue register="9" value="255" rotateRight="24"/>
+		
+		<cpu:SetRegisterToAddressOf ref="frameBuffer" register="10"/>
+		
+		<cpu:CopyAddressToRegister32 addressRegister="10" register="10"/>
+		
+		<cpu:SetRegisterToValue register="11" value="0"/>
+		<cpu:OrRegisterWithValue register="11" value="0" rotateRight="8"/>
+		<cpu:OrRegisterWithValue register="11" value="15" rotateRight="16"/>
+		<cpu:OrRegisterWithValue register="11" value="240" rotateRight="24"/>
+	
+		<label id="Screen.Clear.Loop"/>
+	
+		<cpu:CopyRegisterToAddress32 register="9" addressRegister="10"/>
+		
+		<cpu:AddValueToRegister value="4" register="10"/>
+		
+		<cpu:SubtractValueFromRegister value="1" register="11" setFlags="true"/>
+		
+		<cpu:Jump ref="Screen.Clear.Loop" condition="NotEqual"/>
+	
+		<cpu:Return/>
+	</label>
+
 	<var:string id="message">OZone v1.0 (ARM v6)</var:string>
+
+	<align bytes="16"/>
+
+	<label id="setVideoMode"/>
+	<!--Physical Width-->
+	<int>1360</int>
+	<!--<int>1920</int>-->
+	<!--Physical Height-->
+	<int>768</int>
+	<!--<int>1080</int>-->
+	<!--Virtual Width-->
+	<int>1360</int>
+	<!--<int>1920</int>-->
+	<!--Virtual Height-->
+	<int>768</int>
+	<!--<int>1080</int>-->
+	<!--Stride (out)-->
+	<label id="stride" export="Screen.Stride"/>
+	<int>0</int>
+	<!--Depth-->
+	<int>32</int>
+	<!--X-->
+	<int>0</int>
+	<!--Y-->
+	<int>0</int>
+	<!--Address (out)-->
+	<label id="frameBuffer" export="Screen.FrameBuffer"/>
+	<int>0</int>
+	<!--Length (out)-->
+	<int>0</int>
 </scope>
