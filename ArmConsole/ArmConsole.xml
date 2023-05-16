@@ -7,6 +7,8 @@
 
 	<cpu:Call ref="Screen.Enable"/>
 	
+	<cpu:SetRegisterToValue register="5" value="0"/>
+	
 	<cpu:Call ref="Screen.Clear"/>
 	
 	<cpu:SetRegisterToAddressOf ref="message" register="5"/>
@@ -194,28 +196,23 @@
 		<cpu:Return/>
 	</label>
 
-	<label id="Screen.Clear">
-		<cpu:SetRegisterToValue register="9" value="255"/>
-		<cpu:OrRegisterWithValue register="9" value="255" rotateRight="8"/>
-		<cpu:OrRegisterWithValue register="9" value="255" rotateRight="16"/>
-		<cpu:OrRegisterWithValue register="9" value="255" rotateRight="24"/>
+	<label id="Screen.Clear">		
+		<cpu:SetRegisterToAddressOf ref="frameBuffer" register="9"/>
 		
-		<cpu:SetRegisterToAddressOf ref="frameBuffer" register="10"/>
+		<cpu:CopyAddressToRegister32 addressRegister="9" register="9"/>
 		
-		<cpu:CopyAddressToRegister32 addressRegister="10" register="10"/>
-		
-		<cpu:SetRegisterToValue register="11" value="0"/>
-		<cpu:OrRegisterWithValue register="11" value="0" rotateRight="8"/>
-		<cpu:OrRegisterWithValue register="11" value="15" rotateRight="16"/>
-		<cpu:OrRegisterWithValue register="11" value="240" rotateRight="24"/>
+		<cpu:SetRegisterToValue register="10" value="0"/>
+		<cpu:OrRegisterWithValue register="10" value="0" rotateRight="8"/>
+		<cpu:OrRegisterWithValue register="10" value="15" rotateRight="16"/>
+		<cpu:OrRegisterWithValue register="10" value="240" rotateRight="24"/>
 	
 		<label id="Screen.Clear.Loop"/>
 	
-		<cpu:CopyRegisterToAddress32 register="9" addressRegister="10"/>
+		<cpu:CopyRegisterToAddress32 register="5" addressRegister="9"/>
 		
-		<cpu:AddValueToRegister value="4" register="10"/>
+		<cpu:AddValueToRegister value="4" register="9"/>
 		
-		<cpu:SubtractValueFromRegister value="1" register="11" setFlags="true"/>
+		<cpu:SubtractValueFromRegister value="1" register="10" setFlags="true"/>
 		
 		<cpu:Jump ref="Screen.Clear.Loop" condition="NotEqual"/>
 	
