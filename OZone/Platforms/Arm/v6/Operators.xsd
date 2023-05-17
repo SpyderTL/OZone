@@ -79,6 +79,38 @@
 			<xsd:attribute name="offset" type="UInt12"/>
 		</xsd:complexType>
 	</xsd:element>
+	<xsd:element name="CopyRegisterToCoprocessor">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="register" type="UInt4" use="required"/>
+			<xsd:attribute name="coprocessorRegister" type="UInt4" use="required"/>
+			<xsd:attribute name="coprocessorRegister2" type="UInt4"/>
+			<xsd:attribute name="opcode" type="UInt3"/>
+			<xsd:attribute name="opcode2" type="UInt3"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="CopyCoprocessorToRegister">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="coprocessorRegister" type="UInt4" use="required"/>
+			<xsd:attribute name="coprocessorRegister2" type="UInt4"/>
+			<xsd:attribute name="register" type="UInt4" use="required"/>
+			<xsd:attribute name="opcode" type="UInt3"/>
+			<xsd:attribute name="opcode2" type="UInt3"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="CopyRegisterToStatus">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="register" type="UInt4" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="CopyStatusToRegister">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="register" type="UInt4" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
 	<xsd:element name="AddValueToRegister">
 		<xsd:complexType>
 			<xsd:attribute name="condition" type="Condition"/>
@@ -100,6 +132,16 @@
 		</xsd:complexType>
 	</xsd:element>
 	<xsd:element name="AndRegisterWithValue">
+		<xsd:complexType>
+			<xsd:attribute name="condition" type="Condition"/>
+			<xsd:attribute name="register" type="UInt4" use="required"/>
+			<xsd:attribute name="destination" type="UInt4"/>
+			<xsd:attribute name="value" type="xsd:unsignedByte"/>
+			<xsd:attribute name="rotateRight" type="UInt5"/>
+			<xsd:attribute name="setFlags" type="xsd:boolean"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="NotRegisterWithValue">
 		<xsd:complexType>
 			<xsd:attribute name="condition" type="Condition"/>
 			<xsd:attribute name="register" type="UInt4" use="required"/>

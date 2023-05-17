@@ -5,69 +5,59 @@
 	xmlns:cpu="http://metalx.org/Arm/v6/Operators"
 	xmlns:var="http://metalx.org/Variable">
 
+	<!--Initialize Stack-->
+	<cpu:Call ref="System.InitializeStack"/>
+	
+	<!--Set Interrupt Handlers-->
+	<cpu:Call ref="System.InstallInterruptHandlers"/>
+	
+	<!--Enable Serial Port Interrupts-->
+	<cpu:SetRegisterToAddressOf ref="uart" register="1"/>
+
+	<cpu:CopyAddressToRegister32 addressRegister="1" register="2" offset="56"/>
+
+	<cpu:OrRegisterWithValue register="2" value="16"/>
+
+	<cpu:CopyRegisterToAddress32 register="2" addressRegister="1" offset="56"/>
+	
+	<!--Enable IRQ Controller-->
+	<cpu:SetRegisterToAddressOf ref="irqController" register="1"/>
+
+	<cpu:SetRegisterToValue register="2" value="255" rotateRight="8"/>
+
+	<cpu:CopyRegisterToAddress32 register="2" addressRegister="1" offset="20"/>
+
+	<!--Enable Interrupts-->
+	<cpu:CopyStatusToRegister register="1"/>
+
+	<cpu:AndRegisterWithValue register="1" value="63"/>
+
+	<cpu:CopyRegisterToStatus register="1"/>
+
+	<!--Enable Screen-->
 	<cpu:Call ref="Screen.Enable"/>
-	
+
 	<cpu:SetRegisterToValue register="5" value="0"/>
-	
+
 	<cpu:Call ref="Screen.Clear"/>
-	
+
 	<cpu:SetRegisterToAddressOf ref="message" register="5"/>
-	
+
 	<cpu:Call ref="Serial.WriteLine"/>
 
+	<!--Show Prompt-->
 	<label id="showPrompt"/>
-	
+
 	<cpu:SetRegisterToValue value="62" register="5"/>
-	
+
 	<cpu:Call ref="Serial.WriteCharacter"/>
 
-	<label id="waitForCharacter"/>
-	
-	<cpu:Call ref="Serial.ReadCharacter"/>
+	<!--Wait for Interrupt-->
+	<label id="waitForInterrupt"/>
 
-	<!--Empty-->
-	<cpu:TestExclusiveOrRegisterWithValue register="5" value="0"/>
+	<cpu:Call ref="System.WaitForInterrupt"/>
 
-	<cpu:Jump ref="waitForCharacter" condition="Equal"/>
-
-	<!--Return-->
-	<cpu:TestExclusiveOrRegisterWithValue register="5" value="13"/>
-	
-	<cpu:Jump ref="handleEnter" condition="Equal"/>
-
-	<!--Backspace-->
-	<cpu:TestExclusiveOrRegisterWithValue register="5" value="8"/>
-	
-	<cpu:Jump ref="handleBackspace" condition="Equal"/>
-	
-	<!--Other-->
-	<cpu:Call ref="Serial.WriteCharacter"/>
-
-	<cpu:Jump ref="waitForCharacter"/>
-
-	<label id="handleEnter"/>
-	
-	<cpu:Call ref="Serial.WriteCharacter"/>
-	
-	<cpu:SetRegisterToValue register="5" value="10"/>
-	
-	<cpu:Call ref="Serial.WriteCharacter"/>
-	
-	<cpu:Jump ref="showPrompt"/>
-	
-	<label id="handleBackspace"/>
-	
-	<cpu:Call ref="Serial.WriteCharacter"/>
-	
-	<cpu:SetRegisterToValue register="5" value="32"/>
-	
-	<cpu:Call ref="Serial.WriteCharacter"/>
-	
-	<cpu:SetRegisterToValue register="5" value="8"/>
-	
-	<cpu:Call ref="Serial.WriteCharacter"/>
-	
-	<cpu:Jump ref="waitForCharacter"/>
+	<cpu:Jump ref="waitForInterrupt"/>
 
 	<!--UART 0x20201000-->
 	<label id="uart" offset="20201000"/>
@@ -106,9 +96,9 @@
 			<label id="forEachCharacter"/>
 
 			<cpu:TestExclusiveOrRegisterWithValue register="11" value="0"/>
-			
+
 			<cpu:Jump ref="done" condition="Equal"/>
-			
+
 			<cpu:CopyAddressToRegister8 addressRegister="10" register="12"/>
 
 			<cpu:CopyRegisterToAddress8 register="12" addressRegister="9"/>
@@ -135,9 +125,9 @@
 			<label id="forEachCharacter2"/>
 
 			<cpu:TestExclusiveOrRegisterWithValue register="11" value="0"/>
-			
+
 			<cpu:Jump ref="done2" condition="Equal"/>
-			
+
 			<cpu:CopyAddressToRegister8 addressRegister="10" register="12"/>
 
 			<cpu:CopyRegisterToAddress8 register="12" addressRegister="9"/>
@@ -163,62 +153,246 @@
 	</label>
 
 	<label id="Mailbox" offset="2000b880"/>
-	
+
 	<label id="Screen.Enable">
 		<cpu:SetRegisterToAddressOf ref="setVideoMode" register="9"/>
-		
+
 		<cpu:OrRegisterWithValue register="9" value="1"/>
-		
+
 		<cpu:OrRegisterWithValue register="9" value="64" rotateRight="8"/>
-		
+
 		<cpu:SetRegisterToAddressOf ref="Mailbox" register="10"/>
-		
+
 		<cpu:CopyRegisterToAddress32 register="9" addressRegister="10" offset="32"/>
-		
+
 		<!--Wait For Response-->
 		<label id="Screen.Enable.WaitForResponse"/>
-			   
+
 		<cpu:CopyAddressToRegister32 addressRegister="10" register="9" offset="24"/>
-		
+
 		<cpu:TestAndRegisterWithValue register="9" value="64" rotateRight="8"/>
-		
+
 		<cpu:Jump ref="Screen.Enable.WaitForResponse" condition="NotEqual"/>
-		
+
 		<!--Verify Channel-->
 		<cpu:CopyAddressToRegister32 addressRegister="10" register="9"/>
-		
+
 		<cpu:AndRegisterWithValue register="9" value="15"/>
-		
+
 		<cpu:TestExclusiveOrRegisterWithValue register="9" value="1"/>
-		
+
 		<cpu:Jump ref="Screen.Enable.WaitForResponse" condition="NotEqual"/>
-		
+
 		<cpu:Return/>
 	</label>
 
-	<label id="Screen.Clear">		
+	<label id="Screen.Clear">
 		<cpu:SetRegisterToAddressOf ref="frameBuffer" register="9"/>
-		
+
 		<cpu:CopyAddressToRegister32 addressRegister="9" register="9"/>
-		
+
 		<cpu:SetRegisterToValue register="10" value="0"/>
 		<cpu:OrRegisterWithValue register="10" value="0" rotateRight="8"/>
 		<cpu:OrRegisterWithValue register="10" value="15" rotateRight="16"/>
 		<cpu:OrRegisterWithValue register="10" value="240" rotateRight="24"/>
-	
+
 		<label id="Screen.Clear.Loop"/>
-	
+
 		<cpu:CopyRegisterToAddress32 register="5" addressRegister="9"/>
-		
+
 		<cpu:AddValueToRegister value="4" register="9"/>
-		
+
 		<cpu:SubtractValueFromRegister value="1" register="10" setFlags="true"/>
-		
+
 		<cpu:Jump ref="Screen.Clear.Loop" condition="NotEqual"/>
-	
+
 		<cpu:Return/>
 	</label>
 
+	<label id="System.WaitForInterrupt">
+		<cpu:SetRegisterToValue register="9" value="0"/>
+
+		<cpu:CopyRegisterToCoprocessor register="9" coprocessorRegister="7" opcode="0" opcode2="4"/>
+
+		<cpu:Return/>
+	</label>
+
+	<label id="System.InstallInterruptHandlers">
+		<!--IRQ Stub-->
+		<cpu:SetRegisterToAddressOf register="9" ref="handleInterruptStub"/>
+
+		<cpu:CopyAddressToRegister32 addressRegister="9" register="9"/>
+
+		<cpu:SetRegisterToAddressOf register="10" ref="irqHandler"/>
+
+		<cpu:CopyRegisterToAddress32 register="9" addressRegister="10"/>
+
+		<cpu:SetRegisterToAddressOf register="10" ref="fastIrqHandler"/>
+
+		<cpu:CopyRegisterToAddress32 register="9" addressRegister="10"/>
+		
+		<!--IRQ Redirect-->
+		<cpu:SetRegisterToAddressOf register="9" ref="handleInterruptRedirect"/>
+		<cpu:SetRegisterToValue register="10" value="1" rotateRight="24"/>
+		<cpu:SetRegisterToValue register="11" value="5"/>
+
+		<label id="System.InstallInterruptHandlers.Loop"/>
+
+		<cpu:CopyAddressToRegister32 addressRegister="9" register="12"/>
+		<cpu:CopyRegisterToAddress32 register="12" addressRegister="10"/>
+
+		<cpu:AddValueToRegister value="4" register="9"/>
+		<cpu:AddValueToRegister value="4" register="10"/>
+		
+		<cpu:SubtractValueFromRegister value="1" register="11" setFlags="true"/>
+		
+		<cpu:Jump ref="System.InstallInterruptHandlers.Loop" condition="NotEqual"/>
+		
+		<cpu:Return/>
+	</label>
+
+	<label id="System.InitializeStack">
+		<cpu:SetRegisterToValue register="13" value="128" rotateRight="24"/>
+		
+		<cpu:CopyStatusToRegister register="9"/>
+
+		<cpu:NotRegisterWithValue register="9" value="1"/>
+
+		<cpu:CopyRegisterToStatus register="9"/>
+		
+		<cpu:SetRegisterToValue register="13" value="64" rotateRight="24"/>
+
+		<cpu:OrRegisterWithValue register="9" value="1"/>
+
+		<cpu:CopyRegisterToStatus register="9"/>
+
+		<cpu:Return/>
+	</label>
+
+	<label id="irqController" offset="2000b200"/>
+
+	<label id="irqHandler" offset="0018"/>
+	<label id="fastIrqHandler" offset="001c"/>
+
+	<!--<label id="handleInterruptStub"/>
+	<cpu:SubtractValueFromRegister value="4" register="14" destination="15" setFlags="true"/>-->
+
+	<label id="handleInterruptStub"/>
+	<cpu:SetRegisterToValue register="15" value="1" rotateRight="24"/>
+
+	<label id="handleInterruptRedirect"/>
+	<cpu:SetRegisterToAddressOf register="0" ref="handleInterrupt"/>
+	<cpu:CopyRegister register="0" destination="15"/>
+
+	<label id="handleInterrupt">
+		<!--Save Registers-->
+		<cpu:SubtractValueFromRegister value="36" register="13"/>
+
+		<cpu:CopyRegisterToAddress32 register="5" addressRegister="13" offset="0"/>
+		<cpu:CopyRegisterToAddress32 register="6" addressRegister="13" offset="4"/>
+		<cpu:CopyRegisterToAddress32 register="7" addressRegister="13" offset="8"/>
+		<cpu:CopyRegisterToAddress32 register="8" addressRegister="13" offset="12"/>
+		<cpu:CopyRegisterToAddress32 register="9" addressRegister="13" offset="16"/>
+		<cpu:CopyRegisterToAddress32 register="10" addressRegister="13" offset="20"/>
+		<cpu:CopyRegisterToAddress32 register="11" addressRegister="13" offset="24"/>
+		<cpu:CopyRegisterToAddress32 register="12" addressRegister="13" offset="28"/>
+		<cpu:CopyRegisterToAddress32 register="14" addressRegister="13" offset="32"/>
+
+		<cpu:Call ref="handleSerialInterrupt"/>
+
+		<!--Restore Registers-->
+		<cpu:CopyAddressToRegister32 register="5" addressRegister="13" offset="0"/>
+		<cpu:CopyAddressToRegister32 register="6" addressRegister="13" offset="4"/>
+		<cpu:CopyAddressToRegister32 register="7" addressRegister="13" offset="8"/>
+		<cpu:CopyAddressToRegister32 register="8" addressRegister="13" offset="12"/>
+		<cpu:CopyAddressToRegister32 register="9" addressRegister="13" offset="16"/>
+		<cpu:CopyAddressToRegister32 register="10" addressRegister="13" offset="20"/>
+		<cpu:CopyAddressToRegister32 register="11" addressRegister="13" offset="24"/>
+		<cpu:CopyAddressToRegister32 register="12" addressRegister="13" offset="28"/>
+		<cpu:CopyAddressToRegister32 register="14" addressRegister="13" offset="32"/>
+
+		<cpu:AddValueToRegister value="36" register="13"/>
+
+		<cpu:SubtractValueFromRegister value="4" register="14" destination="15" setFlags="true"/>
+	</label>
+
+	<label id="handleSerialInterrupt">
+		<!--Save Registers-->
+		<cpu:SubtractValueFromRegister value="4" register="13"/>
+
+		<cpu:CopyRegisterToAddress32 register="14" addressRegister="13" offset="0"/>
+
+		<cpu:Call ref="Serial.ReadCharacter"/>
+
+		<!--Empty-->
+		<cpu:TestExclusiveOrRegisterWithValue register="5" value="0"/>
+
+		<cpu:Jump ref="handleSerialInterrupt.Done" condition="Equal"/>
+
+		<!--Return-->
+		<cpu:TestExclusiveOrRegisterWithValue register="5" value="13"/>
+
+		<cpu:Jump ref="handleSerialInterrupt.HandleEnter" condition="Equal"/>
+
+		<!--Backspace-->
+		<cpu:TestExclusiveOrRegisterWithValue register="5" value="8"/>
+
+		<cpu:Jump ref="handleSerialInterrupt.HandleBackspace" condition="Equal"/>
+
+		<!--Other-->
+		<cpu:Call ref="Serial.WriteCharacter"/>
+
+		<cpu:Jump ref="handleSerialInterrupt.Done"/>
+
+		<!--Handle Enter-->
+		<label id="handleSerialInterrupt.HandleEnter"/>
+
+		<cpu:Call ref="Serial.WriteCharacter"/>
+
+		<cpu:SetRegisterToValue register="5" value="10"/>
+
+		<cpu:Call ref="Serial.WriteCharacter"/>
+
+		<cpu:Jump ref="handleSerialInterrupt.ShowPrompt"/>
+
+		<!--Handle Backspace-->
+		<label id="handleSerialInterrupt.HandleBackspace"/>
+
+		<cpu:Call ref="Serial.WriteCharacter"/>
+
+		<cpu:SetRegisterToValue register="5" value="32"/>
+
+		<cpu:Call ref="Serial.WriteCharacter"/>
+
+		<cpu:SetRegisterToValue register="5" value="8"/>
+
+		<cpu:Call ref="Serial.WriteCharacter"/>
+
+		<cpu:Jump ref="handleSerialInterrupt.Done"/>
+
+		<!--Show Prompt-->
+		<label id="handleSerialInterrupt.ShowPrompt"/>
+
+		<cpu:SetRegisterToValue value="62" register="5"/>
+
+		<cpu:Call ref="Serial.WriteCharacter"/>
+
+		<label id="handleSerialInterrupt.Done"/>
+
+		<!--Clear Interrupts-->
+		<cpu:SetRegisterToValue register="9" value="15"/>
+		<cpu:SetRegisterToAddressOf register="10" ref="uart"/>
+
+		<cpu:CopyRegisterToAddress32 register="9" addressRegister="10" offset="68"/>
+
+		<!--Restore Registers-->
+		<cpu:CopyAddressToRegister32 register="14" addressRegister="13" offset="0"/>
+
+		<cpu:AddValueToRegister value="4" register="13"/>
+
+		<cpu:Return/>
+	</label>
+	
 	<var:string id="message">OZone v1.0 (ARM v6)</var:string>
 
 	<align bytes="16"/>

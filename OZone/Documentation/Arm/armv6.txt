@@ -16,6 +16,33 @@ Registers
 	r15		Program Counter
 	CPSR	Status Register
 
+Status Register
+	Negative				1 bit
+	Zero					1 bit
+	Carry					1 bit
+	Overflow				1 bit
+	Saturation				1 bit
+	Reserved				2 bits
+	Jazelle					1 bit
+	Reserved				4 bits
+	SIMD Greater or Equal	4 bits
+	Reserved				6 bits
+	Big Endian				1 bit
+	Disable Abort			1 bit
+	Disable IRQ				1 bit
+	Disable Fast IRQ		1 bit
+	Thumb					1 bit
+	Mode					5 bits
+		16	User
+		17	Fast IRQ
+		18	IRQ
+		19	Supervisor
+		20	Abort
+		21	Undefined
+		22	System
+
+System Control Coprocessor (Coprocessor 15)
+
 Reset
 	Mode 19	(Supervisor)
 	Interrupts Disabled
@@ -46,4 +73,15 @@ Move Immediate Instruction
 	Destination Register		4 bits
 	Rotate Right By 2			4 bits
 	Value						8 bits
-	
+
+Move Coprocessor Instruction
+	Condition					4 bits
+	Operator					4 bits				(14)
+	OpCode1						3 bits				(0x0b0000)
+	Load						1 bit				(0 = ARM to Coprocessor, 1 = Coprocessor to ARM)
+	Coprocessor Register		4 bits
+	ARM Register				4 bits
+	Coprocessor					4 bits				(15)
+	Opcode2						3 bits				(0)
+	Reserved					1 bit				(1)
+	Coprocessor Register 2		4 bits				(0)
