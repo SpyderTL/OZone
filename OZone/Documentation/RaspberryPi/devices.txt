@@ -140,4 +140,167 @@ Raspberry Pi
 		0x20	IRQ Disable High		4
 		0x24	IRQ Disable				4
 
-	USB Controller			0x20980000  (or maybe 0x20980080)
+	USB Controller			0x20980000
+		0x00	OTG Control				4
+			Reserved						4 bits
+			CHIRP Enable					1 bit
+			Mult Valid BC					5 bits
+			Current Mode Host				1 bit
+			On The Go Version				1 bit
+			B Session Valid					1 bit
+			A Session Valid					1 bit
+			DBNC Short						1 bit
+			Con ID B						1 bit
+			DBNCE Filter Bypass				1 bit
+			Reserved						3 bits
+			Device HNPEN					1 bit
+			Host Set HNPEN					1 bit
+			HNPREQ							1 bit
+			Host NEG SCS					1 bit
+			BVALO Value						1 bit
+			BVALO Enable					1 bit
+			AVALO Value						1 bit
+			AVALO Enable					1 bit
+			VBVALO Value					1 bit
+			VEVALO Enable					1 bit
+			SES REQ							1 bit
+			SES REQ SCS						1 bit
+		0x04	OTG Interrupt			4
+		0x08	AHB Configuration		4
+		0x0c	USB Configuration		4
+			Reserved						1 bit
+			Force Device Mode				1 bit
+			Force Host Mode					1 bit
+			Transmit End Delay				1 bit
+			IC Traffic Pull Remove			1 bit
+			IC USB Cap						1 bit
+			ULPI INT PROT DIS				1 bit
+			Indicator Passthrough			1 bit
+			Indicator Complement			1 bit
+			Term Sel DL Pulse				1 bit
+		0x10	RST Control				4
+		0x14	Interrupt Status		4
+		0x18	Interrupt Enable		4
+		0x1c	RX Status R				4
+		0x20	RX Status P				4
+		0x24	RX FIFO Size			4
+		0x28	NP TX FIFO Size			4
+		0x2c	NP TX Status			4
+		0x30	I2C Control				4
+		0x34	PVND Control			4
+		0x38	GPIO					4
+		0x3c	UID						4
+		0x40	SNPS ID					4
+		0x44	HW Config				4
+		0x48	HW Config 2				4
+		0x4c	HW Config 3				4
+		0x50	HW Config 4				4
+		0x54	LPM Config				4
+		0x58	Power Down				4
+		0x5c	D FIFO Config			4
+		0x60	ADP Control				4
+		0x64	Reference Clock			4
+		0x68	Interrupt Enable 2		4
+		0x6c	Interrupt Status 2		4
+		0x100	HP TX FIFO Size			4
+		0x104	DP TX FIFO List			4 * FIFOSIZE
+			Depth							16 bits
+			Start Address					16 bits
+		0x400	Host Configuration		4
+			Mode CH TIME N					1 bit
+			Reserved						4 bits
+			Per Sched Enabled				1 bit
+			FR List Enable					2 bits
+			Desc DMA						1 bit
+			Reserved						7 bits
+			Res Valid						8 bits
+			Enable 32kHZ					1 bit
+			Reserved						4 bits
+			SUPP							1 bit
+			ClockSelect						2 bits		(0 = 30/60 MHz, 1 = 48 MHz, 2 = 6 MHz)
+		0x404	Interrupt				4
+		0x408	Frame Number			4
+			Frames Remaining				16 bits
+			Frame Number					16 bits
+		0x410	P Transmit Status		4
+		0x414	HA Interrupt Status		4
+		0x418	HA Interrupt Enable		4
+		0x41c	FLB Address				4
+		0x440	Host Port 0				4
+			Reserved					14 bits
+			Speed						2 bits
+			TST Control					4 bits
+			Power						1 bit
+			Line Status					2 bits
+			Reset						1 bit
+			Suspend						1 bit
+			Resume						1 bit
+			Overcurrent Changed			1 bit
+			Overcurrent Active			1 bit
+			Enabled Changed				1 bit
+			Enabled						1 bit
+			Connection Detected			1 bit
+			Connection Status			1 bit
+		0x500	Host Channels[?]		32 * ?
+			0x00	Control					4
+			0x04	SPLT					4
+			0x08	Interrupt Status		4
+			0x0c	Interrupt Enable		4
+			0x10	T Size					4
+			0x14	DMA						4
+			0x18	DMA B					4
+		0x800	Device Configuration	4
+		0x804	Device Control			4
+		0x808	Device Status			4
+		0x810	IEP Mask				4
+		0x814	OEP Mask				4
+		0x818	DA Interrupt Status		4
+		0x81c	DA Interrupt Enable		4
+		0x820	DTKNQR1					4
+		0x824	DTKNQR2					4
+		0x828	Device VBUS Disable		4
+		0x82c	Device VBUS Pulse		4
+		0x830	Device TKNQR3			4
+		0x834	Device TKNQR4			4
+		0x834	Device IEPEMP Mask		4
+		0x900	Devices[Device Count]	32 * Device Count
+			0x00	IEP Control				8
+			0x08	IEP Interrupt Status	4
+			0x10	IEP T Size				4
+			0x14	IEP DMA					4
+			0x18	Transmit Status			4
+		0xb00	Devices[Device Count]	32 * Device Count
+			0x00	OEP Control				8
+			0x08	OEP Interrupt Status	4
+			0x10	OEP T Size				4
+			0x14	OEP DMA					4
+		0xe00	PCG Control				4
+			Device Mode						1 bit
+			Port Speed						2 bits
+			Device Enumeration Speed		2 bits
+			Hardware MAC Address			7 bits
+			Max TERM Select					1 bit
+			Max Receiver Select				2 bits
+			Port Power						1 bit
+			Port Clock Select				2 bits
+			ESS Register Restored			1 bit
+			Extended Hibernate Switch		1 bit
+			Extended Hibernate Power Clamp	1 bit
+			Enable Extended Hibernation		1 bit
+			Restore Mode					1 bit
+			Reset After Suspend				1 bit
+			Deep Sleep						1 bit
+			PHY In Sleep					1 bit
+			Enable Sleep Gating				1 bit
+			Reset Power Down Module			1 bit
+			Power Clamp						1 bit
+			Gate H Clock					1 bit
+			Stop P Clock					1 bit
+		0xe04	PCG C Control			4
+			Reserved						29 bits
+			Timer							2 bits
+			Gate Enable						1 bit
+		0x1000	EP FIFO					4096
+
+
+
