@@ -15,7 +15,7 @@ namespace OZone.Projects
 	{
 		public static void Clean(Project project)
 		{
-			if(Directory.Exists(project.Name))
+			if (Directory.Exists(project.Name))
 				Directory.Delete(project.Name, true);
 		}
 
@@ -24,13 +24,13 @@ namespace OZone.Projects
 			var build = new List<ProjectFile>();
 
 			// Find Files
-			foreach(var transform in project.Transforms)
+			foreach (var transform in project.Transforms)
 			{
-				if(!File.Exists(transform.Path))
+				if (!File.Exists(transform.Path))
 				{
-					foreach(var path in project.Paths.Select(p => Path.Combine(p, transform.Path)))
+					foreach (var path in project.Paths.Select(p => Path.Combine(p, transform.Path)))
 					{
-						if(File.Exists(path))
+						if (File.Exists(path))
 						{
 							transform.Path = path;
 
@@ -40,13 +40,13 @@ namespace OZone.Projects
 				}
 			}
 
-			foreach(var file in project.Files)
+			foreach (var file in project.Files)
 			{
-				if(!File.Exists(file.Path))
+				if (!File.Exists(file.Path))
 				{
-					foreach(var path in project.Paths.Select(p => Path.Combine(p, file.Path)))
+					foreach (var path in project.Paths.Select(p => Path.Combine(p, file.Path)))
 					{
-						if(File.Exists(path))
+						if (File.Exists(path))
 						{
 							file.Path = path;
 
@@ -58,14 +58,14 @@ namespace OZone.Projects
 
 			var transformTimestamp = project.Transforms.Max(t => File.GetLastWriteTime(t.Path));
 
-			foreach(var file in project.Files)
+			foreach (var file in project.Files)
 			{
-				if(File.Exists(file.OutputPath))
+				if (File.Exists(file.OutputPath))
 				{
 					var sourceTimestamp = File.GetLastWriteTime(file.Path);
 					var outputTimestamp = File.GetLastWriteTime(file.OutputPath);
 
-					if(outputTimestamp >= transformTimestamp &&
+					if (outputTimestamp >= transformTimestamp &&
 						outputTimestamp >= sourceTimestamp)
 						continue;
 				}
@@ -73,7 +73,7 @@ namespace OZone.Projects
 				build.Add(file);
 			}
 
-			if(build.Count != 0)
+			if (build.Count != 0)
 			{
 				var settings = new XmlWriterSettings
 				{
@@ -91,16 +91,16 @@ namespace OZone.Projects
 				{
 					var folder = Path.GetDirectoryName(file.OutputPath);
 
-					if(!Directory.Exists(folder))
+					if (!Directory.Exists(folder))
 						Directory.CreateDirectory(folder);
 
-					switch(file.Type)
+					switch (file.Type)
 					{
 						case ProjectFileType.Program:
 						case ProjectFileType.Class:
 							Console.WriteLine("Building " + Path.GetFileName(file.Path));
 
-							using(var reader = XmlReader.Create(file.Path))
+							using (var reader = XmlReader.Create(file.Path))
 							using (var writer = XmlWriter.Create(file.OutputPath, settings))
 							{
 								try
@@ -118,22 +118,23 @@ namespace OZone.Projects
 							}
 
 							break;
-							
+
 						case ProjectFileType.Image:
 							Console.WriteLine("Building " + Path.GetFileName(file.Path));
 
 							Bitmap bitmap = new Bitmap(Image.FromFile(file.Path, true));
 
-							using(var memory = new MemoryStream())
-							using(var writer = XmlWriter.Create(memory))
+							using (var memory = new MemoryStream())
+							using (var writer = XmlWriter.Create(memory))
 							{
 								writer.WriteStartElement("image", "http://metalx.org/Image");
+								writer.WriteAttributeString("name", Path.GetFileName(file.Path));
 								writer.WriteAttributeString("width", bitmap.Width.ToString());
 								writer.WriteAttributeString("height", bitmap.Height.ToString());
 
-								for(int y = 0; y < bitmap.Height; y++)
+								for (int y = 0; y < bitmap.Height; y++)
 								{
-									for(int x = 0; x < bitmap.Width; x++)
+									for (int x = 0; x < bitmap.Width; x++)
 									{
 										var pixel = bitmap.GetPixel(x, y);
 
@@ -147,7 +148,7 @@ namespace OZone.Projects
 										writer.WriteEndElement();
 									}
 								}
-								
+
 								writer.WriteEndElement();
 								writer.Flush();
 								writer.Close();
@@ -174,8 +175,8 @@ namespace OZone.Projects
 
 								memory.Position = 0;
 
-								using(var reader = XmlReader.Create(memory))
-								using(var writer2 = XmlWriter.Create(file.OutputPath, settings))
+								using (var reader = XmlReader.Create(memory))
+								using (var writer2 = XmlWriter.Create(file.OutputPath, settings))
 									ProgramBuilder.Build(reader, writer2, transforms);
 							}
 

@@ -1,1 +1,1 @@
-"C:\Program Files\qemu\qemu-system-arm.exe" -M raspi1ap -bios "bin/debug/ArmConsole.bin"
+"C:\Program Files\qemu\qemu-system-arm.exe" -M raspi1ap -bios "bin/debug/ArmConsole.bin" -device usb-kbd
