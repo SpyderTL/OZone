@@ -303,88 +303,88 @@
 	<xsl:template match="ns:WriteSIAddressToDXPortAndIncrementSI">
 		<xsl:element name="prg:hex">6F</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfOverflow8">
+	<xsl:template match="ns:BranchToRelative8IfOverflow">
 		<xsl:element name="prg:hex">70</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfNotOverflow8">
+	<xsl:template match="ns:BranchToRelative8IfNotOverflow">
 		<xsl:element name="prg:hex">71</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfBelow8">
+	<xsl:template match="ns:BranchToRelative8IfBelow">
 		<xsl:element name="prg:hex">72</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfNotAboveOrEqual8">
+	<xsl:template match="ns:BranchToRelative8IfNotAboveOrEqual">
 		<xsl:element name="prg:hex">72</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfCarry8">
+	<xsl:template match="ns:BranchToRelative8IfCarry">
 		<xsl:element name="prg:hex">72</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfAboveOrEqual8">
+	<xsl:template match="ns:BranchToRelative8IfAboveOrEqual">
 		<xsl:element name="prg:hex">73</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfNotBelow8">
+	<xsl:template match="ns:BranchToRelative8IfNotBelow">
 		<xsl:element name="prg:hex">73</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfNotCarry8">
+	<xsl:template match="ns:BranchToRelative8IfNotCarry">
 		<xsl:element name="prg:hex">73</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfZero8">
+	<xsl:template match="ns:BranchToRelative8IfZero">
 		<xsl:element name="prg:hex">74</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfEqual8">
+	<xsl:template match="ns:BranchToRelative8IfEqual">
 		<xsl:element name="prg:hex">74</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfNotZero8">
+	<xsl:template match="ns:BranchToRelative8IfNotZero">
 		<xsl:element name="prg:hex">75</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfNotEqual8">
+	<xsl:template match="ns:BranchToRelative8IfNotEqual">
 		<xsl:element name="prg:hex">75</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfBelowOrEqual8">
+	<xsl:template match="ns:BranchToRelative8IfBelowOrEqual">
 		<xsl:element name="prg:hex">76</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfNotAbove8">
+	<xsl:template match="ns:BranchToRelative8IfNotAbove">
 		<xsl:element name="prg:hex">76</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfAbove8">
+	<xsl:template match="ns:BranchToRelative8IfAbove">
 		<xsl:element name="prg:hex">77</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfNotBelowOrEqual8">
+	<xsl:template match="ns:BranchToRelative8IfNotBelowOrEqual">
 		<xsl:element name="prg:hex">77</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfNegative8">
+	<xsl:template match="ns:BranchToRelative8IfNegative">
 		<xsl:element name="prg:hex">78</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfPositive8">
+	<xsl:template match="ns:BranchToRelative8IfPositive">
 		<xsl:element name="prg:hex">79</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfEven8">
+	<xsl:template match="ns:BranchToRelative8IfEven">
 		<xsl:element name="prg:hex">7A</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfOdd8">
+	<xsl:template match="ns:BranchToRelative8IfOdd">
 		<xsl:element name="prg:hex">7B</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfLess8">
+	<xsl:template match="ns:BranchToRelative8IfLess">
 		<xsl:element name="prg:hex">7C</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfNotGreaterOrEqual8">
+	<xsl:template match="ns:BranchToRelative8IfNotGreaterOrEqual">
 		<xsl:element name="prg:hex">7C</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfNotLess8">
+	<xsl:template match="ns:BranchToRelative8IfNotLess">
 		<xsl:element name="prg:hex">7D</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfGreaterOrEqual8">
+	<xsl:template match="ns:BranchToRelative8IfGreaterOrEqual">
 		<xsl:element name="prg:hex">7D</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfLessOrEqual8">
+	<xsl:template match="ns:BranchToRelative8IfLessOrEqual">
 		<xsl:element name="prg:hex">7E</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfNotGreater8">
+	<xsl:template match="ns:BranchToRelative8IfNotGreater">
 		<xsl:element name="prg:hex">7E</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfNotLessOrEqual8">
+	<xsl:template match="ns:BranchToRelative8IfNotLessOrEqual">
 		<xsl:element name="prg:hex">7F</xsl:element>
 	</xsl:template>
-	<xsl:template match="ns:BranchToRelativeIfGreater8">
+	<xsl:template match="ns:BranchToRelative8IfGreater">
 		<xsl:element name="prg:hex">7F</xsl:element>
 	</xsl:template>
 	<xsl:template match="ns:TestOperandWithRegister8">
