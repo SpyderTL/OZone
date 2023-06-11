@@ -52,6 +52,21 @@
 	<cpu:CopyAXToAbsoluteMemory/>
 	<addressOf ref="kernel32.getModuleHandle.address" type="Absolute32"/>
 
+	<!--Get ExitProcess address-->
+	<cpu:PushImmediateToStack/>
+	<addressOf ref="kernel32.exitProcess.name" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:PushImmediateAddress/>
+	<addressOf ref="kernel32.handle" type="Absolute32"/>
+
+	<cpu:LogicFunction/>
+	<logic:CallImmediateAddress/>
+	<addressOf ref="ExeHeader.GetProcAddress" type="Absolute32"/>
+
+	<cpu:CopyAXToAbsoluteMemory/>
+	<addressOf ref="kernel32.exitProcess.address" type="Absolute32"/>
+
 	<!--Get LoadIcon address-->
 	<cpu:PushImmediateToStack/>
 	<addressOf ref="user32.loadIcon.name" type="Absolute32"/>
@@ -329,6 +344,13 @@
 	<addressOf ref="processMessages" type="Relative32"/>
 
 	<label id="exit"/>
+	
+	<cpu:PushImmediateToStack/>
+	<int>0</int>
+	
+	<cpu:LogicFunction/>
+	<logic:CallImmediateAddress/>
+	<addressOf ref="kernel32.exitProcess.address" type="Absolute32"/>
 
 	<cpu:ReturnToNearCaller/>
 
@@ -392,6 +414,10 @@
 	<string>GetModuleHandleA</string>
 	<byte>0</byte>
 
+	<label id="kernel32.exitProcess.name"/>
+	<string>ExitProcess</string>
+	<byte>0</byte>
+
 	<label id="user32.fileName"/>
 	<string>user32.dll</string>
 	<byte>0</byte>
@@ -443,6 +469,7 @@
 	<var:integer id="user32.postQuitMessage.address">0</var:integer>
 	<var:integer id="kernel32.handle">0</var:integer>
 	<var:integer id="kernel32.getModuleHandle.address">0</var:integer>
+	<var:integer id="kernel32.exitProcess.address">0</var:integer>
 	<var:integer id="module.handle">0</var:integer>
 	<var:integer id="icon.handle">0</var:integer>
 	<var:integer id="cursor.handle">0</var:integer>
