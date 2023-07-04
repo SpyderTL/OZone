@@ -11,32 +11,17 @@
 	xmlns:imm="http://metalx.org/Amd/Amd64/Immediate"
 	xmlns:shift="http://metalx.org/Amd/Amd64/Shift"
 	xmlns:logic="http://metalx.org/Amd/Amd64/Logic"
-	xmlns:index="http://metalx.org/Amd/Amd64/Index">
+	xmlns:index="http://metalx.org/Amd/Amd64/Index"
+	xmlns:fn="http://metalx.org/Microsoft/x64/Functions">
 	
 	<label id="entryPoint" export="Application.EntryPoint"/>
 
 	<!--Get Kernel32.dll Handle-->
 	<cpu:CopyImmediateToCX/>
 	<addressOf ref="kernel32.fileName" type="Absolute32"/>
-	
-	<!--<label id="halt"/>
 
-	<cpu:JumpToRelative8/>
-	<addressOf ref="halt" type="Relative8"/>-->
+	<fn:CallAddress ref="ExeHeader.LoadLibrary"/>
 	
-	<cpu:MathImmediate8ToOperandFunction/>
-	<math:SubtractFromSPRegister/>
-	<byte>32</byte>
-		
-	<cpu:LogicFunction/>
-	<logic:CallIndexAddress/>
-	<index:Immediate32/>
-	<addressOf ref="ExeHeader.LoadLibrary" type="Absolute32"/>
-	
-	<cpu:MathImmediate8ToOperandFunction/>
-	<math:AddToSPRegister/>
-	<byte>32</byte>
-
 	<cpu:CopyAXToAbsoluteMemory/>
 	<addressOf ref="kernel32.handle" type="Absolute64"/>	
 	
@@ -46,20 +31,9 @@
 
 	<cpu:CopyImmediateToDX/>
 	<addressOf ref="kernel32.getStdHandle.name" type="Absolute32"/>
-	
-	<cpu:MathImmediate8ToOperandFunction/>
-	<math:SubtractFromSPRegister/>
-	<byte>32</byte>
-		
-	<cpu:LogicFunction/>
-	<logic:CallIndexAddress/>
-	<index:Immediate32/>
-	<addressOf ref="ExeHeader.GetProcAddress" type="Absolute32"/>
-	
-	<cpu:MathImmediate8ToOperandFunction/>
-	<math:AddToSPRegister/>
-	<byte>32</byte>
 
+	<fn:CallAddress ref="ExeHeader.GetProcAddress"/>
+	
 	<cpu:CopyAXToAbsoluteMemory/>
 	<addressOf ref="kernel32.getStdHandle.address" type="Absolute64"/>
 
@@ -72,18 +46,7 @@
 	<cpu:CopyImmediateToDX/>
 	<addressOf ref="kernel32.readConsole.name" type="Absolute32"/>
 
-	<cpu:MathImmediate8ToOperandFunction/>
-	<math:SubtractFromSPRegister/>
-	<byte>32</byte>
-		
-	<cpu:LogicFunction/>
-	<logic:CallIndexAddress/>
-	<index:Immediate32/>
-	<addressOf ref="ExeHeader.GetProcAddress" type="Absolute32"/>
-	
-	<cpu:MathImmediate8ToOperandFunction/>
-	<math:AddToSPRegister/>
-	<byte>32</byte>
+	<fn:CallAddress ref="ExeHeader.GetProcAddress"/>
 
 	<cpu:CopyAXToAbsoluteMemory/>
 	<addressOf ref="kernel32.readConsole.address" type="Absolute64"/>
@@ -97,18 +60,7 @@
 	<cpu:CopyImmediateToDX/>
 	<addressOf ref="kernel32.writeConsole.name" type="Absolute32"/>
 
-	<cpu:MathImmediate8ToOperandFunction/>
-	<math:SubtractFromSPRegister/>
-	<byte>32</byte>
-		
-	<cpu:LogicFunction/>
-	<logic:CallIndexAddress/>
-	<index:Immediate32/>
-	<addressOf ref="ExeHeader.GetProcAddress" type="Absolute32"/>
-	
-	<cpu:MathImmediate8ToOperandFunction/>
-	<math:AddToSPRegister/>
-	<byte>32</byte>
+	<fn:CallAddress ref="ExeHeader.GetProcAddress"/>
 
 	<cpu:CopyAXToAbsoluteMemory/>
 	<addressOf ref="kernel32.writeConsole.address" type="Absolute64"/>
@@ -118,18 +70,7 @@
 	<cpu:CopyImmediateToCX/>
 	<long>-10</long>
 
-	<cpu:MathImmediate8ToOperandFunction/>
-	<math:SubtractFromSPRegister/>
-	<byte>32</byte>
-		
-	<cpu:LogicFunction/>
-	<logic:CallIndexAddress/>
-	<index:Immediate32/>
-	<addressOf ref="kernel32.getStdHandle.address" type="Absolute32"/>
-	
-	<cpu:MathImmediate8ToOperandFunction/>
-	<math:AddToSPRegister/>
-	<byte>32</byte>
+	<fn:CallAddress ref="kernel32.getStdHandle.address"/>
 
 	<cpu:CopyAXToAbsoluteMemory/>
 	<addressOf ref="console.input.handle" type="Absolute64"/>
@@ -139,18 +80,7 @@
 	<cpu:CopyImmediateToCX/>
 	<long>-11</long>
 
-	<cpu:MathImmediate8ToOperandFunction/>
-	<math:SubtractFromSPRegister/>
-	<byte>32</byte>
-		
-	<cpu:LogicFunction/>
-	<logic:CallIndexAddress/>
-	<index:Immediate32/>
-	<addressOf ref="kernel32.getStdHandle.address" type="Absolute32"/>
-	
-	<cpu:MathImmediate8ToOperandFunction/>
-	<math:AddToSPRegister/>
-	<byte>32</byte>
+	<fn:CallAddress ref="kernel32.getStdHandle.address"/>
 
 	<cpu:CopyAXToAbsoluteMemory/>
 	<addressOf ref="console.output.handle" type="Absolute64"/>
@@ -177,24 +107,7 @@
 	<imm:CopyImmediateToCX/>
 	<int>0</int>
 
-	<cpu:MathImmediate8ToOperandFunction/>
-	<math:SubtractFromSPRegister/>
-	<byte>32</byte>
-		
-	<cpu:LogicFunction/>
-	<logic:CallIndexAddress/>
-	<index:Immediate32/>
-	<addressOf ref="kernel32.writeConsole.address" type="Absolute32"/>
-	
-	<cpu:MathImmediate8ToOperandFunction/>
-	<math:AddToSPRegister/>
-	<byte>32</byte>
-		
-	<!--<label id="halt2"/>
-
-	<cpu:JumpToRelative8/>
-	<addressOf ref="halt2" type="Relative8"/>-->
-
+	<fn:CallAddress ref="kernel32.writeConsole.address"/>
 
 	<!--Read From Console-->
 	<!--ReadConsole(handle, buffer, length, out charactersWritten, control)-->
@@ -216,38 +129,7 @@
 	<imm:CopyImmediateToCX/>
 	<addressOf ref="inputBuffer.length" type="Absolute32"/>
 
-	<cpu:MathImmediate8ToOperandFunction/>
-	<math:SubtractFromSPRegister/>
-	<byte>32</byte>
-
-	<cpu:LogicFunction/>
-	<logic:CallIndexAddress/>
-	<index:Immediate32/>
-	<addressOf ref="kernel32.readConsole.address" type="Absolute32"/>
-
-	<cpu:MathImmediate8ToOperandFunction/>
-	<math:AddToSPRegister/>
-	<byte>32</byte>
-	
-	<!--<cpu:PushImmediateToStack/>
-	<int>0</int>
-
-	<cpu:PushImmediateToStack/>
-	<addressOf ref="inputBuffer.length" type="Absolute32"/>
-
-	<cpu:PushImmediateToStack/>
-	<int>255</int>
-
-	<cpu:PushImmediateToStack/>
-	<addressOf ref="inputBuffer" type="Absolute32"/>
-
-	<cpu:LogicFunction/>
-	<logic:PushImmediateAddress/>
-	<addressOf ref="console.input.handle" type="Absolute32"/>
-
-	<cpu:LogicFunction/>
-	<logic:CallImmediateAddress/>
-	<addressOf ref="kernel32.readConsole.address" type="Absolute32"/>-->
+	<fn:CallAddress ref="kernel32.readConsole.address"/>
 	
 	<!--Write Result To Console-->
 	<!--WriteConsole(handle, buffer, length, out charactersWritten, reserved)-->
@@ -269,40 +151,8 @@
 	<cpu:CopyImmediateToOperandFunction/>
 	<imm:CopyImmediateToCX/>
 	<int>0</int>
-
-	<cpu:MathImmediate8ToOperandFunction/>
-	<math:SubtractFromSPRegister/>
-	<byte>32</byte>
-
-	<cpu:LogicFunction/>
-	<logic:CallIndexAddress/>
-	<index:Immediate32/>
-	<addressOf ref="kernel32.writeConsole.address" type="Absolute32"/>
-
-	<cpu:MathImmediate8ToOperandFunction/>
-	<math:AddToSPRegister/>
-	<byte>32</byte>
-
-	<!--<cpu:PushImmediateToStack/>
-	<int>0</int>
-
-	<cpu:PushImmediateToStack/>
-	<int>0</int>
-
-	<cpu:LogicFunction/>
-	<logic:PushImmediateAddress/>
-	<addressOf ref="inputBuffer.length" type="Absolute32"/>
-
-	<cpu:PushImmediateToStack/>
-	<addressOf ref="inputBuffer" type="Absolute32"/>
-
-	<cpu:LogicFunction/>
-	<logic:PushImmediateAddress/>
-	<addressOf ref="console.output.handle" type="Absolute32"/>
-
-	<cpu:LogicFunction/>
-	<logic:CallImmediateAddress/>
-	<addressOf ref="kernel32.writeConsole.address" type="Absolute32"/>-->
+	
+	<fn:CallAddress ref="kernel32.writeConsole.address"/>
 
 	<cpu:JumpToRelative/>
 	<addressOf ref="showPrompt" type="Relative32"/>

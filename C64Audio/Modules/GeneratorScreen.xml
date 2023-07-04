@@ -79,6 +79,7 @@
 
 		<cpu:PullAccumulatorFromStack/>
 		
+		<!--Check Up Key-->
 		<cpu:CompareAccumulatorToImmediate8/>
 		<hex>91</hex>
 
@@ -108,6 +109,7 @@
 
 		<label id="notUp"/>
 
+		<!--Check Down Key-->
 		<cpu:CompareAccumulatorToImmediate8/>
 		<hex>11</hex>
 
@@ -137,6 +139,7 @@
 
 		<label id="notDown"/>
 
+		<!--Check Left Key-->
 		<cpu:CompareAccumulatorToImmediate8/>
 		<hex>9D</hex>
 
@@ -151,6 +154,7 @@
 
 		<label id="notLeft"/>
 
+		<!--Check Right Key-->
 		<cpu:CompareAccumulatorToImmediate8/>
 		<hex>1D</hex>
 
@@ -165,6 +169,7 @@
 
 		<label id="notRight"/>
 
+		<!--Check Plus Key-->
 		<cpu:CompareAccumulatorToImmediate8/>
 		<hex>2B</hex>
 
@@ -209,6 +214,7 @@
 
 		<label id="notPlus"/>
 
+		<!--Check Minus Key-->
 		<cpu:CompareAccumulatorToImmediate8/>
 		<hex>2D</hex>
 
@@ -253,9 +259,9 @@
 
 		<label id="notMinus"/>
 
+		<!--Highlight Selected-->
 		<label id="highlight"/>
 
-		<!--Highlight Selected-->
 		<cpu:CopyImmediate16AddressToAccumulator/>
 		<addressOf ref="Selected" type="Absolute16"/>
 
@@ -362,7 +368,7 @@
 	
 	<label id="drawScreen">
 		<cpu:CopyImmediate8ToAccumulator/>
-		<byte>18</byte>
+		<byte>58</byte>
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<hex>02</hex>
@@ -391,28 +397,16 @@
 		<addressOf ref="MemoryWriter.Position" type="Absolute8" offset="1"/>
 
 		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
-		<addressOf ref="screenRegisters" type="Absolute16" offset="0"/>
+		<addressOf ref="registers" type="Absolute16" offset="0"/>
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<hex>04</hex>
 		
 		<cpu:CopyImmediate16PlusXIndexAddressToAccumulator/>
-		<addressOf ref="screenRegisters" type="Absolute16" offset="1"/>
+		<addressOf ref="registers" type="Absolute16" offset="1"/>
 
 		<cpu:CopyAccumulatorToImmediate8Address/>
 		<hex>05</hex>
-
-		<cpu:CopyImmediate8ToYIndex/>
-		<byte>1</byte>
-
-		<cpu:CopyImmediate8PointerPlusYIndexAddressToAccumulator/>
-		<hex>04</hex>
-
-		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="Hexadecimal.Value" type="Absolute16"/>
-
-		<cpu:CallImmediate16Address/>
-		<addressOf ref="Screen.DrawHexadecimal" type="Absolute16"/>
 
 		<cpu:CopyImmediate8ToYIndex/>
 		<byte>0</byte>
@@ -442,32 +436,97 @@
 	</label>
 
 	<label id="screenCharacters">
+		<!--Frequency-->
 		<hex>0400</hex>
+		<hex>0402</hex>
 		<hex>0405</hex>
+		<hex>0407</hex>
 		<hex>040A</hex>
+		<hex>040C</hex>
 
+		<!--Duty Cycle-->
 		<hex>0428</hex>
+		<hex>042A</hex>
 		<hex>042D</hex>
+		<hex>042F</hex>
 		<hex>0432</hex>
+		<hex>0434</hex>
 
+		<!--Pulse / Noise Enable-->
 		<hex>0450</hex>
+		<hex>0452</hex>
 		<hex>0455</hex>
+		<hex>0457</hex>
 		<hex>045A</hex>
+		<hex>045C</hex>
 
+		<!--Triange / Sawtooth Enable-->
 		<hex>0478</hex>
+		<hex>047A</hex>
 		<hex>047D</hex>
+		<hex>047F</hex>
 		<hex>0482</hex>
+		<hex>0484</hex>
 
+		<!--Ring Modulation / Reset-->
 		<hex>04A0</hex>
+		<hex>04A2</hex>
 		<hex>04A5</hex>
+		<hex>04A7</hex>
 		<hex>04AA</hex>
+		<hex>04AC</hex>
 
+		<!--Enable / Synchronize-->
 		<hex>04C8</hex>
+		<hex>04CA</hex>
 		<hex>04CD</hex>
+		<hex>04CF</hex>
 		<hex>04D2</hex>
+		<hex>04D4</hex>
+
+		<!--Attack / Decay Duration-->
+		<hex>04F0</hex>
+		<hex>04F2</hex>
+		<hex>04F5</hex>
+		<hex>04F7</hex>
+		<hex>04FA</hex>
+		<hex>04FC</hex>
+
+		<!--Sustain Level / Release Duration-->
+		<hex>0518</hex>
+		<hex>051A</hex>
+		<hex>051D</hex>
+		<hex>051F</hex>
+		<hex>0522</hex>
+		<hex>0524</hex>
+
+		<!--Channel Filter Enable-->
+		<hex>0540</hex>
+		<hex>0545</hex>
+		<hex>054A</hex>
+
+		<!--Filter Cutoff-->
+		<hex>0568</hex>
+		<hex>056A</hex>
+
+		<!--Filter Resonance-->
+		<hex>0590</hex>
+
+		<!--High Pass Filter-->
+		<hex>05B8</hex>
+
+		<!--Band Pass Filter-->
+		<hex>05BD</hex>
+
+		<!--Low Pass Filter-->
+		<hex>05C2</hex>
+
+		<!--Volume-->
+		<hex>05E0</hex>
 	</label>
 
 	<label id="screenColors">
+		<!--Frequency-->
 		<hex>D800</hex>
 		<hex>D802</hex>
 		<hex>D805</hex>
@@ -475,6 +534,7 @@
 		<hex>D80A</hex>
 		<hex>D80C</hex>
 
+		<!--Duty Cycle-->
 		<hex>D828</hex>
 		<hex>D82A</hex>
 		<hex>D82D</hex>
@@ -482,6 +542,7 @@
 		<hex>D832</hex>
 		<hex>D834</hex>
 
+		<!--Pulse / Noise Enable-->
 		<hex>D850</hex>
 		<hex>D852</hex>
 		<hex>D855</hex>
@@ -489,6 +550,7 @@
 		<hex>D85A</hex>
 		<hex>D85C</hex>
 
+		<!--Triange / Sawtooth Enable-->
 		<hex>D878</hex>
 		<hex>D87A</hex>
 		<hex>D87D</hex>
@@ -496,6 +558,7 @@
 		<hex>D882</hex>
 		<hex>D884</hex>
 
+		<!--Ring Modulation / Reset-->
 		<hex>D8A0</hex>
 		<hex>D8A2</hex>
 		<hex>D8A5</hex>
@@ -503,41 +566,57 @@
 		<hex>D8AA</hex>
 		<hex>D8AC</hex>
 
+		<!--Enable / Synchronize-->
 		<hex>D8C8</hex>
 		<hex>D8CA</hex>
 		<hex>D8CD</hex>
 		<hex>D8CF</hex>
 		<hex>D8D2</hex>
 		<hex>D8D4</hex>
-	</label>
 
-	<label id="screenRegisters">
-		<hex>9E00</hex>
-		<hex>9E10</hex>
-		<hex>9E20</hex>
+		<!--Attack / Decay Duration-->
+		<hex>D8F0</hex>
+		<hex>D8F2</hex>
+		<hex>D8F5</hex>
+		<hex>D8F7</hex>
+		<hex>D8FA</hex>
+		<hex>D8FC</hex>
 
-		<hex>9E02</hex>
-		<hex>9E12</hex>
-		<hex>9E22</hex>
+		<!--Sustain Level / Release Duration-->
+		<hex>D918</hex>
+		<hex>D91A</hex>
+		<hex>D91D</hex>
+		<hex>D91F</hex>
+		<hex>D922</hex>
+		<hex>D924</hex>
 
-		<hex>9E04</hex>
-		<hex>9E14</hex>
-		<hex>9E24</hex>
+		<!--Channel Filter Enable-->
+		<hex>D940</hex>
+		<hex>D945</hex>
+		<hex>D94A</hex>
 
-		<hex>9E0A</hex>
-		<hex>9E1A</hex>
-		<hex>9E2A</hex>
+		<!--Filter Cutoff-->
+		<hex>D968</hex>
+		<hex>D96A</hex>
 
-		<hex>9E0C</hex>
-		<hex>9E1C</hex>
-		<hex>9E2C</hex>
+		<!--Filter Resonance-->
+		<hex>D990</hex>
 
-		<hex>9E0E</hex>
-		<hex>9E1E</hex>
-		<hex>9E2E</hex>
+		<!--High Pass Filter-->
+		<hex>D9B8</hex>
+
+		<!--Band Pass Filter-->
+		<hex>D9BD</hex>
+
+		<!--Low Pass Filter-->
+		<hex>D9C2</hex>
+
+		<!--Volume-->
+		<hex>D9E0</hex>
 	</label>
 
 	<label id="registers">
+		<!--Frequency-->
 		<hex>9E01</hex>
 		<hex>9E00</hex>
 		<hex>9E11</hex>
@@ -545,6 +624,7 @@
 		<hex>9E21</hex>
 		<hex>9E20</hex>
 
+		<!--Duty Cycle-->
 		<hex>9E03</hex>
 		<hex>9E02</hex>
 		<hex>9E13</hex>
@@ -552,6 +632,7 @@
 		<hex>9E23</hex>
 		<hex>9E22</hex>
 
+		<!--Pulse / Noise Enable-->
 		<hex>9E05</hex>
 		<hex>9E04</hex>
 		<hex>9E15</hex>
@@ -559,6 +640,23 @@
 		<hex>9E25</hex>
 		<hex>9E24</hex>
 
+		<!--Triange / Sawtooth Enable-->
+		<hex>9E07</hex>
+		<hex>9E06</hex>
+		<hex>9E17</hex>
+		<hex>9E16</hex>
+		<hex>9E27</hex>
+		<hex>9E26</hex>
+
+		<!--Ring Modulation / Reset-->
+		<hex>9E09</hex>
+		<hex>9E08</hex>
+		<hex>9E19</hex>
+		<hex>9E18</hex>
+		<hex>9E29</hex>
+		<hex>9E28</hex>
+
+		<!--Enable / Synchronize-->
 		<hex>9E0B</hex>
 		<hex>9E0A</hex>
 		<hex>9E1B</hex>
@@ -566,6 +664,7 @@
 		<hex>9E2B</hex>
 		<hex>9E2A</hex>
 
+		<!--Attack / Decay Duration-->
 		<hex>9E0D</hex>
 		<hex>9E0C</hex>
 		<hex>9E1D</hex>
@@ -573,12 +672,37 @@
 		<hex>9E2D</hex>
 		<hex>9E2C</hex>
 
+		<!--Sustain Level / Release Duration-->
 		<hex>9E0F</hex>
 		<hex>9E0E</hex>
 		<hex>9E1F</hex>
 		<hex>9E1E</hex>
 		<hex>9E2F</hex>
 		<hex>9E2E</hex>
+
+		<!--Channel Filter Enable-->
+		<hex>9E34</hex>
+		<hex>9E35</hex>
+		<hex>9E36</hex>
+		
+		<!--Filter Cutoff-->
+		<hex>9E31</hex>
+		<hex>9E30</hex>
+		
+		<!--Filter Resonance-->
+		<hex>9E32</hex>
+
+		<!--High Pass Filter-->
+		<hex>9E38</hex>
+		
+		<!--Band Pass Filter-->
+		<hex>9E39</hex>
+		
+		<!--Low Pass Filter-->
+		<hex>9E3A</hex>
+		
+		<!--Volume-->
+		<hex>9E3B</hex>
 	</label>
 
 	<label id="keyboardNotes">
