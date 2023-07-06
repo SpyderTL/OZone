@@ -1,1 +1,1 @@
-"C:\Games\Commodore 64\SDL2VICE-3.6.1-win64\x64sc.exe" -autostart "bin\Debug\c64audio.prg"
+"C:\Games\Commodore 64\GTK3VICE-3.7-win64\bin\x64sc.exe" -autostart "bin\Debug\c64audio.prg"

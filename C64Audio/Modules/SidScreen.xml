@@ -11,13 +11,25 @@
 	xmlns:kernel="http://metalx.org/Commodore64/Kernel"
 	xmlns:var="http://metalx.org/Variable">
 
+	<!--Define Memory Address Labels-->
 	<kernel:ReadCharacter id="readCharacter"/>
+	<vid:BorderColor id="borderColor"/>
+	<vid:BackgroundColor0 id="backgroundColor"/>
 
 	<label id="Selected"/>
 	<byte>0</byte>
 
 	<label id="Show" export="SidScreen.Show">
 		<!--Clear Screen-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<color:Black/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="borderColor" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="backgroundColor" type="Absolute16"/>
+
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Screen.Clear" type="Absolute16"/>
 

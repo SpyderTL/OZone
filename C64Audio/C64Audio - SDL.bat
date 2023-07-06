@@ -1,0 +1,1 @@
+"C:\Games\Commodore 64\SDL2VICE-3.6.1-win64\x64sc.exe" -autostart "bin\Debug\c64audio.prg"

@@ -11,15 +11,30 @@
 	xmlns:kernel="http://metalx.org/Commodore64/Kernel"
 	xmlns:var="http://metalx.org/Variable">
 
+	<!--Define Memory Address Labels-->
 	<kernel:ReadCharacter id="readCharacter"/>
+	<vid:BorderColor id="borderColor"/>
+	<vid:BackgroundColor0 id="backgroundColor"/>
 
 	<label id="Selected"/>
 	<byte>0</byte>
 
 	<label id="Show" export="GeneratorScreen.Show">
 		<!--Clear Screen-->
+		<cpu:CopyImmediate8ToAccumulator/>
+		<color:Black/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="borderColor" type="Absolute16"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="backgroundColor" type="Absolute16"/>
+
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Screen.Clear" type="Absolute16"/>
+		
+		<!--Draw Labels-->
+		
 
 		<cpu:CopyImmediate8ToAccumulator/>
 		<byte>0</byte>
@@ -435,251 +450,301 @@
 		<cpu:ReturnFromSubroutine/>
 	</label>
 
+	<var:string id="labels">Reg    Ch1  Ch2  Ch3</var:string>
+
 	<label id="screenCharacters">
 		<!--Frequency-->
 		<hex>0400</hex>
 		<hex>0402</hex>
+		
 		<hex>0405</hex>
 		<hex>0407</hex>
+		
 		<hex>040A</hex>
 		<hex>040C</hex>
 
 		<!--Duty Cycle-->
 		<hex>0428</hex>
 		<hex>042A</hex>
+		
 		<hex>042D</hex>
 		<hex>042F</hex>
+		
 		<hex>0432</hex>
 		<hex>0434</hex>
 
-		<!--Pulse / Noise Enable-->
-		<hex>0450</hex>
+		<!--Pulse Enable-->
 		<hex>0452</hex>
-		<hex>0455</hex>
 		<hex>0457</hex>
-		<hex>045A</hex>
 		<hex>045C</hex>
-
-		<!--Triange / Sawtooth Enable-->
-		<hex>0478</hex>
+		
+		<!--Noise Enable-->
 		<hex>047A</hex>
-		<hex>047D</hex>
 		<hex>047F</hex>
-		<hex>0482</hex>
 		<hex>0484</hex>
 
-		<!--Ring Modulation / Reset-->
-		<hex>04A0</hex>
+		<!--Triangle Enable-->
 		<hex>04A2</hex>
-		<hex>04A5</hex>
 		<hex>04A7</hex>
-		<hex>04AA</hex>
 		<hex>04AC</hex>
 
-		<!--Enable / Synchronize-->
-		<hex>04C8</hex>
+		<!--Sawtooth Enable-->
 		<hex>04CA</hex>
-		<hex>04CD</hex>
 		<hex>04CF</hex>
-		<hex>04D2</hex>
 		<hex>04D4</hex>
 
-		<!--Attack / Decay Duration-->
-		<hex>04F0</hex>
+		<!--Ring Modulation-->
 		<hex>04F2</hex>
-		<hex>04F5</hex>
 		<hex>04F7</hex>
-		<hex>04FA</hex>
 		<hex>04FC</hex>
-
-		<!--Sustain Level / Release Duration-->
-		<hex>0518</hex>
+		
+		<!--Reset-->
 		<hex>051A</hex>
-		<hex>051D</hex>
 		<hex>051F</hex>
-		<hex>0522</hex>
 		<hex>0524</hex>
 
+		<!--Enable-->
+		<hex>0542</hex>
+		<hex>0547</hex>
+		<hex>054C</hex>
+
+		<!--Synchronize-->
+		<hex>056A</hex>
+		<hex>056F</hex>
+		<hex>0574</hex>
+
+		<!--Attack Duration-->
+		<hex>0592</hex>
+		<hex>0597</hex>
+		<hex>059C</hex>
+		
+		<!--Decay Duration-->
+		<hex>05BA</hex>
+		<hex>05BF</hex>
+		<hex>05C4</hex>
+
+		<!--Sustain Level-->
+		<hex>05E2</hex>
+		<hex>05E7</hex>
+		<hex>05EC</hex>
+
+		<!--Release Duration-->
+		<hex>060A</hex>
+		<hex>060F</hex>
+		<hex>0614</hex>
+		
 		<!--Channel Filter Enable-->
-		<hex>0540</hex>
-		<hex>0545</hex>
-		<hex>054A</hex>
+		<hex>0632</hex>
+		<hex>0637</hex>
+		<hex>063C</hex>
 
 		<!--Filter Cutoff-->
-		<hex>0568</hex>
-		<hex>056A</hex>
+		<hex>0658</hex>
+		<hex>065A</hex>
 
 		<!--Filter Resonance-->
-		<hex>0590</hex>
+		<hex>0682</hex>
 
 		<!--High Pass Filter-->
-		<hex>05B8</hex>
+		<hex>06AA</hex>
 
 		<!--Band Pass Filter-->
-		<hex>05BD</hex>
+		<hex>06AF</hex>
 
 		<!--Low Pass Filter-->
-		<hex>05C2</hex>
+		<hex>06B4</hex>
 
 		<!--Volume-->
-		<hex>05E0</hex>
+		<hex>06D2</hex>
 	</label>
 
 	<label id="screenColors">
 		<!--Frequency-->
 		<hex>D800</hex>
 		<hex>D802</hex>
+		
 		<hex>D805</hex>
 		<hex>D807</hex>
+		
 		<hex>D80A</hex>
 		<hex>D80C</hex>
 
 		<!--Duty Cycle-->
 		<hex>D828</hex>
 		<hex>D82A</hex>
+		
 		<hex>D82D</hex>
 		<hex>D82F</hex>
+		
 		<hex>D832</hex>
 		<hex>D834</hex>
 
-		<!--Pulse / Noise Enable-->
-		<hex>D850</hex>
+		<!--Pulse Enable-->
 		<hex>D852</hex>
-		<hex>D855</hex>
 		<hex>D857</hex>
-		<hex>D85A</hex>
 		<hex>D85C</hex>
 
-		<!--Triange / Sawtooth Enable-->
-		<hex>D878</hex>
+		<!--Noise Enable-->
 		<hex>D87A</hex>
-		<hex>D87D</hex>
 		<hex>D87F</hex>
-		<hex>D882</hex>
 		<hex>D884</hex>
 
-		<!--Ring Modulation / Reset-->
-		<hex>D8A0</hex>
+		<!--Triangle Enable-->
 		<hex>D8A2</hex>
-		<hex>D8A5</hex>
 		<hex>D8A7</hex>
-		<hex>D8AA</hex>
 		<hex>D8AC</hex>
 
-		<!--Enable / Synchronize-->
-		<hex>D8C8</hex>
+		<!--Sawtooth Enable-->
 		<hex>D8CA</hex>
-		<hex>D8CD</hex>
 		<hex>D8CF</hex>
-		<hex>D8D2</hex>
 		<hex>D8D4</hex>
 
-		<!--Attack / Decay Duration-->
-		<hex>D8F0</hex>
+		<!--Ring Modulation-->
 		<hex>D8F2</hex>
-		<hex>D8F5</hex>
 		<hex>D8F7</hex>
-		<hex>D8FA</hex>
 		<hex>D8FC</hex>
-
-		<!--Sustain Level / Release Duration-->
-		<hex>D918</hex>
+		
+		<!--Reset-->
 		<hex>D91A</hex>
-		<hex>D91D</hex>
 		<hex>D91F</hex>
-		<hex>D922</hex>
 		<hex>D924</hex>
 
+		<!--Enable-->
+		<hex>D942</hex>
+		<hex>D947</hex>
+		<hex>D94C</hex>
+
+		<!--Synchronize-->
+		<hex>D96A</hex>
+		<hex>D96F</hex>
+		<hex>D974</hex>
+
+		<!--Attack Duration-->
+		<hex>D992</hex>
+		<hex>D997</hex>
+		<hex>D99C</hex>
+		
+		<!--Decay Duration-->
+		<hex>D9BA</hex>
+		<hex>D9BF</hex>
+		<hex>D9C4</hex>
+
+		<!--Sustain Level-->
+		<hex>D9E2</hex>
+		<hex>D9E7</hex>
+		<hex>D9EC</hex>
+
+		<!--Release Duration-->
+		<hex>DA0A</hex>
+		<hex>DA0F</hex>
+		<hex>DA14</hex>
+
 		<!--Channel Filter Enable-->
-		<hex>D940</hex>
-		<hex>D945</hex>
-		<hex>D94A</hex>
+		<hex>DA32</hex>
+		<hex>DA37</hex>
+		<hex>DA3C</hex>
 
 		<!--Filter Cutoff-->
-		<hex>D968</hex>
-		<hex>D96A</hex>
+		<hex>DA58</hex>
+		<hex>DA5A</hex>
 
 		<!--Filter Resonance-->
-		<hex>D990</hex>
+		<hex>DA82</hex>
 
 		<!--High Pass Filter-->
-		<hex>D9B8</hex>
+		<hex>DAAA</hex>
 
 		<!--Band Pass Filter-->
-		<hex>D9BD</hex>
+		<hex>DAAF</hex>
 
 		<!--Low Pass Filter-->
-		<hex>D9C2</hex>
+		<hex>DAB4</hex>
 
 		<!--Volume-->
-		<hex>D9E0</hex>
+		<hex>DAD2</hex>
 	</label>
 
 	<label id="registers">
 		<!--Frequency-->
 		<hex>9E01</hex>
 		<hex>9E00</hex>
+		
 		<hex>9E11</hex>
 		<hex>9E10</hex>
+		
 		<hex>9E21</hex>
 		<hex>9E20</hex>
 
 		<!--Duty Cycle-->
 		<hex>9E03</hex>
 		<hex>9E02</hex>
+		
 		<hex>9E13</hex>
 		<hex>9E12</hex>
+		
 		<hex>9E23</hex>
 		<hex>9E22</hex>
 
-		<!--Pulse / Noise Enable-->
+		<!--Pulse Enable-->
 		<hex>9E05</hex>
-		<hex>9E04</hex>
 		<hex>9E15</hex>
-		<hex>9E14</hex>
 		<hex>9E25</hex>
-		<hex>9E24</hex>
 
-		<!--Triange / Sawtooth Enable-->
+		<!--Noise Enable-->
+		<hex>9E04</hex>
+		<hex>9E14</hex>
+		<hex>9E24</hex>
+		
+		<!--Triangle Enable-->
 		<hex>9E07</hex>
-		<hex>9E06</hex>
 		<hex>9E17</hex>
-		<hex>9E16</hex>
 		<hex>9E27</hex>
+
+		<!--Sawtooth Enable-->
+		<hex>9E06</hex>
+		<hex>9E16</hex>
 		<hex>9E26</hex>
 
-		<!--Ring Modulation / Reset-->
+		<!--Ring Modulation-->
 		<hex>9E09</hex>
-		<hex>9E08</hex>
 		<hex>9E19</hex>
-		<hex>9E18</hex>
 		<hex>9E29</hex>
-		<hex>9E28</hex>
 
-		<!--Enable / Synchronize-->
+		<!--Reset-->
+		<hex>9E08</hex>
+		<hex>9E18</hex>
+		<hex>9E28</hex>
+		
+		<!--Enable-->
 		<hex>9E0B</hex>
-		<hex>9E0A</hex>
 		<hex>9E1B</hex>
-		<hex>9E1A</hex>
 		<hex>9E2B</hex>
+
+		<!--Synchronize-->
+		<hex>9E0A</hex>
+		<hex>9E1A</hex>
 		<hex>9E2A</hex>
 
-		<!--Attack / Decay Duration-->
-		<hex>9E0D</hex>
+		<!--Attack Duration-->
 		<hex>9E0C</hex>
-		<hex>9E1D</hex>
 		<hex>9E1C</hex>
-		<hex>9E2D</hex>
 		<hex>9E2C</hex>
 
-		<!--Sustain Level / Release Duration-->
-		<hex>9E0F</hex>
+		<!--Decay Duration-->
+		<hex>9E0D</hex>
+		<hex>9E1D</hex>
+		<hex>9E2D</hex>
+
+		<!--Sustain Level-->
 		<hex>9E0E</hex>
-		<hex>9E1F</hex>
 		<hex>9E1E</hex>
-		<hex>9E2F</hex>
 		<hex>9E2E</hex>
 
+		<!--Release Duration-->
+		<hex>9E0F</hex>
+		<hex>9E1F</hex>
+		<hex>9E2F</hex>
+		
 		<!--Channel Filter Enable-->
 		<hex>9E34</hex>
 		<hex>9E35</hex>
