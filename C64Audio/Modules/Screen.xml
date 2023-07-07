@@ -106,9 +106,341 @@
 		</scope>
 	</label>
 
-	<label id="DrawAscii" export="Screen.DrawAscii">
+	<label id="DrawString" export="Screen.DrawString">
 		<scope>
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+
+			<cpu:CopyAccumulatorToXIndex/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+			
+			<label id="forEachCharacter"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="MemoryReader.ReadByte" type="Absolute16"/>
+
+			<cpu:CopyAccumulatorToYIndex/>
+			
+			<cpu:CopyImmediate16PlusYIndexAddressToAccumulator/>
+			<addressOf ref="characters" type="Absolute16"/>
+
+			<cpu:CallImmediate16Address/>
+			<addressOf ref="MemoryWriter.WriteByte" type="Absolute16"/>
+
+			<cpu:DecrementXIndex/>
+			
+			<cpu:BranchToRelative8IfNotZero/>
+			<addressOf ref="forEachCharacter" type="Relative8"/>
+			
 			<cpu:ReturnFromSubroutine/>
 		</scope>
+	</label>
+
+	<label id="characters">
+		<!--00-->
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<!--10-->
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<!--20-->
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<!--30-->
+		<vic:Zero/>
+		<vic:One/>
+		<vic:Two/>
+		<vic:Three/>
+		<vic:Four/>
+		<vic:Five/>
+		<vic:Six/>
+		<vic:Seven/>
+
+		<vic:Eight/>
+		<vic:Nine/>
+		<vic:Colon/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<!--40-->
+		<vic:At/>
+		<vic:A/>
+		<vic:B/>
+		<vic:C/>
+		<vic:D/>
+		<vic:E/>
+		<vic:F/>
+		<vic:G/>
+
+		<vic:H/>
+		<vic:I/>
+		<vic:J/>
+		<vic:K/>
+		<vic:L/>
+		<vic:M/>
+		<vic:N/>
+		<vic:O/>
+
+		<!--50-->
+		<vic:P/>
+		<vic:Q/>
+		<vic:R/>
+		<vic:S/>
+		<vic:T/>
+		<vic:U/>
+		<vic:V/>
+		<vic:W/>
+
+		<vic:X/>
+		<vic:Y/>
+		<vic:Z/>
+		<vic:LeftBracket/>
+		<vic:Slash/>
+		<vic:RightBracket/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<!--60-->
+		<vic:Apostrophe/>
+		<vic:A/>
+		<vic:B/>
+		<vic:C/>
+		<vic:D/>
+		<vic:E/>
+		<vic:F/>
+		<vic:G/>
+
+		<vic:H/>
+		<vic:I/>
+		<vic:J/>
+		<vic:K/>
+		<vic:L/>
+		<vic:M/>
+		<vic:N/>
+		<vic:O/>
+
+		<!--70-->
+		<vic:P/>
+		<vic:Q/>
+		<vic:R/>
+		<vic:S/>
+		<vic:T/>
+		<vic:U/>
+		<vic:V/>
+		<vic:W/>
+
+		<vic:X/>
+		<vic:Y/>
+		<vic:Z/>
+		<vic:LeftParenthesis/>
+		<vic:Slash/>
+		<vic:RightParenthesis/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<!--80-->
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<!--90-->
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<!--A0-->
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<!--B0-->
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<!--C0-->
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<!--D0-->
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<!--E0-->
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<!--F0-->
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
+		<vic:Space/>
 	</label>
 </scope>

@@ -21,20 +21,45 @@
 
 	<label id="Show" export="GeneratorScreen.Show">
 		<!--Clear Screen-->
-		<cpu:CopyImmediate8ToAccumulator/>
+		<!--<cpu:CopyImmediate8ToAccumulator/>
 		<color:Black/>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
 		<addressOf ref="borderColor" type="Absolute16"/>
 
 		<cpu:CopyAccumulatorToImmediate16Address/>
-		<addressOf ref="backgroundColor" type="Absolute16"/>
+		<addressOf ref="backgroundColor" type="Absolute16"/>-->
 
 		<cpu:CallImmediate16Address/>
 		<addressOf ref="Screen.Clear" type="Absolute16"/>
 		
 		<!--Draw Labels-->
-		
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="labels" type="Absolute8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16" offset="0"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<addressOf ref="labels" type="Absolute16High8"/>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryReader.Position" type="Absolute16" offset="1"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>00</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute16" offset="0"/>
+
+		<cpu:CopyImmediate8ToAccumulator/>
+		<hex>04</hex>
+
+		<cpu:CopyAccumulatorToImmediate16Address/>
+		<addressOf ref="MemoryWriter.Position" type="Absolute16" offset="1"/>
+
+		<cpu:CallImmediate16Address/>
+		<addressOf ref="Screen.DrawString" type="Absolute16"/>
 
 		<cpu:CopyImmediate8ToAccumulator/>
 		<byte>0</byte>
@@ -101,7 +126,7 @@
 		<cpu:BranchToRelative8IfNotEqual/>
 		<addressOf ref="notUp" type="Relative8"/>
 
-		<cpu:DecrementImmediate16Address/>
+		<!--<cpu:DecrementImmediate16Address/>
 		<addressOf ref="Selected" type="Absolute16"/>
 
 		<cpu:DecrementImmediate16Address/>
@@ -114,7 +139,7 @@
 		<addressOf ref="Selected" type="Absolute16"/>
 		
 		<cpu:DecrementImmediate16Address/>
-		<addressOf ref="Selected" type="Absolute16"/>
+		<addressOf ref="Selected" type="Absolute16"/>-->
 		
 		<cpu:DecrementImmediate16Address/>
 		<addressOf ref="Selected" type="Absolute16"/>
@@ -131,7 +156,7 @@
 		<cpu:BranchToRelative8IfNotEqual/>
 		<addressOf ref="notDown" type="Relative8"/>
 
-		<cpu:IncrementImmediate16Address/>
+		<!--<cpu:IncrementImmediate16Address/>
 		<addressOf ref="Selected" type="Absolute16"/>
 
 		<cpu:IncrementImmediate16Address/>
@@ -144,7 +169,7 @@
 		<addressOf ref="Selected" type="Absolute16"/>
 
 		<cpu:IncrementImmediate16Address/>
-		<addressOf ref="Selected" type="Absolute16"/>
+		<addressOf ref="Selected" type="Absolute16"/>-->
 
 		<cpu:IncrementImmediate16Address/>
 		<addressOf ref="Selected" type="Absolute16"/>
